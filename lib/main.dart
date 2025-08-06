@@ -44,19 +44,17 @@ class Main extends StatelessWidget {
               fontSize: 15.sp,
               color: Preferences.thema ? Colors.white : Colors.black),
           child: MaterialApp(
-              localizationsDelegates: const [
-                GlobalMaterialLocalizations.delegate,
-                GlobalWidgetsLocalizations.delegate,
-                GlobalCupertinoLocalizations.delegate
-              ],
-              supportedLocales: const [
-                Locale('es')
-              ],
-              debugShowCheckedModeBanner: false,
-              title: 'Enrutador',
-              themeMode: Preferences.thema ? ThemeMode.light : ThemeMode.dark,
-              theme: Preferences.thema ? light : dark,
-              navigatorKey: NavigationKey.navigatorKey,
-              initialRoute: AppRoutes.initialRoute,
-              routes: AppRoutes.routes)));
+            localizationsDelegates: const [
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate
+            ],
+            supportedLocales: const [Locale('es')],
+            debugShowCheckedModeBanner: false,
+            title: 'Enrutador',
+            themeMode: Preferences.thema ? ThemeMode.light : ThemeMode.dark,
+            theme: Preferences.thema ? light : dark,
+            navigatorKey: NavigationKey.navigatorKey,
+            initialRoute: AppRoutes.initialRoute,routes: AppRoutes.routes,
+          )));
 }

@@ -49,21 +49,15 @@
 	<array>
 		<string>tel</string>
 	</array>
-	<key>CFBundleDocumentTypes</key>
+	<key>CFBundleTypeName</key>
+	<string>JSON File</string>
+	<key>CFBundleTypeRole</key>
+	<string>Viewer</string>
+	<key>LSItemContentTypes</key>
 	<array>
-			<dict>
-					<key>CFBundleTypeName</key>
-					<string>JSON File</string>
-					<key>CFBundleTypeRole</key>
-					<string>Viewer</string>
-					<key>LSHandlerRank</key>
-					<string>Alternate</string>
-					<key>LSItemContentTypes</key>
-					<array>
-							<string>public.json</string>
-							<string>public.text</string>
-					</array>
-			</dict>
+			<string>public.json</string> <!-- UTI para JSON -->
 	</array>
+	<key>LSHandlerRank</key>
+	<string>Alternate</string>
 </dict>
 </plist>

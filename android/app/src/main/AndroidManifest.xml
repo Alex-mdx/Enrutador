@@ -34,13 +34,9 @@
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <!-- Manejar ambos esquemas (file:// y content://) -->
                 <data android:scheme="file" />
-                <data android:scheme="content" />
-                <!-- MIME type para JSON -->
-                <data android:mimeType="application/json" />
-                <data android:mimeType="text/plain" /> <!-- WhatsApp a veces usa text/plain -->
+                <data android:mimeType="*/*" />
+                <data android:pathPattern=".*\\.json" /> <!-- Solo archivos .json -->
             </intent-filter>
         </activity>
         <!-- Don't delete the meta-data below.

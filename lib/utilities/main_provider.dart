@@ -57,5 +57,12 @@ class MainProvider with ChangeNotifier implements TickerProvider {
     notifyListeners();
   }
 
+  String? _jsonPath;
+  String? get jsonPath => _jsonPath;
+  set jsonPath(String? valor) {
+    _jsonPath = valor;
+    notifyListeners();
+  }
+
   //?Funciones
 }
