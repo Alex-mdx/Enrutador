@@ -88,8 +88,8 @@ class _MyWidgetState extends State<MapSliding> {
                                   IconButton.filledTonal(
                                       iconSize: 22.sp,
                                       onPressed: () {},
-                                      icon: Icon(LineIcons.whatSApp,
-                                          color: ThemaMain.green)),
+                                      icon: Icon(Icons.share,
+                                          color: ThemaMain.darkBlue)),
                                   IconButton.filledTonal(
                                       iconSize: 22.sp,
                                       onPressed: () {},

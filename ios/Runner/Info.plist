@@ -49,15 +49,38 @@
 	<array>
 		<string>tel</string>
 	</array>
-	<key>CFBundleTypeName</key>
-	<string>JSON File</string>
-	<key>CFBundleTypeRole</key>
-	<string>Viewer</string>
-	<key>LSItemContentTypes</key>
+	<key>CFBundleURLTypes</key>
 	<array>
-			<string>public.json</string> <!-- UTI para JSON -->
+			<dict>
+					<key>CFBundleURLName</key>
+					<string>apphandler</string>
+					<key>CFBundleURLSchemes</key>
+					<array>
+							<string>com.example.enrutador</string>  <!-- Mismo esquema que Android -->
+					</array>
+			</dict>
 	</array>
-	<key>LSHandlerRank</key>
-	<string>Alternate</string>
+
+	<!-- Para manejar archivos JSON -->
+	<key>CFBundleDocumentTypes</key>
+	<array>
+			<dict>
+					<key>CFBundleTypeName</key>
+					<string>JSON File</string>
+					<key>LSItemContentTypes</key>
+					<array>
+							<string>public.json</string>
+					</array>
+					<key>LSHandlerRank</key>
+					<string>Alternate</string>
+			</dict>
+	</array>
+	<key>UTExportedTypeDeclarations</key>
+	<array>
+			<dict>
+					<key>UTTypeIdentifier</key>
+					<string>public.json</string>
+			</dict>
+	</array>
 </dict>
 </plist>

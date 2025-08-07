@@ -1,4 +1,5 @@
 import 'package:enrutador/utilities/main_provider.dart';
+import 'package:enrutador/views/home_view.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:flutter/services.dart';
@@ -44,17 +45,26 @@ class Main extends StatelessWidget {
               fontSize: 15.sp,
               color: Preferences.thema ? Colors.white : Colors.black),
           child: MaterialApp(
-            localizationsDelegates: const [
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate
-            ],
-            supportedLocales: const [Locale('es')],
-            debugShowCheckedModeBanner: false,
-            title: 'Enrutador',
-            themeMode: Preferences.thema ? ThemeMode.light : ThemeMode.dark,
-            theme: Preferences.thema ? light : dark,
-            navigatorKey: NavigationKey.navigatorKey,
-            initialRoute: AppRoutes.initialRoute,routes: AppRoutes.routes,
-          )));
+              localizationsDelegates: const [
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate
+              ],
+              supportedLocales: const [
+                Locale('es')
+              ],
+              debugShowCheckedModeBanner: false,
+              title: 'Enrutador',
+              themeMode: Preferences.thema ? ThemeMode.light : ThemeMode.dark,
+              theme: Preferences.thema ? light : dark,
+              navigatorKey: NavigationKey.navigatorKey,
+              initialRoute: AppRoutes.initialRoute,
+              routes: AppRoutes.routes,
+              onGenerateRoute: (settings) {
+                // Maneja rutas no definidas
+                if (settings.name == '/') {
+                  return MaterialPageRoute(builder: (_) => const HomeView());
+                }
+                return null;
+              })));
 }

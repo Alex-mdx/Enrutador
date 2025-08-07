@@ -2,7 +2,6 @@ import 'package:avatar_glow/avatar_glow.dart';
 import 'package:enrutador/models/contacto_model.dart';
 import 'package:enrutador/utilities/main_provider.dart';
 import 'package:enrutador/utilities/theme/theme_color.dart';
-import 'package:enrutador/utilities/w3w_fun.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_animations/flutter_map_animations.dart';
@@ -37,19 +36,26 @@ class _ViajeMapPageState extends State<MapMain>
             mapController: provider.animaMap.mapController,
             options: MapOptions(
                 onTap: (tapPosition, point) async {
-                  await W3wFun.coorTo3(point.latitude, point.longitude);
-                  provider.contacto = ContactoModel(
+                  //await W3wFun.coorTo3(point.latitude, point.longitude);
+                  provider.contacto = ContactoModelo(
                       id: 1,
                       nombreCompleto: null,
                       latitud: point.latitude,
-                      longitud: point.longitude,agendar: null,
-                      contactoEnlances: [],
+                      longitud: point.longitude,
                       domicilio: null,
+                      fechaDomicilio: null,
                       numero: null,
+                      numeroFecha: null,
+                      agendar: null,
+                      contactoEnlances: [],
                       tipo: null,
+                      tipoFecha: null,
                       estado: null,
+                      estadoFecha: null,
                       foto: null,
+                      fotoFecha: null,
                       fotoReferencia: null,
+                      fotoReferenciaFecha: null,
                       what3Words: null,
                       nota: null);
                   provider.marker = [

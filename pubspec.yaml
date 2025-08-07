@@ -44,7 +44,7 @@ dependencies:
   sliding_up_panel: ^2.0.0+1
   sqflite: ^2.3.3+1
   what3words: ^3.2.0
-  receive_sharing_intent: ^1.8.1
+  app_links: ^6.4.0
 
 dev_dependencies:
   flutter_lints: ^5.0.0

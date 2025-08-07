@@ -43,9 +43,9 @@ class MainProvider with ChangeNotifier implements TickerProvider {
     notifyListeners();
   }
 
-  ContactoModel? _contacto;
-  ContactoModel? get contacto => _contacto;
-  set contacto(ContactoModel? valor) {
+  ContactoModelo? _contacto;
+  ContactoModelo? get contacto => _contacto;
+  set contacto(ContactoModelo? valor) {
     _contacto = valor;
     notifyListeners();
   }

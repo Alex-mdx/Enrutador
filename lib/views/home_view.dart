@@ -1,6 +1,5 @@
 import 'dart:async';
 
-
 import 'package:enrutador/utilities/main_provider.dart';
 import 'package:enrutador/views/map_main.dart';
 import 'package:enrutador/views/widgets/map_navigation.dart';
@@ -10,8 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:location/location.dart' as lc;
 import 'package:provider/provider.dart';
-import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:sizer/sizer.dart';
+import 'package:app_links/app_links.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -42,9 +41,8 @@ class Paginado extends StatefulWidget {
 }
 
 class PaginadoState extends State<Paginado> {
-  var recibir = ReceiveSharingIntent;
   lc.Location location = lc.Location();
-  String? _sharedJsonPath;
+  final AppLinks appLinks = AppLinks();
   @override
   void initState() {
     super.initState();
@@ -62,34 +60,25 @@ class PaginadoState extends State<Paginado> {
     location.onLocationChanged.listen((lc.LocationData currentLocation) {
       widget.provider.local = currentLocation;
     });
-    _listenForSharedFiles();
+    initDeepLinks();
   }
 
-  void _listenForSharedFiles() {
-    // Para Android/iOS cuando la app está abierta
-    ReceiveSharingIntent.instance.getMediaStream().listen((files) {
-      if (files.isNotEmpty && files.first.path.endsWith('.json')) {
-        setState(() {
-          _sharedJsonPath = files.first.path;
-        });
-        _processJsonFile(_sharedJsonPath!);
-      }
-    });
+  Future<void> initDeepLinks() async {
+    final uri = await appLinks.getInitialLink();
+    if (uri != null) _handleUri(uri);
 
-    // Para Android/iOS cuando la app está cerrada/inactiva
-    ReceiveSharingIntent.instance.getInitialMedia().then((files) {
-      if (files.isNotEmpty && files.first.path.endsWith('.json')) {
-        setState(() {
-          _sharedJsonPath = files.first.path;
-        });
-        _processJsonFile(_sharedJsonPath!);
-      }
-    });
+// Escucha de enlaces cálidos (app abierta)
+    appLinks.uriLinkStream.listen(_handleUri);
   }
 
-  void _processJsonFile(String path) {
-    print("Archivo JSON recibido: $path");
-    // Aquí lees el archivo y lo procesas
+  void _handleUri(Uri uri) {
+    if (uri.scheme == 'com.example.app') {
+      // Ejemplo: com.example.app://?path=/storage/ejemplo.json
+      final filePath = uri.queryParameters['path'];
+      if (filePath != null) debugPrint("link: $filePath");
+    } else {
+      debugPrint("link: ${uri.path}");
+    }
   }
 
   @override

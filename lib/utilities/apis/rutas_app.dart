@@ -9,5 +9,4 @@ class AppRoutes {
   };
   static get routes => _routes;
   static String get home => 'home';
-  static String get opciones => 'opciones';
 }

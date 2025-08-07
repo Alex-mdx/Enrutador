@@ -17,7 +17,7 @@ android {
     }
 
     kotlinOptions {
-        jvmTarget = "1.8"  // Versión como String
+        jvmTarget = "1.8"
     }
 
     defaultConfig {
@@ -26,6 +26,9 @@ android {
         targetSdk = flutter.targetSdkVersion.toInt()
         versionCode = flutter.versionCode.toInt()
         versionName = flutter.versionName
+         manifestPlaceholders.apply {
+            put("appAuthRedirectScheme", "com.example.enrutador")
+        }
     }
 
     buildTypes {
@@ -34,21 +37,6 @@ android {
         }
     }
 }
-
 dependencies {
-    // Desugaring solo si necesitas APIs modernas en Android antiguo
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
-}
-
-// Fuerza Java 8 en todos los plugins (incluyendo receive_sharing_intent)
-subprojects {
-    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-        kotlinOptions.jvmTarget = "1.8"
-    }
-}
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-    kotlinOptions {
-        jvmTarget = "1.8"
-        freeCompilerArgs = listOf("-Xjvm-default=all")
-    }
+        coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
 }
