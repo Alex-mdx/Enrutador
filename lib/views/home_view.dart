@@ -5,12 +5,15 @@ import 'package:enrutador/views/map_main.dart';
 import 'package:enrutador/views/widgets/map_navigation.dart';
 import 'package:enrutador/views/widgets/map_sliding.dart';
 import 'package:enrutador/views/widgets/search_widget.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:location/location.dart' as lc;
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 import 'package:app_links/app_links.dart';
+
+import '../utilities/map_fun.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -72,12 +75,23 @@ class PaginadoState extends State<Paginado> {
   }
 
   void _handleUri(Uri uri) {
-    if (uri.scheme == 'com.example.app') {
-      // Ejemplo: com.example.app://?path=/storage/ejemplo.json
-      final filePath = uri.queryParameters['path'];
-      if (filePath != null) debugPrint("link: $filePath");
-    } else {
-      debugPrint("link: ${uri.path}");
+    switch (uri.scheme) {
+      case 'com.example.app':
+        // Ejemplo: com.example.app://?path=/storage/ejemplo.json
+        final filePath = uri.queryParameters['path'];
+        if (filePath != null) debugPrint("link: $filePath");
+        break;
+      case 'geo':
+        final filePath = uri.query;
+        if (filePath.contains("q=")) {
+          Future.delayed(
+        Duration(seconds: kDebugMode ?  4:1),() async => await MapFun.getUri(provider: widget.provider, uri: filePath));
+          
+        }
+        break;
+      default:
+        debugPrint("link: ${uri.query}");
+        break;
     }
   }
 

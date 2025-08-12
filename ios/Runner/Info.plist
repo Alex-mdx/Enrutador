@@ -49,19 +49,12 @@
 	<array>
 		<string>tel</string>
 	</array>
-	<key>CFBundleURLTypes</key>
-	<array>
-			<dict>
-					<key>CFBundleURLName</key>
-					<string>apphandler</string>
-					<key>CFBundleURLSchemes</key>
-					<array>
-							<string>com.example.enrutador</string>  <!-- Mismo esquema que Android -->
-					</array>
-			</dict>
-	</array>
-
-	<!-- Para manejar archivos JSON -->
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>In order to access your photo library</string>
+	<key>NSCameraUsageDescription</key>
+	<string>your usage description here</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>your usage description here</string>
 	<key>CFBundleDocumentTypes</key>
 	<array>
 			<dict>

@@ -34,7 +34,7 @@ class _MapNavigationState extends State<MapNavigation> {
                       zoom: 15,
                       coords: Coords(provider.contacto!.latitud,
                           provider.contacto!.longitud),
-                      title: "Ubicacion actual");
+                      title: "Ubicacion Seleccionada");
                 },
                 icon: Icon(LineIcons.directions, color: ThemaMain.white)),
           IconButton.filled(

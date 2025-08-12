@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.example.enrutador"
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = 35
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
@@ -22,10 +22,10 @@ android {
 
     defaultConfig {
         applicationId = "com.example.enrutador"
-        minSdk = flutter.minSdkVersion.toInt()
-        targetSdk = flutter.targetSdkVersion.toInt()
-        versionCode = flutter.versionCode.toInt()
-        versionName = flutter.versionName
+        minSdk = 24
+        targetSdk = 35
+        versionCode = 1
+        versionName = "0.0.1"
          manifestPlaceholders.apply {
             put("appAuthRedirectScheme", "com.example.enrutador")
         }

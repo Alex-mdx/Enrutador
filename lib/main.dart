@@ -61,7 +61,6 @@ class Main extends StatelessWidget {
               initialRoute: AppRoutes.initialRoute,
               routes: AppRoutes.routes,
               onGenerateRoute: (settings) {
-                // Maneja rutas no definidas
                 if (settings.name == '/') {
                   return MaterialPageRoute(builder: (_) => const HomeView());
                 }

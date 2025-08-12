@@ -7,9 +7,11 @@ environment:
   sdk: '>=3.4.3 <4.0.0'
 
 dependencies:
+  app_links: ^6.4.0
   avatar_glow: ^3.0.1
   badges: ^3.1.2
   cupertino_icons: ^1.0.6
+  flutter_map_location_marker: ^10.1.0
   flutter:
     sdk: flutter
   flutter_launcher_icons: ^0.14.1
@@ -22,15 +24,14 @@ dependencies:
   get: ^4.6.6
   http: ^1.4.0
   image: ^4.2.0
-  image_picker: ^1.1.2
   internet_connection_checker_plus: ^2.7.0
   intl: 0.20.2
   latlong2: ^0.9.1
   line_icons: ^2.0.3
-  open_location_code: ^1.0.1
   location: ^8.0.1
   map_launcher: ^4.0.0
   oktoast: ^3.4.0
+  open_location_code: ^1.0.1
   package_info_plus: ^8.3.0
   path: ^1.9.1
   path_provider: ^2.1.5
@@ -44,7 +45,7 @@ dependencies:
   sliding_up_panel: ^2.0.0+1
   sqflite: ^2.3.3+1
   what3words: ^3.2.0
-  app_links: ^6.4.0
+  advanced_media_picker: ^0.1.2
 
 dev_dependencies:
   flutter_lints: ^5.0.0

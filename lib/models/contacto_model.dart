@@ -1,7 +1,8 @@
+import 'package:enrutador/utilities/funcion_parser.dart';
 import 'package:enrutador/utilities/textos.dart';
 
 class ContactoModelo {
-  int id;
+  int? id;
   String? nombreCompleto;
   double latitud;
   double longitud;
@@ -9,6 +10,8 @@ class ContactoModelo {
   DateTime? fechaDomicilio;
   int? numero;
   DateTime? numeroFecha;
+  int? otroNumero;
+  DateTime? otroNumeroFecha;
   DateTime? agendar;
   List<int> contactoEnlances;
   int? tipo;
@@ -23,7 +26,7 @@ class ContactoModelo {
   String? nota;
 
   ContactoModelo(
-      {required this.id,
+      {this.id,
       required this.nombreCompleto,
       required this.latitud,
       required this.longitud,
@@ -31,6 +34,8 @@ class ContactoModelo {
       required this.fechaDomicilio,
       required this.numero,
       required this.numeroFecha,
+      required this.otroNumero,
+      required this.otroNumeroFecha,
       required this.agendar,
       required this.contactoEnlances,
       required this.tipo,
@@ -53,6 +58,8 @@ class ContactoModelo {
           DateTime? fechaDomicilio,
           int? numero,
           DateTime? numeroFecha,
+          int? otroNumero,
+          DateTime? otroNumeroFecha,
           DateTime? agendar,
           List<int>? contactoEnlances,
           int? tipo,
@@ -76,6 +83,8 @@ class ContactoModelo {
           fechaDomicilio: fechaDomicilio ?? this.fechaDomicilio,
           numero: numero ?? this.numero,
           numeroFecha: numeroFecha ?? this.numeroFecha,
+          otroNumero: otroNumero ?? this.otroNumero,
+          otroNumeroFecha: otroNumeroFecha ?? this.otroNumeroFecha,
           agendar: agendar ?? this.agendar,
           contactoEnlances: contactoEnlances ?? this.contactoEnlances,
           tipo: tipo ?? this.tipo,
@@ -92,22 +101,27 @@ class ContactoModelo {
   factory ContactoModelo.fromJson(Map<String, dynamic> json) => ContactoModelo(
       id: json["id"],
       nombreCompleto: json["nombre_completo"],
-      latitud: double.parse(double.parse(json["latitud"]).toStringAsFixed(6)),
-      longitud: double.parse(double.parse(json["longitud"]).toStringAsFixed(6)),
+      latitud: double.parse(
+          double.parse(json["latitud"].toString()).toStringAsFixed(6)),
+      longitud: double.parse(
+          double.parse(json["longitud"].toString()).toStringAsFixed(6)),
       domicilio: json["domicilio"],
-      fechaDomicilio: DateTime.tryParse(json["fecha_domicilio"]),
-      numero: json["numero"],
-      numeroFecha: DateTime.tryParse(json["numero_fecha"]),
-      agendar: DateTime.tryParse(json["agendar"]),
+      fechaDomicilio: DateTime.tryParse(json["fecha_domicilio"].toString()),
+      numero: Parser.toInt(json["numero"]),
+      numeroFecha: DateTime.tryParse(json["numero_fecha"].toString()),
+      otroNumero: Parser.toInt(json["otro_numero"]),
+      otroNumeroFecha: DateTime.tryParse(json["otro_numero_fecha"].toString()),
+      agendar: DateTime.tryParse(json["agendar"].toString()),
       contactoEnlances: List<int>.from(json["contacto_enlances"].map((x) => x)),
       tipo: json["tipo"],
-      tipoFecha: DateTime.tryParse(json["tipo_fecha"]),
+      tipoFecha: DateTime.tryParse(json["tipo_fecha"].toString()),
       estado: json["estado"],
-      estadoFecha: DateTime.tryParse(json["estado_fecha"]),
+      estadoFecha: DateTime.tryParse(json["estado_fecha"].toString()),
       foto: json["foto"],
-      fotoFecha: DateTime.parse(json["foto_fecha"]),
+      fotoFecha: DateTime.tryParse(json["foto_fecha"].toString()),
       fotoReferencia: json["foto_referencia"],
-      fotoReferenciaFecha: DateTime.parse(json["foto_referencia_fecha"]),
+      fotoReferenciaFecha:
+          DateTime.tryParse(json["foto_referencia_fecha"].toString()),
       what3Words: json["what_3_words"],
       nota: json["nota"]);
 
@@ -117,19 +131,33 @@ class ContactoModelo {
         "latitud": latitud,
         "longitud": longitud,
         "domicilio": domicilio,
-        "fecha_domicilio": fechaDomicilio?.toIso8601String(),
+        "fecha_domicilio": fechaDomicilio == null
+            ? null
+            : Textos.fechaYMDHMS(fecha: fechaDomicilio!),
         "numero": numero,
-        "numero_fecha": numeroFecha?.toIso8601String(),
+        "numero_fecha": numeroFecha == null
+            ? null
+            : Textos.fechaYMDHMS(fecha: numeroFecha!),
+        "otro_numero": otroNumero,
+        "otro_numero_fecha": otroNumeroFecha == null
+            ? null
+            : Textos.fechaYMDHMS(fecha: otroNumeroFecha!),
         "agendar": agendar == null ? null : Textos.fechaYMD(fecha: agendar!),
         "contacto_enlances": List<int>.from(contactoEnlances.map((x) => x)),
         "tipo": tipo,
-        "tipo_fecha": tipoFecha?.toIso8601String(),
+        "tipo_fecha":
+            tipoFecha == null ? null : Textos.fechaYMDHMS(fecha: tipoFecha!),
         "estado": estado,
-        "estado_fecha": estadoFecha?.toIso8601String(),
+        "estado_fecha": estadoFecha == null
+            ? null
+            : Textos.fechaYMDHMS(fecha: estadoFecha!),
         "foto": foto,
-        "foto_fecha": fotoFecha?.toIso8601String(),
+        "foto_fecha":
+            fotoFecha == null ? null : Textos.fechaYMDHMS(fecha: fotoFecha!),
         "foto_referencia": fotoReferencia,
-        "foto_referencia_fecha": fotoReferenciaFecha?.toIso8601String(),
+        "foto_referencia_fecha": fotoReferenciaFecha == null
+            ? null
+            : Textos.fechaYMDHMS(fecha: fotoReferenciaFecha!),
         "what_3_words": what3Words,
         "nota": nota
       };

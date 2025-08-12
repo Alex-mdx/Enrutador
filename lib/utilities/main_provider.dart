@@ -10,7 +10,7 @@ class MainProvider with ChangeNotifier implements TickerProvider {
   MainProvider() {
     _animaMap = AnimatedMapController(
         vsync: this,
-        duration: const Duration(milliseconds: 500),
+        duration: Durations.extralong2,
         curve: Curves.easeInOut);
   }
   @override
@@ -22,10 +22,18 @@ class MainProvider with ChangeNotifier implements TickerProvider {
     notifyListeners();
   }
 
+
   bool _internet = false;
   bool get internet => _internet;
   set internet(bool valor) {
     _internet = valor;
+    notifyListeners();
+  }
+
+  TextEditingController _buscar = TextEditingController();
+  TextEditingController get buscar => _buscar;
+  set buscar(TextEditingController valor) {
+    _buscar = valor;
     notifyListeners();
   }
 
