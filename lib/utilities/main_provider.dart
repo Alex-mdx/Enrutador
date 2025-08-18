@@ -2,8 +2,11 @@ import 'package:enrutador/models/contacto_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_map_animations/flutter_map_animations.dart';
+import 'package:flutter_slider_drawer/flutter_slider_drawer.dart';
 import 'package:location/location.dart' as ld;
 import 'package:sliding_up_panel/sliding_up_panel.dart';
+
+import '../models/referencia_model.dart';
 
 class MainProvider with ChangeNotifier implements TickerProvider {
   late AnimatedMapController _animaMap;
@@ -30,10 +33,26 @@ class MainProvider with ChangeNotifier implements TickerProvider {
     notifyListeners();
   }
 
+  ReferenciaModelo? _selectReferencia;
+  ReferenciaModelo? get selectRefencia => _selectReferencia;
+  set selectRefencia(ReferenciaModelo? valor) {
+    _selectReferencia = valor;
+    notifyListeners();
+  }
+
+
   TextEditingController _buscar = TextEditingController();
   TextEditingController get buscar => _buscar;
   set buscar(TextEditingController valor) {
     _buscar = valor;
+    notifyListeners();
+  }
+
+  GlobalKey<SliderDrawerState> _sliderDrawerKey =
+      GlobalKey<SliderDrawerState>();
+      GlobalKey<SliderDrawerState> get sliderDrawerKey => _sliderDrawerKey;
+  set sliderDrawerKey(GlobalKey<SliderDrawerState> valor) {
+    _sliderDrawerKey = valor;
     notifyListeners();
   }
 

@@ -1,7 +1,6 @@
 import 'package:enrutador/controllers/contacto_controller.dart';
 import 'package:enrutador/models/contacto_model.dart';
 import 'package:enrutador/utilities/main_provider.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map_animations/flutter_map_animations.dart';
 import 'package:latlong2/latlong.dart';
@@ -78,8 +77,14 @@ class MapFun {
                     zoom: 18);
                 await provider.slide.open();
               },
-              child:
-                  Icon(size: 24.sp, Icons.add_location, color: ThemaMain.red)))
+              child: Stack(alignment: Alignment.center, children: [
+                Image.asset("assets/mark_point2.png",
+                    width: 26.sp, height: 26.sp),
+                Padding(
+                    padding: EdgeInsets.only(bottom: 10.sp),
+                    child: Icon(
+                        size: 22.sp, Icons.add_circle, color: ThemaMain.red))
+              ])))
     ];
   }
 }

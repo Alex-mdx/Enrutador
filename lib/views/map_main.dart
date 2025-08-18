@@ -1,8 +1,8 @@
 import 'package:enrutador/controllers/contacto_controller.dart';
+import 'package:enrutador/controllers/tipo_controller.dart';
 import 'package:enrutador/models/contacto_model.dart';
 import 'package:enrutador/utilities/main_provider.dart';
 import 'package:enrutador/utilities/map_fun.dart';
-import 'package:enrutador/utilities/services/dialog_services.dart';
 import 'package:enrutador/utilities/theme/theme_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -13,8 +13,6 @@ import 'package:latlong2/latlong.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
-
-import '../utilities/uri_fun.dart';
 
 class MapMain extends StatefulWidget {
   const MapMain({super.key});
@@ -42,20 +40,20 @@ class _ViajeMapPageState extends State<MapMain>
             mapController: provider.animaMap.mapController,
             options: MapOptions(
                 keepAlive: true,
-                onTap: (tapPosition, point) async => MapFun.touch(
+                onTap: (tapPosition, point) async => await MapFun.touch(
                     provider: provider,
                     lat: point.latitude,
                     lng: point.longitude),
-                initialZoom: 17,
-                minZoom: 2,
-                maxZoom: 21,
+                initialZoom: 18,
+                minZoom: 4,
+                maxZoom: 20,
                 initialCenter: LatLng(
                     provider.local!.latitude!, provider.local!.longitude!)),
             children: [
                 TileLayer(
-                    maxZoom: 21,
+                    maxZoom: 20,
                     keepBuffer: 3,
-                    maxNativeZoom: 21,
+                    maxNativeZoom: 20,
                     urlTemplate:
                         'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                     retinaMode: false,
@@ -70,61 +68,9 @@ class _ViajeMapPageState extends State<MapMain>
             userAgentPackageName: 'dev.fleaflet.flutter_map.example',
             // Opcional: añade una capa de etiquetas encima para ver los nombres de las calles
           ), */
-
-                FutureBuilder(
-                    future: ContactoController.getItems(),
-                    builder: (context, snapshot) {
-                      return AnimatedMarkerLayer(
-                          alignment: Alignment.topCenter,
-                          markers: !snapshot.hasData
-                              ? []
-                              : snapshot.data!
-                                  .map((e) => AnimatedMarker(
-                                      rotate: true,
-                                      point: LatLng(e.latitud, e.longitud),
-                                      builder: (context, animation) => InkWell(
-                                          onTap: () async {
-                                            try {
-                                              provider.animaMap.centerOnPoint(
-                                                  LatLng(e.latitud, e.longitud),
-                                                  zoom: 18);
-                                              provider.contacto =
-                                                  await ContactoController
-                                                      .getItem(
-                                                          lat: e.latitud,
-                                                          lng: e.longitud);
-                                              
-                                            } catch (err) {
-                                              debugPrint("$err");
-                                              var reparacion =
-                                                  ContactoModelo.fromJson({
-                                                "latitud": e.latitud,
-                                                "longitud": e.longitud,
-                                                "foto": "null",
-                                                "fotoReferencia": "null"
-                                              });
-                                              await ContactoController.update(reparacion);
-                                              provider.contacto =
-                                                  await ContactoController
-                                                      .getItem(
-                                                          lat: e.latitud,
-                                                          lng: e.longitud);
-                                              showToast("No se pudo obtener sus fotos, intente de nuevo");
-                                            }
-                                            await provider.slide.open();
-                                          },
-                                          child: Icon(
-                                              size: 24.sp,
-                                              Icons.location_history,
-                                              color: ThemaMain.primary))))
-                                  .toList());
-                    }),
-                AnimatedMarkerLayer(
-                    alignment: Alignment.topCenter,
-                    markers: [...provider.marker]),
                 CurrentLocationLayer(
-                    alignDirectionAnimationDuration: Durations.extralong1,
-                    alignPositionAnimationDuration: Durations.extralong3,
+                    alignDirectionAnimationDuration: Durations.medium1,
+                    alignPositionAnimationDuration: Durations.medium1,
                     moveAnimationDuration: Durations.extralong3,
                     style: LocationMarkerStyle(
                         showAccuracyCircle: true,
@@ -134,10 +80,97 @@ class _ViajeMapPageState extends State<MapMain>
                         marker: DefaultLocationMarker(
                             color: ThemaMain.darkBlue,
                             child: Icon(
-                                size: 17.sp,
-                                Icons.navigation,
+                                size: 16.sp,
+                                Icons.circle,
                                 color: Colors.white)),
                         markerDirection: MarkerDirection.heading)),
+                FutureBuilder(
+                    future: ContactoController.getItems(),
+                    builder: (context, snapshot) => AnimatedMarkerLayer(
+                        alignment: Alignment.center,
+                        markers: !snapshot.hasData
+                            ? []
+                            : snapshot.data!.map((e) {
+                                var tocable = (provider.contacto?.latitud ==
+                                        e.latitud &&
+                                    provider.contacto?.longitud == e.longitud);
+                                return AnimatedMarker(
+                                    rotate: true,
+                                    point: LatLng(e.latitud, e.longitud),
+                                    builder: (context, animation) => InkWell(
+                                        onLongPress: () async {
+                                          await ContactoController
+                                              .deleteItemByltlng(
+                                                  lat: e.latitud,
+                                                  lng: e.longitud);
+                                          provider.contacto = null;
+                                        },
+                                        onTap: () async {
+                                          try {
+                                            provider.animaMap.centerOnPoint(
+                                                LatLng(e.latitud, e.longitud),
+                                                zoom: 18);
+                                            provider.contacto =
+                                                await ContactoController
+                                                    .getItem(
+                                                        lat: e.latitud,
+                                                        lng: e.longitud);
+                                          } catch (err) {
+                                            debugPrint("$err");
+                                            var reparacion =
+                                                ContactoModelo.fromJson({
+                                              "latitud": e.latitud,
+                                              "longitud": e.longitud,
+                                              "foto": "null",
+                                              "foto_referencia": "null"
+                                            });
+                                            await ContactoController.update(
+                                                reparacion);
+                                            provider.contacto =
+                                                await ContactoController
+                                                    .getItem(
+                                                        lat: e.latitud,
+                                                        lng: e.longitud);
+                                            showToast(
+                                                "No se pudo obtener sus fotos, intente de nuevo");
+                                          }
+                                          await provider.slide.open();
+                                        },
+                                        child: Stack(
+                                            fit: StackFit.expand,
+                                            alignment: Alignment.center,
+                                            children: [
+                                              Image.asset(
+                                                  tocable
+                                                      ? "assets/mark_point2.png"
+                                                      : "assets/mark_point.png",
+                                                  width:
+                                                      tocable ? 24.sp : 22.sp,
+                                                  height:
+                                                      tocable ? 24.sp : 22.sp),
+                                              Padding(
+                                                  padding: EdgeInsets.only(
+                                                      bottom:
+                                                          tocable ? 10.sp : 0),
+                                                  child: FutureBuilder(
+                                                      future: TipoController
+                                                          .getItem(
+                                                              data:
+                                                                  e.tipo ?? -1),
+                                                      builder: (context, data) {
+                                                        return Icon(
+                                                            data.data?.icon ??
+                                                                Icons.person,
+                                                            size: 20.sp,
+                                                            color: data.data
+                                                                    ?.color ??
+                                                                ThemaMain
+                                                                    .primary);
+                                                      }))
+                                            ])));
+                              }).toList())),
+                AnimatedMarkerLayer(
+                    alignment: Alignment.center, markers: [...provider.marker]),
                 MapCompass.cupertino(
                     padding: EdgeInsets.only(top: 6.h, right: 3.w),
                     hideIfRotatedNorth: false)

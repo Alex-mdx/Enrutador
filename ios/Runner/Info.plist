@@ -49,12 +49,10 @@
 	<array>
 		<string>tel</string>
 	</array>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>In order to access your photo library</string>
 	<key>NSCameraUsageDescription</key>
-	<string>your usage description here</string>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>your usage description here</string>
+	<string>Esta app necesita acceso a la cámara para tomar fotos.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Esta app necesita acceso a tu galería para seleccionar fotos.</string>
 	<key>CFBundleDocumentTypes</key>
 	<array>
 			<dict>

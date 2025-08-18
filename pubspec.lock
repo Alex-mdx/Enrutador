@@ -45,10 +45,10 @@ packages:
     dependency: transitive
     description:
       name: archive
-      sha256: "2fde1607386ab523f7a36bb3e7edb43bd58e6edaf2ffb29d8a6d578b297fdbbd"
+      sha256: cb6a278ef2dbb298455e1a713bda08524a175630ec643a242c399c932a0a1f7d
       url: "https://pub.dev"
     source: hosted
-    version: "4.0.7"
+    version: "3.6.1"
   args:
     dependency: transitive
     description:
@@ -305,6 +305,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "10.2.4"
+  filesize:
+    dependency: "direct main"
+    description:
+      name: filesize
+      sha256: f53df1f27ff60e466eefcd9df239e02d4722d5e2debee92a87dfd99ac66de2af
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.1"
   fixnum:
     dependency: transitive
     description:
@@ -318,6 +326,54 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_image_compress:
+    dependency: "direct main"
+    description:
+      name: flutter_image_compress
+      sha256: "51d23be39efc2185e72e290042a0da41aed70b14ef97db362a6b5368d0523b27"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.4.0"
+  flutter_image_compress_common:
+    dependency: transitive
+    description:
+      name: flutter_image_compress_common
+      sha256: c5c5d50c15e97dd7dc72ff96bd7077b9f791932f2076c5c5b6c43f2c88607bfb
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.6"
+  flutter_image_compress_macos:
+    dependency: transitive
+    description:
+      name: flutter_image_compress_macos
+      sha256: "20019719b71b743aba0ef874ed29c50747461e5e8438980dfa5c2031898f7337"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.3"
+  flutter_image_compress_ohos:
+    dependency: transitive
+    description:
+      name: flutter_image_compress_ohos
+      sha256: e76b92bbc830ee08f5b05962fc78a532011fcd2041f620b5400a593e96da3f51
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.3"
+  flutter_image_compress_platform_interface:
+    dependency: transitive
+    description:
+      name: flutter_image_compress_platform_interface
+      sha256: "579cb3947fd4309103afe6442a01ca01e1e6f93dc53bb4cbd090e8ce34a41889"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.5"
+  flutter_image_compress_web:
+    dependency: transitive
+    description:
+      name: flutter_image_compress_web
+      sha256: b9b141ac7c686a2ce7bb9a98176321e1182c9074650e47bb140741a44b6f5a96
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.5"
   flutter_launcher_icons:
     dependency: "direct main"
     description:
@@ -371,6 +427,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "10.1.0"
+  flutter_material_color_picker:
+    dependency: "direct main"
+    description:
+      name: flutter_material_color_picker
+      sha256: ca1e7749d228c9155ea24bce98e647cdbffa350e6f334f6c001f841cd3d9c987
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.2.0"
   flutter_phone_direct_caller:
     dependency: "direct main"
     description:
@@ -395,6 +459,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.1.1"
+  flutter_slider_drawer:
+    dependency: "direct main"
+    description:
+      name: flutter_slider_drawer
+      sha256: "41a627bc3a87c981ca128c0ec4e0f2135244c8e13a78bf472db4d59a1ed9896f"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.2"
   flutter_sticky_header:
     dependency: transitive
     description:
@@ -521,10 +593,10 @@ packages:
     dependency: "direct main"
     description:
       name: image
-      sha256: "4e973fcf4caae1a4be2fa0a13157aa38a8f9cb049db6529aa00b4d71abc4d928"
+      sha256: f31d52537dc417fdcde36088fdf11d191026fd5e4fae742491ebd40e5a8bea7d
       url: "https://pub.dev"
     source: hosted
-    version: "4.5.4"
+    version: "4.3.0"
   internet_connection_checker_plus:
     dependency: "direct main"
     description:
@@ -917,14 +989,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.8"
-  posix:
-    dependency: transitive
-    description:
-      name: posix
-      sha256: "6323a5b0fa688b6a010df4905a56b00181479e6d10534cecfecede2aa55add61"
-      url: "https://pub.dev"
-    source: hosted
-    version: "6.0.3"
   pro_image_editor:
     dependency: "direct main"
     description:
@@ -1290,6 +1354,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.2.0"
+  widgets_to_image:
+    dependency: "direct main"
+    description:
+      name: widgets_to_image
+      sha256: "4e5b7e88bf62c06a91762a9a713096f095361e4c8e81fdd3875cf19cdad73d3e"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.1"
   win32:
     dependency: transitive
     description:

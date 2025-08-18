@@ -21,12 +21,6 @@ class SqlGenerator {
     return false;
   }
 
-  static Future<sql.Database> database({required Function(sql.Database) tablas}) async {
-    return sql.openDatabase('app_categoria.db', version: 1,
-        onCreate: (sql.Database database, int version) async {
-      await tablas(database);
-    });
-  }
 
   static Future<bool> renombrar(
       {required String actual,

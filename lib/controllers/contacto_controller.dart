@@ -1,11 +1,5 @@
-import 'dart:developer';
-
 import 'package:enrutador/models/contacto_model.dart';
-import 'package:flutter/material.dart';
-import 'package:open_location_code/open_location_code.dart';
 import 'package:sqflite/sqflite.dart' as sql;
-
-import 'sql_generator.dart';
 
 String nombreDB = "contacto";
 
@@ -13,7 +7,7 @@ class ContactoController {
   static Future<void> createTables(sql.Database database) async {
     await database.execute("""CREATE TABLE $nombreDB(
           id INTEGER PRIMARY KEY AUTOINCREMENT,
-          nombre_completo nombreCompleto,
+          nombre_completo INTEGER,
           latitud INTEGER,
           longitud INTEGER,
           domicilio TEXT,
@@ -38,15 +32,22 @@ class ContactoController {
       )""");
   }
 
+  static Future<sql.Database> database() async {
+    return sql.openDatabase('app_categoria.db',
+        version: 1,
+        onCreate: (db, ver) => createTables(db),
+        onUpgrade: (db, oldVersion, newVersion) => createTables(db));
+  }
+
   static Future<void> insert(ContactoModelo data) async {
-    final db = await SqlGenerator.database(tablas: createTables);
+    final db = await database();
 
     await db.insert(nombreDB, data.toJson(),
         conflictAlgorithm: sql.ConflictAlgorithm.replace);
   }
 
   static Future<void> update(ContactoModelo data) async {
-    final db = await SqlGenerator.database(tablas: createTables);
+    final db = await database();
     await db.update(nombreDB, data.toJson(),
         where: "latitud = ? AND longitud = ?",
         whereArgs: [data.latitud, data.longitud],
@@ -55,7 +56,7 @@ class ContactoController {
 
   static Future<ContactoModelo?> getItem(
       {required double lat, required double lng}) async {
-    final db = await SqlGenerator.database(tablas: createTables);
+    final db = await database();
     final modelo = (await db.query(nombreDB,
             where: "latitud = ? AND longitud = ?",
             whereArgs: [lat, lng],
@@ -66,9 +67,33 @@ class ContactoController {
   }
 
   static Future<List<ContactoModelo>> getItems() async {
-    final db = await SqlGenerator.database(tablas: createTables);
+    final db = await database();
+    final modelo = (await db.query(nombreDB, columns: [
+      "latitud",
+      "longitud",
+      "contacto_enlances",
+      "tipo",
+      "estado"
+    ]));
+    List<ContactoModelo> model = [];
+    for (var element in modelo) {
+      model.add(ContactoModelo.fromJson(element));
+    }
+    return model;
+  }
+
+  static Future<List<ContactoModelo>> getItemsAll(
+      {required String? nombre}) async {
+    final db = await database();
     final modelo = (await db.query(nombreDB,
-        columns: ["latitud", "longitud", "contacto_enlances"]));
+        where: nombre == "" || nombre == null 
+            ? null
+            : "nombre_completo LIKE ? OR numero LIKE ? OR otro_numero LIKE ?",
+        whereArgs:
+            nombre == "" || nombre == null 
+            ? null : ['%$nombre%', '%$nombre%', '%$nombre%'],
+        orderBy: "nombre_completo ASC",
+        limit: 250));
     List<ContactoModelo> model = [];
     for (var element in modelo) {
       model.add(ContactoModelo.fromJson(element));
@@ -77,7 +102,7 @@ class ContactoController {
   }
 
   static Future<List<ContactoModelo>> buscar(String word, int? limit) async {
-    final db = await SqlGenerator.database(tablas: createTables);
+    final db = await database();
     List<ContactoModelo> contactoModelo = [];
 
     List<Map<String, dynamic>> categoria = await db.query(nombreDB,
@@ -92,12 +117,22 @@ class ContactoController {
   }
 
   static Future<void> deleteItem(int id) async {
-    final db = await SqlGenerator.database(tablas: createTables);
+    final db = await database();
     await db.delete(nombreDB, where: 'id = ?', whereArgs: [id]);
   }
 
+  static Future<void> deleteItemByltlng(
+      {required double lat, required double lng}) async {
+    final db = await database();
+    await db.delete(
+      nombreDB,
+      where: "latitud = ? AND longitud = ?",
+      whereArgs: [lat, lng],
+    );
+  }
+
   static Future<void> deleteAll() async {
-    final db = await SqlGenerator.database(tablas: createTables);
+    final db = await database();
     await db.delete(nombreDB);
   }
 }

@@ -1,6 +1,8 @@
 import 'package:enrutador/utilities/funcion_parser.dart';
 import 'package:enrutador/utilities/textos.dart';
 
+import 'referencia_model.dart';
+
 class ContactoModelo {
   int? id;
   String? nombreCompleto;
@@ -13,7 +15,7 @@ class ContactoModelo {
   int? otroNumero;
   DateTime? otroNumeroFecha;
   DateTime? agendar;
-  List<int> contactoEnlances;
+  List<ReferenciaModelo> contactoEnlances;
   int? tipo;
   DateTime? tipoFecha;
   int? estado;
@@ -61,7 +63,7 @@ class ContactoModelo {
           int? otroNumero,
           DateTime? otroNumeroFecha,
           DateTime? agendar,
-          List<int>? contactoEnlances,
+          List<ReferenciaModelo>? contactoEnlances,
           int? tipo,
           DateTime? tipoFecha,
           int? estado,
@@ -112,7 +114,7 @@ class ContactoModelo {
       otroNumero: Parser.toInt(json["otro_numero"]),
       otroNumeroFecha: DateTime.tryParse(json["otro_numero_fecha"].toString()),
       agendar: DateTime.tryParse(json["agendar"].toString()),
-      contactoEnlances: List<int>.from(json["contacto_enlances"].map((x) => x)),
+      contactoEnlances: List<ReferenciaModelo>.from(json["contacto_enlances"].map((x) => x.toJson())),
       tipo: json["tipo"],
       tipoFecha: DateTime.tryParse(json["tipo_fecha"].toString()),
       estado: json["estado"],
@@ -143,7 +145,7 @@ class ContactoModelo {
             ? null
             : Textos.fechaYMDHMS(fecha: otroNumeroFecha!),
         "agendar": agendar == null ? null : Textos.fechaYMD(fecha: agendar!),
-        "contacto_enlances": List<int>.from(contactoEnlances.map((x) => x)),
+        "contacto_enlances": List<ReferenciaModelo>.from(contactoEnlances.map((x) => x.toJson())),
         "tipo": tipo,
         "tipo_fecha":
             tipoFecha == null ? null : Textos.fechaYMDHMS(fecha: tipoFecha!),

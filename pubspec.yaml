@@ -7,20 +7,25 @@ environment:
   sdk: '>=3.4.3 <4.0.0'
 
 dependencies:
+  advanced_media_picker: ^0.1.2
   app_links: ^6.4.0
   avatar_glow: ^3.0.1
   badges: ^3.1.2
   cupertino_icons: ^1.0.6
-  flutter_map_location_marker: ^10.1.0
+  filesize: ^2.0.1
   flutter:
     sdk: flutter
+  flutter_image_compress: ^2.4.0
   flutter_launcher_icons: ^0.14.1
   flutter_localizations:
     sdk: flutter
   flutter_map: ^8.2.1
   flutter_map_animations: ^0.9.0
   flutter_map_compass: ^1.1.1
+  flutter_map_location_marker: ^10.1.0
+  flutter_material_color_picker: ^1.2.0
   flutter_phone_direct_caller: ^2.2.1
+  flutter_slider_drawer: ^3.0.2
   get: ^4.6.6
   http: ^1.4.0
   image: ^4.2.0
@@ -45,7 +50,7 @@ dependencies:
   sliding_up_panel: ^2.0.0+1
   sqflite: ^2.3.3+1
   what3words: ^3.2.0
-  advanced_media_picker: ^0.1.2
+  widgets_to_image: ^2.0.1
 
 dev_dependencies:
   flutter_lints: ^5.0.0
@@ -54,3 +59,5 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/
