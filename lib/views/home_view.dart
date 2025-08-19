@@ -17,6 +17,7 @@ import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 import 'package:app_links/app_links.dart';
 
+import '../controllers/contacto_controller.dart';
 import '../utilities/map_fun.dart';
 import '../utilities/uri_fun.dart';
 
@@ -131,6 +132,13 @@ class _HomeViewState extends State<HomeView> {
                             provider.sliderDrawerKey.currentState?.toggle(),
                         icon: Icon(Icons.menu, size: 20.sp)),
                     title: Text("Enrutador", style: TextStyle(fontSize: 18.sp)),
+                    actions: [
+                      IconButton(
+                          onPressed: () async {
+                            await ContactoController.getItems();
+                          },
+                          icon: Icon(Icons.abc))
+                    ],
                     toolbarHeight: 6.h),
                 body: Paginado(provider: provider))));
   }
@@ -195,7 +203,7 @@ class PaginadoState extends State<Paginado> {
         }
         break;
       default:
-          UriFun.jsonUri(uri);
+        UriFun.jsonUri(uri);
         debugPrint("link other: ${uri.data}\n${uri.query}");
         break;
     }

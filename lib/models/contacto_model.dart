@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:enrutador/utilities/funcion_parser.dart';
 import 'package:enrutador/utilities/textos.dart';
 
@@ -114,7 +116,8 @@ class ContactoModelo {
       otroNumero: Parser.toInt(json["otro_numero"]),
       otroNumeroFecha: DateTime.tryParse(json["otro_numero_fecha"].toString()),
       agendar: DateTime.tryParse(json["agendar"].toString()),
-      contactoEnlances: List<ReferenciaModelo>.from(json["contacto_enlances"].map((x) => x.toJson())),
+      contactoEnlances:
+          (jsonDecode(json["contacto_enlances"]) as List).map((x) => ReferenciaModelo.fromJson(jsonDecode(x) )).toList(),
       tipo: json["tipo"],
       tipoFecha: DateTime.tryParse(json["tipo_fecha"].toString()),
       estado: json["estado"],
@@ -145,7 +148,8 @@ class ContactoModelo {
             ? null
             : Textos.fechaYMDHMS(fecha: otroNumeroFecha!),
         "agendar": agendar == null ? null : Textos.fechaYMD(fecha: agendar!),
-        "contacto_enlances": List<ReferenciaModelo>.from(contactoEnlances.map((x) => x.toJson())),
+        "contacto_enlances": jsonEncode(contactoEnlances.map((x) => jsonEncode(x)).toList())
+            ,
         "tipo": tipo,
         "tipo_fecha":
             tipoFecha == null ? null : Textos.fechaYMDHMS(fecha: tipoFecha!),

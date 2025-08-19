@@ -84,6 +84,26 @@ class _ViajeMapPageState extends State<MapMain>
                                 Icons.circle,
                                 color: Colors.white)),
                         markerDirection: MarkerDirection.heading)),
+                        if (provider.contacto != null &&
+                    provider.contacto!.contactoEnlances.isNotEmpty)
+                  PolylineLayer(
+                      polylines: provider.contacto!.contactoEnlances
+                          .map((e) => Polyline(
+                                  points: [
+                                    LatLng(provider.contacto!.latitud,
+                                        provider.contacto!.longitud),
+                                    LatLng(
+                                        e.contactoIdRLat ??
+                                            provider.contacto!.latitud,
+                                        e.contactoIdRLng ??
+                                            provider.contacto!.longitud)
+                                  ],
+                                  color: ThemaMain.green,
+                                  strokeCap: StrokeCap.round,
+                                  strokeWidth: 1.w,
+                                  pattern: StrokePattern.dotted(
+                                      spacingFactor: 7.sp)))
+                          .toList()),
                 FutureBuilder(
                     future: ContactoController.getItems(),
                     builder: (context, snapshot) => AnimatedMarkerLayer(
@@ -145,9 +165,9 @@ class _ViajeMapPageState extends State<MapMain>
                                                       ? "assets/mark_point2.png"
                                                       : "assets/mark_point.png",
                                                   width:
-                                                      tocable ? 24.sp : 22.sp,
+                                                      tocable ? 26.sp : 22.sp,
                                                   height:
-                                                      tocable ? 24.sp : 22.sp),
+                                                      tocable ? 26.sp : 22.sp),
                                               Padding(
                                                   padding: EdgeInsets.only(
                                                       bottom:
@@ -171,6 +191,7 @@ class _ViajeMapPageState extends State<MapMain>
                               }).toList())),
                 AnimatedMarkerLayer(
                     alignment: Alignment.center, markers: [...provider.marker]),
+                
                 MapCompass.cupertino(
                     padding: EdgeInsets.only(top: 6.h, right: 3.w),
                     hideIfRotatedNorth: false)

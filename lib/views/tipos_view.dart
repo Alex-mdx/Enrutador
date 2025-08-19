@@ -97,13 +97,17 @@ class _TiposViewState extends State<TiposView> {
                                   context: context,
                                   builder: (context) =>
                                       DialogsTipos(tipo: tipo))
-                              .whenComplete(() => setState(() {})));
+                              .whenComplete(() => setState(() {
+                                    send();
+                                  })));
                     }),
         floatingActionButton: FloatingActionButton(
             onPressed: () => showDialog(
                     context: context,
                     builder: (context) => DialogsTipos(tipo: null))
-                .whenComplete(() => setState(() {})),
+                .whenComplete(() => setState(() {
+                      send();
+                    })),
             child: Icon(Icons.add_comment, size: 24.sp)));
   }
 }

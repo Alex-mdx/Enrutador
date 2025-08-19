@@ -41,10 +41,10 @@ class ReferenciaModelo {
 
   factory ReferenciaModelo.fromJson(Map<String, dynamic> json) =>
       ReferenciaModelo(
-          contactoIdLat: double.tryParse(json["contacto_id_lat"]) ?? 1,
-          contactoIdLng: double.tryParse(json["contacto_id_lng"]) ?? 1,
-          contactoIdRLat: double.tryParse(json["contacto_id_r_lat"]),
-          contactoIdRLng: double.tryParse(json["contacto_id_r_lng"]),
+          contactoIdLat: double.tryParse(json["contacto_id_lat"].toString()) ?? 1,
+          contactoIdLng: double.tryParse(json["contacto_id_lng"].toString()) ?? 1,
+          contactoIdRLat: double.tryParse(json["contacto_id_r_lat"].toString()),
+          contactoIdRLng: double.tryParse(json["contacto_id_r_lng"].toString()),
           buscar: Parser.toInt(json["buscar"]) ?? -1,
           tipoCliente: Parser.toInt(json["tipo_cliente"]),
           estatus: Parser.toInt(json["estatus"]),

@@ -90,9 +90,9 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
               IconButton.filledTonal(
                   iconSize: 22.sp,
                   onPressed: () async => await ShareFun.share(
-                                          titulo: "Comparte este contacto",
-                                          mensaje:
-                                              "${ShareFun.copiar}\n*Plus Code*: ${PlusCode.encode(LatLng(provider.contacto?.latitud ?? 0, provider.contacto?.longitud ?? -1), codeLength: 12)}${provider.contacto?.nombreCompleto != null ? "\n*Nombre*: ${provider.contacto?.nombreCompleto}" : ""}${provider.contacto?.domicilio != null ? "\n*Domicilio*: ${provider.contacto?.domicilio}" : ""}${provider.contacto?.nota != null ? "\n*Notas*: ${provider.contacto?.nota}" : ""}"),
+                      titulo: "Comparte este contacto",
+                      mensaje:
+                          "${ShareFun.copiar}\n*Plus Code*: ${PlusCode.encode(LatLng(provider.contacto?.latitud ?? 0, provider.contacto?.longitud ?? -1), codeLength: 12)}${provider.contacto?.nombreCompleto != null ? "\n*Nombre*: ${provider.contacto?.nombreCompleto}" : ""}${provider.contacto?.domicilio != null ? "\n*Domicilio*: ${provider.contacto?.domicilio}" : ""}${provider.contacto?.nota != null ? "\n*Notas*: ${provider.contacto?.nota}" : ""}"),
                   icon: Icon(Icons.share, color: ThemaMain.darkBlue)),
               IconButton.filledTonal(
                   iconSize: provider.contacto?.id == null ? 22.sp : 18.sp,
@@ -367,10 +367,34 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                               spacing: .5.w,
                               children: [
                                 ...provider.contacto?.contactoEnlances
-                                        .map((e) => IconButton.filled(
-                                            onPressed: () {},
-                                            icon: Icon(LineIcons.userTag,
-                                                color: ThemaMain.darkBlue)))
+                                        .map((e) => GestureDetector(
+                                              onLongPress: () async {
+                                                var temp = provider.contacto!
+                                                    .copyWith(
+                                                        contactoEnlances: []);
+                                                await ContactoController.update(
+                                                    temp);
+                                                provider.contacto = temp;
+                                              },
+                                              child: Chip(
+                                                  deleteIcon: Icon(
+                                                      Icons.assistant_direction,
+                                                      size: 20.sp,
+                                                      color: ThemaMain.green),
+                                                  onDeleted: () async {
+                                                    await provider.slide
+                                                        .close();
+                                                    await MapFun.sendInitUri(
+                                                        provider: provider,
+                                                        lat: e.contactoIdRLat!,
+                                                        lng: e.contactoIdRLng!);
+                                                  },
+                                                  labelPadding:
+                                                      EdgeInsets.all(6.sp),
+                                                  label: Text("Aval",
+                                                      style: TextStyle(
+                                                          fontSize: 15.sp))),
+                                            ))
                                         .toList() ??
                                     [],
                                 if (provider.selectRefencia == null)
