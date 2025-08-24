@@ -4,20 +4,24 @@ import 'package:enrutador/controllers/contacto_controller.dart';
 import 'package:enrutador/utilities/camara_fun.dart';
 import 'package:enrutador/utilities/main_provider.dart';
 import 'package:enrutador/utilities/services/dialog_services.dart';
+import 'package:enrutador/utilities/services/navigation_services.dart';
 import 'package:enrutador/utilities/share_fun.dart';
 import 'package:enrutador/utilities/theme/theme_app.dart';
+import 'package:enrutador/views/dialogs/dialog_direccion.dart';
 import 'package:enrutador/views/dialogs/dialog_send.dart';
+import 'package:enrutador/views/dialogs/dialogs_comunicar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
-import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:line_icons/line_icons.dart';
+import 'package:map_launcher/map_launcher.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:open_location_code/open_location_code.dart';
+import 'package:phone_numbers_parser/phone_numbers_parser.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
-
+import 'package:badges/badges.dart' as bd;
 import '../../../controllers/tipo_controller.dart';
 import '../../../models/contacto_model.dart';
 import '../../../models/referencia_model.dart';
@@ -84,7 +88,7 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                       Text(
                           "${provider.contacto?.latitud.toStringAsFixed(6)} ${provider.contacto?.longitud.toStringAsFixed(6)}",
                           style: TextStyle(
-                              fontSize: 14.sp, fontStyle: FontStyle.italic))
+                              fontSize: 15.sp, fontStyle: FontStyle.italic))
                     ])),
             Wrap(spacing: 1.w, children: [
               IconButton.filledTonal(
@@ -94,6 +98,26 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                       mensaje:
                           "${ShareFun.copiar}\n*Plus Code*: ${PlusCode.encode(LatLng(provider.contacto?.latitud ?? 0, provider.contacto?.longitud ?? -1), codeLength: 12)}${provider.contacto?.nombreCompleto != null ? "\n*Nombre*: ${provider.contacto?.nombreCompleto}" : ""}${provider.contacto?.domicilio != null ? "\n*Domicilio*: ${provider.contacto?.domicilio}" : ""}${provider.contacto?.nota != null ? "\n*Notas*: ${provider.contacto?.nota}" : ""}"),
                   icon: Icon(Icons.share, color: ThemaMain.darkBlue)),
+              IconButton.filled(
+                  iconSize: 22.sp,
+                  style: ButtonStyle(
+                      backgroundColor: WidgetStatePropertyAll(ThemaMain.green)),
+                  color: ThemaMain.green,
+                  onPressed: () async => Dialogs.showMorph(
+                      title: "Abrir en el mapa",
+                      description:
+                          "¿Desea abrir esta ubicacion en una aplicacion de mapa disponible?",
+                      loadingTitle: "Abriendo",
+                      onAcceptPressed: (contexto) async {
+                        final availableMaps = await MapLauncher.installedMaps;
+                        print(availableMaps);
+                        await availableMaps.first.showMarker(
+                            zoom: 15,
+                            coords: Coords(provider.contacto!.latitud,
+                                provider.contacto!.longitud),
+                            title: "Ubicacion Seleccionada");
+                      }),
+                  icon: Icon(LineIcons.directions, color: ThemaMain.white)),
               IconButton.filledTonal(
                   iconSize: provider.contacto?.id == null ? 22.sp : 18.sp,
                   onPressed: () async {
@@ -140,15 +164,16 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
     return Card(
         color: ThemaMain.dialogbackground,
         child: AnimatedContainer(
-            duration: Durations.medium3,
+            duration: Durations.medium1,
             height: provider.contacto?.id == null ? 0.h : 28.h,
-            child: Scrollbar(
-                child: ListView(children: [
-              Row(children: [
-                Expanded(flex: 1, child: fotos(provider)),
-                Expanded(
-                    flex: 4,
-                    child: Column(
+            child: Row(children: [
+              Expanded(flex: 5, child: fotos(provider)),
+              VerticalDivider(width: 0, indent: 1.h, endIndent: 1.h),
+              Expanded(
+                  flex: 15,
+                  child: Scrollbar(
+                      child: ListView(children: [
+                    Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Column(
@@ -164,10 +189,14 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                                         barrierDismissible: false,
                                         context: context,
                                         builder: (context) => DialogSend(
+                                            entradaTexto: provider
+                                                .contacto?.nombreCompleto,
                                             fun: (p0) async {
                                               var newModel = provider.contacto
                                                   ?.copyWith(
-                                                      nombreCompleto: p0);
+                                                      nombreCompleto:
+                                                          Textos.normalizar(
+                                                              p0 ?? ""));
                                               await ContactoController.update(
                                                   newModel!);
                                               provider.contacto = newModel;
@@ -187,7 +216,8 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                                     onPressed: () => showDialog(
                                         barrierDismissible: false,
                                         context: context,
-                                        builder: (context) => DialogSend(
+                                        builder: (context) => DialogDireccion(
+                                            word: provider.contacto?.domicilio,
                                             fun: (p0) async {
                                               var newModel = provider.contacto
                                                   ?.copyWith(
@@ -198,18 +228,14 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                                                   newModel!);
                                               provider.contacto = newModel;
                                             },
-                                            tipoTeclado:
-                                                TextInputType.streetAddress,
                                             fecha: provider
-                                                .contacto?.fechaDomicilio,
-                                            cabeza:
-                                                "Ingresar domicilio del contacto")),
+                                                .contacto?.fechaDomicilio)),
                                     label: Text(
                                         "Domicilio: ${provider.contacto?.domicilio ?? "Sin Domicilio"}",
                                         style: TextStyle(fontSize: 16.sp)))
                               ]),
-                          Wrap(
-                              alignment: WrapAlignment.spaceBetween,
+                          Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
                                 TextButton.icon(
                                     style: ButtonStyle(
@@ -235,10 +261,13 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                                                 provider.contacto?.tipo ?? -1),
                                         builder: (context, data) {
                                           return Text(
-                                              "Tipo\n${data.data?.nombre ?? "Ø"}",
+                                              "Tipo: ${data.data?.nombre ?? "Ø"}",
                                               style: TextStyle(
-                                                  fontSize: 14.sp,
-                                                  fontWeight: FontWeight.bold));
+                                                  color: data.data?.color,
+                                                  fontSize: 15.sp,
+                                                  fontWeight: data.data != null
+                                                      ? FontWeight.bold
+                                                      : FontWeight.normal));
                                         })),
                                 TextButton.icon(
                                     style: ButtonStyle(
@@ -247,118 +276,113 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                                                 horizontal: 1.w, vertical: 0))),
                                     onPressed: () {},
                                     label: Text(
-                                        "Estado\n${provider.contacto?.estado ?? "Ø"}",
+                                        "Estado: ${provider.contacto?.estado ?? "Ø"}",
                                         style: TextStyle(
-                                            fontSize: 14.sp,
-                                            fontWeight: FontWeight.bold))),
-                                TextButton.icon(
-                                    style: ButtonStyle(
-                                        padding: WidgetStatePropertyAll(
-                                            EdgeInsets.symmetric(
-                                                horizontal: 1.w, vertical: 0))),
-                                    onLongPress: () async {
-                                      if (provider.contacto?.numero != null) {
-                                        var res = await FlutterPhoneDirectCaller
-                                            .callNumber(provider
-                                                    .contacto?.numero
-                                                    .toString() ??
-                                                "1");
-                                        if (res != true) {
-                                          showToast(
-                                              "No se pudo ejecutar la llamada");
-                                        }
-                                      } else {
-                                        showToast(
-                                            "Numero de telefono no valido");
-                                      }
-                                    },
-                                    onPressed: () => showDialog(
-                                        barrierDismissible: false,
-                                        context: context,
-                                        builder: (context) => DialogSend(
-                                            fun: (p0) async {
-                                              if (int.tryParse(p0.toString()) !=
-                                                  null) {
-                                                var newModel = provider.contacto
-                                                    ?.copyWith(
-                                                        numero: int.parse(
-                                                            p0.toString()),
-                                                        numeroFecha:
-                                                            DateTime.now());
-                                                await ContactoController.update(
-                                                    newModel!);
-                                                provider.contacto = newModel;
-                                              } else {
-                                                showToast(
-                                                    "Numero ingresado no valido");
-                                              }
-                                            },
-                                            tipoTeclado: TextInputType.phone,
-                                            fecha:
-                                                provider.contacto?.numeroFecha,
-                                            cabeza:
-                                                "Ingresar numero telefonico del contacto")),
-                                    label: Text(
-                                        "Telefono\n${provider.contacto?.numero ?? "Ø"}",
-                                        style: TextStyle(
-                                            fontSize: 14.sp,
-                                            fontWeight: FontWeight.bold))),
-                                TextButton.icon(
-                                    onLongPress: () async {
-                                      if (provider.contacto?.otroNumero !=
-                                          null) {
-                                        var res = await FlutterPhoneDirectCaller
-                                            .callNumber(provider
-                                                    .contacto?.otroNumero
-                                                    .toString() ??
-                                                "1");
-                                        if (res != true) {
-                                          showToast(
-                                              "No se pudo ejecutar la llamada");
-                                        }
-                                      } else {
-                                        showToast("Numero ingresado no valido");
-                                      }
-                                    },
-                                    style: ButtonStyle(
-                                        padding: WidgetStatePropertyAll(
-                                            EdgeInsets.symmetric(
-                                                horizontal: 1.w, vertical: 0))),
-                                    onPressed: () async {
-                                      showDialog(
-                                          barrierDismissible: false,
-                                          context: context,
-                                          builder: (context) => DialogSend(
-                                              fun: (p0) async {
-                                                if (int.tryParse(
-                                                        p0.toString()) !=
-                                                    null) {
-                                                  var newModel = provider
-                                                      .contacto
-                                                      ?.copyWith(
-                                                          otroNumero: int.parse(
-                                                              p0.toString()),
-                                                          otroNumeroFecha:
-                                                              DateTime.now());
-                                                  await ContactoController
-                                                      .update(newModel!);
-                                                  provider.contacto = newModel;
-                                                } else {
-                                                  showToast(
-                                                      "Numero ingresado no valido");
-                                                }
-                                              },
-                                              tipoTeclado: TextInputType.phone,
-                                              fecha: provider
-                                                  .contacto?.otroNumeroFecha,
-                                              cabeza:
-                                                  "Ingresar numero telefonico secundario del contacto"));
-                                    },
-                                    label: Text(
-                                        "Otro Tel\n${provider.contacto?.otroNumero ?? "Ø"}",
-                                        style: TextStyle(
-                                            fontSize: 14.sp,
+                                            fontSize: 15.sp,
                                             fontWeight: FontWeight.bold)))
+                              ]),
+                          Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                bd.Badge(
+                                    badgeStyle: bd.BadgeStyle(
+                                        badgeColor: ThemaMain.green),
+                                    showBadge: PhoneNumber.parse(
+                                            (provider.contacto?.numero ?? "0")
+                                                .toString(),
+                                            destinationCountry: IsoCode.MX)
+                                        .isValid(type: PhoneNumberType.mobile),
+                                    badgeContent: GestureDetector(
+                                        onTap: () => showDialog(
+                                            context: context,
+                                            builder: (context) => DialogsComunicar(
+                                                number: (provider.contacto?.numero ?? 0)
+                                                    .toString())),
+                                        child: Icon(LineIcons.tty,
+                                            size: 18.sp,
+                                            color: ThemaMain.second)),
+                                    child: TextButton.icon(
+                                        style: ButtonStyle(padding: WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: 1.w, vertical: 0))),
+                                        onPressed: () => showDialog(
+                                            barrierDismissible: false,
+                                            context: context,
+                                            builder: (context) => DialogSend(
+                                                lenght: 10,
+                                                entradaTexto: (provider.contacto?.numero ?? "").toString(),
+                                                fun: (p0) async {
+                                                  if (int.tryParse(
+                                                          p0.toString()) !=
+                                                      null) {
+                                                    var newModel = provider
+                                                        .contacto
+                                                        ?.copyWith(
+                                                            numero: int.parse(
+                                                                p0.toString()),
+                                                            numeroFecha:
+                                                                DateTime.now());
+                                                    await ContactoController
+                                                        .update(newModel!);
+                                                    provider.contacto =
+                                                        newModel;
+                                                  } else {
+                                                    showToast(
+                                                        "Numero ingresado no valido");
+                                                  }
+                                                },
+                                                tipoTeclado: TextInputType.phone,
+                                                fecha: provider.contacto?.numeroFecha,
+                                                cabeza: "Ingresar numero telefonico del contacto")),
+                                        label: Text("Telefono\n${PhoneNumber.parse((provider.contacto?.numero ?? "0").toString(), destinationCountry: IsoCode.MX).formatNsn()}", style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.bold)))),
+                                bd.Badge(
+                                    badgeStyle: bd.BadgeStyle(
+                                        badgeColor: ThemaMain.green),
+                                    showBadge: PhoneNumber.parse(
+                                            (provider.contacto?.otroNumero ?? "0")
+                                                .toString(),
+                                            destinationCountry: IsoCode.MX)
+                                        .isValid(type: PhoneNumberType.mobile),
+                                    badgeContent: GestureDetector(
+                                        onTap: () => showDialog(
+                                            context: context,
+                                            builder: (context) => DialogsComunicar(
+                                                number: (provider.contacto?.otroNumero ?? 0)
+                                                    .toString())),
+                                        child: Icon(LineIcons.tty,
+                                            size: 18.sp,
+                                            color: ThemaMain.second)),
+                                    child: TextButton.icon(
+                                        style: ButtonStyle(padding: WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: 1.w, vertical: 0))),
+                                        onPressed: () => showDialog(
+                                            barrierDismissible: false,
+                                            context: context,
+                                            builder: (context) => DialogSend(
+                                                lenght: 10,
+                                                entradaTexto: (provider.contacto?.otroNumero ?? "").toString(),
+                                                fun: (p0) async {
+                                                  if (int.tryParse(
+                                                          p0.toString()) !=
+                                                      null) {
+                                                    var newModel = provider
+                                                        .contacto
+                                                        ?.copyWith(
+                                                            otroNumero:
+                                                                int.parse(p0
+                                                                    .toString()),
+                                                            otroNumeroFecha:
+                                                                DateTime.now());
+                                                    await ContactoController
+                                                        .update(newModel!);
+                                                    provider.contacto =
+                                                        newModel;
+                                                  } else {
+                                                    showToast(
+                                                        "Numero ingresado no valido");
+                                                  }
+                                                },
+                                                tipoTeclado: TextInputType.phone,
+                                                fecha: provider.contacto?.otroNumeroFecha,
+                                                cabeza: "Ingresar numero telefonico secundario del contacto")),
+                                        label: Text("Otro Tel\n${PhoneNumber.parse((provider.contacto?.otroNumero ?? "0").toString(), destinationCountry: IsoCode.MX).formatNsn()}", style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.bold))))
                               ]),
                           Text("Referencias:",
                               style: TextStyle(fontSize: 16.sp)),
@@ -427,6 +451,7 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                                   barrierDismissible: false,
                                   context: context,
                                   builder: (context) => DialogSend(
+                                      entradaTexto: provider.contacto?.nota,
                                       fun: (p0) async {
                                         var newModel = provider.contacto
                                             ?.copyWith(nota: p0);
@@ -440,13 +465,53 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                               child: Text(
                                   "Notas\n${provider.contacto?.nota ?? "Sin notas"}",
                                   style: TextStyle(fontSize: 16.sp)))
-                        ]))
-              ])
-            ]))));
+                        ])
+                  ])))
+            ])));
   }
 
   Widget fotos(MainProvider provider) {
-    return Column(mainAxisAlignment: MainAxisAlignment.start, children: [
+    return Column(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
+      ElevatedButton.icon(
+          style: ButtonStyle(
+              elevation: WidgetStatePropertyAll(2),
+              padding: WidgetStatePropertyAll(
+                  EdgeInsets.symmetric(horizontal: 1.w, vertical: 0))),
+          onPressed: () => showDialog(
+              context: context,
+              builder: (context) => Dialog(
+                  child: CalendarDatePicker(
+                      initialCalendarMode: DatePickerMode.day,
+                      initialDate: provider.contacto?.agendar ?? DateTime.now(),
+                      firstDate: DateTime.now(),
+                      lastDate: DateTime.now().add(Duration(days: 365 * 6)),
+                      onDateChanged: (time) => Dialogs.showMorph(
+                          title: "Seleccionar fecha",
+                          description:
+                              "¿Esta seguro de seleccionar dicha fecha para visitar?",
+                          loadingTitle: "Guardando",
+                          onAcceptPressed: (context) async {
+                            var newModel =
+                                provider.contacto?.copyWith(agendar: time);
+                            await ContactoController.update(newModel!);
+                            provider.contacto = newModel;
+                            Navigation.pop();
+                          })))),
+          label: Text(
+              provider.contacto?.agendar == null
+                  ? "Agendar visita"
+                  : "Visita ${Textos.conversionDiaNombre(provider.contacto!.agendar!, DateTime.now())}",
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  fontSize: 14.sp,
+                  fontWeight: provider.contacto?.agendar == null
+                      ? FontWeight.normal
+                      : FontWeight.bold)),
+          icon: provider.contacto?.agendar == null
+              ? Icon(LineIcons.calendarWithDayFocus, size: 20.sp)
+              : null),
       Container(
           decoration: BoxDecoration(
               color: ThemaMain.background,
@@ -475,7 +540,7 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                     }
                   },
                   child: Icon(Icons.contacts,
-                      size: 34.sp, color: ThemaMain.primary))
+                      size: 38.sp, color: ThemaMain.primary))
               : InkWell(
                   onLongPress: () => Dialogs.showMorph(
                       title: "Eliminar foto",
@@ -533,14 +598,13 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                           base64Decode(provider.contacto?.foto ?? "a"),
                           fit: BoxFit.cover,
                           filterQuality: FilterQuality.low,
-                          width: 34.sp,
-                          height: 34.sp,
+                          width: 38.sp,
+                          height: 38.sp,
                           gaplessPlayback: true,
                           errorBuilder: (context, error, stackTrace) => Icon(
                               Icons.broken_image,
                               color: ThemaMain.red,
-                              size: 34.sp))))),
-      Divider(),
+                              size: 38.sp))))),
       Container(
           decoration: BoxDecoration(
               color: ThemaMain.background,
@@ -568,7 +632,7 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                       }
                     }
                   },
-                  child: Icon(Icons.image, color: ThemaMain.green, size: 34.sp))
+                  child: Icon(Icons.image, color: ThemaMain.green, size: 38.sp))
               : InkWell(
                   onLongPress: () => Dialogs.showMorph(
                       title: "Eliminar foto",
@@ -626,15 +690,15 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                       child: Image.memory(
                           fit: BoxFit.cover,
                           filterQuality: FilterQuality.low,
-                          width: 34.sp,
-                          height: 34.sp,
+                          width: 38.sp,
+                          height: 38.sp,
                           base64Decode(
                               provider.contacto?.fotoReferencia ?? "a"),
                           gaplessPlayback: true,
                           errorBuilder: (context, error, stackTrace) => Icon(
                               Icons.broken_image,
                               color: ThemaMain.red,
-                              size: 34.sp)))))
+                              size: 38.sp)))))
     ]);
   }
 }

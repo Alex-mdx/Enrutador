@@ -27,7 +27,7 @@ class _DialogIconPickerState extends State<DialogIconPicker> {
                       runSpacing: 0,
                       children: LineIcons.values.values
                           .map((e) => IconButton(
-                              iconSize: 22.sp,
+                              iconSize: 24.sp,
                               onPressed: () {
                                 widget.iconFun(e);
                                 Navigation.pop();

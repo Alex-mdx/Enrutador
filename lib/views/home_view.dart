@@ -20,6 +20,7 @@ import 'package:app_links/app_links.dart';
 import '../controllers/contacto_controller.dart';
 import '../utilities/map_fun.dart';
 import '../utilities/uri_fun.dart';
+import 'widgets/map_alternative.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -158,6 +159,7 @@ class PaginadoState extends State<Paginado> {
   @override
   void initState() {
     super.initState();
+    widget.provider.logeo();
     InternetConnection().onStatusChange.listen((InternetStatus status) {
       switch (status) {
         case InternetStatus.connected:
@@ -214,6 +216,7 @@ class PaginadoState extends State<Paginado> {
     return Stack(children: [
       MapMain(),
       Align(alignment: Alignment.bottomRight, child: MapNavigation()),
+      Align(alignment: Alignment.bottomLeft, child: MapAlternative()),
       Align(alignment: Alignment.topLeft, child: SearchWidget()),
       MapSliding()
     ]);

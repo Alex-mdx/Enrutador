@@ -76,8 +76,7 @@ class ContactoModelo {
           DateTime? fotoReferenciaFecha,
           String? what3Words,
           String? nota,
-          DateTime? creado,
-          DateTime? actual}) =>
+          DateTime? creado}) =>
       ContactoModelo(
           id: id ?? this.id,
           nombreCompleto: nombreCompleto ?? this.nombreCompleto,
@@ -116,8 +115,7 @@ class ContactoModelo {
       otroNumero: Parser.toInt(json["otro_numero"]),
       otroNumeroFecha: DateTime.tryParse(json["otro_numero_fecha"].toString()),
       agendar: DateTime.tryParse(json["agendar"].toString()),
-      contactoEnlances:
-          (jsonDecode(json["contacto_enlances"]) as List).map((x) => ReferenciaModelo.fromJson(jsonDecode(x) )).toList(),
+      contactoEnlances: generar1(json["contacto_enlances"].toString()),
       tipo: json["tipo"],
       tipoFecha: DateTime.tryParse(json["tipo_fecha"].toString()),
       estado: json["estado"],
@@ -148,8 +146,8 @@ class ContactoModelo {
             ? null
             : Textos.fechaYMDHMS(fecha: otroNumeroFecha!),
         "agendar": agendar == null ? null : Textos.fechaYMD(fecha: agendar!),
-        "contacto_enlances": jsonEncode(contactoEnlances.map((x) => jsonEncode(x)).toList())
-            ,
+        "contacto_enlances":
+            jsonEncode(contactoEnlances.map((x) => x.toJson()).toList()),
         "tipo": tipo,
         "tipo_fecha":
             tipoFecha == null ? null : Textos.fechaYMDHMS(fecha: tipoFecha!),
@@ -167,4 +165,16 @@ class ContactoModelo {
         "what_3_words": what3Words,
         "nota": nota
       };
+  static List<ReferenciaModelo> generar1(String texto) {
+    try {
+      final mapa = jsonDecode(texto);
+      List<ReferenciaModelo> detalleTemp = [];
+      for (var element in mapa) {
+        detalleTemp.add(ReferenciaModelo.fromJson(element));
+      }
+      return detalleTemp;
+    } catch (e) {
+      return [];
+    }
+  }
 }

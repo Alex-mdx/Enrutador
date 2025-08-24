@@ -9,21 +9,28 @@ class DialogSend extends StatelessWidget {
   final String cabeza;
   final Function(String?) fun;
   final TextInputType tipoTeclado;
+  final String? entradaTexto;
   final DateTime? fecha;
+  final int? lenght;
   const DialogSend(
       {super.key,
       required this.cabeza,
       required this.fun,
       required this.tipoTeclado,
-      required this.fecha});
+      required this.fecha,
+      required this.entradaTexto,
+      this.lenght});
 
   @override
   Widget build(BuildContext context) {
-    TextEditingController controller = TextEditingController();
+    TextEditingController controller =
+        TextEditingController(text: entradaTexto);
     return Dialog(
         child: Column(mainAxisSize: MainAxisSize.min, children: [
-      Text(cabeza,
-          style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold)),
+      Padding(
+          padding: EdgeInsets.symmetric(horizontal: 1.w),
+          child: Text(cabeza,
+              style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold))),
       Divider(),
       Padding(
           padding: EdgeInsets.all(8.sp),
@@ -35,7 +42,8 @@ class DialogSend extends StatelessWidget {
             TextField(
                 textCapitalization: TextCapitalization.sentences,
                 minLines: 1,
-                maxLines: 3,
+                maxLines: 4,
+                maxLength: lenght,
                 controller: controller,
                 keyboardType: tipoTeclado,
                 decoration: InputDecoration(
@@ -53,7 +61,6 @@ class DialogSend extends StatelessWidget {
                     if (controller.text != "" || controller.text.isEmpty) {
                       fun(controller.text);
                     }
-
                     Navigation.pop();
                   },
                   label: Text("Aceptar", style: TextStyle(fontSize: 16.sp)))

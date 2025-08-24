@@ -2,11 +2,36 @@ import 'package:intl/intl.dart';
 import 'dart:math' as math;
 
 class Textos {
+  static String conversionDiaNombre(DateTime fecha, DateTime now) {
+    var newNow = YMDFecha(now);
+    var newFecha = YMDFecha(fecha);
+    String tipo = "NULL";
+    var diferencia = (newNow.difference(newFecha)).inDays;
+    switch (diferencia) {
+      case -1:
+        tipo = "Mañana";
+        break;
+      case 0:
+        tipo = "Hoy";
+        break;
+      case 1:
+        tipo = "Ayer";
+        break;
+      case 2:
+        tipo = "Antier";
+        break;
+
+      default:
+        if (diferencia.isNegative) {
+          tipo = "Dentro de ${diferencia.abs()} dias";
+        } else {
+          tipo = "Hace $diferencia dias";
+        }
+        break;
+    }
+    return tipo;
+  }
   static String normalizar(String text) {
-    text = text.replaceAll(
-        RegExp(r'[^\x00-\x7F]+'), ''); // Elimina caracteres no ASCII
-    text = text.replaceAll(
-        RegExp(r'[^\w\s]'), ''); // Elimina símbolos no alfanuméricos
     // Reemplaza los acentos y caracteres especiales
     text = text.replaceAll(RegExp(r'[áàäâã]'), 'a');
     text = text.replaceAll(RegExp(r'[éèëê]'), 'e');
@@ -34,6 +59,30 @@ class Textos {
 
     String formateado = NumberFormat('#,###.$tipo').format(moneda);
     return formateado;
+  }
+
+  static String? obtenerEntre(
+      {required String palabra,
+      required String palabra1,
+      required String palabra2}) {
+    var firstIndex = palabra.indexOf(palabra1);
+    if (firstIndex == -1) {
+      return palabra;
+    }
+    var length = palabra1.length;
+
+    var modificado = palabra.substring(firstIndex + length);
+    var lastIndexd = modificado.indexOf(palabra2);
+    if (lastIndexd == -1) {
+      return modificado;
+    }
+    var lastModificado = modificado.substring(0, lastIndexd);
+    return lastModificado == "" ? null : lastModificado;
+  }
+
+  static DateTime YMDFecha(DateTime? fecha) {
+    var mConvertida = fecha == null ? "Sin fecha" : DateFormat('yyyy-MM-dd').format(fecha);
+    return DateTime.parse(mConvertida);
   }
 
   static String fechaYMDHMS({required DateTime fecha}) {
@@ -82,4 +131,6 @@ class Textos {
     }
     return cadenaAleatoria;
   }
+
+  
 }

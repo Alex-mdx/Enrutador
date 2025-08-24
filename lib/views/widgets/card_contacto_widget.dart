@@ -6,7 +6,6 @@ import 'package:oktoast/oktoast.dart';
 import 'package:open_location_code/open_location_code.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:sizer/sizer.dart';
-
 import '../../controllers/tipo_controller.dart';
 
 class CardContactoWidget extends StatelessWidget {
@@ -138,12 +137,10 @@ class CardContactoWidget extends StatelessWidget {
                                       icon: Icon(Icons.offline_share,
                                           color: ThemaMain.green)),
                                 IconButton.filled(
-                                    onPressed: () async =>
-                                      await ShareFun.share(
-                                          titulo: "Comparte este contacto",
-                                          mensaje:
-                                              "${ShareFun.copiar}\n*Plus Code*: ${PlusCode.encode(LatLng(contacto.latitud, contacto.longitud), codeLength: 12)}${contacto.nombreCompleto != null ? "\n*Nombre*: ${contacto.nombreCompleto}" : ""}${contacto.domicilio != null ? "\n*Domicilio*: ${contacto.domicilio}" : ""}${contacto.nota != null ? "\n*Notas*: ${contacto.nota}" : ""}")
-                                    ,
+                                    onPressed: () async => await ShareFun.share(
+                                        titulo: "Comparte este contacto",
+                                        mensaje:
+                                            "${ShareFun.copiar}\n*Plus Code*: ${PlusCode.encode(LatLng(contacto.latitud, contacto.longitud), codeLength: 12)}${contacto.nombreCompleto != null ? "\n*Nombre*: ${contacto.nombreCompleto}" : ""}${contacto.domicilio != null ? "\n*Domicilio*: ${contacto.domicilio}" : ""}${contacto.nota != null ? "\n*Notas*: ${contacto.nota}" : ""}"),
                                     iconSize: 20.sp,
                                     icon: Icon(Icons.share,
                                         color: ThemaMain.white))

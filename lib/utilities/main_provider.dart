@@ -1,4 +1,6 @@
+import 'package:enrutador/controllers/tipo_controller.dart';
 import 'package:enrutador/models/contacto_model.dart';
+import 'package:enrutador/models/tipos_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_map_animations/flutter_map_animations.dart';
@@ -91,5 +93,23 @@ class MainProvider with ChangeNotifier implements TickerProvider {
     notifyListeners();
   }
 
+  List<TiposModelo> _tipos = [];
+  List<TiposModelo> get tipos => _tipos;
+  set tipos(List<TiposModelo> valor) {
+    _tipos = valor;
+    notifyListeners();
+  }
+
+  bool _mapaReal = false;
+  bool get mapaReal => _mapaReal;
+  set mapaReal(bool valor) {
+    _mapaReal = valor;
+    notifyListeners();
+  }
+
   //?Funciones
+
+  logeo() async {
+tipos = await TipoController.getItems();
+  }
 }

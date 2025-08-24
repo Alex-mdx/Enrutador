@@ -1,5 +1,4 @@
 import 'package:enrutador/controllers/contacto_controller.dart';
-import 'package:enrutador/controllers/tipo_controller.dart';
 import 'package:enrutador/models/contacto_model.dart';
 import 'package:enrutador/utilities/main_provider.dart';
 import 'package:enrutador/utilities/map_fun.dart';
@@ -9,6 +8,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_animations/flutter_map_animations.dart';
 import 'package:flutter_map_compass/flutter_map_compass.dart';
 import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
+import 'package:get/get.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:provider/provider.dart';
@@ -39,39 +39,42 @@ class _ViajeMapPageState extends State<MapMain>
         : FlutterMap(
             mapController: provider.animaMap.mapController,
             options: MapOptions(
+                onPositionChanged: (camera, hasGesture) {},
                 keepAlive: true,
                 onTap: (tapPosition, point) async => await MapFun.touch(
                     provider: provider,
                     lat: point.latitude,
                     lng: point.longitude),
                 initialZoom: 18,
-                minZoom: 4,
+                minZoom: 6,
                 maxZoom: 20,
                 initialCenter: LatLng(
                     provider.local!.latitude!, provider.local!.longitude!)),
             children: [
-                TileLayer(
-                    maxZoom: 20,
-                    keepBuffer: 3,
-                    maxNativeZoom: 20,
-                    urlTemplate:
-                        'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                    retinaMode: false,
-                    panBuffer: 1,
-                    userAgentPackageName: 'com.enrutador.app'),
-                /* TileLayer(retinaMode: false,
-                    panBuffer: 2,
-            // URL para las imágenes satelitales de Esri
-            urlTemplate:
-                'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-            // Es buena práctica incluir un userAgentPackageName
-            userAgentPackageName: 'dev.fleaflet.flutter_map.example',
-            // Opcional: añade una capa de etiquetas encima para ver los nombres de las calles
-          ), */
+                provider.mapaReal
+                    ? TileLayer(
+                        retinaMode: false,
+                        panBuffer: 2,
+                        maxZoom: 20,
+                        keepBuffer: 3,
+                        maxNativeZoom: 19,
+                        urlTemplate:
+                            'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+                        userAgentPackageName:
+                            'dev.fleaflet.flutter_map.example')
+                    : TileLayer(
+                        panBuffer: 2,
+                        maxZoom: 20,
+                        keepBuffer: 3,
+                        maxNativeZoom: 19,
+                        urlTemplate:
+                            'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                        retinaMode: false,
+                        userAgentPackageName: 'com.enrutador.app'),
                 CurrentLocationLayer(
                     alignDirectionAnimationDuration: Durations.medium1,
                     alignPositionAnimationDuration: Durations.medium1,
-                    moveAnimationDuration: Durations.extralong3,
+                    moveAnimationDuration: Durations.short3,
                     style: LocationMarkerStyle(
                         showAccuracyCircle: true,
                         markerSize: Size(20.sp, 20.sp),
@@ -84,7 +87,7 @@ class _ViajeMapPageState extends State<MapMain>
                                 Icons.circle,
                                 color: Colors.white)),
                         markerDirection: MarkerDirection.heading)),
-                        if (provider.contacto != null &&
+                if (provider.contacto != null &&
                     provider.contacto!.contactoEnlances.isNotEmpty)
                   PolylineLayer(
                       polylines: provider.contacto!.contactoEnlances
@@ -98,11 +101,13 @@ class _ViajeMapPageState extends State<MapMain>
                                         e.contactoIdRLng ??
                                             provider.contacto!.longitud)
                                   ],
+                                  borderColor: Colors.black,
+                                  borderStrokeWidth: 5.sp,
                                   color: ThemaMain.green,
                                   strokeCap: StrokeCap.round,
                                   strokeWidth: 1.w,
                                   pattern: StrokePattern.dotted(
-                                      spacingFactor: 7.sp)))
+                                      spacingFactor: 6.sp)))
                           .toList()),
                 FutureBuilder(
                     future: ContactoController.getItems(),
@@ -115,6 +120,8 @@ class _ViajeMapPageState extends State<MapMain>
                                         e.latitud &&
                                     provider.contacto?.longitud == e.longitud);
                                 return AnimatedMarker(
+                                    width: tocable ? 24.sp : 22.sp,
+                                    height: tocable ? 24.sp : 22.sp,
                                     rotate: true,
                                     point: LatLng(e.latitud, e.longitud),
                                     builder: (context, animation) => InkWell(
@@ -160,38 +167,37 @@ class _ViajeMapPageState extends State<MapMain>
                                             fit: StackFit.expand,
                                             alignment: Alignment.center,
                                             children: [
-                                              Image.asset(
-                                                  tocable
-                                                      ? "assets/mark_point2.png"
-                                                      : "assets/mark_point.png",
-                                                  width:
-                                                      tocable ? 26.sp : 22.sp,
-                                                  height:
-                                                      tocable ? 26.sp : 22.sp),
+                                              Image.asset(tocable
+                                                  ? "assets/mark_point2.png"
+                                                  : "assets/mark_point.png"),
                                               Padding(
                                                   padding: EdgeInsets.only(
                                                       bottom:
-                                                          tocable ? 10.sp : 0),
-                                                  child: FutureBuilder(
-                                                      future: TipoController
-                                                          .getItem(
-                                                              data:
-                                                                  e.tipo ?? -1),
-                                                      builder: (context, data) {
-                                                        return Icon(
-                                                            data.data?.icon ??
-                                                                Icons.person,
-                                                            size: 20.sp,
-                                                            color: data.data
-                                                                    ?.color ??
-                                                                ThemaMain
-                                                                    .primary);
-                                                      }))
+                                                          tocable ? 6.sp : 0),
+                                                  child: Icon(
+                                                      provider.tipos
+                                                              .firstWhereOrNull(
+                                                                  (element) =>
+                                                                      element
+                                                                          .id ==
+                                                                      e.tipo)
+                                                              ?.icon ??
+                                                          Icons.person,
+                                                      size: tocable
+                                                          ? 22.sp
+                                                          : 20.sp,
+                                                      color: provider.tipos
+                                                              .firstWhereOrNull(
+                                                                  (element) =>
+                                                                      element
+                                                                          .id ==
+                                                                      e.tipo)
+                                                              ?.color ??
+                                                          ThemaMain.primary))
                                             ])));
                               }).toList())),
                 AnimatedMarkerLayer(
                     alignment: Alignment.center, markers: [...provider.marker]),
-                
                 MapCompass.cupertino(
                     padding: EdgeInsets.only(top: 6.h, right: 3.w),
                     hideIfRotatedNorth: false)

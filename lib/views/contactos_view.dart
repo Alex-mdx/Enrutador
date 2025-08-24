@@ -1,4 +1,6 @@
+import 'package:enrutador/utilities/services/dialog_services.dart';
 import 'package:flutter/foundation.dart';
+import 'package:get/get.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:enrutador/controllers/contacto_controller.dart';
 import 'package:enrutador/models/contacto_model.dart';
@@ -18,7 +20,7 @@ class ContactosView extends StatefulWidget {
 
 class _ContactosViewState extends State<ContactosView> {
   TextEditingController buscador = TextEditingController();
-  List<bool> selects = [];
+  List<ContactoModelo> selects = [];
   bool carga = false;
   List<ContactoModelo> contactos = [];
   @override
@@ -31,9 +33,7 @@ class _ContactosViewState extends State<ContactosView> {
     setState(() {
       carga = false;
     });
-    selects = [];
     contactos = await ContactoController.getItemsAll(nombre: buscador.text);
-    selects.addAll(contactos.map((e) => false).toList());
     setState(() {
       carga = true;
     });
@@ -47,22 +47,37 @@ class _ContactosViewState extends State<ContactosView> {
             actions: [
               OverflowBar(spacing: 1.w, children: [
                 ElevatedButton.icon(
-                    onPressed: () {},
+                    onPressed: () async {
+                      final tamanio =
+                          (await ContactoController.getItems()).length;
+                      Dialogs.showMorph(
+                          title: "Contactos",
+                          description:
+                              "Estas seguro de enviar los $tamanio contacto(s)\nEste proceso puede tardar unos segundos dependiendo de el tamaño de los datos obtenidos",
+                          loadingTitle: "procesando",
+                          onAcceptPressed: (context) async {
+                            final all = await ContactoController.getItemsAll(
+                                nombre: null);
+                            var archivo = await ShareFun.shareDatas(
+                                nombre: "contactos", datas: all);
+                            if (archivo != null) {
+                              await ShareFun.share(
+                                  titulo:
+                                      "Este es un contenido compacto de contactos",
+                                  mensaje: "objeto de contactos",
+                                  files: [XFile(archivo.path)]);
+                            }
+                          });
+                    },
                     label:
                         Text("Enviar todo", style: TextStyle(fontSize: 14.sp)),
                     icon: Icon(Icons.done_all,
                         color: ThemaMain.primary, size: 20.sp)),
-                if (selects.any((element) => element == true))
+                if (selects.isNotEmpty)
                   ElevatedButton(
                       onPressed: () async {
-                        List<ContactoModelo> contactosTemp = [];
-                        for (var i = 0; i < selects.length; i++) {
-                          if (selects[i]) {
-                            contactosTemp.add(contactos[i]);
-                          }
-                        }
                         var archivo = await ShareFun.shareDatas(
-                            nombre: "contactos", datas: contactosTemp);
+                            nombre: "contactos", datas: selects);
                         if (archivo != null) {
                           await ShareFun.share(
                               titulo:
@@ -71,8 +86,7 @@ class _ContactosViewState extends State<ContactosView> {
                               files: [XFile(archivo.path)]);
                         }
                       },
-                      child: Text(
-                          "Enviar (${selects.where((element) => element == true).length})",
+                      child: Text("Enviar (${selects.length})",
                           style: TextStyle(fontSize: 14.sp)))
               ])
             ]),
@@ -108,21 +122,31 @@ class _ContactosViewState extends State<ContactosView> {
                       child: Text("No se ha ingresado ningun contacto",
                           style: TextStyle(
                               fontSize: 16.sp, fontWeight: FontWeight.bold)))
-                  : ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: contactos.length,
-                      itemBuilder: (context, index) {
-                        ContactoModelo contacto = contactos[index];
-                        return CardContactoWidget(
-                            contacto: contacto,
-                            funContact: (p0) {},
-                            onSelected: (p0) => setState(() {
-                                  selects[index] = !selects[index];
-                                }),
-                            compartir: true,
-                            selected: selects[index],
-                            selectedVisible: true);
-                      })
+                  : Expanded(
+                      child: Scrollbar(
+                          child: ListView.builder(
+                              shrinkWrap: true,
+                              itemCount: contactos.length,
+                              itemBuilder: (context, index) {
+                                ContactoModelo contacto = contactos[index];
+                                var existencia = selects.firstWhereOrNull(
+                                    (element) =>
+                                        element.latitud == contacto.latitud &&
+                                        element.longitud == contacto.longitud);
+                                return CardContactoWidget(
+                                    contacto: contacto,
+                                    funContact: (p0) {},
+                                    onSelected: (p0) => setState(() {
+                                          if (existencia != null) {
+                                            selects.remove(contacto);
+                                          } else {
+                                            selects.add(contacto);
+                                          }
+                                        }),
+                                    compartir: true,
+                                    selected: existencia != null,
+                                    selectedVisible: true);
+                              })))
         ]));
   }
 }

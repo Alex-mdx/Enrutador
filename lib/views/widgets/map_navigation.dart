@@ -1,9 +1,8 @@
 import 'package:enrutador/utilities/main_provider.dart';
 import 'package:enrutador/utilities/theme/theme_color.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:line_icons/line_icons.dart';
-import 'package:map_launcher/map_launcher.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 
@@ -25,18 +24,20 @@ class _MapNavigationState extends State<MapNavigation> {
             IconButton.filled(
                 iconSize: 24.sp,
                 style: ButtonStyle(
-                    backgroundColor: WidgetStatePropertyAll(ThemaMain.green)),
-                color: ThemaMain.green,
+                    backgroundColor: WidgetStatePropertyAll(ThemaMain.primary)),
                 onPressed: () async {
-                  final availableMaps = await MapLauncher.installedMaps;
-                  print(availableMaps);
-                  await availableMaps.first.showMarker(
-                      zoom: 15,
-                      coords: Coords(provider.contacto!.latitud,
-                          provider.contacto!.longitud),
-                      title: "Ubicacion Seleccionada");
+                  CameraFit camara = CameraFit.bounds(
+                      maxZoom: 19,
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 3.w, vertical: 10.h),
+                      bounds: LatLngBounds(
+                          LatLng(provider.local?.latitude ?? -1,
+                              provider.local?.longitude ?? -1),
+                          LatLng(provider.contacto!.latitud,
+                              provider.contacto!.longitud)));
+                  await provider.animaMap.animatedFitCamera(cameraFit: camara);
                 },
-                icon: Icon(LineIcons.directions, color: ThemaMain.white)),
+                icon: Icon(Icons.border_outer_rounded, color: ThemaMain.white)),
           IconButton.filled(
               iconSize: 23.sp,
               onPressed: () async => await provider.animaMap.animatedZoomIn(),

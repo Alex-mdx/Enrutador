@@ -37,19 +37,23 @@ dependencies:
   map_launcher: ^4.0.0
   oktoast: ^3.4.0
   open_location_code: ^1.0.1
+  open_route_service: ^1.2.7
   package_info_plus: ^8.3.0
   path: ^1.9.1
   path_provider: ^2.1.5
   permission_handler: ^12.0.0+1
+  phone_numbers_parser: ^9.0.3
   photo_view: ^0.15.0
-  pro_image_editor: ^10.1.2
+  pro_image_editor: ^11.5.1
   provider: ^6.1.2
   share_plus: ^11.0.0
   shared_preferences: ^2.3.3
   sizer: ^3.0.4
   sliding_up_panel: ^2.0.0+1
   sqflite: ^2.3.3+1
+  url_launcher: ^6.3.2
   what3words: ^3.2.0
+  whatsapp_unilink: ^2.1.0
   widgets_to_image: ^2.0.1
 
 dev_dependencies:
