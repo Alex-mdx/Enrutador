@@ -1,6 +1,8 @@
 import 'dart:convert';
 
 import 'package:enrutador/controllers/contacto_controller.dart';
+import 'package:enrutador/controllers/enrutar_controller.dart';
+import 'package:enrutador/models/enrutar_model.dart';
 import 'package:enrutador/utilities/camara_fun.dart';
 import 'package:enrutador/utilities/main_provider.dart';
 import 'package:enrutador/utilities/services/dialog_services.dart';
@@ -90,71 +92,119 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                           style: TextStyle(
                               fontSize: 15.sp, fontStyle: FontStyle.italic))
                     ])),
-            Wrap(spacing: 1.w, children: [
-              IconButton.filledTonal(
-                  iconSize: 22.sp,
-                  onPressed: () async => await ShareFun.share(
-                      titulo: "Comparte este contacto",
-                      mensaje:
-                          "${ShareFun.copiar}\n*Plus Code*: ${PlusCode.encode(LatLng(provider.contacto?.latitud ?? 0, provider.contacto?.longitud ?? -1), codeLength: 12)}${provider.contacto?.nombreCompleto != null ? "\n*Nombre*: ${provider.contacto?.nombreCompleto}" : ""}${provider.contacto?.domicilio != null ? "\n*Domicilio*: ${provider.contacto?.domicilio}" : ""}${provider.contacto?.nota != null ? "\n*Notas*: ${provider.contacto?.nota}" : ""}"),
-                  icon: Icon(Icons.share, color: ThemaMain.darkBlue)),
-              IconButton.filled(
-                  iconSize: 22.sp,
-                  style: ButtonStyle(
-                      backgroundColor: WidgetStatePropertyAll(ThemaMain.green)),
-                  color: ThemaMain.green,
-                  onPressed: () async => Dialogs.showMorph(
-                      title: "Abrir en el mapa",
-                      description:
-                          "¿Desea abrir esta ubicacion en una aplicacion de mapa disponible?",
-                      loadingTitle: "Abriendo",
-                      onAcceptPressed: (contexto) async {
-                        final availableMaps = await MapLauncher.installedMaps;
-                        print(availableMaps);
-                        await availableMaps.first.showMarker(
-                            zoom: 15,
-                            coords: Coords(provider.contacto!.latitud,
-                                provider.contacto!.longitud),
-                            title: "Ubicacion Seleccionada");
-                      }),
-                  icon: Icon(LineIcons.directions, color: ThemaMain.white)),
-              IconButton.filledTonal(
-                  iconSize: provider.contacto?.id == null ? 22.sp : 18.sp,
-                  onPressed: () async {
-                    if (provider.contacto?.id == null) {
-                      await ContactoController.insert(provider.contacto!);
-                      provider.marker.clear();
-                      provider.contacto = await ContactoController.getItem(
-                          lat: provider.contacto!.latitud,
-                          lng: provider.contacto!.longitud);
-                    } else {
-                      await Dialogs.showMorph(
-                          title: "Eliminar Punteo",
-                          description: "¿Desea eliminar este punteo?",
-                          loadingTitle: "Eliminando",
-                          onAcceptPressed: (context) async {
-                            await ContactoController.deleteItem(
-                                provider.contacto!.id!);
-                            var model = ContactoModelo.fromJson({
-                              "latitud": provider.contacto!.latitud,
-                              "longitud": provider.contacto!.longitud,
-                              "contacto_enlances": []
-                            });
-                            provider.contacto = model;
-                            await MapFun.touch(
-                                provider: provider,
-                                lat: model.latitud,
-                                lng: model.longitud);
-                            showToast("Marcador limpiado");
-                          });
-                    }
-                  },
-                  icon: esperar
-                      ? CircularProgressIndicator()
-                      : provider.contacto?.id == null
-                          ? Icon(Icons.save, color: ThemaMain.green)
-                          : Icon(Icons.delete, color: ThemaMain.red))
-            ])
+            Expanded(
+                child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                        spacing: .5.w,
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton.filledTonal(
+                              iconSize: 22.sp,
+                              onPressed: () async => await ShareFun.share(
+                                  titulo: "Comparte este contacto",
+                                  mensaje:
+                                      "${ShareFun.copiar}\n*Plus Code*: ${PlusCode.encode(LatLng(provider.contacto?.latitud ?? 0, provider.contacto?.longitud ?? -1), codeLength: 12)}${provider.contacto?.nombreCompleto != null ? "\n*Nombre*: ${provider.contacto?.nombreCompleto}" : ""}${provider.contacto?.domicilio != null ? "\n*Domicilio*: ${provider.contacto?.domicilio}" : ""}${provider.contacto?.nota != null ? "\n*Notas*: ${provider.contacto?.nota}" : ""}"),
+                              icon:
+                                  Icon(Icons.share, color: ThemaMain.darkBlue)),
+                          IconButton.filled(
+                              iconSize: 22.sp,
+                              style: ButtonStyle(
+                                  backgroundColor:
+                                      WidgetStatePropertyAll(ThemaMain.green)),
+                              color: ThemaMain.green,
+                              onPressed: () async => Dialogs.showMorph(
+                                  title: "Abrir en el mapa",
+                                  description:
+                                      "¿Desea abrir esta ubicacion en una aplicacion de mapa disponible?",
+                                  loadingTitle: "Abriendo",
+                                  onAcceptPressed: (contexto) async {
+                                    final availableMaps =
+                                        await MapLauncher.installedMaps;
+                                    print(availableMaps);
+                                    await availableMaps.first.showMarker(
+                                        zoom: 15,
+                                        coords: Coords(
+                                            provider.contacto!.latitud,
+                                            provider.contacto!.longitud),
+                                        title: "Ubicacion Seleccionada");
+                                  }),
+                              icon: Icon(LineIcons.directions,
+                                  color: ThemaMain.white)),
+                          if (provider.contacto?.id != null)
+                            IconButton.filled(
+                                iconSize: 22.sp,
+                                onPressed: () async {
+                                  var contacto =
+                                      await EnrutarController.getItemContacto(
+                                          contactoId: provider.contacto!.id!);
+                                  if (contacto == null) {
+                                    Dialogs.showMorph(
+                                        title: "Enrutar",
+                                        description:
+                                            "¿Usar este contacto para enrutar?\nSe metera este contacto a una lista para visitar",
+                                        loadingTitle: "Enrutando...",
+                                        onAcceptPressed: (contexto) async {
+                                          EnrutarModelo data = EnrutarModelo(
+                                              visitado: 0,
+                                              orden: 0,
+                                              contactoId:
+                                                  provider.contacto!.id!,
+                                              buscar: provider.contacto!);
+                                          await EnrutarController.insert(data);
+                                          showToast(
+                                              "Contacto ingresado para el enrutamiento");
+                                        });
+                                  } else {
+                                    showToast("Contacto ya enrutado");
+                                  }
+                                },
+                                icon: Icon(LineIcons.route,
+                                    color: ThemaMain.green)),
+                          IconButton.filledTonal(
+                              iconSize:
+                                  provider.contacto?.id == null ? 22.sp : 18.sp,
+                              onPressed: () async {
+                                if (provider.contacto?.id == null) {
+                                  await ContactoController.insert(
+                                      provider.contacto!);
+                                  provider.marker.clear();
+                                  provider.contacto =
+                                      await ContactoController.getItem(
+                                          lat: provider.contacto!.latitud,
+                                          lng: provider.contacto!.longitud);
+                                } else {
+                                  await Dialogs.showMorph(
+                                      title: "Eliminar Punteo",
+                                      description:
+                                          "¿Desea eliminar este punteo?",
+                                      loadingTitle: "Eliminando",
+                                      onAcceptPressed: (context) async {
+                                        await ContactoController.deleteItem(
+                                            provider.contacto!.id!);
+                                        var model = ContactoModelo.fromJson({
+                                          "latitud": provider.contacto!.latitud,
+                                          "longitud":
+                                              provider.contacto!.longitud,
+                                          "contacto_enlances": []
+                                        });
+                                        provider.contacto = model;
+                                        await MapFun.touch(
+                                            provider: provider,
+                                            lat: model.latitud,
+                                            lng: model.longitud);
+                                        showToast("Marcador limpiado");
+                                      });
+                                }
+                              },
+                              icon: esperar
+                                  ? CircularProgressIndicator()
+                                  : provider.contacto?.id == null
+                                      ? Icon(Icons.save, color: ThemaMain.green)
+                                      : Icon(Icons.delete,
+                                          color: ThemaMain.red))
+                        ])))
           ]),
           cardContacto(provider)
         ]));
@@ -265,9 +315,7 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                                               style: TextStyle(
                                                   color: data.data?.color,
                                                   fontSize: 15.sp,
-                                                  fontWeight: data.data != null
-                                                      ? FontWeight.bold
-                                                      : FontWeight.normal));
+                                                  fontWeight: FontWeight.bold));
                                         })),
                                 TextButton.icon(
                                     style: ButtonStyle(

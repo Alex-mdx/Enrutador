@@ -72,7 +72,7 @@ class _MyWidgetState extends State<MapSliding> {
                                                 style: TextStyle(
                                                     fontSize: 15.sp,
                                                     fontWeight:
-                                                        FontWeight.bold)),
+                                                        FontWeight.bold))
                                           )
                                         : TextButton.icon(
                                             onPressed: () async => Dialogs.showMorph(

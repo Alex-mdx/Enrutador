@@ -4,7 +4,8 @@ import 'package:enrutador/utilities/main_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map_animations/flutter_map_animations.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:open_location_code/open_location_code.dart';
+import 'package:oktoast/oktoast.dart';
+import 'dart:math';
 import 'package:sizer/sizer.dart';
 
 import 'theme/theme_color.dart';
@@ -35,6 +36,44 @@ class MapFun {
     } else {
       await touch(provider: provider, lat: lat, lng: lng);
     }
+  }
+
+  // Versión optimizada que devuelve solo el índice del punto más cercano
+  static ContactoModelo? puntoMasCercano(
+      double originLat, double originLon, List<ContactoModelo> points) {
+    if (points.isEmpty) showToast('La lista de puntos está vacía');
+
+    ContactoModelo? nearestIndex;
+    double minDistance = double.infinity;
+
+    for (int i = 0; i < points.length; i++) {
+      final point = points[i];
+      double distance = _calculateDistance(
+          originLat, originLon, point.latitud, point.longitud);
+
+      if (distance < minDistance) {
+        minDistance = distance;
+        nearestIndex = point;
+      }
+    }
+
+    return nearestIndex;
+  }
+
+  static double _calculateDistance(
+      double lat1, double lon1, double lat2, double lon2) {
+    // Implementar Haversine o euclidiana según necesites
+    const earthRadius = 6378;
+    double dLat = (lat2 - lat1) * pi / 180;
+    double dLon = (lon2 - lon1) * pi / 180;
+
+    double a = sin(dLat / 2) * sin(dLat / 2) +
+        cos(lat1 * pi / 180) *
+            cos(lat2 * pi / 180) *
+            sin(dLon / 2) *
+            sin(dLon / 2);
+
+    return earthRadius * 2 * atan2(sqrt(a), sqrt(1 - a));
   }
 
   static Future<void> touch(

@@ -39,7 +39,10 @@ class _ViajeMapPageState extends State<MapMain>
         : FlutterMap(
             mapController: provider.animaMap.mapController,
             options: MapOptions(
-                onPositionChanged: (camera, hasGesture) {},
+                onMapReady: () =>
+                  provider.mapSeguir = true,
+                onPointerDown: (event, point) =>
+                  provider.mapSeguir = false,
                 keepAlive: true,
                 onTap: (tapPosition, point) async => await MapFun.touch(
                     provider: provider,

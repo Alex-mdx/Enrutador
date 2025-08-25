@@ -107,6 +107,13 @@ class MainProvider with ChangeNotifier implements TickerProvider {
     notifyListeners();
   }
 
+  bool _mapSeguir = false;
+  bool get mapSeguir => _mapSeguir;
+  set mapSeguir(bool valor) {
+    _mapSeguir = valor;
+    notifyListeners();
+  }
+
   //?Funciones
 
   logeo() async {

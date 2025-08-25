@@ -11,6 +11,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slider_drawer/flutter_slider_drawer.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart' as lc;
 import 'package:oktoast/oktoast.dart';
 import 'package:provider/provider.dart';
@@ -131,14 +132,16 @@ class _HomeViewState extends State<HomeView> {
                     leading: IconButton(
                         onPressed: () =>
                             provider.sliderDrawerKey.currentState?.toggle(),
-                        icon: Icon(Icons.menu, size: 20.sp)),
+                        icon: Icon(Icons.menu,
+                            color: ThemaMain.darkBlue, size: 20.sp)),
                     title: Text("Enrutador", style: TextStyle(fontSize: 18.sp)),
                     actions: [
-                      IconButton(
-                          onPressed: () async {
-                            await ContactoController.getItems();
-                          },
-                          icon: Icon(Icons.abc))
+                      if (kDebugMode)
+                        IconButton(
+                            onPressed: () async {
+                              await ContactoController.getItems();
+                            },
+                            icon: Icon(Icons.abc))
                     ],
                     toolbarHeight: 6.h),
                 body: Paginado(provider: provider))));
@@ -173,6 +176,12 @@ class PaginadoState extends State<Paginado> {
 
     location.onLocationChanged.listen((lc.LocationData currentLocation) {
       widget.provider.local = currentLocation;
+      if (widget.provider.mapSeguir) {
+        widget.provider.animaMap.centerOnPoint(
+            LatLng(widget.provider.local?.latitude ?? 0,
+                widget.provider.local?.longitude ?? 0),
+            duration: Duration(milliseconds: 100));
+      }
     });
     initDeepLinks();
   }

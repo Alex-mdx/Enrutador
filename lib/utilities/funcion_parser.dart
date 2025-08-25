@@ -2,7 +2,6 @@ import 'dart:developer';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image/image.dart' as img;
-import 'package:line_icons/line_icon.dart';
 import 'package:line_icons/line_icons.dart';
 
 class Parser {

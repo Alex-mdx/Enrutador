@@ -22,14 +22,15 @@ class _MapNavigationState extends State<MapNavigation> {
         child: Column(spacing: .5.h, mainAxisSize: MainAxisSize.min, children: [
           if (provider.contacto != null)
             IconButton.filled(
-                iconSize: 24.sp,
+                iconSize: 25.sp,
                 style: ButtonStyle(
                     backgroundColor: WidgetStatePropertyAll(ThemaMain.primary)),
                 onPressed: () async {
+                  provider.mapSeguir = false;
                   CameraFit camara = CameraFit.bounds(
                       maxZoom: 19,
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 3.w, vertical: 10.h),
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 10.w, vertical: 10.h),
                       bounds: LatLngBounds(
                           LatLng(provider.local?.latitude ?? -1,
                               provider.local?.longitude ?? -1),
@@ -49,13 +50,22 @@ class _MapNavigationState extends State<MapNavigation> {
           IconButton.filled(
               iconSize: 23.sp,
               onPressed: () async {
-                provider.animaMap.animatedRotateReset();
-                await provider.animaMap.centerOnPoint(
-                    LatLng(
-                        provider.local!.latitude!, provider.local!.longitude!),
-                    zoom: 18);
+                provider.mapSeguir = !provider.mapSeguir;
+                if (provider.mapSeguir) {
+                  provider.animaMap.animatedRotateReset();
+                  await provider.animaMap.centerOnPoint(
+                      LatLng(provider.local!.latitude!,
+                          provider.local!.longitude!),
+                      zoom: 19);
+                } else {
+                  await provider.animaMap.animatedZoomTo(18);
+                }
               },
-              icon: Icon(Icons.my_location_outlined, color: ThemaMain.white))
+              icon: Icon(
+                  provider.mapSeguir
+                      ? Icons.my_location_outlined
+                      : Icons.location_searching,
+                  color: ThemaMain.white))
         ]));
   }
 }
