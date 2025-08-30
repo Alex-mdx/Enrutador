@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slider_drawer/flutter_slider_drawer.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:line_icons/line_icons.dart';
 import 'package:location/location.dart' as lc;
 import 'package:oktoast/oktoast.dart';
 import 'package:provider/provider.dart';
@@ -36,17 +37,16 @@ class _HomeViewState extends State<HomeView> {
     return Consumer<MainProvider>(
         builder: (context, provider, child) => SliderDrawer(
             key: provider.sliderDrawerKey,
-            animationDuration: 350,
+            animationDuration: 200,
             appBar: Placeholder(),
-            sliderOpenSize: 30.w,
+            sliderOpenSize: 34.w,
             isDraggable: false,
             slider: Container(
                 color: ThemaMain.appbar,
                 child: Column(children: [
                   SizedBox(height: 9.h),
                   GestureDetector(
-                      onTap: () async =>
-                          await Navigation.pushNamed(route: "tipos"),
+                      onTap: () async {},
                       child: Card(
                           child: Padding(
                               padding: EdgeInsets.symmetric(
@@ -98,34 +98,60 @@ class _HomeViewState extends State<HomeView> {
                                     Icon(Icons.type_specimen,
                                         size: 22.sp, color: ThemaMain.primary)
                                   ])))),
-                  Card(
-                      child: Padding(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 1.w, vertical: 1.h),
-                          child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text("Estatus",
-                                    style: TextStyle(
-                                        fontSize: 16.sp,
-                                        fontWeight: FontWeight.bold)),
-                                Icon(Icons.contact_emergency,
-                                    size: 22.sp, color: ThemaMain.green)
-                              ]))),
-                  Card(
-                      child: Padding(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 1.w, vertical: 1.h),
-                          child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text("Exportar",
-                                    style: TextStyle(
-                                        fontSize: 16.sp,
-                                        fontWeight: FontWeight.bold)),
-                                Icon(Icons.send,
-                                    size: 20.sp, color: ThemaMain.darkBlue)
-                              ])))
+                  GestureDetector(
+                      onTap: () async {},
+                      child: Card(
+                          child: Padding(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 1.w, vertical: 1.h),
+                              child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text("Estatus",
+                                        style: TextStyle(
+                                            fontSize: 16.sp,
+                                            fontWeight: FontWeight.bold)),
+                                    Icon(Icons.contact_emergency,
+                                        size: 22.sp, color: ThemaMain.darkBlue)
+                                  ])))),
+                  GestureDetector(
+                      onTap: () async =>
+                          await Navigation.pushNamed(route: "navegar"),
+                      child: Card(
+                          child: Padding(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 1.w, vertical: 1.h),
+                              child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text("Navegar",
+                                        style: TextStyle(
+                                            fontSize: 16.sp,
+                                            fontWeight: FontWeight.bold)),
+                                    Icon(LineIcons.globe,
+                                        size: 22.sp, color: ThemaMain.green)
+                                  ])))),
+                  GestureDetector(
+                    onTap: () async =>
+                        await Navigation.pushNamed(route: "lada"),
+                    child: Card(
+                        child: Padding(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 1.w, vertical: 1.h),
+                            child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text("Lada",
+                                      style: TextStyle(
+                                          fontSize: 16.sp,
+                                          fontWeight: FontWeight.bold)),
+                                  Icon(Icons.perm_phone_msg,
+                                      size: 20.sp, color: ThemaMain.pink)
+                                ]))),
+                  )
                 ])),
             child: Scaffold(
                 appBar: AppBar(
@@ -188,10 +214,17 @@ class PaginadoState extends State<Paginado> {
 
   Future<void> initDeepLinks() async {
     final uri = await appLinks.getInitialLink();
+    final uriString = await appLinks.getInitialLinkString();
     if (uri != null) _handleUri(uri);
+    if (uriString != null) _handleString(uriString);
 
 // Escucha de enlaces cálidos (app abierta)
     appLinks.uriLinkStream.listen(_handleUri);
+    appLinks.stringLinkStream.listen(_handleString);
+  }
+
+  void _handleString(String url) {
+    UriFun.readContentUriSafe(url);
   }
 
   void _handleUri(Uri uri) {
@@ -212,10 +245,6 @@ class PaginadoState extends State<Paginado> {
               () async => await MapFun.getUri(
                   provider: widget.provider, uri: filePath));
         }
-        break;
-      default:
-        UriFun.jsonUri(uri);
-        debugPrint("link other: ${uri.data}\n${uri.query}");
         break;
     }
   }

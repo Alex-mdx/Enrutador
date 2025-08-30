@@ -5,11 +5,13 @@ import 'package:enrutador/controllers/enrutar_controller.dart';
 import 'package:enrutador/models/enrutar_model.dart';
 import 'package:enrutador/utilities/camara_fun.dart';
 import 'package:enrutador/utilities/main_provider.dart';
+import 'package:enrutador/utilities/preferences.dart';
 import 'package:enrutador/utilities/services/dialog_services.dart';
 import 'package:enrutador/utilities/services/navigation_services.dart';
 import 'package:enrutador/utilities/share_fun.dart';
 import 'package:enrutador/utilities/theme/theme_app.dart';
 import 'package:enrutador/views/dialogs/dialog_direccion.dart';
+import 'package:enrutador/views/dialogs/dialog_mapas.dart';
 import 'package:enrutador/views/dialogs/dialog_send.dart';
 import 'package:enrutador/views/dialogs/dialogs_comunicar.dart';
 import 'package:flutter/material.dart';
@@ -41,6 +43,17 @@ class TarjetaContacto extends StatefulWidget {
 
 class _TarjetaContactoState extends State<TarjetaContacto> {
   bool esperar = false;
+
+  Future<void> funcion({required ContactoModelo contacto}) async {
+    var data =
+        await EnrutarController.getItemContacto(contactoId: contacto.id!);
+
+    if (data != null) {
+      var newEnrutar = data.copyWith(buscar: contacto);
+      await EnrutarController.update(newEnrutar);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<MainProvider>(context);
@@ -114,22 +127,29 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                                   backgroundColor:
                                       WidgetStatePropertyAll(ThemaMain.green)),
                               color: ThemaMain.green,
-                              onPressed: () async => Dialogs.showMorph(
-                                  title: "Abrir en el mapa",
-                                  description:
-                                      "¿Desea abrir esta ubicacion en una aplicacion de mapa disponible?",
-                                  loadingTitle: "Abriendo",
-                                  onAcceptPressed: (contexto) async {
-                                    final availableMaps =
-                                        await MapLauncher.installedMaps;
-                                    print(availableMaps);
-                                    await availableMaps.first.showMarker(
-                                        zoom: 15,
-                                        coords: Coords(
-                                            provider.contacto!.latitud,
-                                            provider.contacto!.longitud),
-                                        title: "Ubicacion Seleccionada");
-                                  }),
+                              onPressed: () async {
+                                final availableMaps =
+                                    await MapLauncher.installedMaps;
+                                if (Preferences.mapa != "") {
+                                  await availableMaps
+                                      .firstWhere((element) =>
+                                          element.mapType.name ==
+                                          Preferences.mapa)
+                                      .showMarker(
+                                          zoom: 15,
+                                          coords: Coords(
+                                              provider.contacto!.latitud,
+                                              provider.contacto!.longitud),
+                                          title: "Ubicacion Seleccionada");
+                                } else {
+                                  showDialog(
+                                      context: context,
+                                      builder: (context) => DialogMapas(
+                                          coordenadas: LatLng(
+                                              provider.contacto!.latitud,
+                                              provider.contacto!.longitud)));
+                                }
+                              },
                               icon: Icon(LineIcons.directions,
                                   color: ThemaMain.white)),
                           if (provider.contacto?.id != null)
@@ -194,6 +214,15 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                                             provider: provider,
                                             lat: model.latitud,
                                             lng: model.longitud);
+                                        var datas = await EnrutarController
+                                            .getItemContacto(
+                                                contactoId:
+                                                    provider.contacto!.id ??
+                                                        -1);
+                                        if (datas != null) {
+                                          await EnrutarController.deleteItem(
+                                              datas.id!);
+                                        }
                                         showToast("Marcador limpiado");
                                       });
                                 }
@@ -215,10 +244,10 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
         color: ThemaMain.dialogbackground,
         child: AnimatedContainer(
             duration: Durations.medium1,
-            height: provider.contacto?.id == null ? 0.h : 28.h,
+            height: provider.contacto?.id == null ? 0.h : 29.h,
             child: Row(children: [
-              Expanded(flex: 5, child: fotos(provider)),
-              VerticalDivider(width: 0, indent: 1.h, endIndent: 1.h),
+              Expanded(flex: 6, child: fotos(provider)),
+              VerticalDivider(width: 2.sp, indent: 1.h, endIndent: 1.h),
               Expanded(
                   flex: 15,
                   child: Scrollbar(
@@ -249,6 +278,7 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                                                               p0 ?? ""));
                                               await ContactoController.update(
                                                   newModel!);
+                                              funcion(contacto: newModel);
                                               provider.contacto = newModel;
                                             },
                                             tipoTeclado: TextInputType.name,
@@ -276,6 +306,7 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                                                           DateTime.now());
                                               await ContactoController.update(
                                                   newModel!);
+                                              funcion(contacto: newModel);
                                               provider.contacto = newModel;
                                             },
                                             fecha: provider
@@ -303,6 +334,7 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                                                           DateTime.now());
                                               await ContactoController.update(
                                                   newModel!);
+                                              funcion(contacto: newModel);
                                               provider.contacto = newModel;
                                             })),
                                     label: FutureBuilder(
@@ -335,102 +367,161 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                                 bd.Badge(
                                     badgeStyle: bd.BadgeStyle(
                                         badgeColor: ThemaMain.green),
-                                    showBadge: PhoneNumber.parse(
-                                            (provider.contacto?.numero ?? "0")
-                                                .toString(),
-                                            destinationCountry: IsoCode.MX)
-                                        .isValid(type: PhoneNumberType.mobile),
+                                    showBadge:
+                                        PhoneNumber.findPotentialPhoneNumbers(
+                                                    (provider.contacto?.numero ?? "0")
+                                                        .toString())
+                                                .firstOrNull
+                                                ?.isValid() ??
+                                            false,
                                     badgeContent: GestureDetector(
                                         onTap: () => showDialog(
                                             context: context,
                                             builder: (context) => DialogsComunicar(
-                                                number: (provider.contacto?.numero ?? 0)
-                                                    .toString())),
-                                        child: Icon(LineIcons.tty,
-                                            size: 18.sp,
-                                            color: ThemaMain.second)),
+                                                number:
+                                                    (provider.contacto?.numero ?? 0)
+                                                        .toString())),
+                                        child: Icon(LineIcons.tty, size: 18.sp, color: ThemaMain.second)),
                                     child: TextButton.icon(
                                         style: ButtonStyle(padding: WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: 1.w, vertical: 0))),
-                                        onPressed: () => showDialog(
-                                            barrierDismissible: false,
-                                            context: context,
-                                            builder: (context) => DialogSend(
-                                                lenght: 10,
-                                                entradaTexto: (provider.contacto?.numero ?? "").toString(),
-                                                fun: (p0) async {
-                                                  if (int.tryParse(
-                                                          p0.toString()) !=
-                                                      null) {
-                                                    var newModel = provider
-                                                        .contacto
-                                                        ?.copyWith(
-                                                            numero: int.parse(
-                                                                p0.toString()),
-                                                            numeroFecha:
-                                                                DateTime.now());
-                                                    await ContactoController
-                                                        .update(newModel!);
-                                                    provider.contacto =
-                                                        newModel;
-                                                  } else {
-                                                    showToast(
-                                                        "Numero ingresado no valido");
-                                                  }
-                                                },
-                                                tipoTeclado: TextInputType.phone,
-                                                fecha: provider.contacto?.numeroFecha,
-                                                cabeza: "Ingresar numero telefonico del contacto")),
-                                        label: Text("Telefono\n${PhoneNumber.parse((provider.contacto?.numero ?? "0").toString(), destinationCountry: IsoCode.MX).formatNsn()}", style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.bold)))),
+                                        onPressed: () async {
+                                          debugPrint(
+                                              "${provider.contacto?.numero ?? "0"}");
+                                          Iterable<PhoneNumber> country;
+                                          country = PhoneNumber
+                                              .findPotentialPhoneNumbers(
+                                                  (provider.contacto?.numero ??
+                                                          "0")
+                                                      .toString());
+                                          debugPrint(
+                                              "${country.toList().map((e) => e).toList()}");
+                                          String? lada =
+                                              country.firstOrNull?.countryCode;
+                                          debugPrint(lada);
+                                          showDialog(
+                                              barrierDismissible: false,
+                                              context: context,
+                                              builder: (context) => DialogSend(
+                                                  lenght: 10,
+                                                  lada: lada == null
+                                                      ? null
+                                                      : "+$lada",
+                                                  entradaTexto: (provider
+                                                              .contacto
+                                                              ?.numero ??
+                                                          "")
+                                                      .toString()
+                                                      .replaceAll("$lada", ""),
+                                                  fun: (p0) async {
+                                                    if (int.tryParse(
+                                                            p0.toString()) !=
+                                                        null) {
+                                                      var newModel = provider
+                                                          .contacto
+                                                          ?.copyWith(
+                                                              numero: int.parse(p0
+                                                                  .toString()),
+                                                              numeroFecha:
+                                                                  DateTime
+                                                                      .now());
+                                                      await ContactoController
+                                                          .update(newModel!);
+                                                      funcion(
+                                                          contacto: newModel);
+                                                      provider.contacto =
+                                                          newModel;
+                                                    } else {
+                                                      showToast(
+                                                          "Numero ingresado no valido");
+                                                    }
+                                                  },
+                                                  tipoTeclado:
+                                                      TextInputType.phone,
+                                                  fecha: provider
+                                                      .contacto?.numeroFecha,
+                                                  cabeza:
+                                                      "Ingresar numero telefonico del contacto"));
+                                        },
+                                        label: Text("Telefono\n${PhoneNumber.findPotentialPhoneNumbers((provider.contacto?.numero ?? "0").toString()).firstOrNull?.international ?? 0}", style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.bold)))),
                                 bd.Badge(
                                     badgeStyle: bd.BadgeStyle(
                                         badgeColor: ThemaMain.green),
-                                    showBadge: PhoneNumber.parse(
-                                            (provider.contacto?.otroNumero ?? "0")
-                                                .toString(),
-                                            destinationCountry: IsoCode.MX)
-                                        .isValid(type: PhoneNumberType.mobile),
+                                    showBadge: PhoneNumber.findPotentialPhoneNumbers(
+                                                (provider.contacto?.otroNumero ??
+                                                        "0")
+                                                    .toString())
+                                            .firstOrNull
+                                            ?.isValid(
+                                                type: PhoneNumberType.mobile) ??
+                                        false,
                                     badgeContent: GestureDetector(
                                         onTap: () => showDialog(
                                             context: context,
                                             builder: (context) => DialogsComunicar(
-                                                number: (provider.contacto?.otroNumero ?? 0)
-                                                    .toString())),
-                                        child: Icon(LineIcons.tty,
-                                            size: 18.sp,
-                                            color: ThemaMain.second)),
+                                                number: (provider.contacto?.otroNumero ?? 0).toString())),
+                                        child: Icon(LineIcons.tty, size: 18.sp, color: ThemaMain.second)),
                                     child: TextButton.icon(
                                         style: ButtonStyle(padding: WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: 1.w, vertical: 0))),
-                                        onPressed: () => showDialog(
-                                            barrierDismissible: false,
-                                            context: context,
-                                            builder: (context) => DialogSend(
-                                                lenght: 10,
-                                                entradaTexto: (provider.contacto?.otroNumero ?? "").toString(),
-                                                fun: (p0) async {
-                                                  if (int.tryParse(
-                                                          p0.toString()) !=
-                                                      null) {
-                                                    var newModel = provider
-                                                        .contacto
-                                                        ?.copyWith(
-                                                            otroNumero:
-                                                                int.parse(p0
-                                                                    .toString()),
-                                                            otroNumeroFecha:
-                                                                DateTime.now());
-                                                    await ContactoController
-                                                        .update(newModel!);
-                                                    provider.contacto =
-                                                        newModel;
-                                                  } else {
-                                                    showToast(
-                                                        "Numero ingresado no valido");
-                                                  }
-                                                },
-                                                tipoTeclado: TextInputType.phone,
-                                                fecha: provider.contacto?.otroNumeroFecha,
-                                                cabeza: "Ingresar numero telefonico secundario del contacto")),
-                                        label: Text("Otro Tel\n${PhoneNumber.parse((provider.contacto?.otroNumero ?? "0").toString(), destinationCountry: IsoCode.MX).formatNsn()}", style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.bold))))
+                                        onPressed: () {
+                                          debugPrint(
+                                              "${provider.contacto?.otroNumero ?? "0"}");
+                                          Iterable<PhoneNumber> country;
+                                          country = PhoneNumber
+                                              .findPotentialPhoneNumbers(
+                                                  (provider.contacto
+                                                              ?.otroNumero ??
+                                                          "0")
+                                                      .toString());
+                                          debugPrint(
+                                              "${country.toList().map((e) => e).toList()}");
+                                          String? lada =
+                                              country.firstOrNull?.countryCode;
+                                          showDialog(
+                                              barrierDismissible: false,
+                                              context: context,
+                                              builder: (context) => DialogSend(
+                                                  lenght: 10,
+                                                  lada: lada == null
+                                                      ? null
+                                                      : "+$lada",
+                                                  entradaTexto: (provider
+                                                              .contacto
+                                                              ?.otroNumero ??
+                                                          "")
+                                                      .toString()
+                                                      .replaceAll("$lada", ""),
+                                                  fun: (p0) async {
+                                                    if (int.tryParse(
+                                                            p0.toString()) !=
+                                                        null) {
+                                                      var newModel = provider
+                                                          .contacto
+                                                          ?.copyWith(
+                                                              otroNumero:
+                                                                  int.parse(p0
+                                                                      .toString()),
+                                                              otroNumeroFecha:
+                                                                  DateTime
+                                                                      .now());
+                                                      await ContactoController
+                                                          .update(newModel!);
+                                                      funcion(
+                                                          contacto: newModel);
+                                                      provider.contacto =
+                                                          newModel;
+                                                    } else {
+                                                      showToast(
+                                                          "Numero ingresado no valido");
+                                                    }
+                                                  },
+                                                  tipoTeclado:
+                                                      TextInputType.phone,
+                                                  fecha: provider.contacto
+                                                      ?.otroNumeroFecha,
+                                                  cabeza:
+                                                      "Ingresar numero telefonico secundario del contacto"));
+                                        },
+                                        label: Text("Otro Tel\n${PhoneNumber.findPotentialPhoneNumbers((provider.contacto?.otroNumero ?? "0").toString()).firstOrNull?.international ?? 0}", style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.bold))))
                               ]),
                           Text("Referencias:",
                               style: TextStyle(fontSize: 16.sp)),
@@ -542,6 +633,7 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                             var newModel =
                                 provider.contacto?.copyWith(agendar: time);
                             await ContactoController.update(newModel!);
+                            funcion(contacto: newModel);
                             provider.contacto = newModel;
                             Navigation.pop();
                           })))),
@@ -558,7 +650,7 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                       ? FontWeight.normal
                       : FontWeight.bold)),
           icon: provider.contacto?.agendar == null
-              ? Icon(LineIcons.calendarWithDayFocus, size: 20.sp)
+              ? Icon(LineIcons.calendarWithDayFocus, size: 22.sp)
               : null),
       Container(
           decoration: BoxDecoration(
@@ -588,7 +680,7 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                     }
                   },
                   child: Icon(Icons.contacts,
-                      size: 38.sp, color: ThemaMain.primary))
+                      size: 25.w, color: ThemaMain.primary))
               : InkWell(
                   onLongPress: () => Dialogs.showMorph(
                       title: "Eliminar foto",
@@ -610,7 +702,7 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                       try {
                         var reducir =
                             await FlutterImageCompress.compressWithList(data,
-                                minHeight: 720, minWidth: 1280, quality: 50);
+                                minHeight: 540, minWidth: 960, quality: 80);
                         var newModel = provider.contacto?.copyWith(
                             foto: base64Encode(reducir),
                             fotoFecha: DateTime.now());
@@ -646,13 +738,13 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                           base64Decode(provider.contacto?.foto ?? "a"),
                           fit: BoxFit.cover,
                           filterQuality: FilterQuality.low,
-                          width: 38.sp,
-                          height: 38.sp,
+                          width: 24.w,
+                          height: 24.w,
                           gaplessPlayback: true,
                           errorBuilder: (context, error, stackTrace) => Icon(
                               Icons.broken_image,
                               color: ThemaMain.red,
-                              size: 38.sp))))),
+                              size: 24.w))))),
       Container(
           decoration: BoxDecoration(
               color: ThemaMain.background,
@@ -669,7 +761,7 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                       try {
                         var reducir =
                             await FlutterImageCompress.compressWithList(data,
-                                minHeight: 720, minWidth: 1280, quality: 50);
+                                minHeight: 540, minWidth: 960, quality: 80);
                         var newModel = provider.contacto?.copyWith(
                             fotoReferencia: base64Encode(reducir),
                             fotoReferenciaFecha: DateTime.now());
@@ -680,7 +772,7 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                       }
                     }
                   },
-                  child: Icon(Icons.image, color: ThemaMain.green, size: 38.sp))
+                  child: Icon(Icons.image, color: ThemaMain.green, size: 24.w))
               : InkWell(
                   onLongPress: () => Dialogs.showMorph(
                       title: "Eliminar foto",
@@ -738,15 +830,15 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                       child: Image.memory(
                           fit: BoxFit.cover,
                           filterQuality: FilterQuality.low,
-                          width: 38.sp,
-                          height: 38.sp,
+                          width: 24.w,
+                          height: 24.w,
                           base64Decode(
                               provider.contacto?.fotoReferencia ?? "a"),
                           gaplessPlayback: true,
                           errorBuilder: (context, error, stackTrace) => Icon(
                               Icons.broken_image,
                               color: ThemaMain.red,
-                              size: 38.sp)))))
+                              size: 24.w)))))
     ]);
   }
 }

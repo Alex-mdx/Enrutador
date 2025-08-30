@@ -14,6 +14,7 @@ class MapNavigation extends StatefulWidget {
 }
 
 class _MapNavigationState extends State<MapNavigation> {
+  bool container = false;
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<MainProvider>(context);
@@ -27,25 +28,40 @@ class _MapNavigationState extends State<MapNavigation> {
                     backgroundColor: WidgetStatePropertyAll(ThemaMain.primary)),
                 onPressed: () async {
                   provider.mapSeguir = false;
-                  CameraFit camara = CameraFit.bounds(
-                      maxZoom: 19,
-                      padding: EdgeInsets.symmetric(
-                          horizontal: 10.w, vertical: 10.h),
-                      bounds: LatLngBounds(
-                          LatLng(provider.local?.latitude ?? -1,
-                              provider.local?.longitude ?? -1),
-                          LatLng(provider.contacto!.latitud,
-                              provider.contacto!.longitud)));
-                  await provider.animaMap.animatedFitCamera(cameraFit: camara);
+                  container = !container;
+                  if (container) {
+                    CameraFit camara = CameraFit.bounds(
+                        maxZoom: 19,
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 10.w, vertical: 10.h),
+                        bounds: LatLngBounds(
+                            LatLng(provider.local?.latitude ?? -1,
+                                provider.local?.longitude ?? -1),
+                            LatLng(provider.contacto!.latitud,
+                                provider.contacto!.longitud)));
+                    await provider.animaMap
+                        .animatedFitCamera(cameraFit: camara);
+                  } else {
+                    await provider.animaMap.centerOnPoint(
+                        LatLng(provider.contacto!.latitud,
+                            provider.contacto!.longitud),
+                        zoom: 17);
+                  }
                 },
-                icon: Icon(Icons.border_outer_rounded, color: ThemaMain.white)),
+                icon: Icon(
+                    container
+                        ? Icons.border_outer_rounded
+                        : Icons.border_inner_rounded,
+                    color: ThemaMain.white)),
           IconButton.filled(
               iconSize: 23.sp,
-              onPressed: () async => await provider.animaMap.animatedZoomIn(),
+              onPressed: () async => await provider.animaMap.animatedZoomIn(
+                  duration: Durations.medium2, cancelPreviousAnimations: true),
               icon: Icon(Icons.zoom_in, color: ThemaMain.white)),
           IconButton.filled(
               iconSize: 23.sp,
-              onPressed: () async => await provider.animaMap.animatedZoomOut(),
+              onPressed: () async => await provider.animaMap.animatedZoomOut(
+                  duration: Durations.medium2, cancelPreviousAnimations: true),
               icon: Icon(Icons.zoom_out, color: ThemaMain.white)),
           IconButton.filled(
               iconSize: 23.sp,
@@ -56,9 +72,7 @@ class _MapNavigationState extends State<MapNavigation> {
                   await provider.animaMap.centerOnPoint(
                       LatLng(provider.local!.latitude!,
                           provider.local!.longitude!),
-                      zoom: 19);
-                } else {
-                  await provider.animaMap.animatedZoomTo(18);
+                      zoom: 17);
                 }
               },
               icon: Icon(

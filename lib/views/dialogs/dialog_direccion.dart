@@ -39,10 +39,12 @@ class _DialogDireccionState extends State<DialogDireccion> {
             palabra: widget.word ?? "", palabra1: "ext: ", palabra2: ","));
     cruz1 = TextEditingController(
         text: Textos.obtenerEntre(
-            palabra: widget.word ?? "", palabra1: " cruz 1: ", palabra2: " x"));
+            palabra: widget.word ?? "",
+            palabra1: " entre cruz. 1: ",
+            palabra2: " x"));
     cruz2 = TextEditingController(
         text: Textos.obtenerEntre(
-            palabra: widget.word ?? "", palabra1: " cruz 2: ", palabra2: ","));
+            palabra: widget.word ?? "", palabra1: " cruz. 2: ", palabra2: ","));
     colonia = TextEditingController(
         text: Textos.obtenerEntre(
             palabra: widget.word ?? "", palabra1: "Colonia: ", palabra2: ","));

@@ -1,0 +1,71 @@
+import 'package:enrutador/utilities/preferences.dart';
+import 'package:enrutador/utilities/services/dialog_services.dart';
+import 'package:enrutador/utilities/theme/theme_color.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:line_icons/line_icons.dart';
+import 'package:map_launcher/map_launcher.dart';
+import 'package:sizer/sizer.dart';
+
+class ListMapsWidget extends StatefulWidget {
+  final AvailableMap mapas;
+  final double latitud;
+  final double longitud;
+  const ListMapsWidget(
+      {super.key,
+      required this.mapas,
+      required this.latitud,
+      required this.longitud});
+
+  @override
+  State<ListMapsWidget> createState() => _ListMapsWidgetState();
+}
+
+class _ListMapsWidgetState extends State<ListMapsWidget> {
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+        onTap: () => Dialogs.showMorph(
+            title: "Abrir por defecto",
+            description:
+                "¿Desea usar esta aplicacion de navegacion cada que se intente navegar en algun mapa externo?",
+            loadingTitle: "",
+            onAcceptPressed: (context) async =>
+                Preferences.mapa = widget.mapas.mapType.name),
+        dense: widget.mapas.mapType.name != Preferences.mapa,
+        selectedTileColor: ThemaMain.dialogbackground,
+        onLongPress: () {
+          if (Preferences.mapa == widget.mapas.mapType.name) {
+            Preferences.mapa = "";
+          }
+        },
+        selected: widget.mapas.mapType.name == Preferences.mapa,
+        leading: Icon(
+            widget.mapas.mapType.name.toLowerCase().contains("google")
+                ? LineIcons.mapMarker
+                : widget.mapas.mapType.name.toLowerCase().contains("waze")
+                    ? LineIcons.waze
+                    : widget.mapas.mapType.name.toLowerCase().contains("uber")
+                        ? LineIcons.uber
+                        : widget.mapas.mapType.name
+                                .toLowerCase()
+                                .contains("didi")
+                            ? LineIcons.taxi
+                            : LineIcons.question,
+            size: 24.sp,
+            color: ThemaMain.darkBlue),
+        title: Text(widget.mapas.mapName,
+            style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.bold)),
+        subtitle: (kDebugMode)
+            ? Text("${widget.mapas.icon} - ${widget.mapas.mapType.name}",
+                style: TextStyle(fontSize: 14.sp))
+            : null,
+        trailing: IconButton(
+            iconSize: 22.sp,
+            onPressed: () async => await widget.mapas.showMarker(
+                zoom: 15,
+                coords: Coords(widget.latitud, widget.longitud),
+                title: "Ubicacion Seleccionada"),
+            icon: Icon(Icons.launch, color: ThemaMain.green)));
+  }
+}

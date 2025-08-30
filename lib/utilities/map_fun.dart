@@ -25,6 +25,7 @@ class MapFun {
       {required MainProvider provider,
       required double lat,
       required double lng}) async {
+    provider.mapSeguir = false;
     var dir = await ContactoController.getItem(lat: lat, lng: lng);
     await provider.animaMap.centerOnPoint(
         LatLng(double.parse(lat.toStringAsFixed(6)),
@@ -114,15 +115,38 @@ class MapFun {
                     LatLng(double.parse(lat.toStringAsFixed(6)),
                         double.parse(lng.toStringAsFixed(6))),
                     zoom: 18);
+                provider.contacto = ContactoModelo(
+                    id: null,
+                    nombreCompleto: null,
+                    latitud: double.parse(lat.toStringAsFixed(6)),
+                    longitud: double.parse(lng.toStringAsFixed(6)),
+                    domicilio: null,
+                    fechaDomicilio: null,
+                    numero: null,
+                    numeroFecha: null,
+                    otroNumero: null,
+                    otroNumeroFecha: null,
+                    agendar: null,
+                    contactoEnlances: [],
+                    tipo: null,
+                    tipoFecha: null,
+                    estado: null,
+                    estadoFecha: null,
+                    foto: null,
+                    fotoFecha: null,
+                    fotoReferencia: null,
+                    fotoReferenciaFecha: null,
+                    what3Words: null,
+                    nota: null);
                 await provider.slide.open();
               },
               child: Stack(alignment: Alignment.center, children: [
                 Image.asset("assets/mark_point2.png",
-                    width: 26.sp, height: 26.sp),
+                    width: 28.sp, height: 28.sp),
                 Padding(
-                    padding: EdgeInsets.only(bottom: 10.sp),
+                    padding: EdgeInsets.only(bottom: 6.sp),
                     child: Icon(
-                        size: 22.sp, Icons.add_circle, color: ThemaMain.red))
+                        size: 21.sp, Icons.add_circle, color: ThemaMain.red))
               ])))
     ];
   }

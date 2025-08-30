@@ -101,10 +101,10 @@ packages:
     dependency: transitive
     description:
       name: camera_android_camerax
-      sha256: "58b8fe843a3c83fd1273c00cb35f5a8ae507f6cc9b2029bcf7e2abba499e28d8"
+      sha256: "2d438248554f44766bf9ea34c117a5bb0074e241342ef7c22c768fb431335234"
       url: "https://pub.dev"
     source: hosted
-    version: "0.6.19+1"
+    version: "0.6.21"
   camera_avfoundation:
     dependency: transitive
     description:
@@ -382,14 +382,54 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.14.4"
+  flutter_libphonenumber:
+    dependency: "direct main"
+    description:
+      name: flutter_libphonenumber
+      sha256: fd92be0562cf88b62110452e649f5e6167bf405ac1a7806e31996a05303280ee
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.5.1"
+  flutter_libphonenumber_android:
+    dependency: transitive
+    description:
+      name: flutter_libphonenumber_android
+      sha256: "050883c2d168c3567ea9be4efb5eaf5d59e357c427e98da862beb05c3a014c55"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.4.1"
+  flutter_libphonenumber_ios:
+    dependency: transitive
+    description:
+      name: flutter_libphonenumber_ios
+      sha256: c979da7ce78f97d24f70e9c596ec37a721daa83814776dbdcb38286de1942a4f
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.4.0"
+  flutter_libphonenumber_platform_interface:
+    dependency: transitive
+    description:
+      name: flutter_libphonenumber_platform_interface
+      sha256: "9de1bd623103aefe1cb892693f85f6b2d2979ab9e6cce5d452ba10aa61ed41ed"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.1.0"
+  flutter_libphonenumber_web:
+    dependency: transitive
+    description:
+      name: flutter_libphonenumber_web
+      sha256: "3b5be4d5325e8d670f241f02a11d4bf9fd832cb5460d6b6a6926b38861b5881f"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.3.0"
   flutter_lints:
     dependency: "direct dev"
     description:
       name: flutter_lints
-      sha256: "5398f14efa795ffb7a33e9b6a08798b26a180edac4ad7db3f231e40f82ce11e1"
+      sha256: "3105dc8492f6183fb076ccf1f351ac3d60564bff92e20bfc4af9cc1651f4e7e1"
       url: "https://pub.dev"
     source: hosted
-    version: "5.0.0"
+    version: "6.0.0"
   flutter_localizations:
     dependency: "direct main"
     description: flutter
@@ -447,10 +487,10 @@ packages:
     dependency: transitive
     description:
       name: flutter_plugin_android_lifecycle
-      sha256: "6382ce712ff69b0f719640ce957559dde459e55ecd433c767e06d139ddf16cab"
+      sha256: b0694b7fb1689b0e6cc193b3f1fcac6423c4f93c74fb20b806c6b6f196db0c31
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.29"
+    version: "2.0.30"
   flutter_rotation_sensor:
     dependency: transitive
     description:
@@ -621,6 +661,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.9.0"
+  json_stream:
+    dependency: "direct main"
+    description:
+      name: json_stream
+      sha256: "55123ce69c0e1f937e6160bbcea6d9d394b11e240fc829a57f51017d794c6aac"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.1"
   latlong2:
     dependency: "direct main"
     description:
@@ -665,10 +713,10 @@ packages:
     dependency: transitive
     description:
       name: lints
-      sha256: c35bb79562d980e9a453fc715854e1ed39e24e7d0297a880ef54e17f9874a9d7
+      sha256: a5e2b223cb7c9c8efdc663ef484fdd95bb243bff242ef5b13e26883547fce9a0
       url: "https://pub.dev"
     source: hosted
-    version: "5.1.1"
+    version: "6.0.0"
   lists:
     dependency: transitive
     description:
@@ -721,10 +769,10 @@ packages:
     dependency: "direct main"
     description:
       name: map_launcher
-      sha256: "75e2742879228eb3147edb6604cc0dc105da1357eb6b4c1b938c52bc474f6088"
+      sha256: "7f69f0ac7559f46e75b70b75c0de9b0fcb4bef46ff28dc5756e3ed568b2a13ec"
       url: "https://pub.dev"
     source: hosted
-    version: "4.4.0"
+    version: "4.4.1"
   matcher:
     dependency: transitive
     description:
@@ -865,10 +913,10 @@ packages:
     dependency: transitive
     description:
       name: path_provider_android
-      sha256: d0d310befe2c8ab9e7f393288ccbb11b60c019c6b5afc21973eeee4dda2b35e9
+      sha256: "993381400e94d18469750e5b9dcb8206f15bc09f9da86b9e44a9b0092a0066db"
       url: "https://pub.dev"
     source: hosted
-    version: "2.2.17"
+    version: "2.2.18"
   path_provider_foundation:
     dependency: transitive
     description:
@@ -961,10 +1009,10 @@ packages:
     dependency: "direct main"
     description:
       name: phone_numbers_parser
-      sha256: "8aaa49708c9314d450d80767753c6512402e848138e5a91bf59ed3e0d3ac5d9b"
+      sha256: "87b2c344e1ae28bc92ee9e534b30ef85a16d4e7279a770c222aaefe2eeac6f02"
       url: "https://pub.dev"
     source: hosted
-    version: "9.0.3"
+    version: "9.0.11"
   photo_manager:
     dependency: transitive
     description:
@@ -1017,10 +1065,10 @@ packages:
     dependency: "direct main"
     description:
       name: pro_image_editor
-      sha256: db5d0c272185682d27c23e18c3a07267354fc5821aadae1d7faab66d2b4ce1cd
+      sha256: d8fee819a7855fd3f36259d04825e3e20ac658b57c1814e65afd5f9d8b58d80d
       url: "https://pub.dev"
     source: hosted
-    version: "11.5.1"
+    version: "11.5.4"
   proj4dart:
     dependency: transitive
     description:
@@ -1041,10 +1089,10 @@ packages:
     dependency: transitive
     description:
       name: qs_dart
-      sha256: "0e2a4e5805ec696ac7cf66b5fbd3ae999e1cf650125141e164293976204b1486"
+      sha256: "9e387b31487173a6266e96d7015201d92b21b75dda038332e5ad26ad95fe493e"
       url: "https://pub.dev"
     source: hosted
-    version: "1.5.3"
+    version: "1.5.5"
   rxdart:
     dependency: transitive
     description:
@@ -1081,10 +1129,10 @@ packages:
     dependency: transitive
     description:
       name: shared_preferences_android
-      sha256: "5bcf0772a761b04f8c6bf814721713de6f3e5d9d89caf8d3fe031b02a342379e"
+      sha256: a2608114b1ffdcbc9c120eb71a0e207c71da56202852d4aab8a5e30a82269e74
       url: "https://pub.dev"
     source: hosted
-    version: "2.4.11"
+    version: "2.4.12"
   shared_preferences_foundation:
     dependency: transitive
     description:
@@ -1129,10 +1177,10 @@ packages:
     dependency: "direct main"
     description:
       name: sizer
-      sha256: "6f68f574b6dd052e87c4abf67fe4feb316651fab02430ef7e53e991c15acfcb7"
+      sha256: "9963c89e4d30d7c2108de3eafc0a7e6a4a8009799376ea6be5ef0a9ad87cfbad"
       url: "https://pub.dev"
     source: hosted
-    version: "3.0.5"
+    version: "3.1.3"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -1286,10 +1334,10 @@ packages:
     dependency: transitive
     description:
       name: url_launcher_android
-      sha256: "0aedad096a85b49df2e4725fa32118f9fa580f3b14af7a2d2221896a02cd5656"
+      sha256: "69ee86740f2847b9a4ba6cffa74ed12ce500bbe2b07f3dc1e643439da60637b7"
       url: "https://pub.dev"
     source: hosted
-    version: "6.3.17"
+    version: "6.3.18"
   url_launcher_ios:
     dependency: transitive
     description:

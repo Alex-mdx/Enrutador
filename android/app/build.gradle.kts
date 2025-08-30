@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.example.enrutador"
-    compileSdk = 35
+    compileSdk = 36
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
@@ -23,11 +23,16 @@ android {
     defaultConfig {
         applicationId = "com.example.enrutador"
         minSdk = 24
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 1
         versionName = "0.0.1"
          manifestPlaceholders.apply {
             put("appAuthRedirectScheme", "com.example.enrutador")
+        }
+    }
+    packagingOptions {
+        jniLibs {
+            useLegacyPackaging = true
         }
     }
 
@@ -36,6 +41,7 @@ android {
             signingConfig = signingConfigs.getByName("debug")
         }
     }
+
 }
 dependencies {
         coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")

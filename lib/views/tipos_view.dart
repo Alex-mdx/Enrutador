@@ -1,6 +1,7 @@
 import 'package:enrutador/controllers/tipo_controller.dart';
 import 'package:enrutador/models/tipos_model.dart';
 import 'package:enrutador/utilities/main_provider.dart';
+import 'package:enrutador/utilities/services/dialog_services.dart';
 import 'package:enrutador/utilities/share_fun.dart';
 import 'package:enrutador/utilities/theme/theme_color.dart';
 import 'package:flutter/material.dart';
@@ -51,7 +52,25 @@ class _TiposViewState extends State<TiposView> {
               title: Text("Tipos", style: TextStyle(fontSize: 18.sp)),
               actions: [
                 ElevatedButton.icon(
-                    onPressed: () {},
+                    onPressed: () async {
+                      var tipo = await TipoController.getItems();
+                      Dialogs.showMorph(
+                          title: "Tipos",
+                          description:
+                              "Estas seguro de enviar los ${tipo.length} tipo(s)\nEste proceso puede tardar unos segundos dependiendo de el tamaño de los datos obtenidos",
+                          loadingTitle: "procesando",
+                          onAcceptPressed: (context) async {
+                            var archivo = await ShareFun.shareDatas(
+                                nombre: "tipos", datas: tipo);
+                            if (archivo != null) {
+                              await ShareFun.share(
+                                  titulo:
+                                      "Este es un contenido compacto de tipos",
+                                  mensaje: "objeto de contactos",
+                                  files: [XFile(archivo.path)]);
+                            }
+                          });
+                    },
                     label:
                         Text("Enviar todo", style: TextStyle(fontSize: 14.sp)),
                     icon: Icon(Icons.done_all,

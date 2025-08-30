@@ -39,10 +39,8 @@ class _ViajeMapPageState extends State<MapMain>
         : FlutterMap(
             mapController: provider.animaMap.mapController,
             options: MapOptions(
-                onMapReady: () =>
-                  provider.mapSeguir = true,
-                onPointerDown: (event, point) =>
-                  provider.mapSeguir = false,
+                onMapReady: () => provider.mapSeguir = true,
+                onPointerDown: (event, point) => provider.mapSeguir = false,
                 keepAlive: true,
                 onTap: (tapPosition, point) async => await MapFun.touch(
                     provider: provider,
@@ -202,7 +200,7 @@ class _ViajeMapPageState extends State<MapMain>
                 AnimatedMarkerLayer(
                     alignment: Alignment.center, markers: [...provider.marker]),
                 MapCompass.cupertino(
-                    padding: EdgeInsets.only(top: 6.h, right: 3.w),
+                    padding: EdgeInsets.only(top: 7.h, right: 4.w),
                     hideIfRotatedNorth: false)
               ]);
   }
