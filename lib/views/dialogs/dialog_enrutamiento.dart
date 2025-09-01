@@ -62,62 +62,64 @@ class _DialogEnrutamientoState extends State<DialogEnrutamiento> {
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               return Scrollbar(
-                  child: ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: snapshot.data?.length,
-                      itemBuilder: (context, index) {
-                        EnrutarModelo enrutar = snapshot.data![index];
-                        return ListTile(
-                            onTap: () async {
-                              Navigation.pop();
-                              await MapFun.sendInitUri(
-                                  provider: provider,
-                                  lat: enrutar.buscar.latitud,
-                                  lng: enrutar.buscar.longitud);
-                            },
-                            leading: Checkbox(
-                                semanticLabel: "Visitado",
-                                activeColor: ThemaMain.green,
-                                value: enrutar.visitado == 1,
-                                onChanged: (value) async {
-                                  var visitado =
-                                      Parser.toInt(!(enrutar.visitado == 1));
-                                  var tempdata =
-                                      enrutar.copyWith(visitado: visitado);
-                                  await EnrutarController.update(tempdata);
-                                  setState(() {});
-                                }),
-                            title: Text(
-                                enrutar.buscar.nombreCompleto ??
-                                    "Sin nombre ingresado",
-                                style: TextStyle(
-                                    fontSize: 15.sp,
-                                    fontWeight: FontWeight.bold)),
-                            subtitle: Text(
-                                enrutar.buscar.agendar == null
-                                    ? "Sin visita agendada"
-                                    : "Visita: ${Textos.conversionDiaNombre(enrutar.buscar.agendar!, DateTime.now())}",
-                                style: TextStyle(
-                                    fontSize: 15.sp,
-                                    fontWeight: enrutar.buscar.agendar == null
-                                        ? FontWeight.normal
-                                        : FontWeight.bold)),
-                            trailing: IconButton(
-                                iconSize: 20.sp,
-                                onPressed: () async {
-                                  await EnrutarController.deleteItem(
-                                      enrutar.id!);
-                                  var tama =
-                                      (await EnrutarController.getItems())
-                                          .length;
-                                  if (tama == 0) {
-                                    Navigation.pop();
-                                  }
-                                  setState(() {});
+                  child: Expanded(
+                      child: ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: snapshot.data?.length,
+                          itemBuilder: (context, index) {
+                            EnrutarModelo enrutar = snapshot.data![index];
+                            return ListTile(
+                                onTap: () async {
+                                  Navigation.pop();
+                                  await MapFun.sendInitUri(
+                                      provider: provider,
+                                      lat: enrutar.buscar.latitud,
+                                      lng: enrutar.buscar.longitud);
                                 },
-                                icon:
-                                    Icon(Icons.delete, color: ThemaMain.red)));
-                      }));
+                                leading: Checkbox(
+                                    semanticLabel: "Visitado",
+                                    activeColor: ThemaMain.green,
+                                    value: enrutar.visitado == 1,
+                                    onChanged: (value) async {
+                                      var visitado = Parser.toInt(
+                                          !(enrutar.visitado == 1));
+                                      var tempdata =
+                                          enrutar.copyWith(visitado: visitado);
+                                      await EnrutarController.update(tempdata);
+                                      setState(() {});
+                                    }),
+                                title: Text(
+                                    enrutar.buscar.nombreCompleto ??
+                                        "Sin nombre ingresado",
+                                    style: TextStyle(
+                                        fontSize: 15.sp,
+                                        fontWeight: FontWeight.bold)),
+                                subtitle: Text(
+                                    enrutar.buscar.agendar == null
+                                        ? "Sin visita agendada"
+                                        : "Visita: ${Textos.conversionDiaNombre(enrutar.buscar.agendar!, DateTime.now())}",
+                                    style: TextStyle(
+                                        fontSize: 15.sp,
+                                        fontWeight:
+                                            enrutar.buscar.agendar == null
+                                                ? FontWeight.normal
+                                                : FontWeight.bold)),
+                                trailing: IconButton(
+                                    iconSize: 20.sp,
+                                    onPressed: () async {
+                                      await EnrutarController.deleteItem(
+                                          enrutar.id!);
+                                      var tama =
+                                          (await EnrutarController.getItems())
+                                              .length;
+                                      if (tama == 0) {
+                                        Navigation.pop();
+                                      }
+                                      setState(() {});
+                                    },
+                                    icon: Icon(Icons.delete,
+                                        color: ThemaMain.red)));
+                          })));
             } else if (snapshot.hasError) {
               return Text("Error: ${snapshot.error}",
                   style: TextStyle(fontSize: 15.sp));

@@ -62,12 +62,14 @@ class _TiposViewState extends State<TiposView> {
                           onAcceptPressed: (context) async {
                             var archivo = await ShareFun.shareDatas(
                                 nombre: "tipos", datas: tipo);
-                            if (archivo != null) {
+                            if (archivo.isNotEmpty) {
                               await ShareFun.share(
                                   titulo:
                                       "Este es un contenido compacto de tipos",
                                   mensaje: "objeto de contactos",
-                                  files: [XFile(archivo.path)]);
+                                  files: archivo
+                                      .map((e) => XFile(e.path))
+                                      .toList());
                             }
                           });
                     },
@@ -86,13 +88,15 @@ class _TiposViewState extends State<TiposView> {
                         }
                         var archivo = await ShareFun.shareDatas(
                             nombre: "tipos", datas: temp);
-                        if (archivo != null) {
-                          await ShareFun.share(
-                              titulo:
-                                  "Este es un contenido compacto de contactos",
-                              mensaje: "objeto de contactos",
-                              files: [XFile(archivo.path)]);
-                        }
+                        if (archivo.isNotEmpty) {
+                              await ShareFun.share(
+                                  titulo:
+                                      "Este es un contenido compacto de tipos",
+                                  mensaje: "objeto de contactos",
+                                  files: archivo
+                                      .map((e) => XFile(e.path))
+                                      .toList());
+                            }
                       },
                       child: Text(
                           "Enviar (${selects.where((element) => element == true).length})",

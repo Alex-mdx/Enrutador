@@ -224,7 +224,7 @@ class PaginadoState extends State<Paginado> {
   }
 
   void _handleString(String url) {
-    UriFun.readContentUriSafe(url);
+    UriFun.readContentUriSafe(url,widget.provider);
   }
 
   void _handleUri(Uri uri) {
@@ -247,6 +247,11 @@ class PaginadoState extends State<Paginado> {
         }
         break;
     }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override

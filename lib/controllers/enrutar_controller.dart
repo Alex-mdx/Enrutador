@@ -57,7 +57,7 @@ class EnrutarController {
 
   static Future<List<EnrutarModelo>> getItems() async {
     final db = await database();
-    final modelo = (await db.query(nombreDB));
+    final modelo = (await db.query(nombreDB,orderBy: "orden ASC"));
     List<EnrutarModelo> model = [];
     for (var element in modelo) {
       model.add(EnrutarModelo.fromJson(element));

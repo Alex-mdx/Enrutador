@@ -11,11 +11,13 @@ class ListMapsWidget extends StatefulWidget {
   final AvailableMap mapas;
   final double latitud;
   final double longitud;
+  final Function(void) launch;
   const ListMapsWidget(
       {super.key,
       required this.mapas,
       required this.latitud,
-      required this.longitud});
+      required this.longitud,
+      required this.launch});
 
   @override
   State<ListMapsWidget> createState() => _ListMapsWidgetState();
@@ -30,13 +32,16 @@ class _ListMapsWidgetState extends State<ListMapsWidget> {
             description:
                 "¿Desea usar esta aplicacion de navegacion cada que se intente navegar en algun mapa externo?",
             loadingTitle: "",
-            onAcceptPressed: (context) async =>
-                Preferences.mapa = widget.mapas.mapType.name),
+            onAcceptPressed: (context) async => setState(() {
+                  Preferences.mapa = widget.mapas.mapType.name;
+                })),
         dense: widget.mapas.mapType.name != Preferences.mapa,
         selectedTileColor: ThemaMain.dialogbackground,
         onLongPress: () {
           if (Preferences.mapa == widget.mapas.mapType.name) {
-            Preferences.mapa = "";
+            setState(() {
+              Preferences.mapa = "";
+            });
           }
         },
         selected: widget.mapas.mapType.name == Preferences.mapa,
@@ -60,12 +65,12 @@ class _ListMapsWidgetState extends State<ListMapsWidget> {
             ? Text("${widget.mapas.icon} - ${widget.mapas.mapType.name}",
                 style: TextStyle(fontSize: 14.sp))
             : null,
-        trailing: IconButton(
-            iconSize: 22.sp,
-            onPressed: () async => await widget.mapas.showMarker(
+        trailing: IconButton.filledTonal(
+            iconSize: 24.sp,
+            onPressed: () async => widget.launch(await widget.mapas.showMarker(
                 zoom: 15,
                 coords: Coords(widget.latitud, widget.longitud),
-                title: "Ubicacion Seleccionada"),
+                title: "Ubicacion Seleccionada")),
             icon: Icon(Icons.launch, color: ThemaMain.green)));
   }
 }

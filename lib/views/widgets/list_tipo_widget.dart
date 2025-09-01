@@ -83,8 +83,8 @@ class ListTipoWidget extends StatelessWidget {
                                     iconSize: 20.sp,
                                     onPressed: () async {
                                       showToast("Generando archivo...");
-                                      var data = await ShareFun.shareDatas(
-                                          nombre: "tipos", datas: [tipo]);
+                                      var data = (await ShareFun.shareDatas(
+                                          nombre: "tipos", datas: [tipo])).firstOrNull;
                                       if (data != null) {
                                         XFile file = XFile(data.path);
                                         await ShareFun.share(

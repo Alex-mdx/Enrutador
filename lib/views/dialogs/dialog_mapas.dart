@@ -1,3 +1,4 @@
+import 'package:enrutador/utilities/services/navigation_services.dart';
 import 'package:enrutador/views/widgets/list_maps_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
@@ -35,7 +36,10 @@ class DialogMapas extends StatelessWidget {
                             child: ListMapsWidget(
                                 mapas: mapas,
                                 latitud: coordenadas.latitude,
-                                longitud: coordenadas.longitude));
+                                longitud: coordenadas.longitude,
+                                launch: (p0) async {
+                                  Navigation.pop();
+                                }));
                       });
             } else if (snapshot.hasError) {
               return Center(

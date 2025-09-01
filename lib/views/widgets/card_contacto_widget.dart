@@ -79,13 +79,9 @@ class CardContactoWidget extends StatelessWidget {
                                       maxLines: 2,
                                       overflow: TextOverflow.ellipsis,
                                       style: TextStyle(fontSize: 15.sp)),
-                                  Wrap(
-                                      runAlignment: WrapAlignment.spaceBetween,
-                                      alignment: WrapAlignment.spaceBetween,
-                                      spacing: 1.w,
-                                      runSpacing: 0,
-                                      crossAxisAlignment:
-                                          WrapCrossAlignment.center,
+                                  Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
                                       children: [
                                         FutureBuilder(
                                             future: TipoController.getItem(
@@ -98,7 +94,12 @@ class CardContactoWidget extends StatelessWidget {
                                             "Estatus: ${contacto.estado ?? "Ø"}",
                                             maxLines: 2,
                                             overflow: TextOverflow.ellipsis,
-                                            style: TextStyle(fontSize: 14.sp)),
+                                            style: TextStyle(fontSize: 14.sp))
+                                      ]),
+                                  Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
                                         Text("Tel: ${contacto.numero ?? "Ø"}",
                                             maxLines: 2,
                                             overflow: TextOverflow.ellipsis,
@@ -113,38 +114,44 @@ class CardContactoWidget extends StatelessWidget {
                           ])),
                       Container(
                           constraints: BoxConstraints(maxWidth: 20.w),
-                          child: OverflowBar(
-                              alignment: MainAxisAlignment.end,
-                              overflowAlignment: OverflowBarAlignment.center,
-                              children: [
-                                if (compartir)
-                                  IconButton.filledTonal(
-                                      iconSize: 20.sp,
-                                      onPressed: () async {
-                                        showToast("Generando archivo...");
-                                        var data = await ShareFun.shareDatas(
-                                            nombre: "contactos",
-                                            datas: [contacto]);
-                                        if (data != null) {
-                                          XFile file = XFile(data.path);
-                                          await ShareFun.share(
-                                              titulo: "Objeto de contacto",
-                                              mensaje:
-                                                  "este archivo contiene datos de un contacto",
-                                              files: [file]);
-                                        }
-                                      },
-                                      icon: Icon(Icons.offline_share,
-                                          color: ThemaMain.green)),
-                                IconButton.filled(
-                                    onPressed: () async => await ShareFun.share(
-                                        titulo: "Comparte este contacto",
-                                        mensaje:
-                                            "${ShareFun.copiar}\n*Plus Code*: ${PlusCode.encode(LatLng(contacto.latitud, contacto.longitud), codeLength: 12)}${contacto.nombreCompleto != null ? "\n*Nombre*: ${contacto.nombreCompleto}" : ""}${contacto.domicilio != null ? "\n*Domicilio*: ${contacto.domicilio}" : ""}${contacto.nota != null ? "\n*Notas*: ${contacto.nota}" : ""}"),
-                                    iconSize: 20.sp,
-                                    icon: Icon(Icons.share,
-                                        color: ThemaMain.white))
-                              ]))
+                          child: (compartir)
+                              ? OverflowBar(
+                                  alignment: MainAxisAlignment.end,
+                                  overflowAlignment:
+                                      OverflowBarAlignment.center,
+                                  children: [
+                                      IconButton.filledTonal(
+                                          iconSize: 20.sp,
+                                          onPressed: () async {
+                                            showToast("Generando archivo...");
+                                            var data =
+                                                (await ShareFun.shareDatas(
+                                                        nombre: "contactos",
+                                                        datas: [contacto]))
+                                                    .firstOrNull;
+                                            if (data != null) {
+                                              XFile file = XFile(data.path);
+                                              await ShareFun.share(
+                                                  titulo: "Objeto de contacto",
+                                                  mensaje:
+                                                      "este archivo contiene datos de un contacto",
+                                                  files: [file]);
+                                            }
+                                          },
+                                          icon: Icon(Icons.offline_share,
+                                              color: ThemaMain.green)),
+                                      IconButton.filled(
+                                          onPressed: () async =>
+                                              await ShareFun.share(
+                                                  titulo:
+                                                      "Comparte este contacto",
+                                                  mensaje:
+                                                      "${ShareFun.copiar}\n*Plus Code*: ${PlusCode.encode(LatLng(contacto.latitud, contacto.longitud), codeLength: 12)}${contacto.nombreCompleto != null ? "\n*Nombre*: ${contacto.nombreCompleto}" : ""}${contacto.domicilio != null ? "\n*Domicilio*: ${contacto.domicilio}" : ""}${contacto.nota != null ? "\n*Notas*: ${contacto.nota}" : ""}"),
+                                          iconSize: 20.sp,
+                                          icon: Icon(Icons.share,
+                                              color: ThemaMain.white))
+                                    ])
+                              : null)
                     ]))));
   }
 }

@@ -11,7 +11,7 @@ import 'package:sizer/sizer.dart';
 import 'theme/theme_color.dart';
 
 class MapFun {
-  static getUri({required MainProvider provider, required String uri}) async {
+  static Future<void> getUri({required MainProvider provider, required String uri}) async {
     var newText = uri.replaceAll("q=", "");
     List<String> datas = newText.split(",");
 

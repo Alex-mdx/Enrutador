@@ -173,6 +173,7 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                                                   provider.contacto!.id!,
                                               buscar: provider.contacto!);
                                           await EnrutarController.insert(data);
+                                          setState(() {});
                                           showToast(
                                               "Contacto ingresado para el enrutamiento");
                                         });
@@ -182,6 +183,25 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                                 },
                                 icon: Icon(LineIcons.route,
                                     color: ThemaMain.green)),
+                          IconButton.filledTonal(
+                              iconSize: 22.sp,
+                              onPressed: () async {
+                                showToast("Generando archivo...");
+                                var data = (await ShareFun.shareDatas(
+                                        nombre: "contactos",
+                                        datas: [provider.contacto]))
+                                    .firstOrNull;
+                                if (data != null) {
+                                  XFile file = XFile(data.path);
+                                  await ShareFun.share(
+                                      titulo: "Objeto de contacto",
+                                      mensaje:
+                                          "este archivo contiene datos de un contacto",
+                                      files: [file]);
+                                }
+                              },
+                              icon: Icon(Icons.offline_share,
+                                  color: ThemaMain.green)),
                           IconButton.filledTonal(
                               iconSize:
                                   provider.contacto?.id == null ? 22.sp : 18.sp,
@@ -287,7 +307,9 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                                                 "Ingresar nombre del contacto")),
                                     label: Text(
                                         "Nombre: ${provider.contacto?.nombreCompleto ?? "Sin nombre"}",
-                                        style: TextStyle(fontSize: 16.sp))),
+                                        style: TextStyle(
+                                            fontSize: 16.sp,
+                                            fontWeight: FontWeight.bold))),
                                 TextButton.icon(
                                     style: ButtonStyle(
                                         padding: WidgetStatePropertyAll(

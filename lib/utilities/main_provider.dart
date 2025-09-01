@@ -14,9 +14,7 @@ class MainProvider with ChangeNotifier implements TickerProvider {
   late AnimatedMapController _animaMap;
   MainProvider() {
     _animaMap = AnimatedMapController(
-        vsync: this,
-        duration: Durations.extralong2,
-        curve: Curves.easeInOut);
+        vsync: this, duration: Durations.extralong2, curve: Curves.easeInOut);
   }
   @override
   Ticker createTicker(TickerCallback onTick) => Ticker(onTick);
@@ -26,7 +24,6 @@ class MainProvider with ChangeNotifier implements TickerProvider {
     animaMap = valor;
     notifyListeners();
   }
-
 
   bool _internet = false;
   bool get internet => _internet;
@@ -42,7 +39,6 @@ class MainProvider with ChangeNotifier implements TickerProvider {
     notifyListeners();
   }
 
-
   TextEditingController _buscar = TextEditingController();
   TextEditingController get buscar => _buscar;
   set buscar(TextEditingController valor) {
@@ -52,7 +48,7 @@ class MainProvider with ChangeNotifier implements TickerProvider {
 
   GlobalKey<SliderDrawerState> _sliderDrawerKey =
       GlobalKey<SliderDrawerState>();
-      GlobalKey<SliderDrawerState> get sliderDrawerKey => _sliderDrawerKey;
+  GlobalKey<SliderDrawerState> get sliderDrawerKey => _sliderDrawerKey;
   set sliderDrawerKey(GlobalKey<SliderDrawerState> valor) {
     _sliderDrawerKey = valor;
     notifyListeners();
@@ -114,9 +110,30 @@ class MainProvider with ChangeNotifier implements TickerProvider {
     notifyListeners();
   }
 
+  bool _cargaDatos = false;
+  bool get cargaDatos => _cargaDatos;
+  set cargaDatos(bool valor) {
+    _cargaDatos = valor;
+    notifyListeners();
+  }
+
+  int _cargaLenght = 0;
+  int get cargaLenght => _cargaLenght;
+  set cargaLenght(int valor) {
+    _cargaLenght = valor;
+    notifyListeners();
+  }
+
+  int _cargaProgress = 0;
+  int get cargaProgress => _cargaProgress;
+  set cargaProgress(int valor) {
+    _cargaProgress = valor;
+    notifyListeners();
+  }
+
   //?Funciones
 
   logeo() async {
-tipos = await TipoController.getItems();
+    tipos = await TipoController.getItems();
   }
 }

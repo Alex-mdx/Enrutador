@@ -60,7 +60,7 @@ class MainActivity: FlutterActivity() {
         Log.d("MainActivity", "📊 Tamaño del archivo: ${fileSize / (1024 * 1024)} MB")
         
         // Estrategia según el tamaño del archivo
-        return if (fileSize < 2 * 1024 * 1024) { // Menos de 2MB
+        return if (fileSize < 25 * 1024 * 1024) { // Menos de 2MB
             readContentDirectly(uriString)
         } else { // Más de 2MB, usar archivo temporal
             // Para archivos grandes, devolver el path del archivo temporal como string

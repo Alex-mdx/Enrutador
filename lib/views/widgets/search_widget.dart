@@ -17,118 +17,100 @@ class SearchWidget extends StatefulWidget {
 }
 
 class _SearchWidgetState extends State<SearchWidget> {
-  bool press = false;
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<MainProvider>(context);
+    FocusNode foc = FocusNode();
     return Padding(
-        padding: EdgeInsets.all(10.sp),
+        padding: EdgeInsets.symmetric(horizontal: 1.w, vertical: .5.h),
         child: Column(children: [
-          AnimatedContainer(
+          Container(
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(borderRadius),
                   boxShadow: [
                     BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
+                        color: Colors.black.withAlpha(20),
                         blurRadius: 5,
                         offset: Offset(4, 4))
                   ]),
-              width: press ? 95.w : 28.sp,
-              duration: Durations.medium3,
-              child: press
-                  ? Column(children: [
-                      TextFormField(
-                          controller: provider.buscar,
-                          onChanged: (value) => setState(() {
-                                provider.buscar.text = value;
-                              }),
-                          style: TextStyle(fontSize: 18.sp),
-                          decoration: InputDecoration(
-                              fillColor: ThemaMain.second,
-                              prefixIcon: IconButton(
-                                  iconSize: 20.sp,
-                                  onPressed: () {
-                                    setState(() {
-                                      press = !press;
-                                    });
-                                    if (!press) {
-                                      provider.buscar.clear();
-                                    }
-                                  },
-                                  icon: Icon(Icons.arrow_back,
-                                      color: ThemaMain.red)),
-                              label: Text(
-                                  "Nombre | PlusCode | Telefono(s)${kDebugMode ? " | What3Word" : ""}",
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                      fontStyle: FontStyle.italic,
-                                      fontSize: 16.sp,
-                                      color: ThemaMain.darkGrey)),
-                              suffixIcon: IconButton.filledTonal(
-                                  iconSize: 22.sp,
-                                  onPressed: () {},
-                                  icon: Icon(Icons.youtube_searched_for,
-                                      color: ThemaMain.green)),
-                              contentPadding: EdgeInsets.symmetric(
-                                  horizontal: 2.w, vertical: 1.h))),
-                      if (provider.buscar.text != "")
-                        FutureBuilder(
-                            future: ContactoController.buscar(
-                                provider.buscar.text, 6),
-                            builder: (context, snapshot) {
-                              if (snapshot.hasData) {
-                                return Container(
-                                    constraints:
-                                        BoxConstraints(maxHeight: 40.h),
-                                    child: Scrollbar(
-                                        child: ListView.builder(
-                                            itemCount: snapshot.data!.length,
-                                            shrinkWrap: true,
-                                            padding: EdgeInsets.all(0),
-                                            itemBuilder: (context, index) {
-                                              final contacto =
-                                                  snapshot.data![index];
-                                              return CardContactoWidget(
-                                                  contacto: contacto,
-                                                  funContact: (p0) async {
-                                                    provider.animaMap
-                                                        .centerOnPoint(
-                                                            LatLng(
-                                                                contacto
-                                                                    .latitud,
-                                                                contacto
-                                                                    .longitud),
-                                                            zoom: 18);
-                                                    provider.contacto =
-                                                        await ContactoController
-                                                            .getItem(
-                                                                lat: contacto
-                                                                    .latitud,
-                                                                lng: contacto
-                                                                    .longitud);
-                                                    provider.buscar.clear();
-                                                    press = false;
-                                                    await provider.slide.open();
-                                                  },
-                                                  compartir: false,
-                                                  selectedVisible: false,
-                                                  selected: null,
-                                                  onSelected: (p0) {});
-                                            })));
-                              } else if (snapshot.hasError) {
-                                return Text("${snapshot.error}");
-                              } else {
-                                return LinearProgressIndicator();
+              width: 98.w,
+              child: Column(children: [
+                TextFormField(
+                    focusNode: foc,
+                    controller: provider.buscar,
+                    onChanged: (value) => setState(() {
+                          provider.buscar.text = value;
+                        }),
+                    style: TextStyle(fontSize: 18.sp),
+                    decoration: InputDecoration(
+                        fillColor: ThemaMain.second,
+                        prefixIcon: IconButton(
+                            iconSize: 20.sp,
+                            onPressed: () {
+                              provider.buscar.clear();
+                              if (foc.hasFocus) {
+                                foc.unfocus();
                               }
-                            }),
-                    ])
-                  : IconButton.filled(
-                      iconSize: 24.sp,
-                      onPressed: () => setState(() {
-                            press = !press;
-                          }),
-                      icon: Icon(Icons.search, color: ThemaMain.green))),
+                            },
+                            icon: Icon(Icons.arrow_back, color: ThemaMain.red)),
+                        label: Text(
+                            "Nombre | PlusCode | Telefono${kDebugMode ? " | What3Word" : ""}",
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                                fontStyle: FontStyle.italic,
+                                fontSize: 16.sp,
+                                color: ThemaMain.darkGrey)),
+                        suffixIcon: IconButton.filledTonal(
+                            iconSize: 22.sp,
+                            onPressed: () {},
+                            icon: Icon(Icons.youtube_searched_for,
+                                color: ThemaMain.green)),
+                        contentPadding: EdgeInsets.symmetric(
+                            horizontal: 2.w, vertical: 1.h))),
+                if (provider.buscar.text != "")
+                  FutureBuilder(
+                      future:
+                          ContactoController.buscar(provider.buscar.text, 6),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          return Container(
+                              constraints: BoxConstraints(maxHeight: 45.h),
+                              child: Scrollbar(
+                                  child: ListView.builder(
+                                      itemCount: snapshot.data!.length,
+                                      shrinkWrap: true,
+                                      padding: EdgeInsets.all(0),
+                                      itemBuilder: (context, index) {
+                                        final contacto = snapshot.data![index];
+                                        return CardContactoWidget(
+                                            contacto: contacto,
+                                            funContact: (p0) async {
+                                              provider.animaMap.centerOnPoint(
+                                                  LatLng(contacto.latitud,
+                                                      contacto.longitud),
+                                                  zoom: 18);
+                                              provider.contacto =
+                                                  await ContactoController
+                                                      .getItem(
+                                                          lat: contacto.latitud,
+                                                          lng: contacto
+                                                              .longitud);
+                                              provider.buscar.clear();
+                                              await provider.slide.open();
+                                            },
+                                            compartir: false,
+                                            selectedVisible: false,
+                                            selected: null,
+                                            onSelected: (p0) {});
+                                      })));
+                        } else if (snapshot.hasError) {
+                          return Text("${snapshot.error}");
+                        } else {
+                          return LinearProgressIndicator();
+                        }
+                      })
+              ]))
         ]));
   }
 }

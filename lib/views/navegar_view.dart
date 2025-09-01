@@ -1,6 +1,7 @@
 import 'package:enrutador/utilities/main_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:map_launcher/map_launcher.dart';
+import 'package:oktoast/oktoast.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 
@@ -35,7 +36,8 @@ class NavegarView extends StatelessWidget {
                               child: ListMapsWidget(
                                   mapas: mapas,
                                   latitud: provider.local!.latitude!,
-                                  longitud: provider.local!.longitude!));
+                                  longitud: provider.local!.longitude!,
+                                  launch: (p0) => showToast("Mapa lanzado")));
                         });
               } else if (snapshot.hasError) {
                 return Center(

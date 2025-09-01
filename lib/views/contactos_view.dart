@@ -60,12 +60,14 @@ class _ContactosViewState extends State<ContactosView> {
                                 nombre: null);
                             var archivo = await ShareFun.shareDatas(
                                 nombre: "contactos", datas: all);
-                            if (archivo != null) {
+                            if (archivo.isNotEmpty) {
                               await ShareFun.share(
                                   titulo:
-                                      "Este es un contenido compacto de contactos",
+                                      "Este es un contenido compacto de tipos",
                                   mensaje: "objeto de contactos",
-                                  files: [XFile(archivo.path)]);
+                                  files: archivo
+                                      .map((e) => XFile(e.path))
+                                      .toList());
                             }
                           });
                     },
@@ -78,12 +80,12 @@ class _ContactosViewState extends State<ContactosView> {
                       onPressed: () async {
                         var archivo = await ShareFun.shareDatas(
                             nombre: "contactos", datas: selects);
-                        if (archivo != null) {
+                        if (archivo.isNotEmpty) {
                           await ShareFun.share(
-                              titulo:
-                                  "Este es un contenido compacto de contactos",
+                              titulo: "Este es un contenido compacto de tipos",
                               mensaje: "objeto de contactos",
-                              files: [XFile(archivo.path)]);
+                              files:
+                                  archivo.map((e) => XFile(e.path)).toList());
                         }
                       },
                       child: Text("Enviar (${selects.length})",
@@ -101,7 +103,7 @@ class _ContactosViewState extends State<ContactosView> {
                   decoration: InputDecoration(
                       fillColor: ThemaMain.second,
                       label: Text(
-                          "Nombre | PlusCode | Telefono(s)${kDebugMode ? " | What3Word" : ""}",
+                          "Nombre | PlusCode | Telefono${kDebugMode ? " | What3Word" : ""}",
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(

@@ -19,7 +19,7 @@ class _MapNavigationState extends State<MapNavigation> {
   Widget build(BuildContext context) {
     final provider = Provider.of<MainProvider>(context);
     return Padding(
-        padding: EdgeInsets.only(right: 2.w, bottom: 4.h),
+        padding: EdgeInsets.only(right: 1.w, bottom: 4.h),
         child: Column(spacing: .5.h, mainAxisSize: MainAxisSize.min, children: [
           if (provider.contacto != null)
             IconButton.filled(
@@ -33,7 +33,7 @@ class _MapNavigationState extends State<MapNavigation> {
                     CameraFit camara = CameraFit.bounds(
                         maxZoom: 19,
                         padding: EdgeInsets.symmetric(
-                            horizontal: 10.w, vertical: 10.h),
+                            horizontal: 18.w, vertical: 10.h),
                         bounds: LatLngBounds(
                             LatLng(provider.local?.latitude ?? -1,
                                 provider.local?.longitude ?? -1),
@@ -45,7 +45,7 @@ class _MapNavigationState extends State<MapNavigation> {
                     await provider.animaMap.centerOnPoint(
                         LatLng(provider.contacto!.latitud,
                             provider.contacto!.longitud),
-                        zoom: 17);
+                        zoom: 18);
                   }
                 },
                 icon: Icon(
@@ -56,15 +56,15 @@ class _MapNavigationState extends State<MapNavigation> {
           IconButton.filled(
               iconSize: 23.sp,
               onPressed: () async => await provider.animaMap.animatedZoomIn(
-                  duration: Durations.medium2, cancelPreviousAnimations: true),
+                  duration: Durations.medium3, cancelPreviousAnimations: true),
               icon: Icon(Icons.zoom_in, color: ThemaMain.white)),
           IconButton.filled(
               iconSize: 23.sp,
               onPressed: () async => await provider.animaMap.animatedZoomOut(
-                  duration: Durations.medium2, cancelPreviousAnimations: true),
+                  duration: Durations.medium3, cancelPreviousAnimations: true),
               icon: Icon(Icons.zoom_out, color: ThemaMain.white)),
           IconButton.filled(
-              iconSize: 23.sp,
+              iconSize: 24.sp,
               onPressed: () async {
                 provider.mapSeguir = !provider.mapSeguir;
                 if (provider.mapSeguir) {
@@ -72,7 +72,7 @@ class _MapNavigationState extends State<MapNavigation> {
                   await provider.animaMap.centerOnPoint(
                       LatLng(provider.local!.latitude!,
                           provider.local!.longitude!),
-                      zoom: 17);
+                      zoom: 18);
                 }
               },
               icon: Icon(
