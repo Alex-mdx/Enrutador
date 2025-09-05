@@ -17,10 +17,11 @@ class SearchWidget extends StatefulWidget {
 }
 
 class _SearchWidgetState extends State<SearchWidget> {
+  FocusNode foc = FocusNode();
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<MainProvider>(context);
-    FocusNode foc = FocusNode();
+
     return Padding(
         padding: EdgeInsets.symmetric(horizontal: 1.w, vertical: .5.h),
         child: Column(children: [
@@ -71,7 +72,7 @@ class _SearchWidgetState extends State<SearchWidget> {
                 if (provider.buscar.text != "")
                   FutureBuilder(
                       future:
-                          ContactoController.buscar(provider.buscar.text, 6),
+                          ContactoController.buscar(provider.buscar.text, 10),
                       builder: (context, snapshot) {
                         if (snapshot.hasData) {
                           return Container(

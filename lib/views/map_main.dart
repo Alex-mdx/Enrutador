@@ -1,5 +1,4 @@
 import 'package:enrutador/controllers/contacto_controller.dart';
-import 'package:enrutador/models/contacto_model.dart';
 import 'package:enrutador/utilities/main_provider.dart';
 import 'package:enrutador/utilities/map_fun.dart';
 import 'package:enrutador/utilities/theme/theme_color.dart';
@@ -8,9 +7,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_animations/flutter_map_animations.dart';
 import 'package:flutter_map_compass/flutter_map_compass.dart';
 import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
-import 'package:get/get.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:oktoast/oktoast.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 
@@ -116,87 +113,9 @@ class _ViajeMapPageState extends State<MapMain>
                         alignment: Alignment.center,
                         markers: !snapshot.hasData
                             ? []
-                            : snapshot.data!.map((e) {
-                                var tocable = (provider.contacto?.latitud ==
-                                        e.latitud &&
-                                    provider.contacto?.longitud == e.longitud);
-                                return AnimatedMarker(
-                                    width: tocable ? 24.sp : 22.sp,
-                                    height: tocable ? 24.sp : 22.sp,
-                                    rotate: true,
-                                    point: LatLng(e.latitud, e.longitud),
-                                    builder: (context, animation) => InkWell(
-                                        onLongPress: () async {
-                                          await ContactoController
-                                              .deleteItemByltlng(
-                                                  lat: e.latitud,
-                                                  lng: e.longitud);
-                                          provider.contacto = null;
-                                        },
-                                        onTap: () async {
-                                          try {
-                                            provider.animaMap.centerOnPoint(
-                                                LatLng(e.latitud, e.longitud),
-                                                zoom: 18);
-                                            provider.contacto =
-                                                await ContactoController
-                                                    .getItem(
-                                                        lat: e.latitud,
-                                                        lng: e.longitud);
-                                          } catch (err) {
-                                            debugPrint("$err");
-                                            var reparacion =
-                                                ContactoModelo.fromJson({
-                                              "latitud": e.latitud,
-                                              "longitud": e.longitud,
-                                              "foto": "null",
-                                              "foto_referencia": "null"
-                                            });
-                                            await ContactoController.update(
-                                                reparacion);
-                                            provider.contacto =
-                                                await ContactoController
-                                                    .getItem(
-                                                        lat: e.latitud,
-                                                        lng: e.longitud);
-                                            showToast(
-                                                "No se pudo obtener sus fotos, intente de nuevo");
-                                          }
-                                          await provider.slide.open();
-                                        },
-                                        child: Stack(
-                                            fit: StackFit.expand,
-                                            alignment: Alignment.center,
-                                            children: [
-                                              Image.asset(tocable
-                                                  ? "assets/mark_point2.png"
-                                                  : "assets/mark_point.png"),
-                                              Padding(
-                                                  padding: EdgeInsets.only(
-                                                      bottom:
-                                                          tocable ? 6.sp : 0),
-                                                  child: Icon(
-                                                      provider.tipos
-                                                              .firstWhereOrNull(
-                                                                  (element) =>
-                                                                      element
-                                                                          .id ==
-                                                                      e.tipo)
-                                                              ?.icon ??
-                                                          Icons.person,
-                                                      size: tocable
-                                                          ? 22.sp
-                                                          : 20.sp,
-                                                      color: provider.tipos
-                                                              .firstWhereOrNull(
-                                                                  (element) =>
-                                                                      element
-                                                                          .id ==
-                                                                      e.tipo)
-                                                              ?.color ??
-                                                          ThemaMain.primary))
-                                            ])));
-                              }).toList())),
+                            : snapshot.data!
+                                .map((e) => MapFun.marcadores(provider, e))
+                                .toList())),
                 AnimatedMarkerLayer(
                     alignment: Alignment.center, markers: [...provider.marker]),
                 MapCompass.cupertino(

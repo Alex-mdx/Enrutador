@@ -1,6 +1,8 @@
 import 'package:intl/intl.dart';
 import 'dart:math' as math;
 
+import 'package:open_location_code/open_location_code.dart';
+
 class Textos {
   static String conversionDiaNombre(DateTime fecha, DateTime now) {
     var newNow = YMDFecha(now);
@@ -31,6 +33,7 @@ class Textos {
     }
     return tipo;
   }
+
   static String normalizar(String text) {
     // Reemplaza los acentos y caracteres especiales
     text = text.replaceAll(RegExp(r'[áàäâã]'), 'a');
@@ -81,7 +84,8 @@ class Textos {
   }
 
   static DateTime YMDFecha(DateTime? fecha) {
-    var mConvertida = fecha == null ? "Sin fecha" : DateFormat('yyyy-MM-dd').format(fecha);
+    var mConvertida =
+        fecha == null ? "Sin fecha" : DateFormat('yyyy-MM-dd').format(fecha);
     return DateTime.parse(mConvertida);
   }
 
@@ -120,6 +124,12 @@ class Textos {
     return !regex.hasMatch(texto);
   }
 
+  static String psCODE(double latitud, double longitud) {
+    final pscode =
+        PlusCode.encode(LatLng(latitud, longitud), codeLength: 11).toString();
+    return pscode;
+  }
+
   static String randomWord(int? number) {
     final random = math.Random();
     const caracteres =
@@ -131,6 +141,4 @@ class Textos {
     }
     return cadenaAleatoria;
   }
-
-  
 }

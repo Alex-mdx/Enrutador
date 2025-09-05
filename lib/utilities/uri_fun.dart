@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 import 'package:enrutador/controllers/contacto_controller.dart';
 import 'package:enrutador/controllers/tipo_controller.dart';
 import 'package:enrutador/models/contacto_model.dart';

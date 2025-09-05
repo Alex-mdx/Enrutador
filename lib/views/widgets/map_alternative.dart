@@ -24,39 +24,37 @@ class _MapAlternativeState extends State<MapAlternative> {
     return Padding(
         padding: EdgeInsets.only(left: 2.w, bottom: 4.h),
         child: Column(spacing: .5.h, mainAxisSize: MainAxisSize.min, children: [
-          FutureBuilder(
-              future: EnrutarController.getItems(),
-              builder: (context, data) {
-                if (data.hasData && (data.data?.isNotEmpty ?? false)) {
-                  return bd.Badge(
-                      badgeStyle: bd.BadgeStyle(badgeColor: ThemaMain.primary),
-                      badgeContent: Text("${data.data?.length ?? 0}",
-                          style: TextStyle(
-                              color: ThemaMain.second,
-                              fontSize: 14.sp,
-                              fontWeight: FontWeight.bold)),
-                      child: InkWell(onTap: () => showDialog(context: context, builder: (context) => DialogEnrutamiento()),
-                        child: Container(
-                            decoration: BoxDecoration(
-                                color: ThemaMain.dialogbackground,
-                                borderRadius:
-                                    BorderRadius.circular(borderRadius)),
-                            child: Padding(
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 2.w, vertical: .2.h),
-                                child: Column(children: [
-                                  Icon(LineIcons.route,
-                                      color: ThemaMain.green, size: 25.sp),
-                                  Text("Enrutar",
-                                      style: TextStyle(
-                                          fontSize: 15.sp,
-                                          fontWeight: FontWeight.bold))
-                                ])))
-                      ));
-                } else {
-                  return Text("");
-                }
-              }),
+          bd.Badge(
+              badgeStyle: bd.BadgeStyle(badgeColor: ThemaMain.primary),
+              badgeContent: FutureBuilder(
+                  future: EnrutarController.getItems(),
+                  builder: (context, data) {
+                    return Text("${data.data?.length ?? 0}",
+                        style: TextStyle(
+                            color: ThemaMain.second,
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.bold));
+                  }),
+              child: InkWell(
+                  onTap: () => showDialog(
+                      context: context,
+                      builder: (context) =>
+                          DialogEnrutamiento(provider: provider)),
+                  child: Container(
+                      decoration: BoxDecoration(
+                          color: ThemaMain.dialogbackground,
+                          borderRadius: BorderRadius.circular(borderRadius)),
+                      child: Padding(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 2.w, vertical: .2.h),
+                          child: Column(children: [
+                            Icon(LineIcons.route,
+                                color: ThemaMain.green, size: 25.sp),
+                            Text("Enrutar",
+                                style: TextStyle(
+                                    fontSize: 15.sp,
+                                    fontWeight: FontWeight.bold))
+                          ]))))),
           IconButton.filledTonal(
               iconSize: 26.sp,
               onPressed: () async {

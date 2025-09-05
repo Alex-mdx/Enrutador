@@ -27,18 +27,17 @@ class ShareFun {
     List<dynamic> json = [];
     for (var i = 0; i < datas.length; i++) {
       json.add(datas[i]);
-
-      var paginado = int.tryParse((i / chunck).toString());
+      var paginado = i == 0 ? false : ((i / chunck) % 1) == 0;
       final DateTime ahora = DateTime.now();
       debugPrint("$paginado");
-      if (paginado != null) {
+      if (paginado) {
         final Map<String, dynamic> jsonMap = {
           nombre: json.map((e) => e.toJson()).toList()
         };
         final String jsonString = jsonEncode(jsonMap);
         final Directory tempDir = await getTemporaryDirectory();
         final String filePath =
-            '${tempDir.path}/${nombre}_${Textos.fechaYMD(fecha: ahora)}_${Textos.fechaHMS(fecha: ahora)}_${paginado}_${(datas.length / chunck).ceil()}.json';
+            '${tempDir.path}/${nombre}_${Textos.fechaYMD(fecha: ahora)}_${Textos.fechaHMS(fecha: ahora)}_${(i / chunck).toInt()}_${(datas.length / chunck).ceil()}.json';
         await _ensureDirectoryExists(tempDir.path);
         final File file = File(filePath);
         await file.writeAsString(jsonString);

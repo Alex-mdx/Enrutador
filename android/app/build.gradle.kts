@@ -13,7 +13,7 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
-        isCoreLibraryDesugaringEnabled = true  // Opcional (para APIs modernas en Android < 8.0)
+        isCoreLibraryDesugaringEnabled = true 
     }
 
     kotlinOptions {
@@ -25,7 +25,7 @@ android {
         minSdk = 24
         targetSdk = 36
         versionCode = 1
-        versionName = "0.0.1"
+        versionName = "1.0.1"
          manifestPlaceholders.apply {
             put("appAuthRedirectScheme", "com.example.enrutador")
         }

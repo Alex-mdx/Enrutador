@@ -1,6 +1,8 @@
 import 'package:enrutador/models/contacto_model.dart';
 import 'package:sqflite/sqflite.dart' as sql;
 
+import '../utilities/textos.dart';
+
 String nombreDB = "contacto";
 
 class ContactoController {
@@ -66,6 +68,30 @@ class ContactoController {
     return modelo == null ? null : ContactoModelo.fromJson(modelo);
   }
 
+  static Future<List<ContactoModelo>> getItembyAgenda(
+      {required DateTime now}) async {
+    final db = await database();
+    final modelo = (await db.query(nombreDB,
+        where: "agendar = ?",
+        whereArgs: [Textos.fechaYMD(fecha: now)],
+        columns: [
+          "id",
+          "latitud",
+          "longitud",
+          "agendar",
+          "contacto_enlances",
+          "tipo",
+          "estado",
+          "nombre_completo"
+        ],
+        orderBy: "id DESC"));
+    List<ContactoModelo> model = [];
+    for (var element in modelo) {
+      model.add(ContactoModelo.fromJson(element));
+    }
+    return model;
+  }
+
   static Future<List<ContactoModelo>> getItems() async {
     final db = await database();
     final modelo = (await db.query(nombreDB, columns: [
@@ -86,12 +112,12 @@ class ContactoController {
       {required String? nombre}) async {
     final db = await database();
     final modelo = (await db.query(nombreDB,
-        where: nombre == "" || nombre == null 
+        where: nombre == "" || nombre == null
             ? null
             : "nombre_completo LIKE ? OR numero LIKE ? OR otro_numero LIKE ?",
-        whereArgs:
-            nombre == "" || nombre == null 
-            ? null : ['%$nombre%', '%$nombre%', '%$nombre%'],
+        whereArgs: nombre == "" || nombre == null
+            ? null
+            : ['%$nombre%', '%$nombre%', '%$nombre%'],
         orderBy: "nombre_completo ASC",
         limit: 250));
     List<ContactoModelo> model = [];

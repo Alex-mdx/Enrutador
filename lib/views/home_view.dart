@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:enrutador/utilities/main_provider.dart';
 import 'package:enrutador/utilities/services/navigation_services.dart';
 import 'package:enrutador/utilities/theme/theme_color.dart';
@@ -18,8 +17,6 @@ import 'package:oktoast/oktoast.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 import 'package:app_links/app_links.dart';
-
-import '../controllers/contacto_controller.dart';
 import '../utilities/map_fun.dart';
 import '../utilities/uri_fun.dart';
 import 'widgets/map_alternative.dart';
@@ -165,7 +162,7 @@ class _HomeViewState extends State<HomeView> {
                       if (kDebugMode)
                         IconButton(
                             onPressed: () async {
-                              await ContactoController.getItems();
+                              
                             },
                             icon: Icon(Icons.abc))
                     ],
@@ -224,7 +221,7 @@ class PaginadoState extends State<Paginado> {
   }
 
   void _handleString(String url) {
-    UriFun.readContentUriSafe(url,widget.provider);
+    UriFun.readContentUriSafe(url, widget.provider);
   }
 
   void _handleUri(Uri uri) {
