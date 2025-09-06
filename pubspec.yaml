@@ -34,7 +34,6 @@ dependencies:
   intl: 0.20.2
   latlong2: ^0.9.1
   line_icons: ^2.0.3
-  json_stream: ^1.0.1
   location: ^8.0.1
   map_launcher: ^4.0.0
   oktoast: ^3.4.0
@@ -53,6 +52,7 @@ dependencies:
   sizer: ^3.0.4
   sliding_up_panel: ^2.0.0+1
   sqflite: ^2.3.3+1
+  substring_highlight: ^1.0.33
   url_launcher: ^6.3.2
   what3words: ^3.2.0
   whatsapp_unilink: ^2.1.0

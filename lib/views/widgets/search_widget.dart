@@ -5,6 +5,7 @@ import 'package:enrutador/utilities/theme/theme_color.dart';
 import 'package:enrutador/views/widgets/card_contacto_widget.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:line_icons/line_icons.dart';
 import 'package:open_location_code/open_location_code.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
@@ -69,6 +70,54 @@ class _SearchWidgetState extends State<SearchWidget> {
                                 color: ThemaMain.green)),
                         contentPadding: EdgeInsets.symmetric(
                             horizontal: 2.w, vertical: 1.h))),
+                SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(spacing: .5.w, children: [
+                      ChoiceChip(
+                          showCheckmark: false,
+                          avatar: Icon(LineIcons.calendarWithDayFocus,
+                              size: 18.sp, color: ThemaMain.green),
+                          padding: EdgeInsets.all(0),
+                          selectedColor: ThemaMain.dialogbackground,
+                          selected: false,
+                          label: Text("Agendado",
+                              style: TextStyle(
+                                  fontSize: 14.sp,
+                                  fontWeight: FontWeight.bold))),
+                      ChoiceChip(
+                          showCheckmark: false,
+                          avatar: Icon(Icons.type_specimen,
+                              size: 18.sp, color: ThemaMain.primary),
+                          padding: EdgeInsets.all(0),
+                          selectedColor: ThemaMain.dialogbackground,
+                          selected: false,
+                          label: Text("Tipo",
+                              style: TextStyle(
+                                  fontSize: 14.sp,
+                                  fontWeight: FontWeight.bold))),
+                      ChoiceChip(
+                          showCheckmark: false,
+                          avatar: Icon(Icons.contact_emergency,
+                              size: 18.sp, color: ThemaMain.darkBlue),
+                          padding: EdgeInsets.all(0),
+                          selectedColor: ThemaMain.dialogbackground,
+                          selected: false,
+                          label: Text("Estatus",
+                              style: TextStyle(
+                                  fontSize: 14.sp,
+                                  fontWeight: FontWeight.bold))),
+                      ChoiceChip(
+                          showCheckmark: false,
+                          avatar: Icon(LineIcons.mapMarked,
+                              size: 18.sp, color: ThemaMain.pink),
+                          padding: EdgeInsets.all(0),
+                          selectedColor: ThemaMain.dialogbackground,
+                          selected: false,
+                          label: Text("Zona",
+                              style: TextStyle(
+                                  fontSize: 14.sp,
+                                  fontWeight: FontWeight.bold)))
+                    ])),
                 if (provider.buscar.text != "")
                   FutureBuilder(
                       future:
@@ -76,7 +125,7 @@ class _SearchWidgetState extends State<SearchWidget> {
                       builder: (context, snapshot) {
                         if (snapshot.hasData) {
                           return Container(
-                              constraints: BoxConstraints(maxHeight: 45.h),
+                              constraints: BoxConstraints(maxHeight: 40.h),
                               child: Scrollbar(
                                   child: ListView.builder(
                                       itemCount: snapshot.data!.length,
@@ -85,6 +134,7 @@ class _SearchWidgetState extends State<SearchWidget> {
                                       itemBuilder: (context, index) {
                                         final contacto = snapshot.data![index];
                                         return CardContactoWidget(
+                                            entrada: provider.buscar.text,
                                             contacto: contacto,
                                             funContact: (p0) async {
                                               provider.animaMap.centerOnPoint(

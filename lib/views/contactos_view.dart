@@ -135,7 +135,7 @@ class _ContactosViewState extends State<ContactosView> {
                                     (element) =>
                                         element.latitud == contacto.latitud &&
                                         element.longitud == contacto.longitud);
-                                return CardContactoWidget(
+                                return CardContactoWidget(entrada: buscador.text,
                                     contacto: contacto,
                                     funContact: (p0) {},
                                     onSelected: (p0) => setState(() {

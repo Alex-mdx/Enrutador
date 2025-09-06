@@ -119,7 +119,7 @@ class _ViajeMapPageState extends State<MapMain>
                 AnimatedMarkerLayer(
                     alignment: Alignment.center, markers: [...provider.marker]),
                 MapCompass.cupertino(
-                    padding: EdgeInsets.only(top: 7.h, right: 4.w),
+                    padding: EdgeInsets.only(top: 12.h, right: 4.w),
                     hideIfRotatedNorth: false)
               ]);
   }

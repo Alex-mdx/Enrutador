@@ -109,10 +109,10 @@ packages:
     dependency: transitive
     description:
       name: camera_avfoundation
-      sha256: e4aca5bccaf897b70cac87e5fdd789393310985202442837922fd40325e2733b
+      sha256: "951ef122d01ebba68b7a54bfe294e8b25585635a90465c311b2f875ae72c412f"
       url: "https://pub.dev"
     source: hosted
-    version: "0.9.21+1"
+    version: "0.9.21+2"
   camera_platform_interface:
     dependency: transitive
     description:
@@ -661,14 +661,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.9.0"
-  json_stream:
-    dependency: "direct main"
-    description:
-      name: json_stream
-      sha256: "55123ce69c0e1f937e6160bbcea6d9d394b11e240fc829a57f51017d794c6aac"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.1"
   latlong2:
     dependency: "direct main"
     description:
@@ -769,10 +761,10 @@ packages:
     dependency: "direct main"
     description:
       name: map_launcher
-      sha256: "7f69f0ac7559f46e75b70b75c0de9b0fcb4bef46ff28dc5756e3ed568b2a13ec"
+      sha256: "39af937533f3d9af306357c28546ded909a0f81c76097e118724df4d0713d2f2"
       url: "https://pub.dev"
     source: hosted
-    version: "4.4.1"
+    version: "4.4.2"
   matcher:
     dependency: transitive
     description:
@@ -1065,10 +1057,10 @@ packages:
     dependency: "direct main"
     description:
       name: pro_image_editor
-      sha256: d8fee819a7855fd3f36259d04825e3e20ac658b57c1814e65afd5f9d8b58d80d
+      sha256: "3d68b8d315337b225c00926c8c141f6173ae7fb85b0254a086aecab97d70ed3a"
       url: "https://pub.dev"
     source: hosted
-    version: "11.5.4"
+    version: "11.5.6"
   proj4dart:
     dependency: transitive
     description:
@@ -1089,10 +1081,10 @@ packages:
     dependency: transitive
     description:
       name: qs_dart
-      sha256: "9e387b31487173a6266e96d7015201d92b21b75dda038332e5ad26ad95fe493e"
+      sha256: "23e435223d985630e3880fd667128f520237059ca3af0cc2dc029d5365ce9ec1"
       url: "https://pub.dev"
     source: hosted
-    version: "1.5.5"
+    version: "1.5.6"
   rxdart:
     dependency: transitive
     description:
@@ -1282,6 +1274,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.4.1"
+  substring_highlight:
+    dependency: "direct main"
+    description:
+      name: substring_highlight
+      sha256: "96c61e8316098831f6bee87d2386617e4be6aaf87fbc89402dc049d371b67efb"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.33"
   synchronized:
     dependency: transitive
     description:

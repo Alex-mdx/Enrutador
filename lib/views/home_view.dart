@@ -147,7 +147,7 @@ class _HomeViewState extends State<HomeView> {
                                           fontWeight: FontWeight.bold)),
                                   Icon(Icons.perm_phone_msg,
                                       size: 20.sp, color: ThemaMain.pink)
-                                ]))),
+                                ])))
                   )
                 ])),
             child: Scaffold(
