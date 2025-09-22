@@ -7,6 +7,7 @@ import 'package:enrutador/utilities/services/dialog_services.dart';
 import 'package:enrutador/utilities/services/navigation_services.dart';
 import 'package:enrutador/views/dialogs/dialog_compartir.dart';
 import 'package:enrutador/views/dialogs/dialog_mapas.dart';
+import 'package:enrutador/views/dialogs/dialog_ubicacion.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:line_icons/line_icons.dart';
@@ -15,6 +16,7 @@ import 'package:oktoast/oktoast.dart';
 import 'package:open_location_code/open_location_code.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
+import 'package:widgets_to_image/widgets_to_image.dart';
 import '../../../models/contacto_model.dart';
 import '../../../utilities/map_fun.dart';
 import '../../../utilities/textos.dart';
@@ -40,6 +42,8 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
       await EnrutarController.update(newEnrutar);
     }
   }
+
+  WidgetsToImageController controller = WidgetsToImageController();
 
   @override
   Widget build(BuildContext context) {
@@ -70,6 +74,29 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                         LinearProgressIndicator(color: ThemaMain.red),*/
                       Row(children: [
                         TextButton.icon(
+                            onLongPress: () => showDialog(
+                                context: context,
+                                builder: (context) =>
+                                    DialogUbicacion(funLat: (lat) async {
+                                      var temp = provider.contacto!.copyWith(
+                                          latitud: double.parse(lat?.latitude
+                                                  .toStringAsFixed(6) ??
+                                              "0"),
+                                          longitud: double.parse(lat?.longitude
+                                                  .toStringAsFixed(6) ??
+                                              "0"));
+                                      Navigation.pop();
+                                      await ContactoController.update(temp);
+                                      provider.contacto =
+                                          await ContactoController.getItem(
+                                              lat: temp.latitud,
+                                              lng: temp.longitud);
+                                      provider.animaMap.centerOnPoint(
+                                          LatLng(
+                                              provider.contacto?.latitud ?? 0,
+                                              provider.contacto?.longitud ?? 0),
+                                          zoom: 18);
+                                    })),
                             icon: Icon(LineIcons.mapMarked,
                                 size: 22.sp, color: ThemaMain.primary),
                             style: ButtonStyle(
@@ -104,7 +131,7 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                         children: [
                           IconButton.filledTonal(
                               iconSize: 22.sp,
-                              onPressed: () async => showDialog(
+                              onPressed: () async => await showDialog(
                                   context: context,
                                   builder: (context) => DialogCompartir(
                                       contacto: provider.contacto!)),
@@ -129,7 +156,9 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                                           coords: Coords(
                                               provider.contacto!.latitud,
                                               provider.contacto!.longitud),
-                                          title: provider.contacto?.nombreCompleto ??"Ubicacion Seleccionada");
+                                          title: provider
+                                                  .contacto?.nombreCompleto ??
+                                              "Ubicacion Seleccionada");
                                 } else {
                                   showDialog(
                                       context: context,
@@ -176,60 +205,60 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                                           icon: Icon(LineIcons.route,
                                               color: ThemaMain.green));
                                 }),
-                          ElevatedButton.icon(
-                              style: ButtonStyle(
-                                  elevation: WidgetStatePropertyAll(2),
-                                  padding: WidgetStatePropertyAll(
-                                      EdgeInsets.symmetric(
-                                          horizontal: .5.w, vertical: 0))),
-                              onPressed: () => showDialog(
-                                  context: context,
-                                  builder: (context) => Dialog(
-                                      child: CalendarDatePicker(
-                                          initialCalendarMode:
-                                              DatePickerMode.day,
-                                          initialDate:
-                                              provider.contacto?.agendar ??
-                                                  DateTime.now(),
-                                          firstDate: DateTime.now(),
-                                          lastDate: DateTime.now()
-                                              .add(Duration(days: 365 * 6)),
-                                          onDateChanged: (time) =>
-                                              Dialogs.showMorph(
-                                                  title: "Seleccionar fecha",
-                                                  description:
-                                                      "¿Esta seguro de seleccionar dicha fecha para visitar?",
-                                                  loadingTitle: "Guardando",
-                                                  onAcceptPressed:
-                                                      (context) async {
-                                                    var newModel = provider
-                                                        .contacto
-                                                        ?.copyWith(
-                                                            agendar: time);
-                                                    await ContactoController
-                                                        .update(newModel!);
-                                                    funcion(contacto: newModel);
-                                                    provider.contacto =
-                                                        newModel;
-                                                    Navigation.pop();
-                                                  })))),
-                              label: Text(
-                                  provider.contacto?.agendar == null
-                                      ? "Agendar visita"
-                                      : "Visita ${Textos.conversionDiaNombre(provider.contacto!.agendar!, DateTime.now())}",
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                      fontSize: 14.sp,
-                                      fontWeight:
-                                          provider.contacto?.agendar == null
-                                              ? FontWeight.normal
-                                              : FontWeight.bold)),
-                              icon: provider.contacto?.agendar == null
-                                  ? Icon(LineIcons.calendarWithDayFocus,
-                                      size: 20.sp)
-                                  : null),
+                          if (provider.contacto?.id != null)
+                            ElevatedButton.icon(
+                                style: ButtonStyle(
+                                    elevation: WidgetStatePropertyAll(2),
+                                    padding: WidgetStatePropertyAll(
+                                        EdgeInsets.symmetric(
+                                            horizontal: .5.w, vertical: 0))),
+                                onPressed: () => showDialog(
+                                    context: context,
+                                    builder: (context) => Dialog(
+                                        child: CalendarDatePicker(
+                                            initialCalendarMode:
+                                                DatePickerMode.day,
+                                            initialDate: provider.contacto?.agendar ??
+                                                DateTime.now(),
+                                            firstDate: DateTime.now(),
+                                            lastDate: DateTime.now()
+                                                .add(Duration(days: 365 * 6)),
+                                            onDateChanged: (time) =>
+                                                Dialogs.showMorph(
+                                                    title: "Seleccionar fecha",
+                                                    description:
+                                                        "¿Esta seguro de seleccionar dicha fecha para visitar?",
+                                                    loadingTitle: "Guardando",
+                                                    onAcceptPressed:
+                                                        (context) async {
+                                                      var newModel = provider
+                                                          .contacto
+                                                          ?.copyWith(
+                                                              agendar: time);
+                                                      await ContactoController
+                                                          .update(newModel!);
+                                                      funcion(
+                                                          contacto: newModel);
+                                                      provider.contacto =
+                                                          newModel;
+                                                      Navigation.pop();
+                                                    })))),
+                                label: Text(
+                                    provider.contacto?.agendar == null
+                                        ? "Agendar visita"
+                                        : "Visita ${Textos.conversionDiaNombre(provider.contacto!.agendar!, DateTime.now())}",
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        fontSize: 14.sp,
+                                        fontWeight:
+                                            provider.contacto?.agendar == null
+                                                ? FontWeight.normal
+                                                : FontWeight.bold)),
+                                icon: provider.contacto?.agendar == null
+                                    ? Icon(LineIcons.calendarWithDayFocus, size: 20.sp)
+                                    : null),
                           IconButton.filledTonal(
                               iconSize:
                                   provider.contacto?.id == null ? 22.sp : 18.sp,
@@ -283,7 +312,7 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                                           color: ThemaMain.red))
                         ])))
           ]),
-          TarjetaContactoDetalle(compartir: false)
+          TarjetaContactoDetalle(contacto: provider.contacto, compartir: false)
         ]));
   }
 }

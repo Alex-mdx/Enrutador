@@ -1,4 +1,5 @@
 import 'package:enrutador/models/contacto_model.dart';
+import 'package:enrutador/utilities/preferences.dart';
 import 'package:sqflite/sqflite.dart' as sql;
 
 import '../utilities/textos.dart';
@@ -51,8 +52,8 @@ class ContactoController {
   static Future<void> update(ContactoModelo data) async {
     final db = await database();
     await db.update(nombreDB, data.toJson(),
-        where: "latitud = ? AND longitud = ?",
-        whereArgs: [data.latitud, data.longitud],
+        where: "(latitud = ? AND longitud = ?) OR id = ?",
+        whereArgs: [data.latitud, data.longitud, data.id],
         conflictAlgorithm: sql.ConflictAlgorithm.replace);
   }
 
@@ -63,6 +64,15 @@ class ContactoController {
             where: "latitud = ? AND longitud = ?",
             whereArgs: [lat, lng],
             orderBy: "id DESC"))
+        .firstOrNull;
+
+    return modelo == null ? null : ContactoModelo.fromJson(modelo);
+  }
+
+  static Future<ContactoModelo?> getItemId({required int id}) async {
+    final db = await database();
+    final modelo = (await db.query(nombreDB,
+            where: "id = ?", whereArgs: [id], orderBy: "id DESC"))
         .firstOrNull;
 
     return modelo == null ? null : ContactoModelo.fromJson(modelo);
@@ -105,7 +115,20 @@ class ContactoController {
     for (var element in modelo) {
       model.add(ContactoModelo.fromJson(element));
     }
-    return model;
+    var newModelfiltro1 = Preferences.tipos.isEmpty
+        ? model
+        : model
+            .where((element) =>
+                Preferences.tipos.contains(element.tipo.toString()))
+            .toList();
+    var newModelfiltro2 = Preferences.status.isEmpty
+        ? newModelfiltro1
+        : newModelfiltro1
+            .where((element) =>
+                Preferences.status.contains(element.estado.toString()))
+            .toList();
+
+    return newModelfiltro2;
   }
 
   static Future<List<ContactoModelo>> getItemsAll(

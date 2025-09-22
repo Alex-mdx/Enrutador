@@ -18,4 +18,13 @@ class Preferences {
   
   static bool get version => _preferences?.getBool('version') ?? true;
   static set version(bool value) => _preferences?.setBool('version', value);
+
+  static List<String> get tipos => _preferences?.getStringList('tipos') ?? [];
+  static set tipos(List<String> value) => _preferences?.setStringList('tipos', value);
+
+  static List<String> get status => _preferences?.getStringList('status') ?? [];
+  static set status(List<String> value) => _preferences?.setStringList('status', value);
+
+  static List<String> get zonas => _preferences?.getStringList('zonas') ?? [];
+  static set zonas(List<String> value) => _preferences?.setStringList('zonas', value);
 }

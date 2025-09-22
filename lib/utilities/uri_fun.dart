@@ -69,8 +69,10 @@ class UriFun {
               var datamodel = await ContactoController.getItem(
                   lat: model.latitud, lng: model.longitud);
               if (datamodel != null) {
+                debugPrint("actualizar");
                 await ContactoController.update(datamodel);
               } else {
+                debugPrint("nuevo");
                 await ContactoController.insert(model);
               }
             

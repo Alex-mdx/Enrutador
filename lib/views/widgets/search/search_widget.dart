@@ -1,14 +1,18 @@
+import 'dart:developer';
+
 import 'package:enrutador/controllers/contacto_controller.dart';
 import 'package:enrutador/utilities/main_provider.dart';
+import 'package:enrutador/utilities/map_fun.dart';
 import 'package:enrutador/utilities/theme/theme_app.dart';
 import 'package:enrutador/utilities/theme/theme_color.dart';
 import 'package:enrutador/views/widgets/card_contacto_widget.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:line_icons/line_icons.dart';
 import 'package:open_location_code/open_location_code.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
+
+import 'row_filtro.dart';
 
 class SearchWidget extends StatefulWidget {
   const SearchWidget({super.key});
@@ -25,7 +29,7 @@ class _SearchWidgetState extends State<SearchWidget> {
 
     return Padding(
         padding: EdgeInsets.symmetric(horizontal: 1.w, vertical: .5.h),
-        child: Column(children: [
+        child: Column(spacing: 0, children: [
           Container(
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(borderRadius),
@@ -65,59 +69,27 @@ class _SearchWidgetState extends State<SearchWidget> {
                                 color: ThemaMain.darkGrey)),
                         suffixIcon: IconButton.filledTonal(
                             iconSize: 22.sp,
-                            onPressed: () {},
+                            onPressed: () async {
+                              try {
+                                var ps = PlusCode(provider.buscar.text);
+                                var decode = ps.decode();
+                                var coordenadas = LatLng(
+                                    decode.southWest.latitude,
+                                    decode.southWest.longitude);
+                                log("${coordenadas.toJson()}");
+                                await MapFun.sendInitUri(
+                                    provider: provider,
+                                    lat: coordenadas.latitude,
+                                    lng: coordenadas.longitude);
+                              } catch (e) {
+                                debugPrint("error: $e");
+                              }
+                            },
                             icon: Icon(Icons.youtube_searched_for,
                                 color: ThemaMain.green)),
                         contentPadding: EdgeInsets.symmetric(
                             horizontal: 2.w, vertical: 1.h))),
-                SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(spacing: .5.w, children: [
-                      ChoiceChip(
-                          showCheckmark: false,
-                          avatar: Icon(LineIcons.calendarWithDayFocus,
-                              size: 18.sp, color: ThemaMain.green),
-                          padding: EdgeInsets.all(0),
-                          selectedColor: ThemaMain.dialogbackground,
-                          selected: false,
-                          label: Text("Agendado",
-                              style: TextStyle(
-                                  fontSize: 14.sp,
-                                  fontWeight: FontWeight.bold))),
-                      ChoiceChip(
-                          showCheckmark: false,
-                          avatar: Icon(Icons.type_specimen,
-                              size: 18.sp, color: ThemaMain.primary),
-                          padding: EdgeInsets.all(0),
-                          selectedColor: ThemaMain.dialogbackground,
-                          selected: false,
-                          label: Text("Tipo",
-                              style: TextStyle(
-                                  fontSize: 14.sp,
-                                  fontWeight: FontWeight.bold))),
-                      ChoiceChip(
-                          showCheckmark: false,
-                          avatar: Icon(Icons.contact_emergency,
-                              size: 18.sp, color: ThemaMain.darkBlue),
-                          padding: EdgeInsets.all(0),
-                          selectedColor: ThemaMain.dialogbackground,
-                          selected: false,
-                          label: Text("Estatus",
-                              style: TextStyle(
-                                  fontSize: 14.sp,
-                                  fontWeight: FontWeight.bold))),
-                      ChoiceChip(
-                          showCheckmark: false,
-                          avatar: Icon(LineIcons.mapMarked,
-                              size: 18.sp, color: ThemaMain.pink),
-                          padding: EdgeInsets.all(0),
-                          selectedColor: ThemaMain.dialogbackground,
-                          selected: false,
-                          label: Text("Zona",
-                              style: TextStyle(
-                                  fontSize: 14.sp,
-                                  fontWeight: FontWeight.bold)))
-                    ])),
+                RowFiltro(),
                 if (provider.buscar.text != "")
                   FutureBuilder(
                       future:

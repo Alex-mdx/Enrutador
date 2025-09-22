@@ -3,9 +3,9 @@ import 'package:enrutador/utilities/main_provider.dart';
 import 'package:enrutador/utilities/services/navigation_services.dart';
 import 'package:enrutador/utilities/theme/theme_color.dart';
 import 'package:enrutador/views/map_main.dart';
-import 'package:enrutador/views/widgets/map_navigation.dart';
-import 'package:enrutador/views/widgets/map_sliding.dart';
-import 'package:enrutador/views/widgets/search_widget.dart';
+import 'package:enrutador/views/widgets/map_widget/map_navigation.dart';
+import 'package:enrutador/views/widgets/map_widget/map_sliding.dart';
+import 'package:enrutador/views/widgets/search/search_widget.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slider_drawer/flutter_slider_drawer.dart';
@@ -19,7 +19,7 @@ import 'package:sizer/sizer.dart';
 import 'package:app_links/app_links.dart';
 import '../utilities/map_fun.dart';
 import '../utilities/uri_fun.dart';
-import 'widgets/map_alternative.dart';
+import 'widgets/map_widget/map_alternative.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -43,23 +43,6 @@ class _HomeViewState extends State<HomeView> {
                 child: Column(children: [
                   SizedBox(height: 9.h),
                   GestureDetector(
-                      onTap: () async {},
-                      child: Card(
-                          child: Padding(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 1.w, vertical: 1.h),
-                              child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text("Listas",
-                                        style: TextStyle(
-                                            fontSize: 16.sp,
-                                            fontWeight: FontWeight.bold)),
-                                    Icon(Icons.format_list_bulleted,
-                                        size: 22.sp, color: ThemaMain.red)
-                                  ])))),
-                  GestureDetector(
                       onTap: () async =>
                           await Navigation.pushNamed(route: "contactos"),
                       child: Card(
@@ -76,6 +59,23 @@ class _HomeViewState extends State<HomeView> {
                                             fontWeight: FontWeight.bold)),
                                     Icon(Icons.connect_without_contact,
                                         size: 22.sp, color: ThemaMain.darkGrey)
+                                  ])))),
+                  GestureDetector(
+                      onTap: () async {},
+                      child: Card(
+                          child: Padding(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 1.w, vertical: 1.h),
+                              child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text("Listas",
+                                        style: TextStyle(
+                                            fontSize: 16.sp,
+                                            fontWeight: FontWeight.bold)),
+                                    Icon(LineIcons.mapMarked,
+                                        size: 22.sp, color: ThemaMain.red)
                                   ])))),
                   GestureDetector(
                       onTap: () async =>
@@ -131,24 +131,23 @@ class _HomeViewState extends State<HomeView> {
                                         size: 22.sp, color: ThemaMain.green)
                                   ])))),
                   GestureDetector(
-                    onTap: () async =>
-                        await Navigation.pushNamed(route: "lada"),
-                    child: Card(
-                        child: Padding(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 1.w, vertical: 1.h),
-                            child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text("Lada",
-                                      style: TextStyle(
-                                          fontSize: 16.sp,
-                                          fontWeight: FontWeight.bold)),
-                                  Icon(Icons.perm_phone_msg,
-                                      size: 20.sp, color: ThemaMain.pink)
-                                ])))
-                  )
+                      onTap: () async =>
+                          await Navigation.pushNamed(route: "lada"),
+                      child: Card(
+                          child: Padding(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 1.w, vertical: 1.h),
+                              child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text("Lada",
+                                        style: TextStyle(
+                                            fontSize: 16.sp,
+                                            fontWeight: FontWeight.bold)),
+                                    Icon(Icons.perm_phone_msg,
+                                        size: 20.sp, color: ThemaMain.pink)
+                                  ]))))
                 ])),
             child: Scaffold(
                 appBar: AppBar(
@@ -161,10 +160,7 @@ class _HomeViewState extends State<HomeView> {
                     actions: [
                       if (kDebugMode)
                         IconButton(
-                            onPressed: () async {
-                              
-                            },
-                            icon: Icon(Icons.abc))
+                            onPressed: () async {}, icon: Icon(Icons.abc))
                     ],
                     toolbarHeight: 6.h),
                 body: Paginado(provider: provider))));

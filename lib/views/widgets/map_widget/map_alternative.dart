@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 import 'package:badges/badges.dart' as bd;
 
-import '../../controllers/enrutar_controller.dart';
+import '../../../controllers/enrutar_controller.dart';
 
 class MapAlternative extends StatefulWidget {
   const MapAlternative({super.key});

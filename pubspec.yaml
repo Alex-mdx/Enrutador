@@ -24,6 +24,7 @@ dependencies:
   flutter_map_animations: ^0.9.0
   flutter_map_compass: ^1.1.1
   flutter_map_location_marker: ^10.1.0
+  flutter_map_polywidget: ^1.0.1
   flutter_material_color_picker: ^1.2.0
   flutter_phone_direct_caller: ^2.2.1
   flutter_slider_drawer: ^3.0.2
@@ -39,7 +40,7 @@ dependencies:
   oktoast: ^3.4.0
   open_location_code: ^1.0.1
   open_route_service: ^1.2.7
-  package_info_plus: ^8.3.0
+  package_info_plus: ^9.0.0
   path: ^1.9.1
   path_provider: ^2.1.5
   permission_handler: ^12.0.0+1
@@ -47,12 +48,13 @@ dependencies:
   photo_view: ^0.15.0
   pro_image_editor: ^11.5.1
   provider: ^6.1.2
-  share_plus: ^11.0.0
+  share_plus: ^12.0.0
   shared_preferences: ^2.3.3
   sizer: ^3.0.4
   sliding_up_panel: ^2.0.0+1
   sqflite: ^2.3.3+1
   substring_highlight: ^1.0.33
+  timelines_plus: ^1.0.7
   url_launcher: ^6.3.2
   what3words: ^3.2.0
   whatsapp_unilink: ^2.1.0

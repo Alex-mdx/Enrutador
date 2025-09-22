@@ -4,10 +4,10 @@ import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
-import '../../utilities/theme/theme_app.dart';
-import '../../utilities/theme/theme_color.dart';
-import 'sliding_cards/tarjeta_contacto.dart';
-import 'sliding_cards/tarjeta_seleccion.dart';
+import '../../../utilities/theme/theme_app.dart';
+import '../../../utilities/theme/theme_color.dart';
+import '../sliding_cards/tarjeta_contacto.dart';
+import '../sliding_cards/tarjeta_seleccion.dart';
 
 class MapSliding extends StatefulWidget {
   const MapSliding({super.key});

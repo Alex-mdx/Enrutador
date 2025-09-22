@@ -10,18 +10,19 @@ import 'package:share_plus/share_plus.dart';
 class ShareFun {
   static var copiar =
       "//Ingrese este codigo en algun navegador de google para tener la ubicacion exacta";
-  static Future<void> share(
+  static Future<int?> share(
       {required String titulo,
       required String mensaje,
       List<XFile>? files}) async {
     final params = ShareParams(title: titulo, text: mensaje, files: files);
-    await SharePlus.instance.share(params);
+    var share = await SharePlus.instance.share(params);
+    return share.status.index;
   }
 
   static Future<List<File>> shareDatas(
       {required String nombre, required List<dynamic> datas}) async {
     showToast("Generando $nombre");
-    //try {
+    try {
     var chunck = 50;
     List<File> files = [];
     List<dynamic> json = [];
@@ -63,11 +64,11 @@ class ShareFun {
     }
 
     return files;
-    /* } catch (e) {
+    } catch (e) {
       debugPrint("error $e");
       showToast("error: $e");
       return [];
-    } */
+    } 
   }
 
   static Future<void> _ensureDirectoryExists(String path) async {
@@ -75,10 +76,10 @@ class ShareFun {
       final dir = Directory(path);
       if (!await dir.exists()) {
         await dir.create(recursive: true);
-        print('📂 Directorio creado: $path');
+        debugPrint('Directorio creado: $path');
       }
     } catch (e) {
-      print('❌ Error creando directorio: $e');
+      debugPrint('EHHH, esta mal, porque vergas esta mal: $e');
       rethrow;
     }
   }

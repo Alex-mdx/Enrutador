@@ -1,10 +1,14 @@
 import 'package:enrutador/models/contacto_model.dart';
+import 'package:enrutador/utilities/camara_fun.dart';
+import 'package:enrutador/utilities/services/navigation_services.dart';
 import 'package:enrutador/utilities/share_fun.dart';
 import 'package:enrutador/utilities/textos.dart';
+import 'package:enrutador/views/widgets/sliding_cards/tarjeta_contacto_detalle.dart';
 import 'package:flutter/material.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:sizer/sizer.dart';
+import 'package:widgets_to_image/widgets_to_image.dart';
 
 import '../../utilities/theme/theme_color.dart';
 
@@ -63,7 +67,44 @@ class DialogCompartir extends StatelessWidget {
             Card(
                 child: Column(children: [
               IconButton(
-                  onPressed: () async {},
+                  onPressed: () async {
+                    WidgetsToImageController controller =
+                        WidgetsToImageController();
+                    showDialog(
+                        context: context,
+                        builder: (context) => Dialog(
+                                child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                  WidgetsToImage(
+                                      controller: controller,
+                                      child: TarjetaContactoDetalle(
+                                          contacto: contacto, compartir: true)),
+                                  ElevatedButton.icon(
+                                      onPressed: () async {
+                                        var file = await controller.capturePng(
+                                            pixelRatio: 2);
+                                        if (file != null) {
+                                          var imagen = await CamaraFun.imagen(
+                                              nombre: contacto.nombreCompleto ??
+                                                  "Nombre: Sin nombre",
+                                              imagenBytes: file);
+                                          var intBool = await ShareFun.share(
+                                              titulo: "Objeto de contacto",
+                                              mensaje: "Tarjeta de contacto",
+                                              files: [XFile(imagen!.path)]);
+                                          intBool == 0
+                                              ? Navigation.popTwice()
+                                              : null;
+                                        }
+                                      },
+                                      label: Text("Compartir",
+                                          style: TextStyle(
+                                              fontSize: 14.sp,
+                                              fontWeight: FontWeight.bold)),
+                                      icon: Icon(Icons.share))
+                                ])));
+                  },
                   icon: Icon(Icons.image, size: 42.sp, color: ThemaMain.red)),
               Text("Imagen",
                   style:

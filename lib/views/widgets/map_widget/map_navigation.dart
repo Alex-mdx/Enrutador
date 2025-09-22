@@ -23,7 +23,7 @@ class _MapNavigationState extends State<MapNavigation> {
         child: Column(spacing: .5.h, mainAxisSize: MainAxisSize.min, children: [
           if (provider.contacto != null)
             IconButton.filled(
-                iconSize: 25.sp,
+                iconSize: 24.sp,
                 style: ButtonStyle(
                     backgroundColor: WidgetStatePropertyAll(ThemaMain.primary)),
                 onPressed: () async {
@@ -54,12 +54,12 @@ class _MapNavigationState extends State<MapNavigation> {
                         : Icons.border_inner_rounded,
                     color: ThemaMain.white)),
           IconButton.filled(
-              iconSize: 23.sp,
+              iconSize: 24.sp,
               onPressed: () async => await provider.animaMap.animatedZoomIn(
                   duration: Durations.medium3, cancelPreviousAnimations: true),
               icon: Icon(Icons.zoom_in, color: ThemaMain.white)),
           IconButton.filled(
-              iconSize: 23.sp,
+              iconSize: 24.sp,
               onPressed: () async => await provider.animaMap.animatedZoomOut(
                   duration: Durations.medium3, cancelPreviousAnimations: true),
               icon: Icon(Icons.zoom_out, color: ThemaMain.white)),

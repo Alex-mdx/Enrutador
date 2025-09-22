@@ -1,7 +1,4 @@
 import 'dart:typed_data';
-
-import 'package:advanced_media_picker/advanced_media_picker.dart';
-import 'package:enrutador/utilities/theme/theme_color.dart';
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 

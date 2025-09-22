@@ -43,9 +43,9 @@ class _ViajeMapPageState extends State<MapMain>
                     provider: provider,
                     lat: point.latitude,
                     lng: point.longitude),
-                initialZoom: 18,
+                initialZoom: 17,
                 minZoom: 6,
-                maxZoom: 20,
+                maxZoom: 19,
                 initialCenter: LatLng(
                     provider.local!.latitude!, provider.local!.longitude!)),
             children: [
@@ -53,7 +53,7 @@ class _ViajeMapPageState extends State<MapMain>
                     ? TileLayer(
                         retinaMode: false,
                         panBuffer: 2,
-                        maxZoom: 20,
+                        maxZoom: 19,
                         keepBuffer: 3,
                         maxNativeZoom: 19,
                         urlTemplate:
@@ -62,7 +62,7 @@ class _ViajeMapPageState extends State<MapMain>
                             'dev.fleaflet.flutter_map.example')
                     : TileLayer(
                         panBuffer: 2,
-                        maxZoom: 20,
+                        maxZoom: 19,
                         keepBuffer: 3,
                         maxNativeZoom: 19,
                         urlTemplate:

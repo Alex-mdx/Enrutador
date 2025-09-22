@@ -1,5 +1,6 @@
 import 'package:enrutador/controllers/tipo_controller.dart';
 import 'package:enrutador/models/contacto_model.dart';
+import 'package:enrutador/models/estado_model.dart';
 import 'package:enrutador/models/tipos_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -96,6 +97,13 @@ class MainProvider with ChangeNotifier implements TickerProvider {
     notifyListeners();
   }
 
+  List<EstadoModel> _estados = [];
+  List<EstadoModel> get estados => _estados;
+  set estados(List<EstadoModel> valor) {
+    _estados = valor;
+    notifyListeners();
+  }
+
   bool _mapaReal = false;
   bool get mapaReal => _mapaReal;
   set mapaReal(bool valor) {
@@ -128,6 +136,13 @@ class MainProvider with ChangeNotifier implements TickerProvider {
   int get cargaProgress => _cargaProgress;
   set cargaProgress(int valor) {
     _cargaProgress = valor;
+    notifyListeners();
+  }
+
+  bool _shareContacto = false;
+  bool get shareContacto => _shareContacto;
+  set shareContacto(bool valor) {
+    _shareContacto = valor;
     notifyListeners();
   }
 

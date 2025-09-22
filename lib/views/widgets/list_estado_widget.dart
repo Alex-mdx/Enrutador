@@ -1,22 +1,22 @@
-import 'package:enrutador/models/tipos_model.dart';
-import 'package:enrutador/utilities/theme/theme_color.dart';
+import 'package:enrutador/models/estado_model.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:oktoast/oktoast.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../utilities/share_fun.dart';
+import '../../utilities/theme/theme_color.dart';
 
-class ListTipoWidget extends StatelessWidget {
-  final TiposModelo tipo;
+class ListEstadoWidget extends StatelessWidget {
+  final EstadoModel estado;
   final Function() fun;
   final bool share;
   final bool selectedVisible;
   final bool selected;
   final Function(bool?) onSelected;
-  const ListTipoWidget(
+  const ListEstadoWidget(
       {super.key,
-      required this.tipo,
+      required this.estado,
       required this.fun,
       required this.share,
       required this.selectedVisible,
@@ -28,7 +28,7 @@ class ListTipoWidget extends StatelessWidget {
     return GestureDetector(
         onTap: () => fun(),
         child: Card(
-            color: tipo.color,
+            color: estado.color,
             child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 1.h),
                 child: Row(
@@ -43,9 +43,8 @@ class ListTipoWidget extends StatelessWidget {
                                   onChanged: (value) => onSelected(value)),
                             Stack(alignment: Alignment.center, children: [
                               Icon(Icons.circle,
-                                  color: ThemaMain.second, size: 26.sp),
-                              Icon(tipo.icon,
-                                  color: ThemaMain.primary, size: 24.sp)
+                                  color: ThemaMain.second, size: 28.sp),
+                              Text("${estado.orden}",style: TextStyle(fontSize: 18.sp,fontWeight: FontWeight.bold))
                             ])
                           ])),
                       Expanded(
@@ -55,20 +54,20 @@ class ListTipoWidget extends StatelessWidget {
                                   mainAxisSize: MainAxisSize.min,
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(tipo.nombre,
+                                    Text(estado.nombre,
                                         style: TextStyle(
                                             backgroundColor: ThemaMain.white,
                                             fontSize: 16.sp,
                                             fontWeight: FontWeight.bold)),
                                     Text(
-                                        tipo.descripcion == "" ||
-                                                tipo.descripcion == null
+                                        estado.descripcion == "" ||
+                                                estado.descripcion == null
                                             ? "No se incluyo descripcion"
-                                            : tipo.descripcion!,
+                                            : estado.descripcion!,
                                         style: TextStyle(
                                             backgroundColor: ThemaMain.white,
-                                            fontStyle: tipo.descripcion == "" ||
-                                                    tipo.descripcion == null
+                                            fontStyle: estado.descripcion == "" ||
+                                                    estado.descripcion == null
                                                 ? FontStyle.italic
                                                 : FontStyle.normal,
                                             fontSize: 16.sp))
@@ -79,14 +78,14 @@ class ListTipoWidget extends StatelessWidget {
                             onPressed: () async {
                               showToast("Generando archivo...");
                               var data = (await ShareFun.shareDatas(
-                                      nombre: "tipos", datas: [tipo]))
+                                      nombre: "estados", datas: [estado]))
                                   .firstOrNull;
                               if (data != null) {
                                 XFile file = XFile(data.path);
                                 await ShareFun.share(
-                                    titulo: "Objeto tipos",
+                                    titulo: "Objeto estados",
                                     mensaje:
-                                        "este archivo contiene datos de tipos generados",
+                                        "este archivo contiene datos de estados generados",
                                     files: [file]);
                               }
                             },

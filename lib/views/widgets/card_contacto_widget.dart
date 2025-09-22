@@ -31,7 +31,7 @@ class CardContactoWidget extends StatelessWidget {
         onTap: () => funContact(contacto),
         child: Card(
             child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 1.w, vertical: 1.h),
+                padding: EdgeInsets.symmetric(horizontal: 1.w, vertical: .5.h),
                 child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -68,10 +68,10 @@ class CardContactoWidget extends StatelessWidget {
                                 overflow: TextOverflow.ellipsis,
                                 textStyle: TextStyle(
                                     color: ThemaMain.darkBlue,
-                                    fontSize: 16.sp,
+                                    fontSize: 15.sp,
                                     fontWeight: FontWeight.bold),
                                 textStyleHighlight: TextStyle(
-                                    fontSize: 16.sp,
+                                    fontSize: 15.sp,
                                     color: ThemaMain.primary,
                                     fontWeight: FontWeight.bold)),
                             Column(
@@ -87,23 +87,24 @@ class CardContactoWidget extends StatelessWidget {
                                       maxLines: 2,
                                       overflow: TextOverflow.ellipsis,
                                       style: TextStyle(fontSize: 15.sp)),
-                                  Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceAround,
-                                      children: [
-                                        FutureBuilder(
-                                            future: TipoController.getItem(
-                                                data: contacto.tipo ?? -1),
-                                            builder: (context, data) => Text(
-                                                "Tipo:\n${data.data?.nombre ?? "Ø"}",
-                                                style: TextStyle(
-                                                    fontSize: 14.sp))),
-                                        Text(
-                                            "Estatus: ${contacto.estado ?? "Ø"}",
-                                            maxLines: 2,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: TextStyle(fontSize: 14.sp))
-                                      ]),
+                                  if (compartir)
+                                    Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceAround,
+                                        children: [
+                                          FutureBuilder(
+                                              future: TipoController.getItem(
+                                                  data: contacto.tipo ?? -1),
+                                              builder: (context, data) => Text(
+                                                  "Tipo:\n${data.data?.nombre ?? "Ø"}",
+                                                  style: TextStyle(
+                                                      fontSize: 14.sp))),
+                                          Text(
+                                              "Estatus: ${contacto.estado ?? "Ø"}",
+                                              maxLines: 2,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: TextStyle(fontSize: 14.sp))
+                                        ]),
                                   Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceAround,

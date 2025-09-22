@@ -1,6 +1,5 @@
 import 'package:intl/intl.dart';
 import 'dart:math' as math;
-
 import 'package:open_location_code/open_location_code.dart';
 
 class Textos {

@@ -1,39 +1,39 @@
-import 'package:enrutador/utilities/funcion_parser.dart';
-import 'package:enrutador/utilities/theme/theme_color.dart';
 import 'package:flutter/material.dart';
 
-class TiposModelo {
-  int? id;
+import '../utilities/theme/theme_color.dart';
+
+class EstadoModel {
+  int id;
   String nombre;
   String? descripcion;
-  IconData? icon;
+  int orden;
   Color? color;
 
-  TiposModelo(
-      {this.id,
+  EstadoModel(
+      {required this.id,
       required this.nombre,
       required this.descripcion,
-      required this.icon,
+      required this.orden,
       required this.color});
 
-  TiposModelo copyWith(
+  EstadoModel copyWith(
           {int? id,
           String? nombre,
           String? descripcion,
-          IconData? icon,
+          int? orden,
           Color? color}) =>
-      TiposModelo(
+      EstadoModel(
           id: id ?? this.id,
           nombre: nombre ?? this.nombre,
           descripcion: descripcion ?? this.descripcion,
-          icon: icon ?? this.icon,
+          orden: orden ?? this.orden,
           color: color ?? this.color);
 
-  factory TiposModelo.fromJson(Map<String, dynamic> json) => TiposModelo(
+  factory EstadoModel.fromJson(Map<String, dynamic> json) => EstadoModel(
       id: json["id"],
       nombre: json["nombre"],
       descripcion: json["descripcion"],
-      icon: Parser.stringToIconData(json["icon"]),
+      orden: json["orden"],
       color: Color(int.tryParse(json["color"].toString()) ??
           ThemaMain.primary.toARGB32()));
 
@@ -41,7 +41,7 @@ class TiposModelo {
         "id": id,
         "nombre": nombre,
         "descripcion": descripcion,
-        "icon": '${icon?.codePoint}_${icon?.fontFamily}',
+        "orden": orden,
         "color": color?.toARGB32().toString()
       };
 }
