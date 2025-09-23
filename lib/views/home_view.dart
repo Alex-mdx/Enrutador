@@ -96,7 +96,8 @@ class _HomeViewState extends State<HomeView> {
                                         size: 22.sp, color: ThemaMain.primary)
                                   ])))),
                   GestureDetector(
-                      onTap: () async {},
+                      onTap: () async =>
+                          await Navigation.pushNamed(route: "estatus"),
                       child: Card(
                           child: Padding(
                               padding: EdgeInsets.symmetric(
@@ -157,11 +158,6 @@ class _HomeViewState extends State<HomeView> {
                         icon: Icon(Icons.menu,
                             color: ThemaMain.darkBlue, size: 20.sp)),
                     title: Text("Enrutador", style: TextStyle(fontSize: 18.sp)),
-                    actions: [
-                      if (kDebugMode)
-                        IconButton(
-                            onPressed: () async {}, icon: Icon(Icons.abc))
-                    ],
                     toolbarHeight: 6.h),
                 body: Paginado(provider: provider))));
   }

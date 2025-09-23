@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../utilities/theme/theme_color.dart';
 
 class EstadoModel {
-  int id;
+  int? id;
   String nombre;
   String? descripcion;
   int orden;

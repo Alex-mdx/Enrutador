@@ -1,4 +1,5 @@
 import 'package:enrutador/views/contactos_view.dart';
+import 'package:enrutador/views/estado_view.dart';
 import 'package:enrutador/views/lada_view.dart';
 import 'package:enrutador/views/navegar_view.dart';
 import 'package:enrutador/views/tipos_view.dart';
@@ -11,6 +12,7 @@ class AppRoutes {
   static final Map<String, Widget Function(BuildContext)> _routes = {
     home: (_) => const HomeView(),
     tipos: (_) => const TiposView(),
+    estatus: (_) => const EstadoView(),
     contacto: (_) => const ContactosView(),
     navegar: (_) => const NavegarView(),
     lada: (_) => const LadaView()
@@ -21,4 +23,5 @@ class AppRoutes {
   static String get contacto => 'contactos';
   static String get navegar => 'navegar';
   static String get lada => 'lada';
+  static String get estatus => 'estatus';
 }

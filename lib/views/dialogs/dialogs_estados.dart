@@ -1,43 +1,51 @@
-
 import 'package:enrutador/controllers/estado_controller.dart';
 import 'package:enrutador/models/estado_model.dart';
 import 'package:enrutador/utilities/services/navigation_services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_material_color_picker/flutter_material_color_picker.dart';
+import 'package:input_quantity/input_quantity.dart';
+import 'package:line_icons/line_icons.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../utilities/theme/theme_color.dart';
 
-class DialogsTipos extends StatefulWidget {
+class DialogsEstados extends StatefulWidget {
   final EstadoModel? estado;
-  
-  const DialogsTipos({super.key, required this.estado});
+
+  const DialogsEstados({super.key, required this.estado});
 
   @override
-  State<DialogsTipos> createState() => _DialogsTiposState();
+  State<DialogsEstados> createState() => _DialogsTiposState();
 }
 
-class _DialogsTiposState extends State<DialogsTipos> {
+class _DialogsTiposState extends State<DialogsEstados> {
   TextEditingController nombre = TextEditingController();
   TextEditingController descricion = TextEditingController();
   int? orden;
+  int max = 1;
   Color? colorsMain;
 
   @override
   void initState() {
     super.initState();
+    name();
     nombre.text = widget.estado?.nombre ?? "";
     descricion.text = widget.estado?.descripcion ?? "";
-    orden = widget.estado?.orden;
+    orden = widget.estado?.orden ?? 1;
     colorsMain = widget.estado?.color;
+  }
+
+  Future<void> name() async {
+    max =
+        widget.estado?.orden ?? (await EstadoController.getItems()).length + 1;
   }
 
   @override
   Widget build(BuildContext context) {
     return Dialog(
         child: Column(mainAxisSize: MainAxisSize.min, children: [
-      Text(widget.estado == null ? "Crear tipo" : "Actualizar tipo",
+      Text(widget.estado == null ? "Crear Estado" : "Actualizar Estado",
           style: TextStyle(fontSize: 16.sp)),
       Padding(
           padding: EdgeInsets.all(10.sp),
@@ -72,10 +80,27 @@ class _DialogsTiposState extends State<DialogsTipos> {
                         EdgeInsets.symmetric(horizontal: 2.w, vertical: 1.h))),
             Divider(),
             Wrap(runAlignment: WrapAlignment.center, children: [
-              Row(mainAxisSize: MainAxisSize.min, children: [
-                Text("Orden:", style: TextStyle(fontSize: 16.sp)),
-                
-              ]),
+              Row(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text("Orden:", style: TextStyle(fontSize: 16.sp)),
+                    InputQty.int(
+                        decoration: QtyDecorationProps(
+                            fillColor: ThemaMain.second,
+                            minusBtn: Icon(LineIcons.minusCircle,
+                                size: 25.sp, color: ThemaMain.red),
+                            plusBtn: Icon(LineIcons.plusCircle,
+                                size: 25.sp, color: ThemaMain.green),
+                            qtyStyle: QtyStyle.btnOnLeft),
+                        maxVal: max,
+                        initVal: max,
+                        minVal: 1,
+                        steps: 1,
+                        onQtyChanged: (val) => setState(() {
+                              orden = val;
+                            }))
+                  ]),
               Row(mainAxisSize: MainAxisSize.min, children: [
                 Text("Color:", style: TextStyle(fontSize: 16.sp)),
                 IconButton(
@@ -97,9 +122,9 @@ class _DialogsTiposState extends State<DialogsTipos> {
                                       Colors.yellow,
                                       Colors.green,
                                       Colors.cyan,
-                                      
                                       Colors.deepPurple,
-                                      Colors.purpleAccent,Colors.indigo,
+                                      Colors.purpleAccent,
+                                      Colors.indigo,
                                       Colors.brown
                                     ])))),
                     icon: Icon(Icons.circle, color: colorsMain ?? Colors.grey))
@@ -116,12 +141,20 @@ class _DialogsTiposState extends State<DialogsTipos> {
                       var newTipo = widget.estado!.copyWith(
                           nombre: nombre.text,
                           descripcion: descricion.text,
-                          orden: orden ?? 1,
+                          orden: orden ?? max,
                           color: colorsMain);
                       await EstadoController.update(newTipo);
                       showToast("Estado actualizado");
-                      Navigation.pop();
+                    } else {
+                      EstadoModel estado = EstadoModel(
+                          id: null,
+                          nombre: nombre.text,
+                          descripcion: descricion.text,
+                          orden: orden ?? max,
+                          color: colorsMain);
+                      await EstadoController.insert(estado);
                     }
+                    Navigation.pop();
                   } else {
                     showToast("Ingrese un nombre");
                   }

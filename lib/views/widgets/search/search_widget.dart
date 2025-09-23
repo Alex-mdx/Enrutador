@@ -39,11 +39,26 @@ class _SearchWidgetState extends State<SearchWidget> {
                         blurRadius: 5,
                         offset: Offset(4, 4))
                   ]),
-              width: 98.w,
+              width: 99.w,
               child: Column(children: [
                 TextFormField(
                     focusNode: foc,
                     controller: provider.buscar,
+                    onFieldSubmitted: (value) async {
+                      try {
+                        var ps = PlusCode(value);
+                        var decode = ps.decode();
+                        var coordenadas = LatLng(decode.southWest.latitude,
+                            decode.southWest.longitude);
+                        log("${coordenadas.toJson()}");
+                        await MapFun.sendInitUri(
+                            provider: provider,
+                            lat: coordenadas.latitude,
+                            lng: coordenadas.longitude);
+                      } catch (e) {
+                        debugPrint("error: $e");
+                      }
+                    },
                     onChanged: (value) => setState(() {
                           provider.buscar.text = value;
                         }),
@@ -51,14 +66,15 @@ class _SearchWidgetState extends State<SearchWidget> {
                     decoration: InputDecoration(
                         fillColor: ThemaMain.second,
                         prefixIcon: IconButton(
-                            iconSize: 20.sp,
+                            iconSize: 22.sp,
                             onPressed: () {
                               provider.buscar.clear();
                               if (foc.hasFocus) {
                                 foc.unfocus();
                               }
                             },
-                            icon: Icon(Icons.arrow_back, color: ThemaMain.red)),
+                            icon: Icon(Icons.close_rounded,
+                                color: ThemaMain.red)),
                         label: Text(
                             "Nombre | PlusCode | Telefono${kDebugMode ? " | What3Word" : ""}",
                             maxLines: 2,
@@ -67,37 +83,17 @@ class _SearchWidgetState extends State<SearchWidget> {
                                 fontStyle: FontStyle.italic,
                                 fontSize: 16.sp,
                                 color: ThemaMain.darkGrey)),
-                        suffixIcon: IconButton.filledTonal(
-                            iconSize: 22.sp,
-                            onPressed: () async {
-                              try {
-                                var ps = PlusCode(provider.buscar.text);
-                                var decode = ps.decode();
-                                var coordenadas = LatLng(
-                                    decode.southWest.latitude,
-                                    decode.southWest.longitude);
-                                log("${coordenadas.toJson()}");
-                                await MapFun.sendInitUri(
-                                    provider: provider,
-                                    lat: coordenadas.latitude,
-                                    lng: coordenadas.longitude);
-                              } catch (e) {
-                                debugPrint("error: $e");
-                              }
-                            },
-                            icon: Icon(Icons.youtube_searched_for,
-                                color: ThemaMain.green)),
                         contentPadding: EdgeInsets.symmetric(
                             horizontal: 2.w, vertical: 1.h))),
                 RowFiltro(),
                 if (provider.buscar.text != "")
                   FutureBuilder(
                       future:
-                          ContactoController.buscar(provider.buscar.text, 10),
+                          ContactoController.buscar(provider.buscar.text, 8),
                       builder: (context, snapshot) {
                         if (snapshot.hasData) {
                           return Container(
-                              constraints: BoxConstraints(maxHeight: 40.h),
+                              constraints: BoxConstraints(maxHeight: 30.h),
                               child: Scrollbar(
                                   child: ListView.builder(
                                       itemCount: snapshot.data!.length,
