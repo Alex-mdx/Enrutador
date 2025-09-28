@@ -3,11 +3,13 @@ import 'package:enrutador/controllers/enrutar_controller.dart';
 import 'package:enrutador/models/contacto_model.dart';
 import 'package:enrutador/utilities/main_provider.dart';
 import 'package:enrutador/utilities/services/dialog_services.dart';
+import 'package:enrutador/utilities/textos.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map_animations/flutter_map_animations.dart';
 import 'package:get/get.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:oktoast/oktoast.dart';
+import 'package:open_location_code/open_location_code.dart';
 import 'dart:math';
 import 'package:sizer/sizer.dart';
 import 'package:badges/badges.dart' as bd;
@@ -146,11 +148,14 @@ class MapFun {
       {required MainProvider provider,
       required double lat,
       required double lng}) async {
+    var pc = Textos.psCODE(double.parse(lat.toStringAsFixed(6)),
+        double.parse(lng.toStringAsFixed(6)));
+    var newlocation = PlusCode(pc).decode().southWest;
     provider.contacto = ContactoModelo(
         id: null,
         nombreCompleto: null,
-        latitud: double.parse(lat.toStringAsFixed(6)),
-        longitud: double.parse(lng.toStringAsFixed(6)),
+        latitud: newlocation.latitude,
+        longitud: newlocation.longitude,
         domicilio: null,
         fechaDomicilio: null,
         numero: null,
@@ -172,8 +177,7 @@ class MapFun {
     provider.marker = [
       AnimatedMarker(
           rotate: true,
-          point: LatLng(double.parse(lat.toStringAsFixed(6)),
-              double.parse(lng.toStringAsFixed(6))),
+          point: LatLng(newlocation.latitude, newlocation.longitude),
           builder: (context, animation) => InkWell(
               onTap: () async {
                 provider.animaMap.centerOnPoint(
@@ -183,8 +187,8 @@ class MapFun {
                 provider.contacto = ContactoModelo(
                     id: null,
                     nombreCompleto: null,
-                    latitud: double.parse(lat.toStringAsFixed(6)),
-                    longitud: double.parse(lng.toStringAsFixed(6)),
+                    latitud: newlocation.latitude,
+                    longitud: newlocation.longitude,
                     domicilio: null,
                     fechaDomicilio: null,
                     numero: null,

@@ -1,9 +1,11 @@
 import 'dart:convert';
 
 import 'package:badges/badges.dart' as bd;
+import 'package:enrutador/controllers/estado_controller.dart';
 import 'package:enrutador/utilities/main_provider.dart';
 import 'package:enrutador/views/dialogs/dialog_send.dart';
 import 'package:enrutador/views/dialogs/dialogs_comunicar.dart';
+import 'package:enrutador/views/dialogs/dialogs_estado_funcion.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
@@ -176,7 +178,8 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                       onPressed: () => showDialog(
                                           context: context,
                                           builder: (context) => DialogTiposAll(
-                                                  selected: (p0) async {
+                                              fecha: widget.contacto?.tipoFecha,
+                                              selected: (p0) async {
                                                 var newModel = widget.contacto
                                                     ?.copyWith(
                                                         tipo: p0.id,
@@ -204,15 +207,13 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                   FutureBuilder(
                                       future: TipoController.getItem(
                                           data: widget.contacto?.tipo ?? -1),
-                                      builder: (context, data) {
-                                        return Text(
-                                            "Tipo: ${data.data?.nombre ?? "No se ha clasificado"}",
-                                            style: TextStyle(
-                                                color: data.data?.color,
-                                                fontSize: 16.sp,
-                                                fontStyle: FontStyle.italic,
-                                                fontWeight: FontWeight.bold));
-                                      }),
+                                      builder: (context, data) => Text(
+                                          "Tipo: ${data.data?.nombre ?? "No se ha clasificado"}",
+                                          style: TextStyle(
+                                              color: data.data?.color,
+                                              fontSize: 16.sp,
+                                              fontStyle: FontStyle.italic,
+                                              fontWeight: FontWeight.bold))),
                                 if (!widget.compartir)
                                   TextButton.icon(
                                       style: ButtonStyle(
@@ -220,11 +221,49 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                               EdgeInsets.symmetric(
                                                   horizontal: 1.w,
                                                   vertical: 0))),
-                                      onPressed: () {},
-                                      label: Text(
-                                          "Estado: ${widget.contacto?.estado ?? "Ø"}",
+                                      onPressed: () => showDialog(
+                                          context: context,
+                                          builder: (context) =>
+                                              DialogsEstadoFuncion(
+                                                  fecha: widget
+                                                      .contacto?.estadoFecha,
+                                                  contacto: provider.contacto!,
+                                                  estatus: (p0) async {
+                                                    var newModel = widget
+                                                        .contacto
+                                                        ?.copyWith(
+                                                            estado: p0,
+                                                            estadoFecha:
+                                                                DateTime.now());
+                                                    await ContactoController
+                                                        .update(newModel!);
+                                                    funcion(contacto: newModel);
+                                                    provider.contacto =
+                                                        newModel;
+                                                  })),
+                                      label: FutureBuilder(
+                                          future: EstadoController.getItem(
+                                              data: widget.contacto?.estado ??
+                                                  -1),
+                                          builder: (context, data) {
+                                            return Text(
+                                                "Estado: ${data.data?.nombre ?? "Ø"}",
+                                                style: TextStyle(
+                                                    color: data.data?.color,
+                                                    fontSize: 15.sp,
+                                                    fontWeight:
+                                                        FontWeight.bold));
+                                          }))
+                                else
+                                  FutureBuilder(
+                                      future: EstadoController.getItem(
+                                          data: widget.contacto?.estado ?? -1),
+                                      builder: (context, data) => Text(
+                                          "Estado: ${data.data?.nombre ?? "Sin estado"}",
                                           style: TextStyle(
-                                              fontSize: 15.sp,
+                                              color: data.data?.color,
+                                              fontSize: 16.sp,
+                                              fontStyle: FontStyle.italic,
                                               fontWeight: FontWeight.bold)))
                               ]),
                           if (widget.compartir)

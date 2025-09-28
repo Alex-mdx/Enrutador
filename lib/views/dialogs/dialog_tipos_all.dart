@@ -5,15 +5,23 @@ import 'package:enrutador/views/widgets/list_tipo_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 
+import '../../utilities/textos.dart';
+
 class DialogTiposAll extends StatelessWidget {
   final Function(TiposModelo) selected;
-  const DialogTiposAll({super.key, required this.selected});
+  final DateTime? fecha;
+  const DialogTiposAll({super.key, required this.selected, required this.fecha});
 
   @override
   Widget build(BuildContext context) {
     return Dialog(
         child: Column(mainAxisSize: MainAxisSize.min, children: [
       Text("Seleccione el tipo", style: TextStyle(fontSize: 16.sp)),
+      if (fecha != null)
+              Text(
+                  "Ultima modificacion: ${Textos.fechaYMDHMS(fecha: fecha!)}",
+                  style:
+                      TextStyle(fontSize: 15.sp, fontStyle: FontStyle.italic)),
       Container(
           constraints: BoxConstraints(maxHeight: 80.h),
           child: FutureBuilder(

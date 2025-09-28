@@ -92,7 +92,7 @@ class ContactoModelo {
           contactoEnlances: contactoEnlances ?? this.contactoEnlances,
           tipo: tipo ?? this.tipo,
           tipoFecha: tipoFecha ?? this.tipoFecha,
-          estado: estado ?? this.estado,
+          estado: estado,
           estadoFecha: estadoFecha ?? this.estadoFecha,
           foto: foto ?? this.foto,
           fotoFecha: fotoFecha ?? this.fotoFecha,

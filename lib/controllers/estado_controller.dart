@@ -47,7 +47,7 @@ class EstadoController {
 
   static Future<List<EstadoModel>> getItems() async {
     final db = await database();
-    final modelo = (await db.query(nombreDB));
+    final modelo = (await db.query(nombreDB,orderBy: "orden ASC"));
     List<EstadoModel> model = [];
     for (var element in modelo) {
       model.add(EstadoModel.fromJson(element));

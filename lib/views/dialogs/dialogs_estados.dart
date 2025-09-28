@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:enrutador/controllers/estado_controller.dart';
 import 'package:enrutador/models/estado_model.dart';
 import 'package:enrutador/utilities/services/navigation_services.dart';
@@ -37,8 +39,25 @@ class _DialogsTiposState extends State<DialogsEstados> {
   }
 
   Future<void> name() async {
-    max =
-        widget.estado?.orden ?? (await EstadoController.getItems()).length + 1;
+    var temp = (await EstadoController.getItems()).length + 1;
+    setState(() {
+      max = temp;
+    });
+  }
+
+  Future<void> reordenar({required EstadoModel estadoMain}) async {
+    var estados = await EstadoController.getItems();
+    estados.removeWhere((element) => element.id == estadoMain.id);
+    log("${estados.map((e) => e.nombre).toList()}");
+    for (var i = 0; i < estados.length; i++) {
+      if (i + 1 >= estadoMain.orden) {
+        var temp = estados[i].copyWith(orden: i + 2);
+        await EstadoController.update(temp);
+      } else {
+        var temp = estados[i].copyWith(orden: i + 1);
+        await EstadoController.update(temp);
+      }
+    }
   }
 
   @override
@@ -94,7 +113,7 @@ class _DialogsTiposState extends State<DialogsEstados> {
                                 size: 25.sp, color: ThemaMain.green),
                             qtyStyle: QtyStyle.btnOnLeft),
                         maxVal: max,
-                        initVal: max,
+                        initVal: orden ?? 1,
                         minVal: 1,
                         steps: 1,
                         onQtyChanged: (val) => setState(() {
@@ -144,6 +163,7 @@ class _DialogsTiposState extends State<DialogsEstados> {
                           orden: orden ?? max,
                           color: colorsMain);
                       await EstadoController.update(newTipo);
+                      await reordenar(estadoMain: newTipo);
                       showToast("Estado actualizado");
                     } else {
                       EstadoModel estado = EstadoModel(
@@ -153,6 +173,8 @@ class _DialogsTiposState extends State<DialogsEstados> {
                           orden: orden ?? max,
                           color: colorsMain);
                       await EstadoController.insert(estado);
+                      await reordenar(estadoMain: estado);
+                      showToast("Estado creado");
                     }
                     Navigation.pop();
                   } else {

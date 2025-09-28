@@ -43,8 +43,11 @@ class ListEstadoWidget extends StatelessWidget {
                                   onChanged: (value) => onSelected(value)),
                             Stack(alignment: Alignment.center, children: [
                               Icon(Icons.circle,
-                                  color: ThemaMain.second, size: 28.sp),
-                              Text("${estado.orden}",style: TextStyle(fontSize: 18.sp,fontWeight: FontWeight.bold))
+                                  color: ThemaMain.second, size: 26.sp),
+                              Text("${estado.orden}",
+                                  style: TextStyle(
+                                      fontSize: 18.sp,
+                                      fontWeight: FontWeight.bold))
                             ])
                           ])),
                       Expanded(
@@ -66,11 +69,17 @@ class ListEstadoWidget extends StatelessWidget {
                                             : estado.descripcion!,
                                         style: TextStyle(
                                             backgroundColor: ThemaMain.white,
-                                            fontStyle: estado.descripcion == "" ||
+                                            fontStyle: FontStyle.italic,
+                                            fontWeight: estado.descripcion ==
+                                                        "" ||
                                                     estado.descripcion == null
-                                                ? FontStyle.italic
-                                                : FontStyle.normal,
-                                            fontSize: 16.sp))
+                                                ? FontWeight.normal
+                                                : FontWeight.bold,
+                                            fontSize: estado.descripcion ==
+                                                        "" ||
+                                                    estado.descripcion == null
+                                                ? 16.sp
+                                                : 15.sp))
                                   ]))),
                       if (share)
                         IconButton.filledTonal(
