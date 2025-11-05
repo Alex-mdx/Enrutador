@@ -34,6 +34,7 @@ class NavegarView extends StatelessWidget {
                           return Padding(
                               padding: EdgeInsets.only(bottom: 1.h),
                               child: ListMapsWidget(
+                                  word: "Mi direccion",
                                   mapas: mapas,
                                   latitud: provider.local!.latitude!,
                                   longitud: provider.local!.longitude!,

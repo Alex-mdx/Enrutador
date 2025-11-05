@@ -17,6 +17,7 @@ class DialogSend extends StatefulWidget {
   final DateTime? fecha;
   final int? lenght;
   final String? lada;
+  final TextInputAction? input;
   const DialogSend(
       {super.key,
       required this.cabeza,
@@ -25,7 +26,7 @@ class DialogSend extends StatefulWidget {
       required this.fecha,
       required this.entradaTexto,
       this.lenght,
-      this.lada});
+      this.lada, this.input});
 
   @override
   State<DialogSend> createState() => _DialogSendState();
@@ -64,6 +65,7 @@ class _DialogSendState extends State<DialogSend> {
                 maxLines: 4,
                 maxLength: widget.lenght,
                 controller: controller,
+                textInputAction: widget.input,
                 keyboardType: widget.tipoTeclado,
                 decoration: InputDecoration(
                     prefixIcon: widget.lenght != null

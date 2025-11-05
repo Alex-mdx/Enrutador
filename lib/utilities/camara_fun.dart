@@ -18,7 +18,7 @@ class CamaraFun {
         context: context,
         isNeedVideoCamera: false,
         style: PickerStyle(
-            crossAxisCount: 3,
+            crossAxisCount: 4,
             backgroundColor: ThemaMain.second,
             titleWidget: Text("Seleccionar imagen")),
         cameraStyle: CameraStyle(),

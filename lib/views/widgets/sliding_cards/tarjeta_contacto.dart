@@ -85,6 +85,7 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                                           longitud: double.parse(lat?.longitude
                                                   .toStringAsFixed(6) ??
                                               "0"));
+                                      funcion(contacto: temp);
                                       Navigation.pop();
                                       await ContactoController.update(temp);
                                       provider.contacto =
@@ -129,6 +130,7 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                         mainAxisAlignment: MainAxisAlignment.end,
                         mainAxisSize: MainAxisSize.min,
                         children: [
+                          if (provider.contacto?.id != null)
                           IconButton.filledTonal(
                               iconSize: 22.sp,
                               onPressed: () async => await showDialog(
@@ -163,12 +165,15 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                                   showDialog(
                                       context: context,
                                       builder: (context) => DialogMapas(
+                                          words: provider
+                                                  .contacto?.nombreCompleto ??
+                                              "Ubicacion Seleccionada",
                                           coordenadas: LatLng(
                                               provider.contacto!.latitud,
                                               provider.contacto!.longitud)));
                                 }
                               },
-                              icon: Icon(LineIcons.directions,
+                              icon: Icon(LineIcons.alternateMapMarked,
                                   color: ThemaMain.white)),
                           if (provider.contacto?.id != null)
                             FutureBuilder(
@@ -197,12 +202,11 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                                                               .contacto!);
                                                   await EnrutarController
                                                       .insert(data);
-                                                  setState(() {});
                                                   showToast(
                                                       "Contacto ingresado para el enrutamiento");
                                                 });
                                           },
-                                          icon: Icon(LineIcons.route,
+                                          icon: Icon(LineIcons.directions,
                                               color: ThemaMain.green));
                                 }),
                           if (provider.contacto?.id != null)

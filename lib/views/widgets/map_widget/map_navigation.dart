@@ -33,7 +33,7 @@ class _MapNavigationState extends State<MapNavigation> {
                     CameraFit camara = CameraFit.bounds(
                         maxZoom: 19,
                         padding: EdgeInsets.symmetric(
-                            horizontal: 18.w, vertical: 10.h),
+                            horizontal: 20.w, vertical: 10.h),
                         bounds: LatLngBounds(
                             LatLng(provider.local?.latitude ?? -1,
                                 provider.local?.longitude ?? -1),

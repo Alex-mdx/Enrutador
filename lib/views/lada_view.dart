@@ -26,6 +26,11 @@ class LadaView extends StatelessWidget {
                         itemBuilder: (context, index) {
                           final data = snapshot.data!.values.toList()[index];
                           return ListTile(
+                              onLongPress: () {
+                                if (Preferences.lada == "+${data.phoneCode}") {
+                                  Preferences.lada = "";
+                                }
+                              },
                               dense: Preferences.lada != "+${data.phoneCode}",
                               selectedTileColor: ThemaMain.green.withAlpha(100),
                               selected:
@@ -39,11 +44,11 @@ class LadaView extends StatelessWidget {
                                       Preferences.lada = "+${data.phoneCode}"),
                               leading: Text("+${data.phoneCode}",
                                   style: TextStyle(
-                                      fontSize: 16.sp,
+                                      fontSize: 15.sp,
                                       fontWeight: FontWeight.bold)),
                               title: Text(
                                   "${data.countryName} - ${data.countryCode}",
-                                  style: TextStyle(fontSize: 16.sp)),
+                                  style: TextStyle(fontSize: 14.sp)),
                               contentPadding: EdgeInsets.symmetric(
                                   horizontal: 1.w, vertical: 0));
                         }));

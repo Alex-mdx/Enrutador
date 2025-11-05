@@ -1,13 +1,13 @@
 import 'dart:convert';
-
-import 'package:badges/badges.dart' as bd;
 import 'package:enrutador/controllers/estado_controller.dart';
+import 'package:enrutador/utilities/funcion_parser.dart';
 import 'package:enrutador/utilities/main_provider.dart';
 import 'package:enrutador/views/dialogs/dialog_send.dart';
 import 'package:enrutador/views/dialogs/dialogs_comunicar.dart';
 import 'package:enrutador/views/dialogs/dialogs_estado_funcion.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:pasteboard/pasteboard.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:oktoast/oktoast.dart';
@@ -15,7 +15,7 @@ import 'package:phone_numbers_parser/phone_numbers_parser.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
-
+import 'package:badges/badges.dart' as bd;
 import '../../../controllers/contacto_controller.dart';
 import '../../../controllers/enrutar_controller.dart';
 import '../../../controllers/tipo_controller.dart';
@@ -60,7 +60,7 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
             duration: Durations.medium1,
             height: widget.contacto?.id == null ? 0.h : 27.h,
             child: Row(children: [
-              Expanded(flex: 5, child: fotos(provider)),
+              Expanded(flex: widget.compartir ? 7 : 4, child: fotos(provider)),
               VerticalDivider(
                   width: widget.compartir ? 1.w : 2.sp,
                   indent: 1.h,
@@ -163,10 +163,10 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                   Text(
                                       widget.contacto?.domicilio ??
                                           "Domicilio: Sin Domicilio",
-                                      style: TextStyle(fontSize: 16.sp))
+                                      style: TextStyle(fontSize: 14.sp))
                               ]),
                           Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 if (!widget.compartir)
                                   TextButton.icon(
@@ -208,10 +208,10 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                       future: TipoController.getItem(
                                           data: widget.contacto?.tipo ?? -1),
                                       builder: (context, data) => Text(
-                                          "Tipo: ${data.data?.nombre ?? "No se ha clasificado"}",
+                                          data.data?.nombre ?? "Sin tipo",
                                           style: TextStyle(
                                               color: data.data?.color,
-                                              fontSize: 16.sp,
+                                              fontSize: 15.sp,
                                               fontStyle: FontStyle.italic,
                                               fontWeight: FontWeight.bold))),
                                 if (!widget.compartir)
@@ -259,10 +259,10 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                       future: EstadoController.getItem(
                                           data: widget.contacto?.estado ?? -1),
                                       builder: (context, data) => Text(
-                                          "Estado: ${data.data?.nombre ?? "Sin estado"}",
+                                          data.data?.nombre ?? "Sin estado",
                                           style: TextStyle(
                                               color: data.data?.color,
-                                              fontSize: 16.sp,
+                                              fontSize: 15.sp,
                                               fontStyle: FontStyle.italic,
                                               fontWeight: FontWeight.bold)))
                               ]),
@@ -279,194 +279,201 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                     fontSize: 15.sp,
                                     fontWeight: FontWeight.bold)),
                           Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 if (!widget.compartir)
-                                  bd.Badge(
-                                      badgeStyle: bd.BadgeStyle(
-                                          elevation: 2,
-                                          badgeColor: ThemaMain.green),
-                                      showBadge:
-                                          PhoneNumber.findPotentialPhoneNumbers(
-                                                      (widget.contacto?.numero ?? "0")
-                                                          .toString())
+                                  ElevatedButton.icon(
+                                      style: ButtonStyle(
+                                          padding: WidgetStatePropertyAll(
+                                              EdgeInsets.symmetric(
+                                                  vertical: 0,
+                                                  horizontal: 1.w))),
+                                      iconAlignment: IconAlignment.end,
+                                      onLongPress: () async {
+                                        await Clipboard.setData(ClipboardData(
+                                            text: widget.contacto?.numero
+                                                    .toString() ??
+                                                "Sin numero"));
+                                        showToast("Telefono principal copiado");
+                                      },
+                                      onPressed: () {
+                                        Iterable<PhoneNumber> country;
+                                        country = PhoneNumber
+                                            .findPotentialPhoneNumbers(
+                                                (widget.contacto?.numero ?? "0")
+                                                    .toString());
+                                        debugPrint(
+                                            "${country.toList().map((e) => e).toList()}");
+                                        String? lada =
+                                            country.firstOrNull?.countryCode;
+                                        debugPrint(lada);
+                                        showDialog(
+                                            barrierDismissible: false,
+                                            context: context,
+                                            builder: (context) => DialogSend(
+                                                lenght: 10,
+                                                lada: lada == null
+                                                    ? null
+                                                    : "+$lada",
+                                                entradaTexto: (widget
+                                                            .contacto?.numero ??
+                                                        "")
+                                                    .toString()
+                                                    .replaceFirst("$lada", ""),
+                                                fun: (p0) async {
+                                                  if (int.tryParse(
+                                                          p0.toString()) !=
+                                                      null) {
+                                                    var newModel = widget
+                                                        .contacto
+                                                        ?.copyWith(
+                                                            numero: int.parse(
+                                                                p0.toString()),
+                                                            numeroFecha:
+                                                                DateTime.now());
+                                                    await ContactoController
+                                                        .update(newModel!);
+                                                    funcion(contacto: newModel);
+                                                    provider.contacto =
+                                                        newModel;
+                                                  } else {
+                                                    showToast(
+                                                        "Numero ingresado no valido");
+                                                  }
+                                                },
+                                                tipoTeclado:
+                                                    TextInputType.phone,
+                                                fecha: widget
+                                                    .contacto?.numeroFecha,
+                                                cabeza:
+                                                    "Ingresar numero telefonico del contacto"));
+                                      },
+                                      label: Text("Telefono\n${PhoneNumber.findPotentialPhoneNumbers((widget.contacto?.numero ?? "0").toString()).firstOrNull?.formatNsn() ?? 0}",
+                                          style: TextStyle(
+                                              fontSize: 15.sp,
+                                              fontWeight: FontWeight.bold)),
+                                      icon: PhoneNumber.findPotentialPhoneNumbers((widget.contacto?.numero ?? "0").toString())
                                                   .firstOrNull
-                                                  ?.isValid() ??
-                                              false,
-                                      badgeContent: GestureDetector(
-                                          onTap: () => showDialog(
-                                              context: context,
-                                              builder: (context) => DialogsComunicar(
-                                                  number:
-                                                      (widget.contacto?.numero ?? 0)
-                                                          .toString())),
-                                          child: Icon(LineIcons.tty, size: 18.sp, color: ThemaMain.second)),
-                                      child: TextButton.icon(
-                                          onLongPress: () async {
-                                            await Clipboard.setData(ClipboardData(
-                                                text: widget
-                                                        .contacto?.domicilio ??
-                                                    "Domicilio: Sin Domicilio"));
-                                            showToast("Domicilio copiado");
-                                          },
-                                          style: ButtonStyle(padding: WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: 1.w, vertical: 0))),
-                                          onPressed: () async {
-                                            Iterable<PhoneNumber> country;
-                                            country = PhoneNumber
-                                                .findPotentialPhoneNumbers(
-                                                    (widget.contacto?.numero ??
-                                                            "0")
-                                                        .toString());
-                                            debugPrint(
-                                                "${country.toList().map((e) => e).toList()}");
-                                            String? lada = country
-                                                .firstOrNull?.countryCode;
-                                            debugPrint(lada);
-                                            showDialog(
-                                                barrierDismissible: false,
-                                                context: context,
-                                                builder: (context) =>
-                                                    DialogSend(
-                                                        lenght: 10,
-                                                        lada: lada == null
-                                                            ? null
-                                                            : "+$lada",
-                                                        entradaTexto: (widget
-                                                                    .contacto
-                                                                    ?.numero ??
-                                                                "")
-                                                            .toString()
-                                                            .replaceFirst(
-                                                                "$lada", ""),
-                                                        fun: (p0) async {
-                                                          if (int.tryParse(p0
-                                                                  .toString()) !=
-                                                              null) {
-                                                            var newModel = widget
-                                                                .contacto
-                                                                ?.copyWith(
-                                                                    numero: int
-                                                                        .parse(p0
-                                                                            .toString()),
-                                                                    numeroFecha:
-                                                                        DateTime
-                                                                            .now());
-                                                            await ContactoController
-                                                                .update(
-                                                                    newModel!);
-                                                            funcion(
-                                                                contacto:
-                                                                    newModel);
-                                                            provider.contacto =
-                                                                newModel;
-                                                          } else {
-                                                            showToast(
-                                                                "Numero ingresado no valido");
-                                                          }
-                                                        },
-                                                        tipoTeclado:
-                                                            TextInputType.phone,
-                                                        fecha: widget.contacto
-                                                            ?.numeroFecha,
-                                                        cabeza:
-                                                            "Ingresar numero telefonico del contacto"));
-                                          },
-                                          label: Text("Telefono\n${PhoneNumber.findPotentialPhoneNumbers((widget.contacto?.numero ?? "0").toString()).firstOrNull?.formatNsn() ?? 0}", style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.bold))))
+                                                  ?.isValid(
+                                                      type: PhoneNumberType
+                                                          .mobile) ??
+                                              false
+                                          ? GestureDetector(
+                                              onTap: () => showDialog(
+                                                  context: context,
+                                                  builder: (context) =>
+                                                      DialogsComunicar(number: (widget.contacto?.numero ?? 0).toString())),
+                                              child: Stack(alignment: Alignment.center, children: [
+                                                Icon(Icons.circle,
+                                                    size: 24.sp,
+                                                    color: ThemaMain.green),
+                                                Icon(LineIcons.tty,
+                                                    size: 20.sp,
+                                                    color: ThemaMain.second)
+                                              ]))
+                                          : null)
                                 else
                                   Text(
                                       "Telefono\n${PhoneNumber.findPotentialPhoneNumbers((widget.contacto?.numero ?? "0").toString()).firstOrNull?.formatNsn() ?? 0}",
-                                      style: TextStyle(fontSize: 16.sp)),
+                                      style: TextStyle(fontSize: 14.sp)),
                                 if (!widget.compartir)
-                                  bd.Badge(
-                                      badgeStyle: bd.BadgeStyle(
-                                          elevation: 2,
-                                          badgeColor: ThemaMain.green),
-                                      showBadge: PhoneNumber.findPotentialPhoneNumbers((widget.contacto?.otroNumero ?? "0").toString())
-                                              .firstOrNull
-                                              ?.isValid(
-                                                  type:
-                                                      PhoneNumberType.mobile) ??
-                                          false,
-                                      badgeContent: GestureDetector(
-                                          onTap: () => showDialog(
-                                              context: context,
-                                              builder: (context) => DialogsComunicar(
-                                                  number:
-                                                      (widget.contacto?.otroNumero ?? 0)
-                                                          .toString())),
-                                          child: Icon(LineIcons.tty,
-                                              size: 18.sp,
-                                              color: ThemaMain.second)),
-                                      child: TextButton.icon(
-                                          style: ButtonStyle(padding: WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: 1.w, vertical: 0))),
-                                          onPressed: () {
-                                            debugPrint(
-                                                "${widget.contacto?.otroNumero ?? "0"}");
-                                            Iterable<PhoneNumber> country;
-                                            country = PhoneNumber
-                                                .findPotentialPhoneNumbers(
-                                                    (widget.contacto
-                                                                ?.otroNumero ??
-                                                            "0")
-                                                        .toString());
-                                            debugPrint(
-                                                "${country.toList().map((e) => e).toList()}");
-                                            String? lada = country
-                                                .firstOrNull?.countryCode;
-                                            showDialog(
-                                                barrierDismissible: false,
-                                                context: context,
-                                                builder: (context) =>
-                                                    DialogSend(
-                                                        lenght: 10,
-                                                        lada: lada == null
-                                                            ? null
-                                                            : "+$lada",
-                                                        entradaTexto: (widget
-                                                                    .contacto
-                                                                    ?.otroNumero ??
-                                                                "")
-                                                            .toString()
-                                                            .replaceFirst(
-                                                                "$lada", ""),
-                                                        fun: (p0) async {
-                                                          if (int.tryParse(p0
-                                                                  .toString()) !=
-                                                              null) {
-                                                            var newModel = widget
-                                                                .contacto
-                                                                ?.copyWith(
-                                                                    otroNumero:
-                                                                        int.parse(p0
-                                                                            .toString()),
-                                                                    otroNumeroFecha:
-                                                                        DateTime
-                                                                            .now());
-                                                            await ContactoController
-                                                                .update(
-                                                                    newModel!);
-                                                            funcion(
-                                                                contacto:
-                                                                    newModel);
-                                                            provider.contacto =
-                                                                newModel;
-                                                          } else {
-                                                            showToast(
-                                                                "Numero ingresado no valido");
-                                                          }
-                                                        },
-                                                        tipoTeclado:
-                                                            TextInputType.phone,
-                                                        fecha: widget.contacto
-                                                            ?.otroNumeroFecha,
-                                                        cabeza:
-                                                            "Ingresar numero telefonico secundario del contacto"));
-                                          },
-                                          label: Text("Otro Tel\n${PhoneNumber.findPotentialPhoneNumbers((widget.contacto?.otroNumero ?? "0").toString()).firstOrNull?.formatNsn() ?? 0}", style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.bold))))
+                                  ElevatedButton.icon(
+                                      style: ButtonStyle(
+                                          padding: WidgetStatePropertyAll(
+                                              EdgeInsets.symmetric(
+                                                  vertical: 0,
+                                                  horizontal: 1.w))),
+                                      iconAlignment: IconAlignment.start,
+                                      onLongPress: () async {
+                                        await Clipboard.setData(ClipboardData(
+                                            text: widget.contacto?.otroNumero
+                                                    .toString() ??
+                                                "Sin numero"));
+                                        showToast(
+                                            "Telefono alternativo copiado");
+                                      },
+                                      onPressed: () {
+                                        Iterable<PhoneNumber> country;
+                                        country = PhoneNumber
+                                            .findPotentialPhoneNumbers(
+                                                (widget.contacto?.otroNumero ??
+                                                        "0")
+                                                    .toString());
+                                        debugPrint(
+                                            "${country.toList().map((e) => e).toList()}");
+                                        String? lada =
+                                            country.firstOrNull?.countryCode;
+                                        debugPrint(lada);
+                                        showDialog(
+                                            barrierDismissible: false,
+                                            context: context,
+                                            builder: (context) => DialogSend(
+                                                lenght: 10,
+                                                lada: lada == null
+                                                    ? null
+                                                    : "+$lada",
+                                                entradaTexto: (widget.contacto
+                                                            ?.otroNumero ??
+                                                        "")
+                                                    .toString()
+                                                    .replaceFirst("$lada", ""),
+                                                fun: (p0) async {
+                                                  if (int.tryParse(
+                                                          p0.toString()) !=
+                                                      null) {
+                                                    var newModel = widget
+                                                        .contacto
+                                                        ?.copyWith(
+                                                            otroNumero:
+                                                                int.parse(p0
+                                                                    .toString()),
+                                                            otroNumeroFecha:
+                                                                DateTime.now());
+                                                    await ContactoController
+                                                        .update(newModel!);
+                                                    funcion(contacto: newModel);
+                                                    provider.contacto =
+                                                        newModel;
+                                                  } else {
+                                                    showToast(
+                                                        "Numero ingresado no valido");
+                                                  }
+                                                },
+                                                tipoTeclado:
+                                                    TextInputType.phone,
+                                                fecha: widget
+                                                    .contacto?.otroNumeroFecha,
+                                                cabeza:
+                                                    "Ingresar numero alternatico del contacto"));
+                                      },
+                                      label: Text("Otro Tel\n${PhoneNumber.findPotentialPhoneNumbers((widget.contacto?.otroNumero ?? "0").toString()).firstOrNull?.formatNsn() ?? 0}",
+                                          style: TextStyle(
+                                              fontSize: 15.sp,
+                                              fontWeight: FontWeight.bold)),
+                                      icon: PhoneNumber.findPotentialPhoneNumbers((widget.contacto?.otroNumero ?? "0").toString())
+                                                  .firstOrNull
+                                                  ?.isValid(
+                                                      type: PhoneNumberType
+                                                          .mobile) ??
+                                              false
+                                          ? GestureDetector(
+                                              onTap: () => showDialog(
+                                                  context: context,
+                                                  builder: (context) =>
+                                                      DialogsComunicar(number: (widget.contacto?.otroNumero ?? 0).toString())),
+                                              child: Stack(alignment: Alignment.center, children: [
+                                                Icon(Icons.circle,
+                                                    size: 24.sp,
+                                                    color: ThemaMain.green),
+                                                Icon(LineIcons.tty,
+                                                    size: 20.sp,
+                                                    color: ThemaMain.second)
+                                              ]))
+                                          : null)
                                 else
                                   Text(
                                       "Otro Telefono\n${PhoneNumber.findPotentialPhoneNumbers((widget.contacto?.otroNumero ?? "0").toString()).firstOrNull?.formatNsn() ?? 0}",
-                                      style: TextStyle(fontSize: 16.sp))
+                                      style: TextStyle(fontSize: 14.sp))
                               ]),
                           if (!widget.compartir)
                             Row(children: [
@@ -510,36 +517,32 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                   spacing: .5.w,
                                   children: widget.contacto?.contactoEnlances
                                           .map((e) => GestureDetector(
-                                                onLongPress: () async {
-                                                  var temp = widget.contacto
-                                                      ?.copyWith(
-                                                          contactoEnlances: []);
-                                                  await ContactoController
-                                                      .update(temp!);
-                                                  provider.contacto = temp;
-                                                },
-                                                child: Chip(
-                                                    deleteIcon: Icon(
-                                                        Icons
-                                                            .assistant_direction,
-                                                        size: 20.sp,
-                                                        color: ThemaMain.green),
-                                                    onDeleted: () async {
-                                                      await provider.slide
-                                                          .close();
-                                                      await MapFun.sendInitUri(
-                                                          provider: provider,
-                                                          lat:
-                                                              e.contactoIdRLat!,
-                                                          lng: e
-                                                              .contactoIdRLng!);
-                                                    },
-                                                    labelPadding:
-                                                        EdgeInsets.all(6.sp),
-                                                    label: Text("Aval",
-                                                        style: TextStyle(
-                                                            fontSize: 15.sp))),
-                                              ))
+                                              onLongPress: () async {
+                                                var temp = widget.contacto
+                                                    ?.copyWith(
+                                                        contactoEnlances: []);
+                                                await ContactoController.update(
+                                                    temp!);
+                                                provider.contacto = temp;
+                                              },
+                                              child: Chip(
+                                                  deleteIcon: Icon(
+                                                      Icons.assistant_direction,
+                                                      size: 20.sp,
+                                                      color: ThemaMain.green),
+                                                  onDeleted: () async {
+                                                    await provider.slide
+                                                        .close();
+                                                    await MapFun.sendInitUri(
+                                                        provider: provider,
+                                                        lat: e.contactoIdRLat!,
+                                                        lng: e.contactoIdRLng!);
+                                                  },
+                                                  labelPadding:
+                                                      EdgeInsets.all(6.sp),
+                                                  label: Text("Aval",
+                                                      style: TextStyle(
+                                                          fontSize: 15.sp)))))
                                           .toList() ??
                                       [])
                             ]),
@@ -559,6 +562,7 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                         },
                                         tipoTeclado: TextInputType.text,
                                         fecha: null,
+                                        input: TextInputAction.newline,
                                         cabeza: "Ingresar notas del contacto")),
                                 child: Text(
                                     "Notas\n${widget.contacto?.nota ?? "Sin notas"}",
@@ -577,174 +581,99 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
 
   Widget fotos(MainProvider provider) {
     return Column(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
-      Container(
-          decoration: BoxDecoration(
-              color: ThemaMain.background,
-              borderRadius: BorderRadius.circular(borderRadius)),
-          child: (widget.contacto?.foto == null ||
-                  widget.contacto?.foto == "null")
-              ? InkWell(
-                  onTap: () async {
-                    if (!widget.compartir) {
-                      final XFile? photo =
-                          (await CamaraFun.getGalleria(context)).firstOrNull;
+      bd.Badge(
+          showBadge: !widget.compartir &&
+              (widget.contacto?.foto != null &&
+                  widget.contacto?.foto != "null"),
+          badgeStyle: bd.BadgeStyle(badgeColor: Colors.transparent),
+          badgeContent: GestureDetector(
+              onTap: () => Dialogs.showMorph(
+                  title: "Eliminar foto",
+                  description: "¿Desea eliminar la foto seleccionada?",
+                  loadingTitle: "Eliminando",
+                  onAcceptPressed: (context) async {
+                    var newModel = widget.contacto
+                        ?.copyWith(foto: "null", fotoFecha: DateTime.now());
+                    await ContactoController.update(newModel!);
+                    showToast("Foto eliminada");
+                    provider.contacto = newModel;
+                  }),
+              child: Icon(Icons.delete, color: ThemaMain.red, size: 18.sp)),
+          child: Container(
+              decoration: BoxDecoration(
+                  color: ThemaMain.background,
+                  borderRadius: BorderRadius.circular(borderRadius)),
+              child: (widget.contacto?.foto == null ||
+                      widget.contacto?.foto == "null")
+                  ? InkWell(
+                      onTap: () async {
+                        if (!widget.compartir) {
+                          final XFile? photo =
+                              (await CamaraFun.getGalleria(context))
+                                  .firstOrNull;
 
-                      if (photo != null) {
-                        final data = await photo.readAsBytes();
-                        try {
-                          var reducir =
-                              await FlutterImageCompress.compressWithList(data,
-                                  minHeight: 540, minWidth: 960, quality: 75);
-                          var newModel = widget.contacto?.copyWith(
-                              foto: base64Encode(reducir),
-                              fotoFecha: DateTime.now());
-                          await ContactoController.update(newModel!);
-                          provider.contacto = newModel;
-                        } catch (e) {
-                          showToast("Error al comprimir imagen");
+                          if (photo != null) {
+                            final data = await photo.readAsBytes();
+                            try {
+                              var reducir =
+                                  await FlutterImageCompress.compressWithList(
+                                      data,
+                                      minHeight: 540,
+                                      minWidth: 960,
+                                      quality: 75);
+                              var newModel = widget.contacto?.copyWith(
+                                  foto: base64Encode(reducir),
+                                  fotoFecha: DateTime.now());
+                              await ContactoController.update(newModel!);
+                              provider.contacto = newModel;
+                            } catch (e) {
+                              showToast("Error al comprimir imagen");
+                            }
+                          }
                         }
-                      }
-                    }
-                  },
-                  child: Icon(Icons.contacts,
-                      size: 26.w, color: ThemaMain.primary))
-              : InkWell(
-                  onLongPress: () => (!widget.compartir)
-                      ? Dialogs.showMorph(
-                          title: "Eliminar foto",
-                          description: "¿Desea eliminar la foto seleccionada?",
-                          loadingTitle: "Eliminando",
-                          onAcceptPressed: (context) async {
-                            var newModel = widget.contacto?.copyWith(
-                                foto: "null", fotoFecha: DateTime.now());
-                            await ContactoController.update(newModel!);
-                            showToast("Foto eliminada");
-                            provider.contacto = newModel;
-                          })
-                      : null,
-                  onDoubleTap: () async {
-                    if (!widget.compartir) {
-                      final XFile? photo =
-                          (await CamaraFun.getGalleria(context)).firstOrNull;
+                      },
+                      child: Icon(Icons.contacts,
+                          size: widget.compartir ? 27.w : 21.w,
+                          color: ThemaMain.primary))
+                  : InkWell(
+                      onLongPress: () async {
+                        try {
+                          await Pasteboard.writeImage(
+                              base64Decode(widget.contacto!.foto!));
 
-                      if (photo != null) {
-                        final data = await photo.readAsBytes();
-                        try {
-                          var reducir =
-                              await FlutterImageCompress.compressWithList(data,
-                                  minHeight: 540, minWidth: 960, quality: 75);
-                          var newModel = widget.contacto?.copyWith(
-                              foto: base64Encode(reducir),
-                              fotoFecha: DateTime.now());
-                          await ContactoController.update(newModel!);
-                          provider.contacto = newModel;
+                          final files = await Pasteboard.files();
+                          print(files);
                         } catch (e) {
-                          showToast("Error al comprimir imagen");
+                          debugPrint("$e");
                         }
-                      }
-                    }
-                  },
-                  onTap: () => showDialog(
-                      barrierDismissible: false,
-                      context: context,
-                      builder: (context) => Column(children: [
-                            Expanded(
-                                child: PhotoView.customChild(
-                                    minScale: PhotoViewComputedScale.contained,
-                                    maxScale:
-                                        PhotoViewComputedScale.contained * 2,
-                                    child: Image.memory(base64Decode(
-                                        widget.contacto?.foto ?? "a")))),
-                            Text(
-                                "Ultima modificacion\n${Textos.fechaYMDHMS(fecha: widget.contacto!.fotoFecha!)}",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                    fontSize: 16.sp,
-                                    fontWeight: FontWeight.bold,
-                                    color: ThemaMain.white))
-                          ])),
-                  child: ClipRRect(
-                      borderRadius: BorderRadiusGeometry.circular(borderRadius),
-                      child: Image.memory(
-                          base64Decode(widget.contacto?.foto ?? "a"),
-                          fit: BoxFit.cover,
-                          filterQuality: FilterQuality.low,
-                          width: 26.w,
-                          height: 26.w,
-                          gaplessPlayback: true,
-                          errorBuilder: (context, error, stackTrace) => Icon(
-                              Icons.broken_image,
-                              color: ThemaMain.red,
-                              size: 26.w))))),
-      Container(
-          decoration: BoxDecoration(
-              color: ThemaMain.background,
-              borderRadius: BorderRadius.circular(borderRadius)),
-          child: (widget.contacto?.fotoReferencia == null ||
-                  widget.contacto?.fotoReferencia == "null")
-              ? InkWell(
-                  onTap: () async {
-                    if (!widget.compartir) {
-                      final XFile? photo =
-                          (await CamaraFun.getGalleria(context)).firstOrNull;
+                      },
+                      onDoubleTap: () async {
+                        if (!widget.compartir) {
+                          final XFile? photo =
+                              (await CamaraFun.getGalleria(context))
+                                  .firstOrNull;
 
-                      if (photo != null) {
-                        final data = await photo.readAsBytes();
-                        try {
-                          var reducir =
-                              await FlutterImageCompress.compressWithList(data,
-                                  minHeight: 540, minWidth: 960, quality: 75);
-                          var newModel = widget.contacto?.copyWith(
-                              fotoReferencia: base64Encode(reducir),
-                              fotoReferenciaFecha: DateTime.now());
-                          await ContactoController.update(newModel!);
-                          provider.contacto = newModel;
-                        } catch (e) {
-                          showToast("Error al comprimir imagen");
+                          if (photo != null) {
+                            final data = await photo.readAsBytes();
+                            try {
+                              var reducir =
+                                  await FlutterImageCompress.compressWithList(
+                                      data,
+                                      minHeight: 540,
+                                      minWidth: 960,
+                                      quality: 75);
+                              var newModel = widget.contacto?.copyWith(
+                                  foto: base64Encode(reducir),
+                                  fotoFecha: DateTime.now());
+                              await ContactoController.update(newModel!);
+                              provider.contacto = newModel;
+                            } catch (e) {
+                              showToast("Error al comprimir imagen");
+                            }
+                          }
                         }
-                      }
-                    }
-                  },
-                  child: Icon(Icons.image, color: ThemaMain.green, size: 26.w))
-              : InkWell(
-                  onLongPress: () => (!widget.compartir)
-                      ? Dialogs.showMorph(
-                          title: "Eliminar foto",
-                          description: "¿Desea eliminar la foto seleccionada?",
-                          loadingTitle: "Eliminando",
-                          onAcceptPressed: (context) async {
-                            var newModel = widget.contacto?.copyWith(
-                                fotoReferencia: "null",
-                                fotoFecha: DateTime.now());
-                            await ContactoController.update(newModel!);
-                            showToast("Foto eliminada");
-                            provider.contacto = newModel;
-                          })
-                      : null,
-                  onDoubleTap: () async {
-                    if (!widget.compartir) {
-                      final XFile? photo =
-                          (await CamaraFun.getGalleria(context)).firstOrNull;
-
-                      if (photo != null) {
-                        final data = await photo.readAsBytes();
-                        try {
-                          var reducir =
-                              await FlutterImageCompress.compressWithList(data,
-                                  minHeight: 540, minWidth: 960, quality: 75);
-                          var newModel = widget.contacto?.copyWith(
-                              fotoReferencia: base64Encode(reducir),
-                              fotoReferenciaFecha: DateTime.now());
-                          await ContactoController.update(newModel!);
-                          provider.contacto = newModel;
-                        } catch (e) {
-                          showToast("Error al comprimir imagen");
-                        }
-                      }
-                    }
-                  },
-                  onTap: () => (!widget.compartir)
-                      ? showDialog(
+                      },
+                      onTap: () => showDialog(
                           barrierDismissible: false,
                           context: context,
                           builder: (context) => Column(children: [
@@ -756,30 +685,163 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                             PhotoViewComputedScale.contained *
                                                 2,
                                         child: Image.memory(base64Decode(
-                                            widget.contacto?.fotoReferencia ??
-                                                "a")))),
+                                            widget.contacto?.foto ?? "a")))),
                                 Text(
-                                    "Ultima modificacion\n${Textos.fechaYMDHMS(fecha: widget.contacto!.fotoReferenciaFecha!)}",
+                                    "Ultima modificacion\n${Textos.fechaYMDHMS(fecha: widget.contacto!.fotoFecha!)}",
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
                                         fontSize: 16.sp,
                                         fontWeight: FontWeight.bold,
                                         color: ThemaMain.white))
-                              ]))
-                      : null,
-                  child: ClipRRect(
-                      borderRadius: BorderRadiusGeometry.circular(borderRadius),
-                      child: Image.memory(
-                          fit: BoxFit.cover,
-                          filterQuality: FilterQuality.low,
-                          width: 26.w,
-                          height: 26.w,
-                          base64Decode(widget.contacto?.fotoReferencia ?? "a"),
-                          gaplessPlayback: true,
-                          errorBuilder: (context, error, stackTrace) => Icon(
-                              Icons.broken_image,
-                              color: ThemaMain.red,
-                              size: 26.w)))))
+                              ])),
+                      child: ClipRRect(
+                          borderRadius:
+                              BorderRadiusGeometry.circular(borderRadius),
+                          child: Image.memory(
+                              base64Decode(widget.contacto?.foto ?? "a"),
+                              fit: BoxFit.cover,
+                              filterQuality: FilterQuality.low,
+                              width: widget.compartir ? 27.w : 21.w,
+                              height: widget.compartir ? 27.w : 21.w,
+                              gaplessPlayback: true,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  Icon(Icons.broken_image,
+                                      color: ThemaMain.red,
+                                      size:
+                                          widget.compartir ? 27.w : 21.w)))))),
+      bd.Badge(
+          showBadge: !widget.compartir &&
+              (widget.contacto?.fotoReferencia != null &&
+                  widget.contacto?.fotoReferencia != "null"),
+          badgeStyle: bd.BadgeStyle(badgeColor: Colors.transparent),
+          badgeContent: GestureDetector(
+              onTap: () => Dialogs.showMorph(
+                  title: "Eliminar foto",
+                  description: "¿Desea eliminar la foto seleccionada?",
+                  loadingTitle: "Eliminando",
+                  onAcceptPressed: (context) async {
+                    var newModel = widget.contacto?.copyWith(
+                        fotoReferencia: "null",
+                        fotoReferenciaFecha: DateTime.now());
+                    await ContactoController.update(newModel!);
+                    showToast("Foto eliminada");
+                    provider.contacto = newModel;
+                  }),
+              child: Icon(Icons.delete, color: ThemaMain.red, size: 18.sp)),
+          child: Container(
+              decoration: BoxDecoration(
+                  color: ThemaMain.background,
+                  borderRadius: BorderRadius.circular(borderRadius)),
+              child: (widget.contacto?.fotoReferencia == null ||
+                      widget.contacto?.fotoReferencia == "null")
+                  ? InkWell(
+                      onTap: () async {
+                        if (!widget.compartir) {
+                          final XFile? photo =
+                              (await CamaraFun.getGalleria(context))
+                                  .firstOrNull;
+
+                          if (photo != null) {
+                            final data = await photo.readAsBytes();
+                            try {
+                              var reducir =
+                                  await FlutterImageCompress.compressWithList(
+                                      data,
+                                      minHeight: 540,
+                                      minWidth: 960,
+                                      quality: 75);
+                              var newModel = widget.contacto?.copyWith(
+                                  fotoReferencia: base64Encode(reducir),
+                                  fotoReferenciaFecha: DateTime.now());
+                              await ContactoController.update(newModel!);
+                              provider.contacto = newModel;
+                            } catch (e) {
+                              showToast("Error al comprimir imagen");
+                            }
+                          }
+                        }
+                      },
+                      child: Icon(Icons.image,
+                          color: ThemaMain.green,
+                          size: widget.compartir ? 27.w : 21.w))
+                  : InkWell(
+                      onLongPress: () async {
+                        try {
+                          await Pasteboard.writeImage(
+                              base64Decode(widget.contacto!.fotoReferencia!));
+
+                          final files = await Pasteboard.files();
+                          print(files);
+                        } catch (e) {
+                          debugPrint("$e");
+                        }
+                      },
+                      onDoubleTap: () async {
+                        if (!widget.compartir) {
+                          final XFile? photo =
+                              (await CamaraFun.getGalleria(context))
+                                  .firstOrNull;
+
+                          if (photo != null) {
+                            final data = await photo.readAsBytes();
+                            try {
+                              var reducir =
+                                  await FlutterImageCompress.compressWithList(
+                                      data,
+                                      minHeight: 540,
+                                      minWidth: 960,
+                                      quality: 75);
+                              var newModel = widget.contacto?.copyWith(
+                                  fotoReferencia: base64Encode(reducir),
+                                  fotoReferenciaFecha: DateTime.now());
+                              await ContactoController.update(newModel!);
+                              provider.contacto = newModel;
+                            } catch (e) {
+                              showToast("Error al comprimir imagen");
+                            }
+                          }
+                        }
+                      },
+                      onTap: () => (!widget.compartir)
+                          ? showDialog(
+                              barrierDismissible: false,
+                              context: context,
+                              builder: (context) => Column(children: [
+                                    Expanded(
+                                        child: PhotoView.customChild(
+                                            minScale: PhotoViewComputedScale
+                                                .contained,
+                                            maxScale: PhotoViewComputedScale
+                                                    .contained *
+                                                2,
+                                            child: Image.memory(base64Decode(
+                                                widget.contacto
+                                                        ?.fotoReferencia ??
+                                                    "a")))),
+                                    Text(
+                                        "Ultima modificacion\n${Textos.fechaYMDHMS(fecha: widget.contacto!.fotoReferenciaFecha!)}",
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                            fontSize: 16.sp,
+                                            fontWeight: FontWeight.bold,
+                                            color: ThemaMain.white))
+                                  ]))
+                          : null,
+                      child: ClipRRect(
+                          borderRadius:
+                              BorderRadiusGeometry.circular(borderRadius),
+                          child: Image.memory(
+                              fit: BoxFit.cover,
+                              filterQuality: FilterQuality.low,
+                              width: widget.compartir ? 27.w : 21.w,
+                              height: widget.compartir ? 27.w : 21.w,
+                              base64Decode(
+                                  widget.contacto?.fotoReferencia ?? "a"),
+                              gaplessPlayback: true,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  Icon(Icons.broken_image,
+                                      color: ThemaMain.red,
+                                      size: widget.compartir ? 27.w : 21.w))))))
     ]);
   }
 }

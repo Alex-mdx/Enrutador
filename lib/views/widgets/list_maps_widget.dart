@@ -12,12 +12,13 @@ class ListMapsWidget extends StatefulWidget {
   final double latitud;
   final double longitud;
   final Function(void) launch;
+  final String word;
   const ListMapsWidget(
       {super.key,
       required this.mapas,
       required this.latitud,
       required this.longitud,
-      required this.launch});
+      required this.launch, required this.word});
 
   @override
   State<ListMapsWidget> createState() => _ListMapsWidgetState();
@@ -70,7 +71,7 @@ class _ListMapsWidgetState extends State<ListMapsWidget> {
             onPressed: () async => widget.launch(await widget.mapas.showMarker(
                 zoom: 15,
                 coords: Coords(widget.latitud, widget.longitud),
-                title: "Ubicacion Seleccionada")),
+                title: widget.word)),
             icon: Icon(Icons.launch, color: ThemaMain.green)));
   }
 }

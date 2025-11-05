@@ -1,6 +1,8 @@
+import 'dart:convert';
 import 'dart:developer';
-
+import 'package:enrutador/models/what_3_words_model.dart';
 import 'package:flutter/material.dart';
+import 'package:oktoast/oktoast.dart';
 import 'package:what3words/what3words.dart';
 
 class W3wFun {
@@ -11,5 +13,39 @@ class W3wFun {
     var word =
         await api.convertTo3wa(Coordinates(lat, lng)).language('es').execute();
     debugPrint("${word.data()?.toJson()}");
+  }
+
+  static Future<List<What3WordsModel>> suggets(String word) async {
+    var isw3w = api.isPossible3wa(word);
+    if (isw3w) {
+      AutosuggestOptions opciones = AutosuggestOptions().setNResults(4);
+      try {
+        var len = await api.autosuggest(word, options: opciones).execute();
+        log(jsonEncode(len.data()?.toJson()["suggestions"] as List<Map<String, dynamic>>));
+        return (len.data()?.toJson()["suggestions"]
+                as List<Map<String, dynamic>>)
+            .map((e) => What3WordsModel.fromJson(e))
+            .toList();
+      } catch (e) {
+        debugPrint("error: $e");
+        return [];
+      }
+    } else {
+      debugPrint("$isw3w");
+      return [];
+    }
+  }
+
+  static Future<void> wordtocoor(String word) async {
+    try {
+      var len = await api.convertToCoordinates(word).execute();
+      log("${len.data()} - ${len.error()?.message ?? "No"}");
+      if (len.data() != null) {
+      } else {
+        showToast("Error: ${len.error()?.message ?? "Desconocido"}");
+      }
+    } catch (e) {
+      debugPrint("error: $e");
+    }
   }
 }

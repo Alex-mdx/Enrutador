@@ -1,9 +1,13 @@
+import 'package:enrutador/controllers/estado_controller.dart';
 import 'package:enrutador/controllers/tipo_controller.dart';
+import 'package:enrutador/models/estado_model.dart';
 import 'package:enrutador/models/tipos_model.dart';
 import 'package:enrutador/utilities/main_provider.dart';
 import 'package:enrutador/utilities/preferences.dart';
 import 'package:enrutador/utilities/services/navigation_services.dart';
+import 'package:enrutador/views/widgets/list_estado_widget.dart';
 import 'package:enrutador/views/widgets/list_tipo_widget.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/utils.dart';
 import 'package:line_icons/line_icons.dart';
@@ -20,8 +24,6 @@ class RowFiltro extends StatefulWidget {
 }
 
 class _RowFiltroState extends State<RowFiltro> {
-  DateTime first = DateTime.now().subtract(Duration(days: 365 * 2));
-  DateTime last = DateTime.now().add(Duration(days: 365 * 2));
 
   @override
   Widget build(BuildContext context) {
@@ -29,6 +31,18 @@ class _RowFiltroState extends State<RowFiltro> {
     return SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(spacing: .5.w, children: [
+          if (kDebugMode)
+            chips(
+                icono: LineIcons.directions,
+                cabeza: "Enrutados",
+                fun: () => setState(() {
+                      Preferences.enrutados = true;
+                    }),
+                colorprincipal: ThemaMain.green,
+                condicion: Preferences.enrutados,
+                delete: () => setState(() {
+                      Preferences.enrutados = false;
+                    })),
           chips(
               icono: Icons.type_specimen,
               cabeza: Preferences.tipos.isEmpty
@@ -70,9 +84,12 @@ class _RowFiltroState extends State<RowFiltro> {
                                             } else {
                                               temp.add(tipo.id!);
                                             }
-                                            Preferences.tipos = temp
-                                                .map((e) => e.toString())
-                                                .toList();
+                                            setState(() {
+                                              Preferences.tipos = temp
+                                                  .map((e) => e.toString())
+                                                  .toList();
+                                            });
+
                                             Navigation.pop();
                                           });
                                     });
@@ -96,25 +113,83 @@ class _RowFiltroState extends State<RowFiltro> {
           chips(
               icono: Icons.contact_emergency,
               cabeza: Preferences.status.isEmpty
-                  ? "Estatus"
-                  : Preferences.status.join(","),
-              fun: () {},
+                  ? "Estado"
+                  : Preferences.status
+                      .map((e) => provider.estados
+                          .firstWhereOrNull((ti) => ti.id == int.tryParse(e))
+                          ?.nombre)
+                      .join(", "),
+              fun: () => showDialog(
+                  context: context,
+                  builder: (context) => Dialog(
+                          child:
+                              Column(mainAxisSize: MainAxisSize.min, children: [
+                        Text("Seleccione estados para filtrar",
+                            style: TextStyle(fontSize: 16.sp)),
+                        FutureBuilder(
+                            future: EstadoController.getItems(),
+                            builder: (context, snapshot) {
+                              if (snapshot.hasData) {
+                                return ListView.builder(
+                                    shrinkWrap: true,
+                                    itemCount: snapshot.data!.length,
+                                    itemBuilder: (context, index) {
+                                      EstadoModel estado =
+                                          snapshot.data![index];
+                                      return ListEstadoWidget(
+                                          estado: estado,
+                                          fun: () {},
+                                          share: false,
+                                          selectedVisible: true,
+                                          selected: Preferences.status
+                                              .contains(estado.id.toString()),
+                                          onSelected: (p0) {
+                                            var temp = Preferences.status
+                                                .map((e) => int.parse(e))
+                                                .toList();
+                                            if (temp.contains(estado.id)) {
+                                              temp.remove(estado.id);
+                                            } else {
+                                              temp.add(estado.id!);
+                                            }
+                                            setState(() {
+                                              Preferences.status = temp
+                                                  .map((e) => e.toString())
+                                                  .toList();
+                                            });
+
+                                            Navigation.pop();
+                                          });
+                                    });
+                              } else if (snapshot.hasError) {
+                                return Text("Error: ${snapshot.error}",
+                                    style: TextStyle(
+                                        fontSize: 15.sp,
+                                        fontStyle: FontStyle.italic));
+                              } else {
+                                return Padding(
+                                    padding: EdgeInsets.all(8.sp),
+                                    child: CircularProgressIndicator());
+                              }
+                            })
+                      ]))),
               colorprincipal: ThemaMain.darkBlue,
               condicion: Preferences.status.isNotEmpty,
               delete: () => setState(() {
                     Preferences.status = [];
                   })),
-          chips(
-              icono: LineIcons.mapMarked,
-              cabeza: Preferences.zonas.isEmpty
-                  ? "Zona"
-                  : Preferences.zonas.join(","),
-              fun: () {},
-              colorprincipal: ThemaMain.pink,
-              condicion: Preferences.zonas.isNotEmpty,
-              delete: () => setState(() {
-                    Preferences.zonas = [];
-                  }))
+          if (kDebugMode)
+            chips(
+                icono: LineIcons.mapMarked,
+                cabeza: Preferences.zonas.isEmpty
+                    ? "Zona"
+                    : Preferences.zonas.join(","),
+                fun: () {},
+                colorprincipal: ThemaMain.pink,
+                condicion: Preferences.zonas.isNotEmpty,
+                delete: () => setState(() {
+                      Preferences.zonas = [];
+                    }))
         ]));
   }
 

@@ -130,8 +130,8 @@ class _DialogUbicacionState extends State<DialogUbicacion> {
               try {
                 var ps = PlusCode(psController.text.removeAllWhitespace);
                 var decode = ps.decode();
-                widget.funLat(
-                    LatLng(decode.center.latitude, decode.center.longitude));
+                widget.funLat(LatLng(
+                    decode.southWest.latitude, decode.southWest.longitude));
               } catch (e) {
                 debugPrint("error: $e");
                 showToast("Plus Code ingresado no valido");

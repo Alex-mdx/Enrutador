@@ -1,3 +1,4 @@
+import 'package:enrutador/controllers/estado_controller.dart';
 import 'package:enrutador/controllers/tipo_controller.dart';
 import 'package:enrutador/models/contacto_model.dart';
 import 'package:enrutador/models/estado_model.dart';
@@ -148,7 +149,8 @@ class MainProvider with ChangeNotifier implements TickerProvider {
 
   //?Funciones
 
-  logeo() async {
+  Future<void> logeo() async {
     tipos = await TipoController.getItems();
+    estados = await EstadoController.getItems();
   }
 }

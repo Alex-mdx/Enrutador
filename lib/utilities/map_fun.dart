@@ -20,13 +20,15 @@ class MapFun {
   static const tierraRadio = 6378;
   static Future<void> getUri(
       {required MainProvider provider, required String uri}) async {
-    var newText = uri.replaceAll("q=", "");
+    var newindex = uri.indexOf("?q=");
+    var newText = uri.replaceRange(0,newindex+3,"");
     List<String> datas = newText.split(",");
-
+    var pc = Textos.psCODE(double.parse(datas[0]), double.parse(datas[1]));
+    var newlocation = PlusCode(pc).decode().southWest;
     await sendInitUri(
         provider: provider,
-        lat: double.parse(datas[0]),
-        lng: double.parse(datas[1]));
+        lat: double.parse(newlocation.latitude.toStringAsFixed(6)),
+        lng: double.parse(newlocation.longitude.toStringAsFixed(6)));
   }
 
   static Future<void> sendInitUri(
@@ -34,11 +36,10 @@ class MapFun {
       required double lat,
       required double lng}) async {
     provider.mapSeguir = false;
+
+    debugPrint("$lat - $lng");
     var dir = await ContactoController.getItem(lat: lat, lng: lng);
-    await provider.animaMap.centerOnPoint(
-        LatLng(double.parse(lat.toStringAsFixed(6)),
-            double.parse(lng.toStringAsFixed(6))),
-        zoom: 18);
+    await provider.animaMap.centerOnPoint(LatLng(lat, lng), zoom: 18);
     if (dir != null) {
       provider.contacto = dir;
       await provider.slide.open();
@@ -91,8 +92,6 @@ class MapFun {
 
   static double _calculateDistance(
       double lat1, double lon1, double lat2, double lon2) {
-    // Implementar Haversine o euclidiana según necesites
-
     double dLat = (lat2 - lat1) * pi / 180;
     double dLon = (lon2 - lon1) * pi / 180;
 
@@ -148,14 +147,13 @@ class MapFun {
       {required MainProvider provider,
       required double lat,
       required double lng}) async {
-    var pc = Textos.psCODE(double.parse(lat.toStringAsFixed(6)),
-        double.parse(lng.toStringAsFixed(6)));
+    var pc = Textos.psCODE(lat, lng);
     var newlocation = PlusCode(pc).decode().southWest;
     provider.contacto = ContactoModelo(
         id: null,
         nombreCompleto: null,
-        latitud: newlocation.latitude,
-        longitud: newlocation.longitude,
+        latitud: double.parse(newlocation.latitude.toStringAsFixed(6)),
+        longitud: double.parse(newlocation.longitude.toStringAsFixed(6)),
         domicilio: null,
         fechaDomicilio: null,
         numero: null,
@@ -176,19 +174,24 @@ class MapFun {
         nota: null);
     provider.marker = [
       AnimatedMarker(
+          width: 21.sp,
+          height: 21.sp,
           rotate: true,
           point: LatLng(newlocation.latitude, newlocation.longitude),
           builder: (context, animation) => InkWell(
               onTap: () async {
                 provider.animaMap.centerOnPoint(
-                    LatLng(double.parse(lat.toStringAsFixed(6)),
-                        double.parse(lng.toStringAsFixed(6))),
+                    LatLng(
+                        double.parse(newlocation.latitude.toStringAsFixed(6)),
+                        double.parse(newlocation.longitude.toStringAsFixed(6))),
                     zoom: 18);
                 provider.contacto = ContactoModelo(
                     id: null,
                     nombreCompleto: null,
-                    latitud: newlocation.latitude,
-                    longitud: newlocation.longitude,
+                    latitud:
+                        double.parse(newlocation.latitude.toStringAsFixed(6)),
+                    longitud:
+                        double.parse(newlocation.longitude.toStringAsFixed(6)),
                     domicilio: null,
                     fechaDomicilio: null,
                     numero: null,
@@ -210,12 +213,11 @@ class MapFun {
                 await provider.slide.open();
               },
               child: Stack(alignment: Alignment.center, children: [
-                Image.asset("assets/mark_point2.png",
-                    width: 28.sp, height: 28.sp),
+                Image.asset("assets/mark_point2.png"),
                 Padding(
-                    padding: EdgeInsets.only(bottom: 6.sp),
+                    padding: EdgeInsets.only(bottom: 5.sp),
                     child: Icon(
-                        size: 21.sp, Icons.add_circle, color: ThemaMain.red))
+                        size: 20.sp, Icons.add_circle, color: ThemaMain.red))
               ])))
     ];
   }
@@ -224,8 +226,8 @@ class MapFun {
     var tocable = (provider.contacto?.latitud == e.latitud &&
         provider.contacto?.longitud == e.longitud);
     return AnimatedMarker(
-        width: tocable ? 24.sp : 22.sp,
-        height: tocable ? 24.sp : 22.sp,
+        width: tocable ? 23.sp : 20.sp,
+        height: tocable ? 23.sp : 20.sp,
         rotate: true,
         point: LatLng(e.latitud, e.longitud),
         builder: (context, animation) => InkWell(
@@ -252,20 +254,15 @@ class MapFun {
               await provider.slide.open();
             },
             child: bd.Badge(
-                badgeStyle: bd.BadgeStyle(badgeColor: Colors.transparent),
-                showBadge: true,
-                badgeContent: OverflowBar(children: [
-                  /* FutureBuilder(
-                        future: EnrutarController.getItemContacto(
-                            contactoId: e.id ?? -1),
-                        builder: (context, snapshot) {
-                          if (snapshot.hasData) {
-                            return Icon(LineIcons.route, size: 18.sp);
-                          } else {
-                            return SizedBox();
-                          }
-                        }) */
-                ]),
+                badgeStyle: bd.BadgeStyle(
+                    badgeColor: Colors.black, shape: bd.BadgeShape.twitter),
+                showBadge: e.estado != null,
+                badgeAnimation: bd.BadgeAnimation.fade(),
+                badgeContent: Icon(Icons.circle,
+                    color: provider.estados
+                        .firstWhereOrNull((element) => element.id == e.estado)
+                        ?.color,
+                    size: tocable ? 14.sp : 12.sp),
                 child: Stack(
                     fit: StackFit.expand,
                     alignment: Alignment.center,
@@ -281,7 +278,7 @@ class MapFun {
                                           (element) => element.id == e.tipo)
                                       ?.icon ??
                                   Icons.person,
-                              size: tocable ? 22.sp : 20.sp,
+                              size: tocable ? 21.sp : 19.sp,
                               color: provider.tipos
                                       .firstWhereOrNull(
                                           (element) => element.id == e.tipo)

@@ -1,6 +1,7 @@
 import 'package:enrutador/controllers/contacto_controller.dart';
 import 'package:enrutador/utilities/main_provider.dart';
 import 'package:enrutador/utilities/map_fun.dart';
+import 'package:enrutador/utilities/preferences.dart';
 import 'package:enrutador/utilities/theme/theme_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -10,6 +11,7 @@ import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class MapMain extends StatefulWidget {
   const MapMain({super.key});
@@ -31,8 +33,8 @@ class _ViajeMapPageState extends State<MapMain>
     super.build(context);
     return provider.local == null
         ? Center(
-            child: Text("No se pudo acceder a su ubicacion",
-                style: TextStyle(fontSize: 14.sp)))
+            child: LoadingAnimationWidget.staggeredDotsWave(
+                color: ThemaMain.primary, size: 24.sp))
         : FlutterMap(
             mapController: provider.animaMap.mapController,
             options: MapOptions(
@@ -44,44 +46,48 @@ class _ViajeMapPageState extends State<MapMain>
                     lat: point.latitude,
                     lng: point.longitude),
                 initialZoom: 17,
-                minZoom: 6,
-                maxZoom: 19,
+                minZoom: 10,
+                maxZoom: 20,
                 initialCenter: LatLng(
                     provider.local!.latitude!, provider.local!.longitude!)),
             children: [
-                provider.mapaReal
-                    ? TileLayer(
-                        retinaMode: false,
-                        panBuffer: 2,
-                        maxZoom: 19,
-                        keepBuffer: 3,
-                        maxNativeZoom: 19,
+                Stack(children: [
+                  provider.mapaReal
+                      ? TileLayer(
+                          maxZoom: 19,
+                          maxNativeZoom: 18,
+                          retinaMode: false,
+                          urlTemplate:
+                              'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+                          userAgentPackageName:
+                              'dev.fleaflet.flutter_map.example')
+                      : TileLayer(
+                          maxZoom: 20,
+                          maxNativeZoom: 19,
+                          urlTemplate:
+                              'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                          retinaMode: false,
+                          userAgentPackageName: 'com.enrutador.app'),
+                  if (Preferences.grid)
+                    TileLayer(
+                        tms: true,
                         urlTemplate:
-                            'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-                        userAgentPackageName:
-                            'dev.fleaflet.flutter_map.example')
-                    : TileLayer(
-                        panBuffer: 2,
-                        maxZoom: 19,
-                        keepBuffer: 3,
-                        maxNativeZoom: 19,
-                        urlTemplate:
-                            'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                        retinaMode: false,
-                        userAgentPackageName: 'com.enrutador.app'),
+                            'https://grid.plus.codes/grid/tms/{z}/{x}/{y}.png${provider.mapaReal ? "?col=white" : ""}',
+                        userAgentPackageName: 'com.enrutador.app')
+                ]),
                 CurrentLocationLayer(
                     alignDirectionAnimationDuration: Durations.medium1,
                     alignPositionAnimationDuration: Durations.medium1,
                     moveAnimationDuration: Durations.short3,
                     style: LocationMarkerStyle(
                         showAccuracyCircle: true,
-                        markerSize: Size(20.sp, 20.sp),
+                        markerSize: Size(19.sp, 19.sp),
                         showHeadingSector: true,
                         accuracyCircleColor: ThemaMain.darkBlue.withAlpha(10),
                         marker: DefaultLocationMarker(
                             color: ThemaMain.darkBlue,
                             child: Icon(
-                                size: 16.sp,
+                                size: 15.sp,
                                 Icons.circle,
                                 color: Colors.white)),
                         markerDirection: MarkerDirection.heading)),

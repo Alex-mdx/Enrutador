@@ -15,16 +15,25 @@ class Preferences {
   static set mapa(String value) => _preferences?.setString('mapa', value);
   static String get lada => _preferences?.getString('lada') ?? "";
   static set lada(String value) => _preferences?.setString('lada', value);
-  
+
   static bool get version => _preferences?.getBool('version') ?? true;
   static set version(bool value) => _preferences?.setBool('version', value);
 
+  static bool get enrutados => _preferences?.getBool('enrutados') ?? false;
+  static set enrutados(bool value) => _preferences?.setBool('enrutados', value);
+
+  static bool get grid => _preferences?.getBool('grid') ?? true;
+  static set grid(bool value) => _preferences?.setBool('grid', value);
+
   static List<String> get tipos => _preferences?.getStringList('tipos') ?? [];
-  static set tipos(List<String> value) => _preferences?.setStringList('tipos', value);
+  static set tipos(List<String> value) =>
+      _preferences?.setStringList('tipos', value);
 
   static List<String> get status => _preferences?.getStringList('status') ?? [];
-  static set status(List<String> value) => _preferences?.setStringList('status', value);
+  static set status(List<String> value) =>
+      _preferences?.setStringList('status', value);
 
   static List<String> get zonas => _preferences?.getStringList('zonas') ?? [];
-  static set zonas(List<String> value) => _preferences?.setStringList('zonas', value);
+  static set zonas(List<String> value) =>
+      _preferences?.setStringList('zonas', value);
 }

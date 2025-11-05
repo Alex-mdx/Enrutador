@@ -32,9 +32,9 @@ class DialogCompartir extends StatelessWidget {
                   onPressed: () async => await ShareFun.share(
                       titulo: "Comparte este contacto",
                       mensaje:
-                          "${ShareFun.copiar}\n*Plus Code*: ${Textos.psCODE(contacto.latitud, contacto.longitud)}${contacto.nombreCompleto != null ? "\n*Nombre*: ${contacto.nombreCompleto}" : ""}${contacto.domicilio != null ? "\n*Domicilio*: ${contacto.domicilio}" : ""}${contacto.numero != null ? "Telefono: ${contacto.numero}" : ""}${contacto.otroNumero != null ? "Telefono alt: ${contacto.otroNumero}" : ""}${contacto.nota != null ? "\n*Notas*: ${contacto.nota}" : ""}"),
+                          "${ShareFun.copiar}\n*Plus Code*: ${Textos.psCODE(contacto.latitud, contacto.longitud)}${contacto.nombreCompleto != null ? "\n*Nombre*: ${contacto.nombreCompleto}" : ""}${contacto.domicilio != null ? "\n*Domicilio*: ${contacto.domicilio}" : ""}${contacto.numero != null ? "\nTelefono: ${contacto.numero}" : ""}${contacto.otroNumero != null ? "\nTelefono alt: ${contacto.otroNumero}" : ""}${contacto.nota != null ? "\n*Notas*: ${contacto.nota}" : ""}"),
                   icon: Icon(Icons.text_snippet,
-                      size: 42.sp, color: ThemaMain.primary)),
+                      size: 32.sp, color: ThemaMain.primary)),
               Text("Texto",
                   style:
                       TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold))
@@ -45,10 +45,7 @@ class DialogCompartir extends StatelessWidget {
                   onPressed: () async {
                     showToast("Generando archivo...");
                     var data = (await ShareFun.shareDatas(
-                            nombre: contacto.nombreCompleto != null
-                                ? "${contacto.nombreCompleto?.replaceAll(" ", "_")}"
-                                : "contacto",
-                            datas: [contacto]))
+                            nombre: "contactos", datas: [contacto]))
                         .firstOrNull;
                     if (data != null) {
                       XFile file = XFile(data.path);
@@ -59,7 +56,7 @@ class DialogCompartir extends StatelessWidget {
                     }
                   },
                   icon: Icon(Icons.offline_share,
-                      size: 42.sp, color: ThemaMain.green)),
+                      size: 32.sp, color: ThemaMain.green)),
               Text("Archivo",
                   style:
                       TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold))
@@ -105,7 +102,7 @@ class DialogCompartir extends StatelessWidget {
                                       icon: Icon(Icons.share))
                                 ])));
                   },
-                  icon: Icon(Icons.image, size: 42.sp, color: ThemaMain.red)),
+                  icon: Icon(Icons.image, size: 32.sp, color: ThemaMain.red)),
               Text("Imagen",
                   style:
                       TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold))

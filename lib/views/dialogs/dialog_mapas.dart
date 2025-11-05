@@ -6,8 +6,9 @@ import 'package:map_launcher/map_launcher.dart';
 import 'package:sizer/sizer.dart';
 
 class DialogMapas extends StatelessWidget {
+  final String words;
   final LatLng coordenadas;
-  const DialogMapas({super.key, required this.coordenadas});
+  const DialogMapas({super.key, required this.words,required this.coordenadas});
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +37,7 @@ class DialogMapas extends StatelessWidget {
                             child: ListMapsWidget(
                                 mapas: mapas,
                                 latitud: coordenadas.latitude,
-                                longitud: coordenadas.longitude,
+                                longitud: coordenadas.longitude,word: words,
                                 launch: (p0) async {
                                   Navigation.pop();
                                 }));

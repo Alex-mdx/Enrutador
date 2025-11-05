@@ -11,7 +11,7 @@ dependencies:
   app_links: ^6.4.0
   avatar_glow: ^3.0.1
   badges: ^3.1.2
-  cupertino_icons: ^1.0.6
+  cupertino_icons: ^1.0.8
   filesize: ^2.0.1
   flutter:
     sdk: flutter
@@ -20,7 +20,7 @@ dependencies:
   flutter_libphonenumber: ^2.5.1
   flutter_localizations:
     sdk: flutter
-  flutter_map: ^8.2.1
+  flutter_map: ^8.2.2
   flutter_map_animations: ^0.9.0
   flutter_map_compass: ^1.1.1
   flutter_map_location_marker: ^10.1.0
@@ -28,16 +28,17 @@ dependencies:
   flutter_material_color_picker: ^1.2.0
   flutter_phone_direct_caller: ^2.2.1
   flutter_slider_drawer: ^3.0.2
-  get: ^4.6.6
+  get: ^4.7.2
   http: ^1.4.0
-  image: ^4.2.0
+  image: ^4.5.4
   input_quantity: ^2.5.1
-  internet_connection_checker_plus: ^2.7.0
+  internet_connection_checker_plus: ^2.9.1
   intl: 0.20.2
+  loading_animation_widget: ^1.3.0
   latlong2: ^0.9.1
   line_icons: ^2.0.3
   location: ^8.0.1
-  map_launcher: ^4.0.0
+  map_launcher: ^4.4.2
   oktoast: ^3.4.0
   open_location_code: ^1.0.1
   open_route_service: ^1.2.7
@@ -47,19 +48,20 @@ dependencies:
   permission_handler: ^12.0.0+1
   phone_numbers_parser: ^9.0.3
   photo_view: ^0.15.0
-  pro_image_editor: ^11.5.1
-  provider: ^6.1.2
-  share_plus: ^12.0.0
-  shared_preferences: ^2.3.3
-  sizer: ^3.0.4
+  pro_image_editor: ^11.12.0
+  provider: ^6.1.5+1
+  share_plus: ^12.0.1
+  shared_preferences: ^2.5.3
+  sizer: ^3.1.3
   sliding_up_panel: ^2.0.0+1
-  sqflite: ^2.3.3+1
+  sqflite: ^2.4.2
   substring_highlight: ^1.0.33
-  timelines_plus: ^1.0.7
+  timelines_plus: ^1.0.8
   url_launcher: ^6.3.2
   what3words: ^3.2.0
   whatsapp_unilink: ^2.1.0
   widgets_to_image: ^2.0.1
+  pasteboard: ^0.4.0
 
 dev_dependencies:
   flutter_lints: ^6.0.0

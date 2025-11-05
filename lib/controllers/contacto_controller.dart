@@ -132,7 +132,7 @@ class ContactoController {
   }
 
   static Future<List<ContactoModelo>> getItemsAll(
-      {required String? nombre}) async {
+      {required String? nombre, required int? limit }) async {
     final db = await database();
     final modelo = (await db.query(nombreDB,
         where: nombre == "" || nombre == null
@@ -142,7 +142,7 @@ class ContactoController {
             ? null
             : ['%$nombre%', '%$nombre%', '%$nombre%'],
         orderBy: "nombre_completo ASC",
-        limit: 250));
+        limit: limit));
     List<ContactoModelo> model = [];
     for (var element in modelo) {
       model.add(ContactoModelo.fromJson(element));
@@ -156,7 +156,7 @@ class ContactoController {
 
     List<Map<String, dynamic>> categoria = await db.query(nombreDB,
         where: "nombre_completo LIKE ? OR numero LIKE ? OR otro_numero LIKE ?",
-        orderBy: "nombre_completo",
+        orderBy: "nombre_completo ASC",
         whereArgs: ['%$word%', '%$word%', '%$word%'],
         limit: limit ?? 10);
     for (var element in categoria) {

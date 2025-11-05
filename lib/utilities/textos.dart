@@ -125,7 +125,7 @@ class Textos {
 
   static String psCODE(double latitud, double longitud) {
     final pscode =
-        PlusCode.encode(LatLng(latitud, longitud), codeLength: 12).toString();
+        PlusCode.encode(LatLng(latitud, longitud), codeLength: 11).toString();
     return pscode;
   }
 

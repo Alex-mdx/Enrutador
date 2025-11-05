@@ -1,5 +1,6 @@
 import 'package:enrutador/controllers/tipo_controller.dart';
 import 'package:enrutador/models/tipos_model.dart';
+import 'package:enrutador/utilities/services/dialog_services.dart';
 import 'package:enrutador/utilities/services/navigation_services.dart';
 import 'package:enrutador/views/dialogs/dialog_icon_picker.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +12,7 @@ import '../../utilities/theme/theme_color.dart';
 
 class DialogsTipos extends StatefulWidget {
   final TiposModelo? tipo;
-  
+
   const DialogsTipos({super.key, required this.tipo});
 
   @override
@@ -39,6 +40,18 @@ class _DialogsTiposState extends State<DialogsTipos> {
         child: Column(mainAxisSize: MainAxisSize.min, children: [
       Text(widget.tipo == null ? "Crear tipo" : "Actualizar tipo",
           style: TextStyle(fontSize: 16.sp)),
+      if (widget.tipo != null)
+        IconButton.filled(
+            onPressed: () => Dialogs.showMorph(
+                title: "Eliminar tipo",
+                description: "¿Esta seguro de eliminar este tipo?",
+                loadingTitle: "Eliminando",
+                onAcceptPressed: (context) async {
+                  await TipoController.deleteItem(widget.tipo!.id!);
+                  Navigation.pop();
+                }),
+            icon: Icon(Icons.delete, color: ThemaMain.second),
+            iconSize: 20.sp),
       Padding(
           padding: EdgeInsets.all(10.sp),
           child: Column(children: [

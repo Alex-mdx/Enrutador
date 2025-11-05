@@ -1,6 +1,7 @@
 import 'package:enrutador/utilities/services/dialog_services.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:enrutador/controllers/contacto_controller.dart';
 import 'package:enrutador/models/contacto_model.dart';
@@ -33,7 +34,7 @@ class _ContactosViewState extends State<ContactosView> {
     setState(() {
       carga = false;
     });
-    contactos = await ContactoController.getItemsAll(nombre: buscador.text);
+    contactos = await ContactoController.getItemsAll(nombre: buscador.text,limit: 50);
     setState(() {
       carga = true;
     });
@@ -57,7 +58,7 @@ class _ContactosViewState extends State<ContactosView> {
                           loadingTitle: "procesando",
                           onAcceptPressed: (context) async {
                             final all = await ContactoController.getItemsAll(
-                                nombre: null);
+                                nombre: null,limit: null);
                             var archivo = await ShareFun.shareDatas(
                                 nombre: "contactos", datas: all);
                             if (archivo.isNotEmpty) {
@@ -117,38 +118,42 @@ class _ContactosViewState extends State<ContactosView> {
                               color: ThemaMain.green)),
                       contentPadding: EdgeInsets.symmetric(
                           horizontal: 2.w, vertical: 1.h)))),
-          !carga
-              ? Center(child: CircularProgressIndicator())
-              : contactos.isEmpty
-                  ? Center(
-                      child: Text("No se ha ingresado ningun contacto",
-                          style: TextStyle(
-                              fontSize: 16.sp, fontWeight: FontWeight.bold)))
-                  : Expanded(
-                      child: Scrollbar(
-                          child: ListView.builder(
-                              shrinkWrap: true,
-                              itemCount: contactos.length,
-                              itemBuilder: (context, index) {
-                                ContactoModelo contacto = contactos[index];
-                                var existencia = selects.firstWhereOrNull(
-                                    (element) =>
-                                        element.latitud == contacto.latitud &&
-                                        element.longitud == contacto.longitud);
-                                return CardContactoWidget(entrada: buscador.text,
-                                    contacto: contacto,
-                                    funContact: (p0) {},
-                                    onSelected: (p0) => setState(() {
-                                          if (existencia != null) {
-                                            selects.remove(contacto);
-                                          } else {
-                                            selects.add(contacto);
-                                          }
-                                        }),
-                                    compartir: true,
-                                    selected: existencia != null,
-                                    selectedVisible: true);
-                              })))
+          Expanded(
+            child: !carga
+                ? Center(
+                    child: LoadingAnimationWidget.twoRotatingArc(
+                        color: ThemaMain.primary, size: 24.sp))
+                : contactos.isEmpty
+                    ? Center(
+                        child: Text("No se ha ingresado ningun contacto",
+                            style: TextStyle(
+                                fontSize: 16.sp, fontWeight: FontWeight.bold)))
+                    : Scrollbar(
+                        child: ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: contactos.length,
+                            itemBuilder: (context, index) {
+                              ContactoModelo contacto = contactos[index];
+                              var existencia = selects.firstWhereOrNull(
+                                  (element) =>
+                                      element.latitud == contacto.latitud &&
+                                      element.longitud == contacto.longitud);
+                              return CardContactoWidget(
+                                  entrada: buscador.text,
+                                  contacto: contacto,
+                                  funContact: (p0) {},
+                                  onSelected: (p0) => setState(() {
+                                        if (existencia != null) {
+                                          selects.remove(contacto);
+                                        } else {
+                                          selects.add(contacto);
+                                        }
+                                      }),
+                                  compartir: true,
+                                  selected: existencia != null,
+                                  selectedVisible: true);
+                            })),
+          )
         ]));
   }
 }

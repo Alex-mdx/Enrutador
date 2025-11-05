@@ -23,7 +23,7 @@ class ShareFun {
       {required String nombre, required List<dynamic> datas}) async {
     showToast("Generando $nombre");
     try {
-    var chunck = 50;
+    var chunck = 75;
     List<File> files = [];
     List<dynamic> json = [];
     for (var i = 0; i < datas.length; i++) {

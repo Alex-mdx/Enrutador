@@ -37,7 +37,7 @@ class DialogsComunicar extends StatelessWidget {
             child: Column(children: [
           IconButton(
               onPressed: () async {
-                var res = await FlutterPhoneDirectCaller.callNumber(number);
+                var res = await FlutterPhoneDirectCaller.callNumber("+$number");
                 if (res != true) {
                   showToast("No se pudo ejecutar la llamada");
                 }

@@ -10,6 +10,7 @@ import 'package:line_icons/line_icons.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:sizer/sizer.dart';
 
+import '../../utilities/services/dialog_services.dart';
 import '../../utilities/theme/theme_color.dart';
 
 class DialogsEstados extends StatefulWidget {
@@ -60,12 +61,34 @@ class _DialogsTiposState extends State<DialogsEstados> {
     }
   }
 
+  Future<void> reordenarSimple() async {
+    var estados = await EstadoController.getItems();
+    log("${estados.map((e) => e.nombre).toList()}");
+    for (var i = 0; i < estados.length; i++) {
+      var temp = estados[i].copyWith(orden: i + 1);
+      await EstadoController.update(temp);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Dialog(
         child: Column(mainAxisSize: MainAxisSize.min, children: [
       Text(widget.estado == null ? "Crear Estado" : "Actualizar Estado",
           style: TextStyle(fontSize: 16.sp)),
+      if (widget.estado != null)
+        IconButton.filled(
+            onPressed: () => Dialogs.showMorph(
+                title: "Eliminar estado",
+                description: "¿Esta seguro de eliminar este tipo?",
+                loadingTitle: "Eliminando",
+                onAcceptPressed: (context) async {
+                  await EstadoController.deleteItem(widget.estado!.id!);
+                  await reordenarSimple();
+                  Navigation.pop();
+                }),
+            icon: Icon(Icons.delete, color: ThemaMain.second),
+            iconSize: 20.sp),
       Padding(
           padding: EdgeInsets.all(10.sp),
           child: Column(children: [
@@ -139,7 +162,7 @@ class _DialogsTiposState extends State<DialogsEstados> {
                                       Colors.red,
                                       Colors.deepOrange,
                                       Colors.yellow,
-                                      Colors.green,
+                                      Colors.lightGreenAccent,
                                       Colors.cyan,
                                       Colors.deepPurple,
                                       Colors.purpleAccent,

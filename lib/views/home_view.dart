@@ -13,11 +13,9 @@ import 'package:internet_connection_checker_plus/internet_connection_checker_plu
 import 'package:latlong2/latlong.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:location/location.dart' as lc;
-import 'package:oktoast/oktoast.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 import 'package:app_links/app_links.dart';
-import '../utilities/map_fun.dart';
 import '../utilities/uri_fun.dart';
 import 'widgets/map_widget/map_alternative.dart';
 
@@ -60,23 +58,24 @@ class _HomeViewState extends State<HomeView> {
                                     Icon(Icons.connect_without_contact,
                                         size: 22.sp, color: ThemaMain.darkGrey)
                                   ])))),
-                  GestureDetector(
-                      onTap: () async {},
-                      child: Card(
-                          child: Padding(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 1.w, vertical: 1.h),
-                              child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text("Listas",
-                                        style: TextStyle(
-                                            fontSize: 16.sp,
-                                            fontWeight: FontWeight.bold)),
-                                    Icon(LineIcons.mapMarked,
-                                        size: 22.sp, color: ThemaMain.red)
-                                  ])))),
+                  if (kDebugMode)
+                    GestureDetector(
+                        onTap: () async {},
+                        child: Card(
+                            child: Padding(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 1.w, vertical: 1.h),
+                                child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text("Listas",
+                                          style: TextStyle(
+                                              fontSize: 16.sp,
+                                              fontWeight: FontWeight.bold)),
+                                      Icon(LineIcons.mapMarked,
+                                          size: 22.sp, color: ThemaMain.red)
+                                    ])))),
                   GestureDetector(
                       onTap: () async =>
                           await Navigation.pushNamed(route: "tipos"),
@@ -202,13 +201,10 @@ class PaginadoState extends State<Paginado> {
   }
 
   Future<void> initDeepLinks() async {
-    final uri = await appLinks.getInitialLink();
     final uriString = await appLinks.getInitialLinkString();
-    if (uri != null) _handleUri(uri);
     if (uriString != null) _handleString(uriString);
 
 // Escucha de enlaces cálidos (app abierta)
-    appLinks.uriLinkStream.listen(_handleUri);
     appLinks.stringLinkStream.listen(_handleString);
   }
 
@@ -216,32 +212,6 @@ class PaginadoState extends State<Paginado> {
     UriFun.readContentUriSafe(url, widget.provider);
   }
 
-  void _handleUri(Uri uri) {
-    switch (uri.scheme) {
-      case 'com.example.app':
-        // Ejemplo: com.example.app://?path=/storage/ejemplo.json
-        final filePath = uri.queryParameters['path'];
-        if (filePath != null) {
-          debugPrint("link: $filePath");
-        }
-        break;
-      case 'geo':
-        final filePath = uri.query;
-        if (filePath.contains("q=")) {
-          showToast("Buscando ubicacion...");
-          Future.delayed(
-              Duration(seconds: kDebugMode ? 4 : 2),
-              () async => await MapFun.getUri(
-                  provider: widget.provider, uri: filePath));
-        }
-        break;
-    }
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {

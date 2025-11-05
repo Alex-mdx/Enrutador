@@ -1,12 +1,18 @@
 import 'dart:convert';
 import 'package:enrutador/controllers/contacto_controller.dart';
+import 'package:enrutador/controllers/estado_controller.dart';
 import 'package:enrutador/controllers/tipo_controller.dart';
 import 'package:enrutador/models/contacto_model.dart';
+import 'package:enrutador/models/estado_model.dart';
 import 'package:enrutador/models/tipos_model.dart';
 import 'package:enrutador/utilities/main_provider.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:oktoast/oktoast.dart';
+import 'package:open_location_code/open_location_code.dart';
+
+import 'map_fun.dart';
+import 'textos.dart';
 
 class UriFun {
   static const _channel =
@@ -14,19 +20,28 @@ class UriFun {
 
   static Future<void> readContentUriSafe(
       String uriString, MainProvider provider) async {
-    try {
-      // Paso 1: Obtener tamaño
-      final fileSize = await _getFileSizeSafe(uriString);
-      if (fileSize > 100 * 1024 * 1024) debugPrint("Archivo demasiado grande");
+    debugPrint(uriString);
+    if (uriString.contains("q=")) {
+      showToast("Buscando ubicacion...");
+      Future.delayed(Duration(seconds: kDebugMode ? 2 : 1),
+          () async => await MapFun.getUri(provider: provider, uri: uriString));
+    } else {
+      try {
+        // Paso 1: Obtener tamaño
+        final fileSize = await _getFileSizeSafe(uriString);
+        if (fileSize > 100 * 1024 * 1024) {
+          return debugPrint("Archivo demasiado grande");
+        }
 
-      // Paso 2: Leer contenido
-      final content = await _getContentSafe(uriString);
-      if (content == null) return debugPrint("No pudo obtener el dato");
+        // Paso 2: Leer contenido
+        final content = await _getContentSafe(uriString);
+        if (content == null) return debugPrint("No pudo obtener el dato");
 
-      // Paso 3: Parsear JSON
-      await _parseJsonSafe(content, provider);
-    } catch (e) {
-      debugPrint('❌ Error seguro: $e');
+        // Paso 3: Parsear JSON
+        await _parseJsonSafe(content, provider);
+      } catch (e) {
+        debugPrint('❌ Error seguro: $e');
+      }
     }
   }
 
@@ -68,14 +83,27 @@ class UriFun {
               var model = ContactoModelo.fromJson(contacto);
               var datamodel = await ContactoController.getItem(
                   lat: model.latitud, lng: model.longitud);
+              var pc = Textos.psCODE(model.latitud, model.longitud);
+              var newlocation = PlusCode(pc).decode().southWest;
+
               if (datamodel != null) {
                 debugPrint("actualizar");
-                await ContactoController.update(datamodel);
+                var newPlus = datamodel.copyWith(
+                    latitud:
+                        double.parse(newlocation.latitude.toStringAsFixed(6)),
+                    longitud:
+                        double.parse(newlocation.longitude.toStringAsFixed(6)));
+                await ContactoController.update(newPlus);
               } else {
+                var newPlus = model.copyWith(
+                    latitud:
+                        double.parse(newlocation.latitude.toStringAsFixed(6)),
+                    longitud:
+                        double.parse(newlocation.longitude.toStringAsFixed(6)));
                 debugPrint("nuevo");
-                await ContactoController.insert(model);
+                await ContactoController.insert(newPlus);
               }
-            
+
               provider.cargaProgress++;
             }
             showToast("Contactos guardados");
@@ -96,6 +124,23 @@ class UriFun {
             }
             provider.tipos = await TipoController.getItems();
             showToast("Tipos guardados");
+            break;
+          case "estados":
+            List<dynamic> estados = datas["estados"];
+            provider.cargaLenght = estados.length;
+            for (var tipo in estados) {
+              var model = EstadoModel.fromJson(tipo);
+              var datamodel = await EstadoController.getItem(data: model.id!);
+              if (datamodel != null) {
+                await EstadoController.update(model);
+              } else {
+                await EstadoController.insert(model);
+              }
+
+              provider.cargaProgress++;
+            }
+            provider.estados = await EstadoController.getItems();
+            showToast("Estados guardados");
             break;
           default:
             showToast("No se detecto el tipo de dato a mostrar");

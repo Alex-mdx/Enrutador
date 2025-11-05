@@ -53,6 +53,17 @@ class _DialogEnrutamientoState extends State<DialogEnrutamiento> {
         Text("Enrutamiento", style: TextStyle(fontSize: 18.sp)),
         TextButton(
             onPressed: () async {
+              var data = await EnrutarController.getItems();
+              for (var element in data) {
+                if (element.visitado == 1) {
+                  var newItem = await ContactoController.getItemId(
+                      id: element.contactoId);
+                  if (newItem != null) {
+                    var newModel = newItem.copyWith(agendar: null);
+                    await ContactoController.update(newModel);
+                  }
+                }
+              }
               await EnrutarController.deleteAll();
               showToast("Datos de enrutamiento limpiado");
               Navigation.pop();
@@ -179,7 +190,7 @@ class _DialogEnrutamientoState extends State<DialogEnrutamiento> {
                                                     visitado: visitado);
                                                 await EnrutarController.update(
                                                     tempdata);
-                                                setState(() {});
+                                                await name();
                                               }),
                                           title: Text(
                                               enrutar.buscar.nombreCompleto ??
@@ -207,6 +218,21 @@ class _DialogEnrutamientoState extends State<DialogEnrutamiento> {
                                           trailing: IconButton(
                                               iconSize: 20.sp,
                                               onPressed: () async {
+                                                if (enrutar.visitado == 1) {
+                                                  var newItem =
+                                                      await ContactoController
+                                                          .getItemId(
+                                                              id: enrutar
+                                                                  .contactoId);
+                                                  if (newItem != null) {
+                                                    var newModel =
+                                                        newItem.copyWith(
+                                                            agendar: null);
+                                                    await ContactoController
+                                                        .update(newModel);
+                                                  }
+                                                }
+
                                                 await EnrutarController
                                                     .deleteItem(enrutar.id!);
                                                 var tama =
@@ -216,7 +242,7 @@ class _DialogEnrutamientoState extends State<DialogEnrutamiento> {
                                                 if (tama == 0) {
                                                   Navigation.pop();
                                                 }
-                                                setState(() {});
+                                                await name();
                                               },
                                               icon: Icon(Icons.delete,
                                                   color: ThemaMain.red))),
