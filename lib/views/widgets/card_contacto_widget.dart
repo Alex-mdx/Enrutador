@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:enrutador/models/contacto_model.dart';
 import 'package:enrutador/utilities/main_provider.dart';
 import 'package:enrutador/utilities/textos.dart';
@@ -32,142 +33,157 @@ class CardContactoWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return bd.Badge(
-      badgeStyle:
-          bd.BadgeStyle(badgeColor: Colors.black, shape: bd.BadgeShape.twitter),
-      showBadge: contacto.estado != null,
-      position: bd.BadgePosition.topStart(start: 0, top: 0),
-      badgeAnimation: bd.BadgeAnimation.size(),
-      badgeContent: Consumer<MainProvider>(
-          builder: (context, provider, child) => Icon(Icons.circle,
-              color: provider.estados
-                  .firstWhereOrNull((element) => element.id == contacto.estado)
-                  ?.color,
-              size: 16.sp)),
-      child: GestureDetector(
-          onTap: () => funContact(contacto),
-          child: Card(
-              child: Padding(
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 1.w, vertical: .5.h),
-                  child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Container(
-                            constraints: BoxConstraints(maxWidth: 25.w),
-                            child:
-                                Row(mainAxisSize: MainAxisSize.min, children: [
-                              if (selectedVisible)
-                                Checkbox.adaptive(
-                                    value: selected,
-                                    onChanged: (value) => onSelected(value)),
-                              FutureBuilder(
-                                  future: TipoController.getItem(
-                                      data: contacto.tipo ?? -1),
-                                  builder: (context, data) => Stack(
-                                          alignment: Alignment.center,
-                                          children: [
-                                            Icon(Icons.circle,
-                                                color: ThemaMain.second,
-                                                size: 26.sp),
-                                            Icon(
-                                                data.data?.icon ?? Icons.person,
-                                                size: 22.sp,
-                                                color: data.data?.color ??
-                                                    ThemaMain.primary)
-                                          ]))
-                            ])),
-                        Expanded(
-                            child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                              SubstringHighlight(
-                                  text: contacto.nombreCompleto ?? "Sin nombre",
-                                  term: entrada,
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                  textStyle: TextStyle(
-                                      color: ThemaMain.darkBlue,
-                                      fontSize: 15.sp,
-                                      fontWeight: FontWeight.bold),
-                                  textStyleHighlight: TextStyle(
-                                      fontSize: 16.sp,
-                                      color: ThemaMain.primary,
-                                      fontWeight: FontWeight.bold)),
-                              Column(
+        badgeStyle: bd.BadgeStyle(
+            badgeColor: Colors.black, shape: bd.BadgeShape.twitter),
+        showBadge: contacto.estado != null,
+        position: bd.BadgePosition.topStart(start: 0, top: 0),
+        badgeAnimation: bd.BadgeAnimation.size(),
+        badgeContent: Consumer<MainProvider>(
+            builder: (context, provider, child) => Icon(Icons.circle,
+                color: provider.estados
+                    .firstWhereOrNull(
+                        (element) => element.id == contacto.estado)
+                    ?.color,
+                size: 16.sp)),
+        child: GestureDetector(
+            onTap: () => funContact(contacto),
+            child: Card(
+                child: Padding(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 1.w, vertical: .5.h),
+                    child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Container(
+                              constraints: BoxConstraints(maxWidth: 25.w),
+                              child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    if (selectedVisible)
+                                      Checkbox.adaptive(
+                                          value: selected,
+                                          onChanged: (value) =>
+                                              onSelected(value)),
+                                    FutureBuilder(
+                                        future: TipoController.getItem(
+                                            data: contacto.tipo ?? -1),
+                                        builder: (context, data) => Stack(
+                                                alignment: Alignment.center,
+                                                children: [
+                                                  Icon(Icons.circle,
+                                                      color: ThemaMain.second,
+                                                      size: 26.sp),
+                                                  Icon(
+                                                      data.data?.icon ??
+                                                          Icons.person,
+                                                      size: 22.sp,
+                                                      color: data.data?.color ??
+                                                          ThemaMain.primary)
+                                                ]))
+                                  ])),
+                          Expanded(
+                              child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    if (compartir)
+                                SubstringHighlight(
+                                    text:
+                                        contacto.nombreCompleto ?? "Sin nombre",
+                                    term: entrada,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    textStyle: TextStyle(
+                                        color: ThemaMain.darkBlue,
+                                        fontSize: 15.sp,
+                                        fontWeight: FontWeight.bold),
+                                    textStyleHighlight: TextStyle(
+                                        fontSize: 16.sp,
+                                        color: ThemaMain.primary,
+                                        fontWeight: FontWeight.bold)),
+                                Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      if (compartir)
+                                        AutoSizeText(
+                                            contacto.domicilio ??
+                                                "Sin domicilio",
+                                            maxLines: 2,
+                                            minFontSize: 12,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(fontSize: 15.sp)),
                                       Text(
-                                          contacto.domicilio ?? "Sin domicilio",
-                                          maxLines: 3,
+                                          "Plus Code: ${Textos.psCODE(contacto.latitud, contacto.longitud)}",
+                                          maxLines: 2,
                                           overflow: TextOverflow.ellipsis,
-                                          style: TextStyle(fontSize: 15.sp)),
-                                    Text(
-                                        "Plus Code: ${Textos.psCODE(contacto.latitud, contacto.longitud)}",
-                                        maxLines: 2,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: TextStyle(fontSize: 15.sp)),
-                                    if (compartir)
+                                          style: TextStyle(
+                                              fontSize: 15.sp,
+                                              fontWeight: FontWeight.bold,
+                                              fontStyle: FontStyle.italic)),
+                                      if (compartir)
+                                        Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              FutureBuilder(
+                                                  future:
+                                                      TipoController.getItem(
+                                                          data: contacto.tipo ??
+                                                              -1),
+                                                  builder: (context, data) => Text(
+                                                      "Tipo:\n${data.data?.nombre ?? "Ø"}",
+                                                      style: TextStyle(
+                                                          fontSize: 14.sp))),
+                                              Text(
+                                                  "Estatus: ${contacto.estado ?? "Ø"}",
+                                                  maxLines: 2,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  style: TextStyle(
+                                                      fontSize: 14.sp))
+                                            ]),
                                       Row(
                                           mainAxisAlignment:
-                                              MainAxisAlignment.spaceAround,
+                                              MainAxisAlignment.spaceBetween,
                                           children: [
-                                            FutureBuilder(
-                                                future: TipoController.getItem(
-                                                    data: contacto.tipo ?? -1),
-                                                builder: (context, data) => Text(
-                                                    "Tipo:\n${data.data?.nombre ?? "Ø"}",
-                                                    style: TextStyle(
-                                                        fontSize: 14.sp))),
-                                            Text(
-                                                "Estatus: ${contacto.estado ?? "Ø"}",
+                                            SubstringHighlight(
+                                                text:
+                                                    "Tel: ${contacto.numero ?? "Ø"}",
+                                                term: entrada,
                                                 maxLines: 2,
                                                 overflow: TextOverflow.ellipsis,
-                                                style:
-                                                    TextStyle(fontSize: 14.sp))
-                                          ]),
-                                    Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceAround,
-                                        children: [
-                                          SubstringHighlight(
-                                              text:
-                                                  "Tel: ${contacto.numero ?? "Ø"}",
-                                              term: entrada,
-                                              maxLines: 2,
-                                              overflow: TextOverflow.ellipsis,
-                                              textStyle: TextStyle(
-                                                  fontSize: 14.sp,
-                                                  color: ThemaMain.darkBlue),
-                                              textStyleHighlight: TextStyle(
-                                                  fontSize: 15.sp,
-                                                  color: ThemaMain.primary,
-                                                  fontWeight: FontWeight.bold)),
-                                          SubstringHighlight(
-                                              text:
-                                                  "Otro: ${contacto.otroNumero ?? "Ø"}",
-                                              term: entrada,
-                                              maxLines: 2,
-                                              overflow: TextOverflow.ellipsis,
-                                              textStyle: TextStyle(
-                                                  fontSize: 14.sp,
-                                                  color: ThemaMain.darkBlue),
-                                              textStyleHighlight: TextStyle(
-                                                  fontSize: 15.sp,
-                                                  color: ThemaMain.primary,
-                                                  fontWeight: FontWeight.bold))
-                                        ])
-                                  ])
-                            ])),
-                        if (compartir)
-                          IconButton.filled(
-                              onPressed: () async => showDialog(
-                                  context: context,
-                                  builder: (context) =>
-                                      DialogCompartir(contacto: contacto)),
-                              iconSize: 20.sp,
-                              icon: Icon(Icons.share, color: ThemaMain.white))
-                      ])))),
-    );
+                                                textStyle: TextStyle(
+                                                    fontSize: 14.sp,
+                                                    color: ThemaMain.darkBlue),
+                                                textStyleHighlight: TextStyle(
+                                                    fontSize: 15.sp,
+                                                    color: ThemaMain.primary,
+                                                    fontWeight:
+                                                        FontWeight.bold)),
+                                            SubstringHighlight(
+                                                text:
+                                                    "Otro: ${contacto.otroNumero ?? "Ø"}",
+                                                term: entrada,
+                                                maxLines: 2,
+                                                overflow: TextOverflow.ellipsis,
+                                                textStyle: TextStyle(
+                                                    fontSize: 14.sp,
+                                                    color: ThemaMain.darkBlue),
+                                                textStyleHighlight: TextStyle(
+                                                    fontSize: 15.sp,
+                                                    color: ThemaMain.primary,
+                                                    fontWeight:
+                                                        FontWeight.bold))
+                                          ])
+                                    ])
+                              ])),
+                          if (compartir)
+                            IconButton.filled(
+                                onPressed: () async => showDialog(
+                                    context: context,
+                                    builder: (context) =>
+                                        DialogCompartir(contacto: contacto)),
+                                iconSize: 20.sp,
+                                icon: Icon(Icons.share, color: ThemaMain.white))
+                        ])))));
   }
 }

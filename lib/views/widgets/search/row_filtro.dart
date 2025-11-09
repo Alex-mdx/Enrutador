@@ -17,14 +17,14 @@ import 'package:sizer/sizer.dart';
 import '../../../utilities/theme/theme_color.dart';
 
 class RowFiltro extends StatefulWidget {
-  const RowFiltro({super.key});
+  final Function? press;
+  const RowFiltro({super.key, this.press});
 
   @override
   State<RowFiltro> createState() => _RowFiltroState();
 }
 
 class _RowFiltroState extends State<RowFiltro> {
-
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<MainProvider>(context);
@@ -37,11 +37,15 @@ class _RowFiltroState extends State<RowFiltro> {
                 cabeza: "Enrutados",
                 fun: () => setState(() {
                       Preferences.enrutados = true;
+                      widget.press!();
                     }),
                 colorprincipal: ThemaMain.green,
                 condicion: Preferences.enrutados,
                 delete: () => setState(() {
                       Preferences.enrutados = false;
+                      if (widget.press != null) {
+                        widget.press!();
+                      }
                     })),
           chips(
               icono: Icons.type_specimen,
@@ -88,6 +92,7 @@ class _RowFiltroState extends State<RowFiltro> {
                                               Preferences.tipos = temp
                                                   .map((e) => e.toString())
                                                   .toList();
+                                              widget.press!();
                                             });
 
                                             Navigation.pop();
@@ -109,6 +114,9 @@ class _RowFiltroState extends State<RowFiltro> {
               condicion: Preferences.tipos.isNotEmpty,
               delete: () => setState(() {
                     Preferences.tipos = [];
+                    if (widget.press != null) {
+                      widget.press!();
+                    }
                   })),
           chips(
               icono: Icons.contact_emergency,
@@ -156,6 +164,9 @@ class _RowFiltroState extends State<RowFiltro> {
                                               Preferences.status = temp
                                                   .map((e) => e.toString())
                                                   .toList();
+                                              if (widget.press != null) {
+                                                widget.press!();
+                                              }
                                             });
 
                                             Navigation.pop();
@@ -177,6 +188,9 @@ class _RowFiltroState extends State<RowFiltro> {
               condicion: Preferences.status.isNotEmpty,
               delete: () => setState(() {
                     Preferences.status = [];
+                    if (widget.press != null) {
+                      widget.press!();
+                    }
                   })),
           if (kDebugMode)
             chips(
@@ -189,6 +203,9 @@ class _RowFiltroState extends State<RowFiltro> {
                 condicion: Preferences.zonas.isNotEmpty,
                 delete: () => setState(() {
                       Preferences.zonas = [];
+                      if (widget.press != null) {
+                        widget.press!();
+                      }
                     }))
         ]));
   }

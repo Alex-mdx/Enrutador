@@ -1,6 +1,6 @@
 import 'dart:convert';
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:enrutador/controllers/estado_controller.dart';
-import 'package:enrutador/utilities/funcion_parser.dart';
 import 'package:enrutador/utilities/main_provider.dart';
 import 'package:enrutador/views/dialogs/dialog_send.dart';
 import 'package:enrutador/views/dialogs/dialogs_comunicar.dart';
@@ -58,9 +58,13 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
         color: ThemaMain.dialogbackground,
         child: AnimatedContainer(
             duration: Durations.medium1,
-            height: widget.contacto?.id == null ? 0.h : 27.h,
+            height: widget.contacto?.id == null
+                ? 0.h
+                : widget.compartir
+                    ? 29.h
+                    : 27.h,
             child: Row(children: [
-              Expanded(flex: widget.compartir ? 7 : 4, child: fotos(provider)),
+              Expanded(flex: widget.compartir ? 8 : 4, child: fotos(provider)),
               VerticalDivider(
                   width: widget.compartir ? 1.w : 2.sp,
                   indent: 1.h,
@@ -122,7 +126,7 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                       widget.contacto?.nombreCompleto ??
                                           "Nombre: Sin nombre",
                                       style: TextStyle(
-                                          fontSize: 16.sp,
+                                          fontSize: 15.sp,
                                           fontWeight: FontWeight.bold)),
                                 if (!widget.compartir)
                                   TextButton.icon(
@@ -160,10 +164,13 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                               "Domicilio: Sin Domicilio",
                                           style: TextStyle(fontSize: 16.sp)))
                                 else
-                                  Text(
+                                  AutoSizeText(
                                       widget.contacto?.domicilio ??
                                           "Domicilio: Sin Domicilio",
-                                      style: TextStyle(fontSize: 14.sp))
+                                      style: TextStyle(fontSize: 14),
+                                      minFontSize: 12,
+                                      maxLines: 3,
+                                      overflow: TextOverflow.ellipsis)
                               ]),
                           Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -198,6 +205,7 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                             return Text(
                                                 "Tipo: ${data.data?.nombre ?? "Ø"}",
                                                 style: TextStyle(
+                                                    shadows: [Shadow()],
                                                     color: data.data?.color,
                                                     fontSize: 15.sp,
                                                     fontWeight:
@@ -211,7 +219,7 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                           data.data?.nombre ?? "Sin tipo",
                                           style: TextStyle(
                                               color: data.data?.color,
-                                              fontSize: 15.sp,
+                                              fontSize: 14.sp,
                                               fontStyle: FontStyle.italic,
                                               fontWeight: FontWeight.bold))),
                                 if (!widget.compartir)
@@ -262,7 +270,7 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                           data.data?.nombre ?? "Sin estado",
                                           style: TextStyle(
                                               color: data.data?.color,
-                                              fontSize: 15.sp,
+                                              fontSize: 14.sp,
                                               fontStyle: FontStyle.italic,
                                               fontWeight: FontWeight.bold)))
                               ]),
@@ -270,13 +278,13 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                             Text(
                                 "PlusCode: ${Textos.psCODE(widget.contacto?.latitud ?? 0, widget.contacto?.longitud ?? 0)}",
                                 style: TextStyle(
-                                    fontSize: 15.sp,
+                                    fontSize: 14.sp,
                                     fontWeight: FontWeight.bold)),
                           if (widget.compartir)
                             Text(
                                 "W3W: ${widget.contacto?.what3Words ?? "[No Encontrado]"} ",
                                 style: TextStyle(
-                                    fontSize: 15.sp,
+                                    fontSize: 14.sp,
                                     fontWeight: FontWeight.bold)),
                           Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -568,12 +576,15 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                     "Notas\n${widget.contacto?.nota ?? "Sin notas"}",
                                     style: TextStyle(fontSize: 16.sp)))
                           else
-                            Text(
+                            AutoSizeText(
                                 "Notas\n${widget.contacto?.nota ?? "Sin notas"}",
                                 style: TextStyle(
-                                    fontSize: 14.sp,
+                                    fontSize: 14,
                                     fontWeight: FontWeight.bold,
-                                    fontStyle: FontStyle.italic))
+                                    fontStyle: FontStyle.italic),
+                                minFontSize: 11,
+                                maxLines: 5,
+                                overflow: TextOverflow.ellipsis)
                         ])
                   ])))
             ])));
@@ -633,7 +644,7 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                         }
                       },
                       child: Icon(Icons.contacts,
-                          size: widget.compartir ? 27.w : 21.w,
+                          size: widget.compartir ? 29.w : 21.w,
                           color: ThemaMain.primary))
                   : InkWell(
                       onLongPress: () async {
@@ -642,7 +653,8 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                               base64Decode(widget.contacto!.foto!));
 
                           final files = await Pasteboard.files();
-                          print(files);
+                          debugPrint("$files");
+                          showToast("Imagen copiada al portapapeles");
                         } catch (e) {
                           debugPrint("$e");
                         }
@@ -701,14 +713,14 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                               base64Decode(widget.contacto?.foto ?? "a"),
                               fit: BoxFit.cover,
                               filterQuality: FilterQuality.low,
-                              width: widget.compartir ? 27.w : 21.w,
-                              height: widget.compartir ? 27.w : 21.w,
+                              width: widget.compartir ? 29.w : 21.w,
+                              height: widget.compartir ? 29.w : 21.w,
                               gaplessPlayback: true,
                               errorBuilder: (context, error, stackTrace) =>
                                   Icon(Icons.broken_image,
                                       color: ThemaMain.red,
                                       size:
-                                          widget.compartir ? 27.w : 21.w)))))),
+                                          widget.compartir ? 29.w : 21.w)))))),
       bd.Badge(
           showBadge: !widget.compartir &&
               (widget.contacto?.fotoReferencia != null &&
@@ -763,7 +775,7 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                       },
                       child: Icon(Icons.image,
                           color: ThemaMain.green,
-                          size: widget.compartir ? 27.w : 21.w))
+                          size: widget.compartir ? 29.w : 21.w))
                   : InkWell(
                       onLongPress: () async {
                         try {
@@ -771,7 +783,8 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                               base64Decode(widget.contacto!.fotoReferencia!));
 
                           final files = await Pasteboard.files();
-                          print(files);
+                          debugPrint("$files");
+                          showToast("Imagen copiada al portapapeles");
                         } catch (e) {
                           debugPrint("$e");
                         }
@@ -833,15 +846,15 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                           child: Image.memory(
                               fit: BoxFit.cover,
                               filterQuality: FilterQuality.low,
-                              width: widget.compartir ? 27.w : 21.w,
-                              height: widget.compartir ? 27.w : 21.w,
+                              width: widget.compartir ? 29.w : 21.w,
+                              height: widget.compartir ? 29.w : 21.w,
                               base64Decode(
                                   widget.contacto?.fotoReferencia ?? "a"),
                               gaplessPlayback: true,
                               errorBuilder: (context, error, stackTrace) =>
                                   Icon(Icons.broken_image,
                                       color: ThemaMain.red,
-                                      size: widget.compartir ? 27.w : 21.w))))))
+                                      size: widget.compartir ? 29.w : 21.w))))))
     ]);
   }
 }

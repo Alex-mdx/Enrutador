@@ -36,4 +36,14 @@ class Preferences {
   static List<String> get zonas => _preferences?.getStringList('zonas') ?? [];
   static set zonas(List<String> value) =>
       _preferences?.setStringList('zonas', value);
+
+  static int get tiposFilt => _preferences?.getInt('tiposFilt') ?? 0;
+  static set tiposFilt(int value) => _preferences?.setInt('tiposFilt', value);
+
+  static int get agruparFilt => _preferences?.getInt('agruparFilt') ?? 0;
+  static set agruparFilt(int value) => _preferences?.setInt('agruparFilt', value);
+
+  static bool get ordenFilt => _preferences?.getBool('ordenFilt') ?? false;
+  static set ordenFilt(bool value) =>
+      _preferences?.setBool('ordenFilt', value);
 }

@@ -54,7 +54,7 @@ class _ViajeMapPageState extends State<MapMain>
                 Stack(children: [
                   provider.mapaReal
                       ? TileLayer(
-                          maxZoom: 19,
+                          maxZoom: 20,
                           maxNativeZoom: 18,
                           retinaMode: false,
                           urlTemplate:
@@ -76,8 +76,8 @@ class _ViajeMapPageState extends State<MapMain>
                         userAgentPackageName: 'com.enrutador.app')
                 ]),
                 CurrentLocationLayer(
-                    alignDirectionAnimationDuration: Durations.medium1,
-                    alignPositionAnimationDuration: Durations.medium1,
+                    alignDirectionAnimationDuration: Durations.short3,
+                    alignPositionAnimationDuration: Durations.short3,
                     moveAnimationDuration: Durations.short3,
                     style: LocationMarkerStyle(
                         showAccuracyCircle: true,

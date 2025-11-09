@@ -132,7 +132,7 @@ class ContactoController {
   }
 
   static Future<List<ContactoModelo>> getItemsAll(
-      {required String? nombre, required int? limit }) async {
+      {required String? nombre, required int? limit}) async {
     final db = await database();
     final modelo = (await db.query(nombreDB,
         where: nombre == "" || nombre == null
@@ -147,7 +147,20 @@ class ContactoController {
     for (var element in modelo) {
       model.add(ContactoModelo.fromJson(element));
     }
-    return model;
+    var newModelfiltro1 = Preferences.tipos.isEmpty
+        ? model
+        : model
+            .where((element) =>
+                Preferences.tipos.contains(element.tipo.toString()))
+            .toList();
+    var newModelfiltro2 = Preferences.status.isEmpty
+        ? newModelfiltro1
+        : newModelfiltro1
+            .where((element) =>
+                Preferences.status.contains(element.estado.toString()))
+            .toList();
+
+    return newModelfiltro2;
   }
 
   static Future<List<ContactoModelo>> buscar(String word, int? limit) async {
