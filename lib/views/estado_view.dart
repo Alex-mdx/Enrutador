@@ -127,7 +127,7 @@ class _TiposViewState extends State<EstadoView> {
                                         builder: (context) => DialogsEstados(
                                             estado: estados[index]));
                                     await send();
-                                  }),
+                                  },dense: false),
                               SizedBox(
                                   height: 1.h, child: DashedLineConnector()),
                               if (estados.length - 1 == index) DotIndicator()

@@ -118,7 +118,7 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                                 style: TextStyle(fontSize: 16.sp)))
                       ]),
                       Text(
-                          "${provider.contacto?.latitud.toStringAsFixed(6)} ${provider.contacto?.longitud.toStringAsFixed(6)}",
+                          "${provider.contacto?.latitud.toStringAsFixed(6)}, ${provider.contacto?.longitud.toStringAsFixed(6)}",
                           style: TextStyle(
                               fontSize: 15.sp, fontStyle: FontStyle.italic))
                     ])),
@@ -131,14 +131,14 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           if (provider.contacto?.id != null)
-                          IconButton.filledTonal(
-                              iconSize: 22.sp,
-                              onPressed: () async => await showDialog(
-                                  context: context,
-                                  builder: (context) => DialogCompartir(
-                                      contacto: provider.contacto!)),
-                              icon:
-                                  Icon(Icons.share, color: ThemaMain.darkBlue)),
+                            IconButton.filledTonal(
+                                iconSize: 22.sp,
+                                onPressed: () async => await showDialog(
+                                    context: context,
+                                    builder: (context) => DialogCompartir(
+                                        contacto: provider.contacto!)),
+                                icon: Icon(Icons.share,
+                                    color: ThemaMain.darkBlue)),
                           IconButton.filled(
                               iconSize: 22.sp,
                               style: ButtonStyle(

@@ -159,15 +159,18 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                               },
                                               fecha: widget
                                                   .contacto?.fechaDomicilio)),
-                                      label: Text(
+                                      label: AutoSizeText(
                                           widget.contacto?.domicilio ??
                                               "Domicilio: Sin Domicilio",
-                                          style: TextStyle(fontSize: 16.sp)))
+                                          style: TextStyle(fontSize: 16.sp),
+                                          minFontSize: 14,
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis))
                                 else
                                   AutoSizeText(
                                       widget.contacto?.domicilio ??
                                           "Domicilio: Sin Domicilio",
-                                      style: TextStyle(fontSize: 14),
+                                      style: TextStyle(fontSize: 16.sp),
                                       minFontSize: 12,
                                       maxLines: 3,
                                       overflow: TextOverflow.ellipsis)
@@ -568,18 +571,21 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                               newModel!);
                                           provider.contacto = newModel;
                                         },
-                                        tipoTeclado: TextInputType.text,
+                                        tipoTeclado: TextInputType.multiline,
                                         fecha: null,
                                         input: TextInputAction.newline,
                                         cabeza: "Ingresar notas del contacto")),
-                                child: Text(
+                                child: AutoSizeText(
                                     "Notas\n${widget.contacto?.nota ?? "Sin notas"}",
-                                    style: TextStyle(fontSize: 16.sp)))
+                                    style: TextStyle(fontSize: 16.sp),
+                                    minFontSize: 13,
+                                    maxLines: 5,
+                                    overflow: TextOverflow.ellipsis))
                           else
                             AutoSizeText(
                                 "Notas\n${widget.contacto?.nota ?? "Sin notas"}",
                                 style: TextStyle(
-                                    fontSize: 14,
+                                    fontSize: 15.sp,
                                     fontWeight: FontWeight.bold,
                                     fontStyle: FontStyle.italic),
                                 minFontSize: 11,

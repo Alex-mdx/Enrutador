@@ -46,4 +46,12 @@ class Preferences {
   static bool get ordenFilt => _preferences?.getBool('ordenFilt') ?? false;
   static set ordenFilt(bool value) =>
       _preferences?.setBool('ordenFilt', value);
+
+      static bool get vaciosFilt => _preferences?.getBool('vaciosFilt') ?? false;
+  static set vaciosFilt(bool value) =>
+      _preferences?.setBool('vaciosFilt', value);
+
+      static bool get visitados => _preferences?.getBool('visitados') ?? false;
+  static set visitados(bool value) =>
+      _preferences?.setBool('visitados', value);
 }

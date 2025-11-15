@@ -1,11 +1,14 @@
 import 'package:enrutador/utilities/preferences.dart';
+import 'package:enrutador/utilities/services/navigation_services.dart';
 import 'package:enrutador/utilities/theme/theme_color.dart';
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
+import 'package:oktoast/oktoast.dart';
 import 'package:sizer/sizer.dart';
 
 class DialogFiltroContacto extends StatefulWidget {
-  const DialogFiltroContacto({super.key});
+  final Function() fun;
+  const DialogFiltroContacto({super.key, required this.fun});
 
   @override
   State<DialogFiltroContacto> createState() => _DialogFiltroContactoState();
@@ -15,11 +18,13 @@ class _DialogFiltroContactoState extends State<DialogFiltroContacto> {
   int tipos = 0;
   int agrupar = 0;
   bool ordenar = false;
+  bool vacios = false;
   @override
   void initState() {
     tipos = Preferences.tiposFilt;
     agrupar = Preferences.agruparFilt;
     ordenar = Preferences.ordenFilt;
+    vacios = Preferences.vaciosFilt;
     super.initState();
   }
 
@@ -73,12 +78,19 @@ class _DialogFiltroContactoState extends State<DialogFiltroContacto> {
             label: Text("Fecha",
                 style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold)),
             selected: agrupar == 1,
-            onSelected: (value) => setState(() {
+            onSelected: (value) {
+              if (tipos != 0) {
+                setState(() {
                   agrupar = 1;
-                })),
-        Divider(indent: 5.w, endIndent: 5.w),
+                });
+              } else {
+                showToast(
+                    "No se puede agrupar por fecha al visualizar por nombre");
+              }
+            })
       ]),
-      Text("Ordenar", style: TextStyle(fontSize: 15.sp)),
+      Divider(indent: 5.w, endIndent: 5.w),
+      Text("Ordenar agrupador", style: TextStyle(fontSize: 15.sp)),
       Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
@@ -98,9 +110,31 @@ class _DialogFiltroContactoState extends State<DialogFiltroContacto> {
             Text("Descendente",
                 style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.bold))
           ]),
+      Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text("Ignorar vacios",
+                style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.bold)),
+            Checkbox(
+                activeColor: ThemaMain.green,
+                value: vacios,
+                onChanged: (value) => setState(() {
+                      if (value != null) {
+                        vacios = !vacios;
+                      }
+                    }))
+          ]),
       ElevatedButton.icon(
           icon: Icon(LineIcons.checkCircle, size: 20.sp),
-          onPressed: () {},
+          onPressed: () {
+            Preferences.tiposFilt = tipos;
+            Preferences.agruparFilt = agrupar;
+            Preferences.ordenFilt = ordenar;
+            Preferences.vaciosFilt = vacios;
+            widget.fun();
+            Navigation.pop();
+          },
           label: Text("Aplicar Cambios", style: TextStyle(fontSize: 15.sp)))
     ]));
   }

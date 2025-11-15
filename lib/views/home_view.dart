@@ -39,7 +39,7 @@ class _HomeViewState extends State<HomeView> {
             slider: Container(
                 color: ThemaMain.appbar,
                 child: Column(children: [
-                  SizedBox(height: 9.h),
+                  SizedBox(height: 10.h),
                   GestureDetector(
                       onTap: () async =>
                           await Navigation.pushNamed(route: "contactos"),
@@ -157,8 +157,28 @@ class _HomeViewState extends State<HomeView> {
                         icon: Icon(Icons.menu,
                             color: ThemaMain.darkBlue, size: 20.sp)),
                     title: Text("Enrutador", style: TextStyle(fontSize: 18.sp)),
-                    toolbarHeight: 6.h),
-                body: Paginado(provider: provider))));
+                    toolbarHeight: 6.h,
+                    actions: [
+                      OverflowBar(children: [
+                        IconButton.filled(
+                            onPressed: () {},
+                            icon:
+                                Icon(Icons.auto_graph, color: ThemaMain.yellow),
+                            iconSize: 20.sp)
+                      ])
+                    ]),
+                body: IgnorePointer(
+                    ignoring:
+                        provider.sliderDrawerKey.currentState?.isDrawerOpen ??
+                            false,
+                    child: AnimatedOpacity(
+                        duration: Durations.long1,
+                        opacity: (provider.sliderDrawerKey.currentState
+                                    ?.isDrawerOpen ??
+                                false)
+                            ? .3
+                            : 1,
+                        child: Paginado(provider: provider))))));
   }
 }
 
@@ -211,7 +231,6 @@ class PaginadoState extends State<Paginado> {
   void _handleString(String url) {
     UriFun.readContentUriSafe(url, widget.provider);
   }
-
 
   @override
   Widget build(BuildContext context) {

@@ -14,6 +14,7 @@ class ListEstadoWidget extends StatelessWidget {
   final bool selectedVisible;
   final bool selected;
   final Function(bool?) onSelected;
+  final bool dense;
   const ListEstadoWidget(
       {super.key,
       required this.estado,
@@ -21,7 +22,8 @@ class ListEstadoWidget extends StatelessWidget {
       required this.share,
       required this.selectedVisible,
       required this.selected,
-      required this.onSelected});
+      required this.onSelected,
+      required this.dense});
 
   @override
   Widget build(BuildContext context) {
@@ -35,20 +37,23 @@ class ListEstadoWidget extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Container(
-                          constraints: BoxConstraints(maxWidth: 25.w),
+                          constraints:
+                              BoxConstraints(maxWidth: dense ? 18.w : 22.w),
                           child: Row(mainAxisSize: MainAxisSize.min, children: [
                             if (selectedVisible)
                               Checkbox.adaptive(
                                   value: selected,
                                   onChanged: (value) => onSelected(value)),
-                            Stack(alignment: Alignment.center, children: [
-                              Icon(Icons.circle,
-                                  color: ThemaMain.second, size: 26.sp),
-                              Text("${estado.orden}",
-                                  style: TextStyle(
-                                      fontSize: 18.sp,
-                                      fontWeight: FontWeight.bold))
-                            ])
+                            if (!dense)
+                              Stack(alignment: Alignment.center, children: [
+                                Icon(Icons.circle,
+                                    color: ThemaMain.second,
+                                    size: dense ? 23.sp : 26.sp),
+                                Text("${estado.orden}",
+                                    style: TextStyle(
+                                        fontSize: 15.sp,
+                                        fontWeight: FontWeight.bold))
+                              ])
                           ])),
                       Expanded(
                           child: Padding(
@@ -69,12 +74,12 @@ class ListEstadoWidget extends StatelessWidget {
                                             : estado.descripcion!,
                                         style: TextStyle(
                                             backgroundColor: ThemaMain.white,
-                                            fontStyle: FontStyle.italic,
-                                            fontWeight: estado.descripcion ==
+                                            fontStyle: estado.descripcion ==
                                                         "" ||
                                                     estado.descripcion == null
-                                                ? FontWeight.normal
-                                                : FontWeight.bold,
+                                                ? FontStyle.normal
+                                                : FontStyle.italic,
+                                            fontWeight: FontWeight.normal,
                                             fontSize: estado.descripcion ==
                                                         "" ||
                                                     estado.descripcion == null

@@ -1,5 +1,4 @@
 import 'package:sqflite/sqflite.dart' as sql;
-
 import '../models/enrutar_model.dart';
 
 String nombreDB = "enrutar";
@@ -46,19 +45,31 @@ class EnrutarController {
     return modelo == null ? null : EnrutarModelo.fromJson(modelo);
   }
 
-  static Future<EnrutarModelo?> getItemContacto({required int contactoId}) async {
+  static Future<EnrutarModelo?> getItemContacto(
+      {required int contactoId}) async {
     final db = await database();
-    final modelo =
-        (await db.query(nombreDB, where: "contacto_id = ?", whereArgs: [contactoId], limit: 1))
-            .firstOrNull;
+    final modelo = (await db.query(nombreDB,
+            where: "contacto_id = ?", whereArgs: [contactoId], limit: 1))
+        .firstOrNull;
 
     return modelo == null ? null : EnrutarModelo.fromJson(modelo);
   }
-  
+
+  static Future<List<EnrutarModelo>> getVisitado({required bool visitado}) async {
+    final db = await database();
+    final modelo = (await db.query(nombreDB,
+        where: visitado ? "visitado = 1" : "visitado = 0",
+        orderBy: "orden ASC"));
+    List<EnrutarModelo> model = [];
+    for (var element in modelo) {
+      model.add(EnrutarModelo.fromJson(element));
+    }
+    return model;
+  }
 
   static Future<List<EnrutarModelo>> getItems() async {
     final db = await database();
-    final modelo = (await db.query(nombreDB,orderBy: "orden ASC"));
+    final modelo = (await db.query(nombreDB, orderBy: "orden ASC"));
     List<EnrutarModelo> model = [];
     for (var element in modelo) {
       model.add(EnrutarModelo.fromJson(element));

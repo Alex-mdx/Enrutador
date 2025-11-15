@@ -21,7 +21,7 @@ class _MyWidgetState extends State<MapSliding> {
   Widget build(BuildContext context) {
     final provider = Provider.of<MainProvider>(context);
     return SlidingUpPanel(
-        isDraggable: false,
+        isDraggable: true,
         backdropEnabled: true,
         renderPanelSheet: false,
         backdropTapClosesPanel: true,
@@ -37,29 +37,34 @@ class _MyWidgetState extends State<MapSliding> {
                 : MainAxisAlignment.end,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Container(
-                  decoration: BoxDecoration(
-                      color: ThemaMain.background,
-                      borderRadius: BorderRadius.vertical(
-                          top: Radius.circular(borderRadius))),
-                  width: 100.w,
-                  child: Column(mainAxisSize: MainAxisSize.min, children: [
-                    if (provider.cargaDatos)
-                      Column(children: [
-                        Text("Cargando datos"),
-                        LinearProgressIndicator(
-                            minHeight: 1.h,
-                            value: (provider.cargaProgress == 0)
-                                ? null
-                                : (provider.cargaProgress /
-                                    provider.cargaLenght),
-                            borderRadius: BorderRadius.circular(borderRadius),
-                            backgroundColor: ThemaMain.dialogbackground,
-                            color: ThemaMain.primary)
-                      ]),
-                    if (provider.selectRefencia != null) TarjetaSeleccion(),
-                    TarjetaContacto()
-                  ]))
+              Stack(children: [
+                Container(
+                    decoration: BoxDecoration(
+                        color: ThemaMain.background,
+                        borderRadius: BorderRadius.vertical(
+                            top: Radius.circular(borderRadius))),
+                    width: 100.w,
+                    child: Column(mainAxisSize: MainAxisSize.min, children: [
+                      if (provider.cargaDatos)
+                        Column(children: [
+                          Text("Cargando datos"),
+                          LinearProgressIndicator(
+                              minHeight: 1.h,
+                              value: (provider.cargaProgress == 0)
+                                  ? null
+                                  : (provider.cargaProgress /
+                                      provider.cargaLenght),
+                              borderRadius: BorderRadius.circular(borderRadius),
+                              backgroundColor: ThemaMain.dialogbackground,
+                              color: ThemaMain.primary)
+                        ]),
+                      if (provider.selectRefencia != null) TarjetaSeleccion(),
+                      TarjetaContacto()
+                    ])),
+                Center(
+                    child: Icon(Icons.drag_handle_rounded,
+                        size: 20.sp, color: ThemaMain.darkBlue))
+              ])
             ]));
   }
 }

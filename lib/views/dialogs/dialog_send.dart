@@ -26,7 +26,8 @@ class DialogSend extends StatefulWidget {
       required this.fecha,
       required this.entradaTexto,
       this.lenght,
-      this.lada, this.input});
+      this.lada,
+      this.input});
 
   @override
   State<DialogSend> createState() => _DialogSendState();
@@ -62,7 +63,7 @@ class _DialogSendState extends State<DialogSend> {
             TextField(
                 textCapitalization: TextCapitalization.sentences,
                 minLines: 1,
-                maxLines: 4,
+                maxLines: 5,
                 maxLength: widget.lenght,
                 controller: controller,
                 textInputAction: widget.input,

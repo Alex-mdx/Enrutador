@@ -131,17 +131,46 @@ class ContactoController {
     return newModelfiltro2;
   }
 
+  static Future<List<ContactoModelo>> getAll() async {
+    final db = await database();
+    final modelo = (await db.query(nombreDB));
+    List<ContactoModelo> model = [];
+    for (var element in modelo) {
+      model.add(ContactoModelo.fromJson(element));
+    }
+
+    return model;
+  }
+
   static Future<List<ContactoModelo>> getItemsAll(
       {required String? nombre, required int? limit}) async {
+    String vacios = Preferences.tiposFilt == 0
+        ? "nombre_completo IS NOT NULL"
+        : Preferences.tiposFilt == 1
+            ? "tipo IS NOT NULL AND tipo_fecha IS NOT NULL"
+            : "estado IS NOT NULL AND estado_fecha IS NOT NULL";
     final db = await database();
     final modelo = (await db.query(nombreDB,
         where: nombre == "" || nombre == null
-            ? null
-            : "nombre_completo LIKE ? OR numero LIKE ? OR otro_numero LIKE ?",
+            ? Preferences.vaciosFilt
+                ? vacios
+                : null
+            : "(nombre_completo LIKE ? OR numero LIKE ? OR otro_numero LIKE ?) ${Preferences.vaciosFilt ? "AND $vacios" : ""}",
         whereArgs: nombre == "" || nombre == null
             ? null
             : ['%$nombre%', '%$nombre%', '%$nombre%'],
-        orderBy: "nombre_completo ASC",
+        columns: [
+          "id",
+          "latitud",
+          "longitud",
+          "tipo",
+          "estado",
+          "nombre_completo",
+          "tipo_fecha",
+          "estado_fecha"
+        ],
+        orderBy:
+            "${Preferences.agruparFilt == 0 ? "nombre_completo" : Preferences.tiposFilt == 1 ? "tipo_fecha" : "estado_fecha"} ${Preferences.ordenFilt ? "DESC" : "ASC"}",
         limit: limit));
     List<ContactoModelo> model = [];
     for (var element in modelo) {
@@ -149,15 +178,27 @@ class ContactoController {
     }
     var newModelfiltro1 = Preferences.tipos.isEmpty
         ? model
+            .where((element) =>
+                Preferences.tiposFilt == 1 ? element.tipo != -1 : true)
+            .toList()
         : model
             .where((element) =>
-                Preferences.tipos.contains(element.tipo.toString()))
+                Preferences.tipos.contains(element.tipo.toString()) &&
+                        Preferences.tiposFilt == 1
+                    ? element.tipo != -1
+                    : true)
             .toList();
     var newModelfiltro2 = Preferences.status.isEmpty
         ? newModelfiltro1
+            .where((element) =>
+                Preferences.tiposFilt == 2 ? element.estado != -1 : true)
+            .toList()
         : newModelfiltro1
             .where((element) =>
-                Preferences.status.contains(element.estado.toString()))
+                Preferences.status.contains(element.estado.toString()) &&
+                        Preferences.tiposFilt == 2
+                    ? element.estado != -1
+                    : true)
             .toList();
 
     return newModelfiltro2;

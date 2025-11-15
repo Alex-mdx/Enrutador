@@ -1,9 +1,11 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:enrutador/controllers/contacto_controller.dart';
 import 'package:enrutador/models/contacto_model.dart';
 import 'package:enrutador/utilities/main_provider.dart';
 import 'package:enrutador/utilities/textos.dart';
 import 'package:enrutador/utilities/theme/theme_color.dart';
 import 'package:enrutador/views/dialogs/dialog_compartir.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
@@ -87,7 +89,7 @@ class CardContactoWidget extends StatelessWidget {
                                   children: [
                                 SubstringHighlight(
                                     text:
-                                        contacto.nombreCompleto ?? "Sin nombre",
+                                        "${contacto.nombreCompleto ?? "Sin nombre"}${kDebugMode ? " -${contacto.tipo} - ${contacto.estado}" : ""}",
                                     term: entrada,
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
@@ -119,28 +121,6 @@ class CardContactoWidget extends StatelessWidget {
                                               fontSize: 15.sp,
                                               fontWeight: FontWeight.bold,
                                               fontStyle: FontStyle.italic)),
-                                      if (compartir)
-                                        Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              FutureBuilder(
-                                                  future:
-                                                      TipoController.getItem(
-                                                          data: contacto.tipo ??
-                                                              -1),
-                                                  builder: (context, data) => Text(
-                                                      "Tipo:\n${data.data?.nombre ?? "Ø"}",
-                                                      style: TextStyle(
-                                                          fontSize: 14.sp))),
-                                              Text(
-                                                  "Estatus: ${contacto.estado ?? "Ø"}",
-                                                  maxLines: 2,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  style: TextStyle(
-                                                      fontSize: 14.sp))
-                                            ]),
                                       Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.spaceBetween,
@@ -178,10 +158,15 @@ class CardContactoWidget extends StatelessWidget {
                               ])),
                           if (compartir)
                             IconButton.filled(
-                                onPressed: () async => showDialog(
-                                    context: context,
-                                    builder: (context) =>
-                                        DialogCompartir(contacto: contacto)),
+                                onPressed: () async {
+                                  var temp = await ContactoController.getItem(
+                                      lat: contacto.latitud,
+                                      lng: contacto.longitud);
+                                  showDialog(
+                                      context: context,
+                                      builder: (context) =>
+                                          DialogCompartir(contacto: temp!));
+                                },
                                 iconSize: 20.sp,
                                 icon: Icon(Icons.share, color: ThemaMain.white))
                         ])))));

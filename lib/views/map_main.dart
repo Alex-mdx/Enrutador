@@ -46,7 +46,7 @@ class _ViajeMapPageState extends State<MapMain>
                     lat: point.latitude,
                     lng: point.longitude),
                 initialZoom: 17,
-                minZoom: 10,
+                minZoom: 9,
                 maxZoom: 20,
                 initialCenter: LatLng(
                     provider.local!.latitude!, provider.local!.longitude!)),
@@ -77,8 +77,8 @@ class _ViajeMapPageState extends State<MapMain>
                 ]),
                 CurrentLocationLayer(
                     alignDirectionAnimationDuration: Durations.short3,
-                    alignPositionAnimationDuration: Durations.short3,
-                    moveAnimationDuration: Durations.short3,
+                    alignPositionAnimationDuration: Durations.extralong2,
+                    moveAnimationDuration: Durations.long3,
                     style: LocationMarkerStyle(
                         showAccuracyCircle: true,
                         markerSize: Size(19.sp, 19.sp),

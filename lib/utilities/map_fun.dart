@@ -6,11 +6,10 @@ import 'package:enrutador/utilities/services/dialog_services.dart';
 import 'package:enrutador/utilities/textos.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map_animations/flutter_map_animations.dart';
+import 'package:flutter_map_math/flutter_geo_math.dart';
 import 'package:get/get.dart';
-import 'package:latlong2/latlong.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:open_location_code/open_location_code.dart';
-import 'dart:math';
 import 'package:sizer/sizer.dart';
 import 'package:badges/badges.dart' as bd;
 import '../models/enrutar_model.dart';
@@ -21,7 +20,7 @@ class MapFun {
   static Future<void> getUri(
       {required MainProvider provider, required String uri}) async {
     var newindex = uri.indexOf("?q=");
-    var newText = uri.replaceRange(0,newindex+3,"");
+    var newText = uri.replaceRange(0, newindex + 3, "");
     List<String> datas = newText.split(",");
     var pc = Textos.psCODE(double.parse(datas[0]), double.parse(datas[1]));
     var newlocation = PlusCode(pc).decode().southWest;
@@ -58,8 +57,11 @@ class MapFun {
 
     for (int i = 0; i < points.length; i++) {
       final point = points[i];
-      double distance = _calculateDistance(
-          originLat, originLon, point.latitud, point.longitud);
+      double distance = calcularDistancia(
+          lat1: originLat,
+          lon1: originLon,
+          lat2: point.latitud,
+          lon2: point.longitud);
 
       if (distance < minDistance) {
         minDistance = distance;
@@ -75,33 +77,9 @@ class MapFun {
       required double lon1,
       required double lat2,
       required double lon2}) {
-    double dLat = _degToRad(lat2 - lat1);
-    double dLon = _degToRad(lon2 - lon1);
-    double a = sin(dLat / 2) * sin(dLat / 2) +
-        cos(_degToRad(lat1)) *
-            cos(_degToRad(lat2)) *
-            sin(dLon / 2) *
-            sin(dLon / 2);
-    double c = 2 * atan2(sqrt(a), sqrt(1 - a));
-    return tierraRadio * c;
-  }
-
-  static double _degToRad(double deg) {
-    return deg * (pi / 180);
-  }
-
-  static double _calculateDistance(
-      double lat1, double lon1, double lat2, double lon2) {
-    double dLat = (lat2 - lat1) * pi / 180;
-    double dLon = (lon2 - lon1) * pi / 180;
-
-    double a = sin(dLat / 2) * sin(dLat / 2) +
-        cos(lat1 * pi / 180) *
-            cos(lat2 * pi / 180) *
-            sin(dLon / 2) *
-            sin(dLon / 2);
-
-    return tierraRadio * 2 * atan2(sqrt(a), sqrt(1 - a));
+    return (FlutterMapMath.distanceBetween(lat1, lon1, lat2, lon2, '') == 0
+        ? 0
+        : FlutterMapMath.distanceBetween(lat1, lon1, lat2, lon2, '') / 10);
   }
 
   static Future<void> ordenamiento(MainProvider provider) async {
@@ -226,8 +204,8 @@ class MapFun {
     var tocable = (provider.contacto?.latitud == e.latitud &&
         provider.contacto?.longitud == e.longitud);
     return AnimatedMarker(
-        width: tocable ? 23.sp : 20.sp,
-        height: tocable ? 23.sp : 20.sp,
+        width: tocable ? 23.sp : 18.sp,
+        height: tocable ? 23.sp : 18.sp,
         rotate: true,
         point: LatLng(e.latitud, e.longitud),
         builder: (context, animation) => InkWell(
@@ -262,7 +240,7 @@ class MapFun {
                     color: provider.estados
                         .firstWhereOrNull((element) => element.id == e.estado)
                         ?.color,
-                    size: tocable ? 14.sp : 12.sp),
+                    size: tocable ? 14.sp : 10.sp),
                 child: Stack(
                     fit: StackFit.expand,
                     alignment: Alignment.center,
@@ -271,14 +249,14 @@ class MapFun {
                           ? "assets/mark_point2.png"
                           : "assets/mark_point.png"),
                       Padding(
-                          padding: EdgeInsets.only(bottom: tocable ? 6.sp : 0),
+                          padding: EdgeInsets.only(bottom: tocable ? 5.sp : 0),
                           child: Icon(
                               provider.tipos
                                       .firstWhereOrNull(
                                           (element) => element.id == e.tipo)
                                       ?.icon ??
                                   Icons.person,
-                              size: tocable ? 21.sp : 19.sp,
+                              size: tocable ? 21.sp : 17.sp,
                               color: provider.tipos
                                       .firstWhereOrNull(
                                           (element) => element.id == e.tipo)
