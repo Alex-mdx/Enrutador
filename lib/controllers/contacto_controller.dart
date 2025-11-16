@@ -58,11 +58,11 @@ class ContactoController {
   }
 
   static Future<ContactoModelo?> getItem(
-      {required double lat, required double lng}) async {
+      {required double lat, required double lng, int? id}) async {
     final db = await database();
     final modelo = (await db.query(nombreDB,
-            where: "latitud = ? AND longitud = ?",
-            whereArgs: [lat, lng],
+            where: "(latitud = ? AND longitud = ?) OR id = ?",
+            whereArgs: [lat, lng, id],
             orderBy: "id DESC"))
         .firstOrNull;
 

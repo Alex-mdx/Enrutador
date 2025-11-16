@@ -1,3 +1,4 @@
+import 'package:enrutador/controllers/referencias_controller.dart';
 import 'package:enrutador/utilities/main_provider.dart';
 import 'package:enrutador/utilities/services/dialog_services.dart';
 import 'package:flutter/material.dart';
@@ -28,11 +29,14 @@ class _TarjetaSeleccionState extends State<TarjetaSeleccion> {
               child: FutureBuilder(
                   future: ContactoController.getItem(
                       lat: provider.selectRefencia?.contactoIdLat ?? 1,
-                      lng: provider.selectRefencia?.contactoIdLng ?? 1),
-                  builder: (context, snapshot) => (provider.contacto?.latitud ==
-                              provider.selectRefencia?.contactoIdLat &&
-                          provider.contacto?.longitud ==
-                              provider.selectRefencia?.contactoIdLng)
+                      lng: provider.selectRefencia?.contactoIdLng ?? 1,
+                      id: provider.selectRefencia!.idForanea),
+                  builder: (context, snapshot) => ((provider
+                                      .contacto?.latitud ==
+                                  provider.selectRefencia?.contactoIdLat &&
+                              provider.contacto?.longitud ==
+                                  provider.selectRefencia?.contactoIdLng) ||
+                          provider.contacto?.id == null)
                       ? Padding(
                           padding: EdgeInsets.only(left: 1.w),
                           child: Text("Seleccione un contacto para referenciar",
@@ -53,14 +57,16 @@ class _TarjetaSeleccionState extends State<TarjetaSeleccion> {
                                 if (temp != null) {
                                   final referencia = provider.selectRefencia
                                       ?.copyWith(
+                                          idRForenea: provider.contacto?.id,
                                           contactoIdRLat:
                                               provider.contacto?.latitud,
                                           contactoIdRLng:
                                               provider.contacto?.longitud,
                                           fecha: DateTime.now());
-                                  var newModel = temp.copyWith(
-                                      contactoEnlances: [referencia!]);
-                                  await ContactoController.update(newModel);
+                                  if (referencia != null) {
+                                    await ReferenciasController.insert(
+                                        referencia);
+                                  }
                                 } else {
                                   showToast("No se encontro el contacto");
                                 }
@@ -68,16 +74,17 @@ class _TarjetaSeleccionState extends State<TarjetaSeleccion> {
                                 provider.selectRefencia = null;
                               }),
                           label: Text(
-                              "Presione aqui para agregar como referencia a ${snapshot.data?.nombreCompleto ?? "Sin nombre disponible"}",
+                              "Presione agregar como referencia de ${snapshot.data?.nombreCompleto ?? "Sin nombre disponible"}",
+                              textAlign: TextAlign.center,
                               style: TextStyle(fontSize: 15.sp)),
                           icon: Icon(Icons.touch_app,
                               size: 20.sp, color: ThemaMain.purple)))),
           Expanded(
               flex: 1,
               child: IconButton(
+                  iconSize: 24.sp,
                   onPressed: () => provider.selectRefencia = null,
-                  icon: Icon(Icons.remove_circle,
-                      color: ThemaMain.pink, size: 22.sp)))
+                  icon: Icon(Icons.remove_circle, color: ThemaMain.red)))
         ]);
   }
 }

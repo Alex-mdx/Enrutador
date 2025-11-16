@@ -498,10 +498,14 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                           onAcceptPressed: (context) async {
                                             provider.selectRefencia =
                                                 ReferenciaModelo(
-                                                    contactoIdLat: widget
-                                                            .contacto
-                                                            ?.latitud ??
-                                                        0,
+                                                    id: -1,
+                                                    idForanea: widget
+                                                        .contacto!.id,
+                                                    contactoIdLat:
+                                                        widget.contacto
+                                                                ?.latitud ??
+                                                            0,
+                                                    idRForenea: null,
                                                     contactoIdLng: widget
                                                             .contacto
                                                             ?.longitud ??
@@ -650,7 +654,7 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                         }
                       },
                       child: Icon(Icons.contacts,
-                          size: widget.compartir ? 29.w : 21.w,
+                          size: widget.compartir ? 30.w : 21.w,
                           color: ThemaMain.primary))
                   : InkWell(
                       onLongPress: () async {
@@ -717,16 +721,20 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                               BorderRadiusGeometry.circular(borderRadius),
                           child: Image.memory(
                               base64Decode(widget.contacto?.foto ?? "a"),
-                              fit: BoxFit.cover,
-                              filterQuality: FilterQuality.low,
-                              width: widget.compartir ? 29.w : 21.w,
-                              height: widget.compartir ? 29.w : 21.w,
+                              fit: widget.compartir
+                                  ? BoxFit.fitHeight
+                                  : BoxFit.cover,
+                              filterQuality: widget.compartir
+                                  ? FilterQuality.medium
+                                  : FilterQuality.low,
+                              width: widget.compartir ? 30.w : 21.w,
+                              height: widget.compartir ? 30.w : 21.w,
                               gaplessPlayback: true,
                               errorBuilder: (context, error, stackTrace) =>
                                   Icon(Icons.broken_image,
                                       color: ThemaMain.red,
                                       size:
-                                          widget.compartir ? 29.w : 21.w)))))),
+                                          widget.compartir ? 30.w : 21.w)))))),
       bd.Badge(
           showBadge: !widget.compartir &&
               (widget.contacto?.fotoReferencia != null &&
@@ -781,7 +789,7 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                       },
                       child: Icon(Icons.image,
                           color: ThemaMain.green,
-                          size: widget.compartir ? 29.w : 21.w))
+                          size: widget.compartir ? 30.w : 21.w))
                   : InkWell(
                       onLongPress: () async {
                         try {
@@ -850,17 +858,21 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                           borderRadius:
                               BorderRadiusGeometry.circular(borderRadius),
                           child: Image.memory(
-                              fit: BoxFit.cover,
-                              filterQuality: FilterQuality.low,
-                              width: widget.compartir ? 29.w : 21.w,
-                              height: widget.compartir ? 29.w : 21.w,
+                              fit: widget.compartir
+                                  ? BoxFit.fitHeight
+                                  : BoxFit.cover,
+                              filterQuality: widget.compartir
+                                  ? FilterQuality.medium
+                                  : FilterQuality.low,
+                              width: widget.compartir ? 30.w : 21.w,
+                              height: widget.compartir ? 30.w : 21.w,
                               base64Decode(
                                   widget.contacto?.fotoReferencia ?? "a"),
                               gaplessPlayback: true,
                               errorBuilder: (context, error, stackTrace) =>
                                   Icon(Icons.broken_image,
                                       color: ThemaMain.red,
-                                      size: widget.compartir ? 29.w : 21.w))))))
+                                      size: widget.compartir ? 30.w : 21.w))))))
     ]);
   }
 }

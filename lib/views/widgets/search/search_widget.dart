@@ -4,12 +4,14 @@ import 'package:enrutador/controllers/contacto_controller.dart';
 import 'package:enrutador/models/what_3_words_model.dart';
 import 'package:enrutador/utilities/main_provider.dart';
 import 'package:enrutador/utilities/map_fun.dart';
+import 'package:enrutador/utilities/textos.dart';
 import 'package:enrutador/utilities/theme/theme_app.dart';
 import 'package:enrutador/utilities/theme/theme_color.dart';
 import 'package:enrutador/utilities/w3w_fun.dart';
 import 'package:enrutador/views/widgets/card_contacto_widget.dart';
 import 'package:enrutador/views/widgets/list_w3w.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:open_location_code/open_location_code.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
@@ -31,7 +33,7 @@ class _SearchWidgetState extends State<SearchWidget> {
     final provider = Provider.of<MainProvider>(context);
 
     return Padding(
-        padding: EdgeInsets.symmetric(horizontal: 1.w, vertical: 0),
+        padding: EdgeInsets.only(top: 1.h),
         child: Column(spacing: 0, children: [
           Container(
               decoration: BoxDecoration(
@@ -42,7 +44,7 @@ class _SearchWidgetState extends State<SearchWidget> {
                         blurRadius: 5,
                         offset: Offset(4, 4))
                   ]),
-              width: 99.w,
+              width: 100.w,
               child: Column(children: [
                 TextFormField(
                     focusNode: foc,
@@ -57,20 +59,29 @@ class _SearchWidgetState extends State<SearchWidget> {
                       setState(() {
                         w3wSuggest = w3w;
                       });
-
                       try {
-                        var ps = PlusCode(value);
-                        var decode = ps.decode();
-                        var coordenadas = LatLng(
-                            double.parse(
-                                decode.southWest.latitude.toStringAsFixed(6)),
-                            double.parse(
-                                decode.southWest.longitude.toStringAsFixed(6)));
+                        var coordenadas = Textos.truncPlusCode(PlusCode(value));
                         log("${coordenadas.toJson()}");
                         await MapFun.sendInitUri(
                             provider: provider,
                             lat: coordenadas.latitude,
                             lng: coordenadas.longitude);
+                        return;
+                      } catch (e) {
+                        debugPrint("error: $e");
+                      }
+                      try {
+                        var newText = value.removeAllWhitespace.split(",");
+                        var text = LatLng(
+                            double.parse(newText[0]), double.parse(newText[1]));
+                        var ps = Textos.psCODE(text.latitude, text.longitude);
+                        var coordenadas = Textos.truncPlusCode(PlusCode(ps));
+                        log("${coordenadas.toJson()}");
+                        await MapFun.sendInitUri(
+                            provider: provider,
+                            lat: coordenadas.latitude,
+                            lng: coordenadas.longitude);
+                        return;
                       } catch (e) {
                         debugPrint("error: $e");
                       }
@@ -81,26 +92,38 @@ class _SearchWidgetState extends State<SearchWidget> {
                     style: TextStyle(fontSize: 16.sp),
                     decoration: InputDecoration(
                         fillColor: ThemaMain.second,
-                        prefixIcon: IconButton(
-                            iconSize: 22.sp,
-                            onPressed: () {
-                              w3wSuggest.clear();
-                              setState(() {
-                                provider.buscar.clear();
-                              });
+                        prefixIcon: AnimatedCrossFade(
+                            alignment: AlignmentGeometry.center,
+                            firstChild: IconButton(
+                                iconSize: 22.sp,
+                                onPressed: () {
+                                  w3wSuggest.clear();
+                                  setState(() {
+                                    provider.buscar.clear();
+                                  });
 
-                              if (foc.hasFocus) {
-                                foc.unfocus();
-                              }
-                            },
-                            icon: Icon(Icons.close_rounded,
-                                color: ThemaMain.red)),
-                        label: Text("Nombre | PlusCode | Telefono | What3Word",
+                                  if (foc.hasFocus) {
+                                    foc.unfocus();
+                                  }
+                                },
+                                icon: Icon(Icons.close_rounded,
+                                    color: ThemaMain.red)),
+                            secondChild: Padding(
+                                padding: EdgeInsets.only(left: 2.w, top: 1.h),
+                                child: Icon(Icons.search_rounded,
+                                    size: 22.sp, color: ThemaMain.primary)),
+                            crossFadeState: provider
+                                    .buscar.text.removeAllWhitespace.isNotEmpty
+                                ? CrossFadeState.showFirst
+                                : CrossFadeState.showSecond,
+                            duration: Durations.long2),
+                        label: Text(
+                            "Nombre | PlusCode | Telefono | What3Word | Coordenadas",
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
                                 fontStyle: FontStyle.italic,
-                                fontSize: 15.sp,
+                                fontSize: 14.sp,
                                 color: ThemaMain.darkGrey)),
                         contentPadding: EdgeInsets.symmetric(
                             horizontal: 2.w, vertical: 1.h))),

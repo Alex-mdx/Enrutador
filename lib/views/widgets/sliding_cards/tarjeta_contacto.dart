@@ -88,6 +88,7 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                                       funcion(contacto: temp);
                                       Navigation.pop();
                                       await ContactoController.update(temp);
+                                      
                                       provider.contacto =
                                           await ContactoController.getItem(
                                               lat: temp.latitud,
@@ -117,7 +118,7 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                                     provider.contacto?.longitud ?? 0),
                                 style: TextStyle(fontSize: 16.sp)))
                       ]),
-                      Text(
+                      SelectableText(
                           "${provider.contacto?.latitud.toStringAsFixed(6)}, ${provider.contacto?.longitud.toStringAsFixed(6)}",
                           style: TextStyle(
                               fontSize: 15.sp, fontStyle: FontStyle.italic))

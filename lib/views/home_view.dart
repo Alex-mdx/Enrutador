@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:enrutador/controllers/referencias_controller.dart';
 import 'package:enrutador/utilities/main_provider.dart';
 import 'package:enrutador/utilities/services/navigation_services.dart';
 import 'package:enrutador/utilities/theme/theme_color.dart';
@@ -32,7 +33,7 @@ class _HomeViewState extends State<HomeView> {
     return Consumer<MainProvider>(
         builder: (context, provider, child) => SliderDrawer(
             key: provider.sliderDrawerKey,
-            animationDuration: 200,
+            animationDuration: 250,
             appBar: Placeholder(),
             sliderOpenSize: 34.w,
             isDraggable: false,
@@ -152,14 +153,24 @@ class _HomeViewState extends State<HomeView> {
             child: Scaffold(
                 appBar: AppBar(
                     leading: IconButton(
-                        onPressed: () =>
-                            provider.sliderDrawerKey.currentState?.toggle(),
+                        onPressed: () => setState(() {
+                              provider.sliderDrawerKey.currentState?.toggle();
+                            }),
                         icon: Icon(Icons.menu,
                             color: ThemaMain.darkBlue, size: 20.sp)),
                     title: Text("Enrutador", style: TextStyle(fontSize: 18.sp)),
                     toolbarHeight: 6.h,
                     actions: [
-                      OverflowBar(children: [
+                      OverflowBar(spacing: 1.w, children: [
+                        if (kDebugMode)
+                          IconButton(
+                              iconSize: 24.sp,
+                              onPressed: () async {
+                                var a = await ReferenciasController.getItems();
+                                debugPrint("${a.length}");
+                              },
+                              icon: Icon(Icons.auto_fix_high,
+                                  color: ThemaMain.background)),
                         IconButton.filled(
                             onPressed: () {},
                             icon:
@@ -172,11 +183,11 @@ class _HomeViewState extends State<HomeView> {
                         provider.sliderDrawerKey.currentState?.isDrawerOpen ??
                             false,
                     child: AnimatedOpacity(
-                        duration: Durations.long1,
+                        duration: Durations.long2,
                         opacity: (provider.sliderDrawerKey.currentState
                                     ?.isDrawerOpen ??
                                 false)
-                            ? .3
+                            ? .25
                             : 1,
                         child: Paginado(provider: provider))))));
   }
@@ -214,7 +225,7 @@ class PaginadoState extends State<Paginado> {
         widget.provider.animaMap.centerOnPoint(
             LatLng(widget.provider.local?.latitude ?? 0,
                 widget.provider.local?.longitude ?? 0),
-            duration: Duration(milliseconds: 100));
+            duration: Duration(milliseconds: 300));
       }
     });
     initDeepLinks();

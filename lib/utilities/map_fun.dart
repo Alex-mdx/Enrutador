@@ -125,8 +125,9 @@ class MapFun {
       {required MainProvider provider,
       required double lat,
       required double lng}) async {
-    var pc = Textos.psCODE(lat, lng);
-    var newlocation = PlusCode(pc).decode().southWest;
+    var pc = Textos.psCODE(double.parse(lat.toStringAsFixed(6)),
+        double.parse(lng.toStringAsFixed(6)));
+    var newlocation = Textos.truncPlusCode(PlusCode(pc));
     provider.contacto = ContactoModelo(
         id: null,
         nombreCompleto: null,

@@ -61,9 +61,10 @@ class _MyWidgetState extends State<MapSliding> {
                       if (provider.selectRefencia != null) TarjetaSeleccion(),
                       TarjetaContacto()
                     ])),
-                Center(
-                    child: Icon(Icons.drag_handle_rounded,
-                        size: 20.sp, color: ThemaMain.darkBlue))
+                if (!provider.cargaDatos)
+                  Align(
+                      child: Icon(Icons.drag_handle_rounded,
+                          size: 20.sp, color: ThemaMain.darkBlue))
               ])
             ]));
   }

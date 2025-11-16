@@ -129,6 +129,14 @@ class Textos {
     return pscode;
   }
 
+  static LatLng truncPlusCode(PlusCode code) {
+    var decode = code.decode();
+    var coordenadas = LatLng(
+        double.parse(decode.southWest.latitude.toStringAsFixed(6)),
+        double.parse(decode.southWest.longitude.toStringAsFixed(6)));
+    return coordenadas;
+  }
+
   static String randomWord(int? number) {
     final random = math.Random();
     const caracteres =

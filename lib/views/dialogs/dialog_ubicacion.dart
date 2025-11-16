@@ -1,7 +1,10 @@
+import 'package:enrutador/utilities/textos.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get_utils/src/extensions/export.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:line_icons/line_icons.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:open_location_code/open_location_code.dart';
 import 'package:sizer/sizer.dart';
@@ -31,6 +34,7 @@ class _DialogUbicacionState extends State<DialogUbicacion> {
           child: Column(children: [
             Row(children: [
               Expanded(
+                  flex: 3,
                   child: TextFormField(
                       enabled: psController.text.isEmpty &&
                           w3wController.text.isEmpty,
@@ -39,7 +43,7 @@ class _DialogUbicacionState extends State<DialogUbicacion> {
                             latController.text = value;
                           }),
                       keyboardType: TextInputType.numberWithOptions(),
-                      style: TextStyle(fontSize: 18.sp),
+                      style: TextStyle(fontSize: 16.sp),
                       decoration: InputDecoration(
                           fillColor: ThemaMain.second,
                           label: Text("Latitud",
@@ -52,6 +56,7 @@ class _DialogUbicacionState extends State<DialogUbicacion> {
                           contentPadding: EdgeInsets.symmetric(
                               horizontal: 2.w, vertical: 1.h)))),
               Expanded(
+                  flex: 3,
                   child: TextFormField(
                       enabled: psController.text.isEmpty &&
                           w3wController.text.isEmpty,
@@ -60,7 +65,7 @@ class _DialogUbicacionState extends State<DialogUbicacion> {
                             lngController.text = value;
                           }),
                       keyboardType: TextInputType.numberWithOptions(),
-                      style: TextStyle(fontSize: 18.sp),
+                      style: TextStyle(fontSize: 16.sp),
                       decoration: InputDecoration(
                           fillColor: ThemaMain.second,
                           label: Text("Longitud",
@@ -71,7 +76,24 @@ class _DialogUbicacionState extends State<DialogUbicacion> {
                                   fontSize: 16.sp,
                                   color: ThemaMain.darkGrey)),
                           contentPadding: EdgeInsets.symmetric(
-                              horizontal: 2.w, vertical: 1.h))))
+                              horizontal: 2.w, vertical: 1.h)))),
+              Expanded(
+                  flex: 1,
+                  child: IconButton.filled(
+                      iconSize: 18.sp,
+                      onPressed: () async {
+                        try {
+                          var string =
+                              (await Clipboard.getData(Clipboard.kTextPlain))!
+                                  .text
+                                  ?.removeAllWhitespace;
+                          latController.text = string!.split(",")[0];
+                          lngController.text = string.split(",")[1];
+                        } catch (e) {
+                          showToast("No se detecto coordenadas");
+                        }
+                      },
+                      icon: Icon(LineIcons.paste, color: ThemaMain.yellow)))
             ]),
             Divider(),
             TextFormField(
@@ -83,7 +105,7 @@ class _DialogUbicacionState extends State<DialogUbicacion> {
                       psController.text = value;
                     }),
                 keyboardType: TextInputType.name,
-                style: TextStyle(fontSize: 18.sp),
+                style: TextStyle(fontSize: 16.sp),
                 decoration: InputDecoration(
                     fillColor: ThemaMain.second,
                     label: Text("Plus Code",
@@ -106,7 +128,7 @@ class _DialogUbicacionState extends State<DialogUbicacion> {
                         w3wController.text = value;
                       }),
                   keyboardType: TextInputType.text,
-                  style: TextStyle(fontSize: 18.sp),
+                  style: TextStyle(fontSize: 16.sp),
                   decoration: InputDecoration(
                       fillColor: ThemaMain.second,
                       label: Text("What 3 Words",
@@ -123,15 +145,19 @@ class _DialogUbicacionState extends State<DialogUbicacion> {
           onPressed: () {
             if (latController.text.isNotEmpty &&
                 lngController.text.isNotEmpty) {
-              widget.funLat(LatLng(double.parse(latController.text),
-                  double.parse(lngController.text)));
+              try {
+                var ps = Textos.psCODE(double.parse(latController.text),
+                    double.parse(lngController.text));
+                var coord = Textos.truncPlusCode(PlusCode(ps));
+                widget.funLat(coord);
+              } catch (e) {
+                showToast("No se pudo convertir en coordenadas");
+              }
             } else if (w3wController.text.isNotEmpty) {
             } else if (psController.text.isNotEmpty) {
               try {
-                var ps = PlusCode(psController.text.removeAllWhitespace);
-                var decode = ps.decode();
-                widget.funLat(LatLng(
-                    decode.southWest.latitude, decode.southWest.longitude));
+                widget.funLat(Textos.truncPlusCode(
+                    PlusCode(psController.text.removeAllWhitespace)));
               } catch (e) {
                 debugPrint("error: $e");
                 showToast("Plus Code ingresado no valido");

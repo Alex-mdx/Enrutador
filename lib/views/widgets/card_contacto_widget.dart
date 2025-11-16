@@ -113,10 +113,8 @@ class CardContactoWidget extends StatelessWidget {
                                             minFontSize: 12,
                                             overflow: TextOverflow.ellipsis,
                                             style: TextStyle(fontSize: 15.sp)),
-                                      Text(
+                                      SelectableText(
                                           "Plus Code: ${Textos.psCODE(contacto.latitud, contacto.longitud)}",
-                                          maxLines: 2,
-                                          overflow: TextOverflow.ellipsis,
                                           style: TextStyle(
                                               fontSize: 15.sp,
                                               fontWeight: FontWeight.bold,
