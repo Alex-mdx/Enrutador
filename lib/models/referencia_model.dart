@@ -1,7 +1,7 @@
 import 'package:enrutador/utilities/funcion_parser.dart';
 
 class ReferenciaModelo {
-  int id;
+  int? id;
   int? idForanea;
   int? idRForenea;
   double contactoIdLat;

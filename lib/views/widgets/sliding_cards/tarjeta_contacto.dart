@@ -8,6 +8,7 @@ import 'package:enrutador/utilities/services/navigation_services.dart';
 import 'package:enrutador/views/dialogs/dialog_compartir.dart';
 import 'package:enrutador/views/dialogs/dialog_mapas.dart';
 import 'package:enrutador/views/dialogs/dialog_ubicacion.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:line_icons/line_icons.dart';
@@ -88,7 +89,7 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                                       funcion(contacto: temp);
                                       Navigation.pop();
                                       await ContactoController.update(temp);
-                                      
+
                                       provider.contacto =
                                           await ContactoController.getItem(
                                               lat: temp.latitud,
@@ -102,7 +103,6 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                             icon: Icon(LineIcons.mapMarked,
                                 size: 22.sp, color: ThemaMain.primary),
                             style: ButtonStyle(
-                                elevation: WidgetStatePropertyAll(1),
                                 padding: WidgetStatePropertyAll(
                                     EdgeInsets.symmetric(
                                         horizontal: 1.w, vertical: 0))),
@@ -119,7 +119,7 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                                 style: TextStyle(fontSize: 16.sp)))
                       ]),
                       SelectableText(
-                          "${provider.contacto?.latitud.toStringAsFixed(6)}, ${provider.contacto?.longitud.toStringAsFixed(6)}",
+                          "${kDebugMode ? "|${provider.contacto?.id}| " : ""}${provider.contacto?.latitud.toStringAsFixed(6)}, ${provider.contacto?.longitud.toStringAsFixed(6)}",
                           style: TextStyle(
                               fontSize: 15.sp, fontStyle: FontStyle.italic))
                     ])),

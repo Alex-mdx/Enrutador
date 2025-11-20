@@ -45,7 +45,7 @@ class _ContactosViewState extends State<ContactosView> {
       carga = false;
     });
     contactos =
-        await ContactoController.getItemsAll(nombre: buscador.text, limit: 150);
+        await ContactoController.getItemsAll(nombre: buscador.text, limit: 100);
     setState(() {
       carga = true;
     });
@@ -152,6 +152,7 @@ class _ContactosViewState extends State<ContactosView> {
                           horizontal: 2.w, vertical: 1.h)))),
           RowFiltro(press: () => send()),
           Expanded(
+              flex: 10,
               child: !carga
                   ? Center(
                       child: LoadingAnimationWidget.twoRotatingArc(
@@ -162,7 +163,44 @@ class _ContactosViewState extends State<ContactosView> {
                               style: TextStyle(
                                   fontSize: 16.sp,
                                   fontWeight: FontWeight.bold)))
-                      : Scrollbar(child: stick(provider)))
+                      : Scrollbar(child: stick(provider))),
+          Padding(
+            padding: EdgeInsets.only(bottom: 1.h),
+            child: Row(
+                mainAxisSize: MainAxisSize.max,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  IconButton.filled(
+                      iconSize: 19.sp,
+                      onPressed: () {},
+                      icon: Icon(LineIcons.angleDoubleLeft,
+                          color: ThemaMain.background)),
+                  IconButton.filled(
+                      iconSize: 19.sp,
+                      onPressed: () {},
+                      icon: Icon(LineIcons.angleLeft,
+                          color: ThemaMain.dialogbackground)),
+                  FutureBuilder(
+                      future: ContactoController.getTotalRegistros(),
+                      builder: (context, snapshot) {
+                        return Text(
+                            "1 - ${(((snapshot.data ?? 1) == 0 ? 1 : (snapshot.data ?? 1)) / 100).ceil()}",
+                            style: TextStyle(
+                                fontSize: 18.sp, fontWeight: FontWeight.bold));
+                      }),
+                  IconButton.filled(
+                      iconSize: 19.sp,
+                      onPressed: () {},
+                      icon: Icon(LineIcons.angleRight,
+                          color: ThemaMain.dialogbackground)),
+                  IconButton.filled(
+                      iconSize: 19.sp,
+                      onPressed: () {},
+                      icon: Icon(LineIcons.angleDoubleRight,
+                          color: ThemaMain.background))
+                ]),
+          )
         ]));
   }
 

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:enrutador/controllers/estado_controller.dart';
+import 'package:enrutador/controllers/referencias_controller.dart';
 import 'package:enrutador/utilities/main_provider.dart';
 import 'package:enrutador/views/dialogs/dialog_send.dart';
 import 'package:enrutador/views/dialogs/dialogs_comunicar.dart';
@@ -164,7 +165,7 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                               "Domicilio: Sin Domicilio",
                                           style: TextStyle(fontSize: 16.sp),
                                           minFontSize: 14,
-                                          maxLines: 2,
+                                          maxLines: 3,
                                           overflow: TextOverflow.ellipsis))
                                 else
                                   AutoSizeText(
@@ -530,36 +531,41 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                               Wrap(
                                   runAlignment: WrapAlignment.spaceBetween,
                                   spacing: .5.w,
-                                  children: widget.contacto?.contactoEnlances
-                                          .map((e) => GestureDetector(
-                                              onLongPress: () async {
-                                                var temp = widget.contacto
-                                                    ?.copyWith(
-                                                        contactoEnlances: []);
-                                                await ContactoController.update(
-                                                    temp!);
-                                                provider.contacto = temp;
-                                              },
-                                              child: Chip(
-                                                  deleteIcon: Icon(
-                                                      Icons.assistant_direction,
-                                                      size: 20.sp,
-                                                      color: ThemaMain.green),
-                                                  onDeleted: () async {
-                                                    await provider.slide
-                                                        .close();
-                                                    await MapFun.sendInitUri(
+                                  children: [
+                                    FutureBuilder(
+                                        future: ReferenciasController.getIdPrin(
+                                            idContacto: widget.contacto?.id,
+                                            lat: widget.contacto?.latitud,
+                                            lng: widget.contacto?.longitud),
+                                        builder: (context, snapshot) => Wrap(
+                                            runAlignment:
+                                                WrapAlignment.spaceBetween,
+                                            spacing: .5.w,
+                                            children: snapshot.data
+                                                    ?.map((e) => ChipReferencia(
+                                                        ref: e,
                                                         provider: provider,
-                                                        lat: e.contactoIdRLat!,
-                                                        lng: e.contactoIdRLng!);
-                                                  },
-                                                  labelPadding:
-                                                      EdgeInsets.all(6.sp),
-                                                  label: Text("Aval",
-                                                      style: TextStyle(
-                                                          fontSize: 15.sp)))))
-                                          .toList() ??
-                                      [])
+                                                        color: ThemaMain.green))
+                                                    .toList() ??
+                                                [])),
+                                    SizedBox(
+                                        height: 4.h, child: VerticalDivider())
+                                  ]),
+                              FutureBuilder(
+                                  future: ReferenciasController.getIdR(
+                                      idRContacto: widget.contacto?.id,
+                                      lat: widget.contacto?.latitud,
+                                      lng: widget.contacto?.longitud),
+                                  builder: (context, snapshot) => Wrap(
+                                      runAlignment: WrapAlignment.spaceBetween,
+                                      spacing: .5.w,
+                                      children: snapshot.data
+                                              ?.map((e) => ChipReferencia(
+                                                  ref: e,
+                                                  provider: provider,
+                                                  color: ThemaMain.primary))
+                                              .toList() ??
+                                          []))
                             ]),
                           if (!widget.compartir)
                             TextButton(
@@ -874,5 +880,38 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                       color: ThemaMain.red,
                                       size: widget.compartir ? 30.w : 21.w))))))
     ]);
+  }
+}
+
+class ChipReferencia extends StatelessWidget {
+  const ChipReferencia(
+      {super.key,
+      required this.ref,
+      required this.provider,
+      required this.color});
+
+  final ReferenciaModelo ref;
+  final MainProvider provider;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+        onLongPress: () async {},
+        child: Chip(
+            deleteIcon:
+                Icon(Icons.assistant_direction, size: 20.sp, color: color),
+            onDeleted: () async {
+              MapFun.sendInitUri(
+                  provider: provider,
+                  lat: ref.contactoIdRLat!,
+                  lng: ref.contactoIdRLng!);
+              await provider.slide.close();
+            },
+            padding: EdgeInsets.all(0),
+            labelPadding: EdgeInsets.all(4.sp),
+            label: Text("Ref",
+                style:
+                    TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold))));
   }
 }

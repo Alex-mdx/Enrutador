@@ -44,8 +44,17 @@ class ReferenciasController {
   static Future<void> update(ReferenciaModelo data) async {
     final db = await database();
     await db.update(nombreDB, data.toJson(),
-        where: "id = ?",
-        whereArgs: [data.id],
+        where:
+            "id = ? OR (id_foranea = ? AND id_r_forenea = ?) OR (contacto_id_lat = ? AND contacto_id_lng = ? AND contacto_id_r_lat = ? AND contacto_id_r_lng = ?)",
+        whereArgs: [
+          data.id,
+          data.idForanea,
+          data.idRForenea,
+          data.contactoIdLat,
+          data.contactoIdLng,
+          data.contactoIdRLat,
+          data.contactoIdRLng
+        ],
         conflictAlgorithm: sql.ConflictAlgorithm.replace);
   }
 
@@ -67,11 +76,15 @@ class ReferenciasController {
     return query == null ? null : ReferenciaModelo.fromJson(query);
   }
 
-  static Future<List<ReferenciaModelo>> getIdPrin(ReferenciaModelo data) async {
+  static Future<List<ReferenciaModelo>> getIdPrin(
+      {required int? idContacto,
+      required double? lat,
+      required double? lng}) async {
     final db = await database();
     final query = await db.query(nombreDB,
-        where: "id_foranea = ? OR (contacto_id_lat AND contacto_id_lng = ?)",
-        whereArgs: [data.idForanea, data.contactoIdLat, data.contactoIdLng]);
+        where:
+            "id_foranea = ? OR (contacto_id_lat = ? AND contacto_id_lng = ?)",
+        whereArgs: [idContacto, lat, lng]);
     List<ReferenciaModelo> modelo = [];
     for (var element in query) {
       modelo.add(ReferenciaModelo.fromJson(element));
@@ -79,12 +92,15 @@ class ReferenciasController {
     return modelo;
   }
 
-  static Future<List<ReferenciaModelo>> getIdR(ReferenciaModelo data) async {
+  static Future<List<ReferenciaModelo>> getIdR(
+      {required int? idRContacto,
+      required double? lat,
+      required double? lng}) async {
     final db = await database();
     final query = await db.query(nombreDB,
         where:
             "id_r_forenea = ? OR (contacto_id_r_lat = ? AND contacto_id_r_lng = ?)",
-        whereArgs: [data.idForanea, data.contactoIdRLat, data.contactoIdRLng]);
+        whereArgs: [idRContacto, lat, lng]);
     List<ReferenciaModelo> modelo = [];
     for (var element in query) {
       modelo.add(ReferenciaModelo.fromJson(element));

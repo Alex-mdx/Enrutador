@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:enrutador/controllers/contacto_controller.dart';
 import 'package:enrutador/controllers/estado_controller.dart';
 import 'package:enrutador/controllers/tipo_controller.dart';
@@ -85,7 +86,7 @@ class UriFun {
                   lat: model.latitud, lng: model.longitud);
               var pc = Textos.psCODE(model.latitud, model.longitud);
               var newlocation = PlusCode(pc).decode().southWest;
-
+              debugPrint("result: ${model.toJson()}");
               if (datamodel != null) {
                 debugPrint("actualizar");
                 var newPlus = datamodel.copyWith(

@@ -1,7 +1,10 @@
 import 'dart:async';
+import 'package:enrutador/controllers/contacto_controller.dart';
 import 'package:enrutador/controllers/referencias_controller.dart';
+import 'package:enrutador/models/referencia_model.dart';
 import 'package:enrutador/utilities/main_provider.dart';
 import 'package:enrutador/utilities/services/navigation_services.dart';
+import 'package:enrutador/utilities/textos.dart';
 import 'package:enrutador/utilities/theme/theme_color.dart';
 import 'package:enrutador/views/map_main.dart';
 import 'package:enrutador/views/widgets/map_widget/map_navigation.dart';
@@ -14,6 +17,7 @@ import 'package:internet_connection_checker_plus/internet_connection_checker_plu
 import 'package:latlong2/latlong.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:location/location.dart' as lc;
+import 'package:open_location_code/open_location_code.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 import 'package:app_links/app_links.dart';
@@ -166,8 +170,66 @@ class _HomeViewState extends State<HomeView> {
                           IconButton(
                               iconSize: 24.sp,
                               onPressed: () async {
-                                var a = await ReferenciasController.getItems();
-                                debugPrint("${a.length}");
+                                var a = await ContactoController.getItems();
+                                var newA = a
+                                    .where((element) =>
+                                        element.contactoEnlances.isNotEmpty)
+                                    .toList();
+                                for (var element in newA) {
+                                  for (var modelRef
+                                      in element.contactoEnlances) {
+                                    var ps = Textos.psCODE(
+                                        modelRef.contactoIdLat,
+                                        modelRef.contactoIdLng);
+                                    var origenPS =
+                                        Textos.truncPlusCode(PlusCode(ps));
+                                    var origen =
+                                        await ContactoController.getItem(
+                                            lat: double.parse(origenPS.latitude
+                                                .toStringAsFixed(6)),
+                                            lng: double.parse(origenPS.longitude
+                                                .toStringAsFixed(6)),
+                                            id: modelRef.idForanea);
+                                    var psRef = Textos.psCODE(
+                                        modelRef.contactoIdRLat ?? 0,
+                                        modelRef.contactoIdRLng ?? 0);
+                                    var refPS =
+                                        Textos.truncPlusCode(PlusCode(psRef));
+                                    var ref = await ContactoController.getItem(
+                                        lat: double.parse(
+                                            refPS.latitude.toStringAsFixed(6)),
+                                        lng: double.parse(
+                                            refPS.longitude.toStringAsFixed(6)),
+                                        id: modelRef.idRForenea);
+                                    ReferenciaModelo referencia =
+                                        ReferenciaModelo(
+                                            id: null,
+                                            idForanea: origen?.id,
+                                            idRForenea: ref?.id,
+                                            contactoIdLat: origen?.latitud ??
+                                                double.parse(origenPS.latitude
+                                                    .toStringAsFixed(6)),
+                                            contactoIdLng: origen?.longitud ??
+                                                double.parse(origenPS.longitude
+                                                    .toStringAsFixed(6)),
+                                            contactoIdRLat: ref?.latitud ??
+                                                double.parse(refPS.latitude
+                                                    .toStringAsFixed(6)),
+                                            contactoIdRLng: ref?.longitud ??
+                                                double.parse(refPS.longitude
+                                                    .toStringAsFixed(6)),
+                                            buscar: modelRef.buscar,
+                                            tipoCliente: modelRef.tipoCliente,
+                                            estatus: modelRef.estatus,
+                                            fecha: modelRef.fecha);
+                                    debugPrint("${referencia.toJson()}");
+                                    /* await ReferenciasController.insert(
+                                        referencia); */
+                                  }
+                                  /* var sinRef =
+                                      element.copyWith(contactoEnlances: []);
+                                  await ContactoController.update(sinRef); */
+                                }
                               },
                               icon: Icon(Icons.auto_fix_high,
                                   color: ThemaMain.background)),

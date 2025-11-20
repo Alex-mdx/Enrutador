@@ -1,5 +1,6 @@
 import 'package:enrutador/models/contacto_model.dart';
 import 'package:enrutador/utilities/preferences.dart';
+import 'package:flutter/foundation.dart';
 import 'package:sqflite/sqflite.dart' as sql;
 
 import '../utilities/textos.dart';
@@ -65,6 +66,7 @@ class ContactoController {
             whereArgs: [lat, lng, id],
             orderBy: "id DESC"))
         .firstOrNull;
+    debugPrint("$modelo");
 
     return modelo == null ? null : ContactoModelo.fromJson(modelo);
   }
@@ -224,14 +226,18 @@ class ContactoController {
     await db.delete(nombreDB, where: 'id = ?', whereArgs: [id]);
   }
 
+  static Future<int> getTotalRegistros() async {
+    final db = await database();
+    var resultado =
+        await db.rawQuery('SELECT COUNT(*) as total FROM $nombreDB');
+    return resultado.first['total'] as int;
+  }
+
   static Future<void> deleteItemByltlng(
       {required double lat, required double lng}) async {
     final db = await database();
-    await db.delete(
-      nombreDB,
-      where: "latitud = ? AND longitud = ?",
-      whereArgs: [lat, lng],
-    );
+    await db.delete(nombreDB,
+        where: "latitud = ? AND longitud = ?", whereArgs: [lat, lng]);
   }
 
   static Future<void> deleteAll() async {
