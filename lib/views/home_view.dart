@@ -201,28 +201,23 @@ class _HomeViewState extends State<HomeView> {
                                         lng: double.parse(
                                             refPS.longitude.toStringAsFixed(6)),
                                         id: modelRef.idRForenea);
-                                    ReferenciaModelo referencia =
+                                        if(origen != null && ref != null){
+ReferenciaModelo referencia =
                                         ReferenciaModelo(
                                             id: null,
-                                            idForanea: origen?.id,
-                                            idRForenea: ref?.id,
-                                            contactoIdLat: origen?.latitud ??
-                                                double.parse(origenPS.latitude
-                                                    .toStringAsFixed(6)),
-                                            contactoIdLng: origen?.longitud ??
-                                                double.parse(origenPS.longitude
-                                                    .toStringAsFixed(6)),
-                                            contactoIdRLat: ref?.latitud ??
-                                                double.parse(refPS.latitude
-                                                    .toStringAsFixed(6)),
-                                            contactoIdRLng: ref?.longitud ??
-                                                double.parse(refPS.longitude
-                                                    .toStringAsFixed(6)),
+                                            idForanea: origen.id,
+                                            idRForenea: ref.id,
+                                            contactoIdLat: origen.latitud,
+                                            contactoIdLng: origen.longitud,
+                                            contactoIdRLat: ref.latitud,
+                                            contactoIdRLng: ref.longitud,
                                             buscar: modelRef.buscar,
                                             tipoCliente: modelRef.tipoCliente,
                                             estatus: modelRef.estatus,
                                             fecha: modelRef.fecha);
                                     debugPrint("${referencia.toJson()}");
+                                        }
+                                    
                                     /* await ReferenciasController.insert(
                                         referencia); */
                                   }

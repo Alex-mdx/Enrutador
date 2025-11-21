@@ -132,71 +132,78 @@ class _RowFiltroState extends State<RowFiltro> {
               fun: () => showDialog(
                   context: context,
                   builder: (context) => Dialog(
-                          child: Container(
-                        constraints: BoxConstraints(minHeight: 80.h),
-                        child:
-                            Column(mainAxisSize: MainAxisSize.min, children: [
-                          Text("Seleccione estados para filtrar",
-                              style: TextStyle(fontSize: 16.sp)),
-                          SingleChildScrollView(
-                            child: Scrollbar(
-                              child: FutureBuilder(
-                                  future: EstadoController.getItems(),
-                                  builder: (context, snapshot) {
-                                    if (snapshot.hasData) {
-                                      return ListView.builder(
-                                          shrinkWrap: true,
-                                          itemCount: snapshot.data!.length,
-                                          itemBuilder: (context, index) {
-                                            EstadoModel estado =
-                                                snapshot.data![index];
-                                            return ListEstadoWidget(
-                                                estado: estado,
-                                                fun: () {},
-                                                share: false,
-                                                selectedVisible: true,
-                                                selected: Preferences.status
-                                                    .contains(
-                                                        estado.id.toString()),
-                                                onSelected: (p0) {
-                                                  var temp = Preferences.status
-                                                      .map((e) => int.parse(e))
-                                                      .toList();
-                                                  if (temp
-                                                      .contains(estado.id)) {
-                                                    temp.remove(estado.id);
-                                                  } else {
-                                                    temp.add(estado.id!);
-                                                  }
-                                                  setState(() {
-                                                    Preferences.status = temp
-                                                        .map(
-                                                            (e) => e.toString())
-                                                        .toList();
-                                                    if (widget.press != null) {
-                                                      widget.press!();
-                                                    }
-                                                  });
+                      child: Container(
+                          constraints: BoxConstraints(minHeight: 80.h),
+                          child:
+                              Column(mainAxisSize: MainAxisSize.min, children: [
+                            Text("Seleccione estados para filtrar",
+                                style: TextStyle(fontSize: 16.sp)),
+                            SingleChildScrollView(
+                                child: Scrollbar(
+                                    child: FutureBuilder(
+                                        future: EstadoController.getItems(),
+                                        builder: (context, snapshot) {
+                                          if (snapshot.hasData) {
+                                            return ListView.builder(
+                                                shrinkWrap: true,
+                                                itemCount:
+                                                    snapshot.data!.length,
+                                                itemBuilder: (context, index) {
+                                                  EstadoModel estado =
+                                                      snapshot.data![index];
+                                                  return ListEstadoWidget(
+                                                      estado: estado,
+                                                      fun: () {},
+                                                      share: false,
+                                                      selectedVisible: true,
+                                                      selected: Preferences
+                                                          .status
+                                                          .contains(estado.id
+                                                              .toString()),
+                                                      onSelected: (p0) {
+                                                        var temp = Preferences
+                                                            .status
+                                                            .map((e) =>
+                                                                int.parse(e))
+                                                            .toList();
+                                                        if (temp.contains(
+                                                            estado.id)) {
+                                                          temp.remove(
+                                                              estado.id);
+                                                        } else {
+                                                          temp.add(estado.id!);
+                                                        }
+                                                        setState(() {
+                                                          Preferences.status =
+                                                              temp
+                                                                  .map((e) => e
+                                                                      .toString())
+                                                                  .toList();
+                                                          if (widget.press !=
+                                                              null) {
+                                                            widget.press!();
+                                                          }
+                                                        });
 
-                                                  Navigation.pop();
-                                                },
-                                                dense: true);
-                                          });
-                                    } else if (snapshot.hasError) {
-                                      return Text("Error: ${snapshot.error}",
-                                          style: TextStyle(
-                                              fontSize: 15.sp,
-                                              fontStyle: FontStyle.italic));
-                                    } else {
-                                      return Padding(
-                                          padding: EdgeInsets.all(8.sp),
-                                          child: CircularProgressIndicator());
-                                    }
-                                  }),
-                            ),
-                          )
-                        ]),
-                      ))),
+                                                        Navigation.pop();
+                                                      },
+                                                      dense: true);
+                                                });
+                                          } else if (snapshot.hasError) {
+                                            return Text(
+                                                "Error: ${snapshot.error}",
+                                                style: TextStyle(
+                                                    fontSize: 15.sp,
+                                                    fontStyle:
+                                                        FontStyle.italic));
+                                          } else {
+                                            return Padding(
+                                                padding: EdgeInsets.all(8.sp),
+                                                child:
+                                                    CircularProgressIndicator());
+                                          }
+                                        })))
+                          ])))),
               colorprincipal: ThemaMain.darkBlue,
               condicion: Preferences.status.isNotEmpty,
               delete: () => setState(() {

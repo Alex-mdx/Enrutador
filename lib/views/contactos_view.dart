@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:oktoast/oktoast.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:enrutador/controllers/contacto_controller.dart';
@@ -34,6 +35,7 @@ class _ContactosViewState extends State<ContactosView> {
   List<ContactoModelo> selects = [];
   bool carga = false;
   List<ContactoModelo> contactos = [];
+  var index = 1;
   @override
   void initState() {
     super.initState();
@@ -44,8 +46,8 @@ class _ContactosViewState extends State<ContactosView> {
     setState(() {
       carga = false;
     });
-    contactos =
-        await ContactoController.getItemsAll(nombre: buscador.text, limit: 100);
+    contactos = await ContactoController.getItemsAll(
+        nombre: buscador.text, limit: 100, page: index);
     setState(() {
       carga = true;
     });
@@ -58,7 +60,7 @@ class _ContactosViewState extends State<ContactosView> {
         appBar: AppBar(
             title: Text("Contactos", style: TextStyle(fontSize: 18.sp)),
             actions: [
-              OverflowBar(spacing: 1.w, children: [
+              OverflowBar(spacing: 2.w, children: [
                 ElevatedButton.icon(
                     style: ButtonStyle(
                         padding: WidgetStatePropertyAll(EdgeInsets.symmetric(
@@ -121,8 +123,10 @@ class _ContactosViewState extends State<ContactosView> {
                   iconSize: 22.sp,
                   onPressed: () => showDialog(
                       context: context,
-                      builder: (context) =>
-                          DialogFiltroContacto(fun: () async => await send())),
+                      builder: (context) => DialogFiltroContacto(fun: () async {
+                            index = 1;
+                            await send();
+                          })),
                   icon: Icon(LineIcons.filter))
             ]),
         body: Column(children: [
@@ -164,43 +168,105 @@ class _ContactosViewState extends State<ContactosView> {
                                   fontSize: 16.sp,
                                   fontWeight: FontWeight.bold)))
                       : Scrollbar(child: stick(provider))),
-          Padding(
-            padding: EdgeInsets.only(bottom: 1.h),
-            child: Row(
-                mainAxisSize: MainAxisSize.max,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  IconButton.filled(
-                      iconSize: 19.sp,
-                      onPressed: () {},
-                      icon: Icon(LineIcons.angleDoubleLeft,
-                          color: ThemaMain.background)),
-                  IconButton.filled(
-                      iconSize: 19.sp,
-                      onPressed: () {},
-                      icon: Icon(LineIcons.angleLeft,
-                          color: ThemaMain.dialogbackground)),
-                  FutureBuilder(
-                      future: ContactoController.getTotalRegistros(),
-                      builder: (context, snapshot) {
-                        return Text(
-                            "1 - ${(((snapshot.data ?? 1) == 0 ? 1 : (snapshot.data ?? 1)) / 100).ceil()}",
+          FutureBuilder(
+              future: ContactoController.getTotalRegistros(),
+              builder: (context, snapshot) {
+                var max = (((contactos.length >= 100
+                                    ? (snapshot.data ?? 1)
+                                    : contactos.length) ==
+                                0
+                            ? 1
+                            : (contactos.length >= 100
+                                ? (snapshot.data ?? 1)
+                                : contactos.length)) /
+                        100)
+                    .ceil();
+                return Column(children: [
+                  Row(
+                      mainAxisSize: MainAxisSize.max,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        IconButton.filledTonal(
+                            iconSize: 19.sp,
+                            onPressed: () async =>
+                                await itemScrollController.scrollTo(
+                                    index: 0, duration: Duration(seconds: 1)),
+                            icon: Icon(LineIcons.arrowCircleUp,
+                                color: ThemaMain.primary)),
+                        IconButton.filledTonal(
+                            iconSize: 19.sp,
+                            onPressed: () async {
+                              if (index != 1) {
+                                index = 1;
+                                debugPrint("$index");
+                                await send();
+                              } else {
+                                showToast("Este es el inicio de la pagina");
+                              }
+                            },
+                            icon: Icon(LineIcons.angleDoubleLeft,
+                                color: ThemaMain.green)),
+                        IconButton.filledTonal(
+                            iconSize: 19.sp,
+                            onPressed: () async {
+                              if (index != 1) {
+                                if (index > 1) {
+                                  index--;
+                                }
+                                debugPrint("$index");
+                                await send();
+                              } else {
+                                showToast("Este es el inicio de la pagina");
+                              }
+                            },
+                            icon: Icon(LineIcons.angleLeft,
+                                color: ThemaMain.green)),
+                        Text("$index - $max",
                             style: TextStyle(
-                                fontSize: 18.sp, fontWeight: FontWeight.bold));
-                      }),
-                  IconButton.filled(
-                      iconSize: 19.sp,
-                      onPressed: () {},
-                      icon: Icon(LineIcons.angleRight,
-                          color: ThemaMain.dialogbackground)),
-                  IconButton.filled(
-                      iconSize: 19.sp,
-                      onPressed: () {},
-                      icon: Icon(LineIcons.angleDoubleRight,
-                          color: ThemaMain.background))
-                ]),
-          )
+                                fontSize: 18.sp, fontWeight: FontWeight.bold)),
+                        IconButton.filledTonal(
+                            iconSize: 19.sp,
+                            onPressed: () async {
+                              if (index != max) {
+                                if (index < max) {
+                                  index++;
+                                }
+                                debugPrint("$index");
+                                await send();
+                              } else {
+                                showToast("Esta es la ultima pagina");
+                              }
+                            },
+                            icon: Icon(LineIcons.angleRight,
+                                color: ThemaMain.green)),
+                        IconButton.filledTonal(
+                            iconSize: 19.sp,
+                            onPressed: () async {
+                              if (index != max) {
+                                index = max;
+                                debugPrint("$index");
+                                await send();
+                              } else {
+                                showToast("Esta es la ultima pagina");
+                              }
+                            },
+                            icon: Icon(LineIcons.angleDoubleRight,
+                                color: ThemaMain.green)),
+                        IconButton.filledTonal(
+                            iconSize: 19.sp,
+                            onPressed: () async =>
+                                await itemScrollController.scrollTo(
+                                    index: 100, duration: Duration(seconds: 1)),
+                            icon: Icon(LineIcons.arrowCircleDown,
+                                color: ThemaMain.primary)),
+                      ]),
+                  LinearProgressIndicator(
+                      color: ThemaMain.primary,
+                      value: (index == 0 ? 1 : index / max),
+                      minHeight: .7.h)
+                ]);
+              })
         ]));
   }
 

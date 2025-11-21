@@ -145,7 +145,7 @@ class ContactoController {
   }
 
   static Future<List<ContactoModelo>> getItemsAll(
-      {required String? nombre, required int? limit}) async {
+      {required String? nombre, required int limit, required int? page}) async {
     String vacios = Preferences.tiposFilt == 0
         ? "nombre_completo IS NOT NULL"
         : Preferences.tiposFilt == 1
@@ -173,7 +173,8 @@ class ContactoController {
         ],
         orderBy:
             "${Preferences.agruparFilt == 0 ? "nombre_completo" : Preferences.tiposFilt == 1 ? "tipo_fecha" : "estado_fecha"} ${Preferences.ordenFilt ? "DESC" : "ASC"}",
-        limit: limit));
+        limit: limit,
+        offset: ((page ?? 1) - 1) * limit));
     List<ContactoModelo> model = [];
     for (var element in modelo) {
       model.add(ContactoModelo.fromJson(element));
@@ -181,26 +182,20 @@ class ContactoController {
     var newModelfiltro1 = Preferences.tipos.isEmpty
         ? model
             .where((element) =>
-                Preferences.tiposFilt == 1 ? element.tipo != -1 : true)
+                Preferences.tiposFilt == 1 ? (element.tipo ?? -1) > -1 : true)
             .toList()
         : model
             .where((element) =>
-                Preferences.tipos.contains(element.tipo.toString()) &&
-                        Preferences.tiposFilt == 1
-                    ? element.tipo != -1
-                    : true)
+                Preferences.tipos.contains(element.tipo.toString()))
             .toList();
     var newModelfiltro2 = Preferences.status.isEmpty
         ? newModelfiltro1
             .where((element) =>
-                Preferences.tiposFilt == 2 ? element.estado != -1 : true)
+                Preferences.tiposFilt == 2 ? (element.estado ?? -1) > -1 : true)
             .toList()
         : newModelfiltro1
             .where((element) =>
-                Preferences.status.contains(element.estado.toString()) &&
-                        Preferences.tiposFilt == 2
-                    ? element.estado != -1
-                    : true)
+                Preferences.status.contains(element.estado.toString()))
             .toList();
 
     return newModelfiltro2;
