@@ -74,11 +74,13 @@ class _TarjetaSeleccionState extends State<TarjetaSeleccion> {
                                 provider.selectRefencia = null;
                               }),
                           label: Text(
-                              "Presione agregar como referencia de ${snapshot.data?.nombreCompleto ?? "Sin nombre disponible"}",
+                              "Presione para vincular a\n${snapshot.data?.nombreCompleto ?? "Sin nombre disponible"}",
                               textAlign: TextAlign.center,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
                               style: TextStyle(fontSize: 15.sp)),
                           icon: Icon(Icons.touch_app,
-                              size: 20.sp, color: ThemaMain.purple)))),
+                              size: 22.sp, color: ThemaMain.yellow)))),
           Expanded(
               flex: 1,
               child: IconButton(

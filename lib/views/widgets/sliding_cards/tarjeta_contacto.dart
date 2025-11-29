@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:enrutador/controllers/contacto_controller.dart';
 import 'package:enrutador/controllers/enrutar_controller.dart';
 import 'package:enrutador/models/enrutar_model.dart';
@@ -23,6 +24,7 @@ import '../../../utilities/map_fun.dart';
 import '../../../utilities/textos.dart';
 import '../../../utilities/theme/theme_color.dart';
 import 'tarjeta_contacto_detalle.dart';
+import 'package:badges/badges.dart' as bd;
 
 class TarjetaContacto extends StatefulWidget {
   const TarjetaContacto({super.key});
@@ -73,51 +75,54 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                         ]), 
                       if (kDebugMode)
                         LinearProgressIndicator(color: ThemaMain.red),*/
-                      Row(children: [
-                        TextButton.icon(
-                            onLongPress: () => showDialog(
-                                context: context,
-                                builder: (context) =>
-                                    DialogUbicacion(funLat: (lat) async {
-                                      var temp = provider.contacto!.copyWith(
-                                          latitud: double.parse(lat?.latitude
-                                                  .toStringAsFixed(6) ??
-                                              "0"),
-                                          longitud: double.parse(lat?.longitude
-                                                  .toStringAsFixed(6) ??
-                                              "0"));
-                                      funcion(contacto: temp);
-                                      Navigation.pop();
-                                      await ContactoController.update(temp);
+                      FutureBuilder(
+                          future: Textos.psGeo(Textos.psCODE(
+                              provider.contacto?.latitud ?? 0,
+                              provider.contacto?.longitud ?? 0)),
+                          builder: (context, snapshot) => TextButton.icon(
+                              onLongPress: () => showDialog(
+                                  context: context,
+                                  builder: (context) =>
+                                      DialogUbicacion(funLat: (lat) async {
+                                        var temp = provider.contacto!.copyWith(
+                                            latitud: double.parse(lat?.latitude
+                                                    .toStringAsFixed(6) ??
+                                                "0"),
+                                            longitud: double.parse(lat
+                                                    ?.longitude
+                                                    .toStringAsFixed(6) ??
+                                                "0"));
+                                        funcion(contacto: temp);
+                                        Navigation.pop();
+                                        await ContactoController.update(temp);
 
-                                      provider.contacto =
-                                          await ContactoController.getItem(
-                                              lat: temp.latitud,
-                                              lng: temp.longitud);
-                                      provider.animaMap.centerOnPoint(
-                                          LatLng(
-                                              provider.contacto?.latitud ?? 0,
-                                              provider.contacto?.longitud ?? 0),
-                                          zoom: 18);
-                                    })),
-                            icon: Icon(LineIcons.mapMarked,
-                                size: 22.sp, color: ThemaMain.primary),
-                            style: ButtonStyle(
-                                padding: WidgetStatePropertyAll(
-                                    EdgeInsets.symmetric(
-                                        horizontal: 1.w, vertical: 0))),
-                            onPressed: () async {
-                              await Clipboard.setData(ClipboardData(
-                                  text: Textos.psCODE(
-                                      provider.contacto?.latitud ?? 0,
-                                      provider.contacto?.longitud ?? 0)));
-                              showToast("Plus Code copiados");
-                            },
-                            label: Text(
-                                Textos.psCODE(provider.contacto?.latitud ?? 0,
-                                    provider.contacto?.longitud ?? 0),
-                                style: TextStyle(fontSize: 16.sp)))
-                      ]),
+                                        provider.contacto =
+                                            await ContactoController.getItem(
+                                                lat: temp.latitud,
+                                                lng: temp.longitud);
+                                        provider.animaMap.centerOnPoint(
+                                            LatLng(
+                                                provider.contacto?.latitud ?? 0,
+                                                provider.contacto?.longitud ??
+                                                    0),
+                                            zoom: 18);
+                                      })),
+                              icon: Icon(LineIcons.mapMarked,
+                                  size: 20.sp, color: ThemaMain.primary),
+                              style: ButtonStyle(
+                                  padding: WidgetStatePropertyAll(
+                                      EdgeInsets.symmetric(
+                                          horizontal: 0, vertical: 0))),
+                              onPressed: () async {
+                                await Clipboard.setData(
+                                    ClipboardData(text: snapshot.data ?? "?"));
+                                showToast("Plus Code copiados");
+                              },
+                              label: AutoSizeText(snapshot.data ?? "?",
+                                  style: TextStyle(fontSize: 16.sp),
+                                  minFontSize: 11,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis))),
                       SelectableText(
                           "${kDebugMode ? "|${provider.contacto?.id}| " : ""}${provider.contacto?.latitud.toStringAsFixed(6)}, ${provider.contacto?.longitud.toStringAsFixed(6)}",
                           style: TextStyle(
@@ -127,7 +132,7 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                 child: SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Row(
-                        spacing: .5.w,
+                        spacing: .25.w,
                         mainAxisAlignment: MainAxisAlignment.end,
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -155,7 +160,7 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                                           element.mapType.name ==
                                           Preferences.mapa)
                                       .showMarker(
-                                          zoom: 15,
+                                          zoom: 16,
                                           coords: Coords(
                                               provider.contacto!.latitud,
                                               provider.contacto!.longitud),
@@ -174,8 +179,39 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                                               provider.contacto!.longitud)));
                                 }
                               },
-                              icon: Icon(LineIcons.alternateMapMarked,
-                                  color: ThemaMain.white)),
+                              icon:
+                                  Stack(alignment: Alignment.center, children: [
+                                bd.Badge(
+                                    badgeStyle: bd.BadgeStyle(
+                                        badgeColor: ThemaMain.black),
+                                    position: bd.BadgePosition.topStart(
+                                        top: -10, start: -14),
+                                    badgeContent: Icon(
+                                        Preferences.tipoNav == 0
+                                            ? LineIcons.car
+                                            : Preferences.tipoNav == 1
+                                                ? LineIcons.walking
+                                                : Preferences.tipoNav == 2
+                                                    ? LineIcons.busAlt
+                                                    : Preferences.tipoNav == 3
+                                                        ? LineIcons.bicycle
+                                                        : Icons.launch,
+                                        color: ThemaMain.white,
+                                        size: 15.sp),
+                                    child: Icon(
+                                        Preferences.mapa.contains("google")
+                                            ? LineIcons.mapMarker
+                                            : Preferences.mapa.contains("waze")
+                                                ? LineIcons.waze
+                                                : Preferences.mapa
+                                                        .contains("uber")
+                                                    ? LineIcons.uber
+                                                    : Preferences.mapa
+                                                            .contains("didi")
+                                                        ? LineIcons.taxi
+                                                        : Icons.launch_rounded,
+                                        color: ThemaMain.white))
+                              ])),
                           if (provider.contacto?.id != null)
                             FutureBuilder(
                                 future: EnrutarController.getItemContacto(

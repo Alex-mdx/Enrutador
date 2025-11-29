@@ -131,7 +131,7 @@ class _SearchWidgetState extends State<SearchWidget> {
                 if (provider.buscar.text != "")
                   Column(children: [
                     Container(
-                        constraints: BoxConstraints(maxHeight: 30.h),
+                        constraints: BoxConstraints(maxHeight: 18.h),
                         child: Scrollbar(
                             child: ListView.builder(
                                 itemCount: w3wSuggest.length,
@@ -139,11 +139,7 @@ class _SearchWidgetState extends State<SearchWidget> {
                                 padding: EdgeInsets.all(0),
                                 itemBuilder: (context, index) {
                                   final w3w = w3wSuggest[index];
-                                  return Column(children: [
-                                    ListW3w(w3w: w3w),
-                                    Divider(
-                                        height: 0, indent: 5.w, endIndent: 5.w)
-                                  ]);
+                                  return ListW3w(w3w: w3w);
                                 }))),
                     FutureBuilder(
                         future:
@@ -151,7 +147,7 @@ class _SearchWidgetState extends State<SearchWidget> {
                         builder: (context, snapshot) {
                           if (snapshot.hasData) {
                             return Container(
-                                constraints: BoxConstraints(maxHeight: 30.h),
+                                constraints: BoxConstraints(maxHeight: 28.h),
                                 child: Scrollbar(
                                     child: ListView.builder(
                                         itemCount: snapshot.data!.length,

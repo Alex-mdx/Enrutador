@@ -8,6 +8,7 @@ import 'package:enrutador/views/dialogs/dialogs_comunicar.dart';
 import 'package:enrutador/views/dialogs/dialogs_estado_funcion.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:pasteboard/pasteboard.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:line_icons/line_icons.dart';
@@ -164,8 +165,8 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                           widget.contacto?.domicilio ??
                                               "Domicilio: Sin Domicilio",
                                           style: TextStyle(fontSize: 16.sp),
-                                          minFontSize: 14,
-                                          maxLines: 3,
+                                          minFontSize: 13,
+                                          maxLines: 2,
                                           overflow: TextOverflow.ellipsis))
                                 else
                                   AutoSizeText(
@@ -499,7 +500,7 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                           onAcceptPressed: (context) async {
                                             provider.selectRefencia =
                                                 ReferenciaModelo(
-                                                    id: -1,
+                                                    id: null,
                                                     idForanea: widget
                                                         .contacto!.id,
                                                     contactoIdLat:
@@ -545,6 +546,11 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                                     ?.map((e) => ChipReferencia(
                                                         ref: e,
                                                         provider: provider,
+                                                        latlng: LatLng(
+                                                            e.contactoIdRLat ??
+                                                                0,
+                                                            e.contactoIdRLng ??
+                                                                0),
                                                         color: ThemaMain.green))
                                                     .toList() ??
                                                 [])),
@@ -563,6 +569,9 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                               ?.map((e) => ChipReferencia(
                                                   ref: e,
                                                   provider: provider,
+                                                  latlng: LatLng(
+                                                      e.contactoIdLat,
+                                                      e.contactoIdLng),
                                                   color: ThemaMain.primary))
                                               .toList() ??
                                           []))
@@ -887,25 +896,30 @@ class ChipReferencia extends StatelessWidget {
   const ChipReferencia(
       {super.key,
       required this.ref,
+      required this.latlng,
       required this.provider,
       required this.color});
 
   final ReferenciaModelo ref;
   final MainProvider provider;
   final Color color;
+  final LatLng latlng;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-        onLongPress: () async {},
+        onLongPress: () async {
+          await ReferenciasController.deleteItem(id: ref.id);
+          showToast("Referencia eliminada");
+        },
         child: Chip(
             deleteIcon:
                 Icon(Icons.assistant_direction, size: 20.sp, color: color),
             onDeleted: () async {
               MapFun.sendInitUri(
                   provider: provider,
-                  lat: ref.contactoIdRLat!,
-                  lng: ref.contactoIdRLng!);
+                  lat: latlng.latitude,
+                  lng: latlng.longitude);
               await provider.slide.close();
             },
             padding: EdgeInsets.all(0),

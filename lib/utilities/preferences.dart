@@ -22,6 +22,12 @@ class Preferences {
   static bool get enrutados => _preferences?.getBool('enrutados') ?? false;
   static set enrutados(bool value) => _preferences?.setBool('enrutados', value);
 
+  static bool get autoNav => _preferences?.getBool('autoNav') ?? false;
+  static set autoNav(bool value) => _preferences?.setBool('autoNav', value);
+
+  static int get tipoNav => _preferences?.getInt('tiposFilt') ?? -1;
+  static set tipoNav(int value) => _preferences?.setInt('tiposFilt', value);
+
   static bool get grid => _preferences?.getBool('grid') ?? true;
   static set grid(bool value) => _preferences?.setBool('grid', value);
 

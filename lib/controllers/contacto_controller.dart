@@ -1,6 +1,5 @@
 import 'package:enrutador/models/contacto_model.dart';
 import 'package:enrutador/utilities/preferences.dart';
-import 'package:flutter/foundation.dart';
 import 'package:sqflite/sqflite.dart' as sql;
 
 import '../utilities/textos.dart';
@@ -66,7 +65,6 @@ class ContactoController {
             whereArgs: [lat, lng, id],
             orderBy: "id DESC"))
         .firstOrNull;
-    debugPrint("$modelo");
 
     return modelo == null ? null : ContactoModelo.fromJson(modelo);
   }
@@ -107,6 +105,7 @@ class ContactoController {
   static Future<List<ContactoModelo>> getItems() async {
     final db = await database();
     final modelo = (await db.query(nombreDB, columns: [
+      "id",
       "latitud",
       "longitud",
       "contacto_enlances",

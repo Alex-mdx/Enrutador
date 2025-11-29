@@ -23,8 +23,15 @@ class _MapAlternativeState extends State<MapAlternative> {
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<MainProvider>(context);
-    return Padding(
-        padding: EdgeInsets.only(left: 2.w, bottom: 4.h),
+    return AnimatedPadding(
+        padding: EdgeInsets.only(
+            left: 1.w,
+            bottom: provider.selectRefencia != null
+                ? 6.h
+                : provider.cargaDatos
+                    ? 4.h
+                    : 2.h),
+        duration: Duration(seconds: 1),
         child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,

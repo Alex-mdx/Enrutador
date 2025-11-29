@@ -166,43 +166,41 @@ class _HomeViewState extends State<HomeView> {
                     toolbarHeight: 6.h,
                     actions: [
                       OverflowBar(spacing: 1.w, children: [
-                        if (kDebugMode)
-                          IconButton(
-                              iconSize: 24.sp,
-                              onPressed: () async {
-                                var a = await ContactoController.getItems();
-                                var newA = a
-                                    .where((element) =>
-                                        element.contactoEnlances.isNotEmpty)
-                                    .toList();
-                                for (var element in newA) {
-                                  for (var modelRef
-                                      in element.contactoEnlances) {
-                                    var ps = Textos.psCODE(
-                                        modelRef.contactoIdLat,
-                                        modelRef.contactoIdLng);
-                                    var origenPS =
-                                        Textos.truncPlusCode(PlusCode(ps));
-                                    var origen =
-                                        await ContactoController.getItem(
-                                            lat: double.parse(origenPS.latitude
-                                                .toStringAsFixed(6)),
-                                            lng: double.parse(origenPS.longitude
-                                                .toStringAsFixed(6)),
-                                            id: modelRef.idForanea);
-                                    var psRef = Textos.psCODE(
-                                        modelRef.contactoIdRLat ?? 0,
-                                        modelRef.contactoIdRLng ?? 0);
-                                    var refPS =
-                                        Textos.truncPlusCode(PlusCode(psRef));
-                                    var ref = await ContactoController.getItem(
-                                        lat: double.parse(
-                                            refPS.latitude.toStringAsFixed(6)),
-                                        lng: double.parse(
-                                            refPS.longitude.toStringAsFixed(6)),
-                                        id: modelRef.idRForenea);
-                                        if(origen != null && ref != null){
-ReferenciaModelo referencia =
+                        IconButton(
+                            iconSize: 24.sp,
+                            onPressed: () async {
+                              var a = await ContactoController.getItems();
+                              var newA = a
+                                  .where((element) =>
+                                      element.contactoEnlances.isNotEmpty)
+                                  .toList();
+                              for (var element in newA) {
+                                for (var modelRef in element.contactoEnlances) {
+                                  var ps = Textos.psCODE(modelRef.contactoIdLat,
+                                      modelRef.contactoIdLng);
+                                  var origenPS =
+                                      Textos.truncPlusCode(PlusCode(ps));
+                                  var origen = await ContactoController.getItem(
+                                      lat: double.parse(
+                                          origenPS.latitude.toStringAsFixed(6)),
+                                      lng: double.parse(origenPS.longitude
+                                          .toStringAsFixed(6)),
+                                      id: modelRef.idForanea);
+                                  var psRef = Textos.psCODE(
+                                      modelRef.contactoIdRLat ?? 0,
+                                      modelRef.contactoIdRLng ?? 0);
+                                  var refPS =
+                                      Textos.truncPlusCode(PlusCode(psRef));
+                                  var ref = await ContactoController.getItem(
+                                      lat: double.parse(
+                                          refPS.latitude.toStringAsFixed(6)),
+                                      lng: double.parse(
+                                          refPS.longitude.toStringAsFixed(6)),
+                                      id: modelRef.idRForenea);
+                                  debugPrint(
+                                      "${origen?.toJson()} - ${ref?.toJson()}");
+                                  if (origen != null && ref != null) {
+                                    ReferenciaModelo referencia =
                                         ReferenciaModelo(
                                             id: null,
                                             idForanea: origen.id,
@@ -216,23 +214,20 @@ ReferenciaModelo referencia =
                                             estatus: modelRef.estatus,
                                             fecha: modelRef.fecha);
                                     debugPrint("${referencia.toJson()}");
-                                        }
-                                    
-                                    /* await ReferenciasController.insert(
-                                        referencia); */
+                                    await ReferenciasController.insert(
+                                        referencia);
                                   }
-                                  /* var sinRef =
-                                      element.copyWith(contactoEnlances: []);
-                                  await ContactoController.update(sinRef); */
                                 }
-                              },
-                              icon: Icon(Icons.auto_fix_high,
-                                  color: ThemaMain.background)),
-                        IconButton.filled(
-                            onPressed: () {},
-                            icon:
-                                Icon(Icons.auto_graph, color: ThemaMain.yellow),
-                            iconSize: 20.sp)
+                                var tempNew =
+                                    await ContactoController.getItemId(
+                                        id: element.id!);
+                                var change =
+                                    tempNew!.copyWith(contactoEnlances: []);
+                                await ContactoController.update(change);
+                              }
+                            },
+                            icon: Icon(Icons.auto_fix_high,
+                                color: ThemaMain.background))
                       ])
                     ]),
                 body: IgnorePointer(
@@ -240,7 +235,7 @@ ReferenciaModelo referencia =
                         provider.sliderDrawerKey.currentState?.isDrawerOpen ??
                             false,
                     child: AnimatedOpacity(
-                        duration: Durations.long2,
+                        duration: Durations.medium3,
                         opacity: (provider.sliderDrawerKey.currentState
                                     ?.isDrawerOpen ??
                                 false)

@@ -44,17 +44,8 @@ class ReferenciasController {
   static Future<void> update(ReferenciaModelo data) async {
     final db = await database();
     await db.update(nombreDB, data.toJson(),
-        where:
-            "id = ? OR (id_foranea = ? AND id_r_forenea = ?) OR (contacto_id_lat = ? AND contacto_id_lng = ? AND contacto_id_r_lat = ? AND contacto_id_r_lng = ?)",
-        whereArgs: [
-          data.id,
-          data.idForanea,
-          data.idRForenea,
-          data.contactoIdLat,
-          data.contactoIdLng,
-          data.contactoIdRLat,
-          data.contactoIdRLng
-        ],
+        where: "id = ? OR (id_foranea = ? AND id_r_forenea = ?)",
+        whereArgs: [data.id, data.idForanea, data.idRForenea],
         conflictAlgorithm: sql.ConflictAlgorithm.replace);
   }
 
@@ -70,9 +61,11 @@ class ReferenciasController {
 
   static Future<ReferenciaModelo?> getId(ReferenciaModelo data) async {
     final db = await database();
-    final query =
-        (await db.query(nombreDB, where: "id = ?", whereArgs: [data.id]))
-            .firstOrNull;
+    final query = (await db.query(nombreDB,
+            where: "id = ? OR (id_foranea = ? AND id_r_forenea = ?)",
+            whereArgs: [data.id, data.idForanea, data.idRForenea]))
+        .firstOrNull;
+    debugPrint("$query");
     return query == null ? null : ReferenciaModelo.fromJson(query);
   }
 
@@ -106,5 +99,10 @@ class ReferenciasController {
       modelo.add(ReferenciaModelo.fromJson(element));
     }
     return modelo;
+  }
+
+  static Future<void> deleteItem({required int? id}) async {
+    final db = await database();
+    await db.delete(nombreDB, where: "id = ?", whereArgs: [id]);
   }
 }

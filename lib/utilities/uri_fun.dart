@@ -89,11 +89,7 @@ class UriFun {
               debugPrint("result: ${model.toJson()}");
               if (datamodel != null) {
                 debugPrint("actualizar");
-                var newPlus = datamodel.copyWith(
-                    latitud:
-                        double.parse(newlocation.latitude.toStringAsFixed(6)),
-                    longitud:
-                        double.parse(newlocation.longitude.toStringAsFixed(6)));
+                var newPlus = model;
                 await ContactoController.update(newPlus);
               } else {
                 var newPlus = model.copyWith(

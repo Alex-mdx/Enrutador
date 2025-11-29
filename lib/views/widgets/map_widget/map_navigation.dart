@@ -18,8 +18,15 @@ class _MapNavigationState extends State<MapNavigation> {
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<MainProvider>(context);
-    return Padding(
-        padding: EdgeInsets.only(right: 1.w, bottom: 4.h),
+    return AnimatedPadding(
+        padding: EdgeInsets.only(
+            right: 2.w,
+            bottom: provider.selectRefencia != null
+                ? 6.h
+                : provider.cargaDatos
+                    ? 4.h
+                    : 2.h),
+        duration: Duration(seconds: 1),
         child: Column(spacing: .5.h, mainAxisSize: MainAxisSize.min, children: [
           if (provider.contacto != null)
             IconButton.filled(
@@ -55,16 +62,16 @@ class _MapNavigationState extends State<MapNavigation> {
                     color: ThemaMain.white)),
           IconButton.filled(
               iconSize: 24.sp,
-              onPressed: () async => await provider.animaMap.animatedZoomIn(
-                  duration: Durations.medium3, cancelPreviousAnimations: true),
+              onPressed: () async => await provider.animaMap
+                  .animatedZoomIn(duration: Durations.medium1),
               icon: Icon(Icons.zoom_in, color: ThemaMain.white)),
           IconButton.filled(
               iconSize: 24.sp,
-              onPressed: () async => await provider.animaMap.animatedZoomOut(
-                  duration: Durations.medium3, cancelPreviousAnimations: true),
+              onPressed: () async => await provider.animaMap
+                  .animatedZoomOut(duration: Durations.medium1),
               icon: Icon(Icons.zoom_out, color: ThemaMain.white)),
           IconButton.filled(
-              iconSize: 24.sp,
+              iconSize: 25.sp,
               onPressed: () async {
                 provider.mapSeguir = !provider.mapSeguir;
                 if (provider.mapSeguir) {

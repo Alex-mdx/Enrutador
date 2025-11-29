@@ -18,7 +18,8 @@ class ListMapsWidget extends StatefulWidget {
       required this.mapas,
       required this.latitud,
       required this.longitud,
-      required this.launch, required this.word});
+      required this.launch,
+      required this.word});
 
   @override
   State<ListMapsWidget> createState() => _ListMapsWidgetState();
@@ -68,10 +69,20 @@ class _ListMapsWidgetState extends State<ListMapsWidget> {
             : null,
         trailing: IconButton.filledTonal(
             iconSize: 24.sp,
-            onPressed: () async => widget.launch(await widget.mapas.showMarker(
-                zoom: 15,
-                coords: Coords(widget.latitud, widget.longitud),
-                title: widget.word)),
-            icon: Icon(Icons.launch, color: ThemaMain.green)));
+            onPressed: () async => Preferences.tipoNav == -1
+                ? widget.launch(await widget.mapas.showMarker(
+                    zoom: 15,
+                    coords: Coords(widget.latitud, widget.longitud),
+                    title: widget.word))
+                : widget.launch(await widget.mapas.showDirections(
+                    directionsMode: DirectionsMode.values
+                        .where((e) => e.index == Preferences.tipoNav)
+                        .first,
+                    destinationTitle: widget.word,
+                    destination: Coords(widget.latitud, widget.longitud))),
+            icon: Icon( Preferences.tipoNav == 0 ? LineIcons.car
+                          : Preferences.tipoNav == 1 ? LineIcons.walking
+                              : Preferences.tipoNav == 2 ? LineIcons.busAlt
+                                  : Preferences.tipoNav == 3 ? LineIcons.bicycle :Icons.launch, color: ThemaMain.primary)));
   }
 }

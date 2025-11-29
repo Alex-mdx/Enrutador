@@ -18,7 +18,7 @@ class W3wFun {
   static Future<List<What3WordsModel>> suggets(String word) async {
     var isw3w = api.isPossible3wa(word);
     if (isw3w) {
-      AutosuggestOptions opciones = AutosuggestOptions().setNResults(4);
+      AutosuggestOptions opciones = AutosuggestOptions().setNResults(3);
       try {
         var len = await api.autosuggest(word, options: opciones).execute();
         log(jsonEncode(len.data()?.toJson()["suggestions"] as List<Map<String, dynamic>>));

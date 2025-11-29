@@ -1,4 +1,5 @@
 import 'package:enrutador/controllers/contacto_controller.dart';
+import 'package:enrutador/controllers/referencias_controller.dart';
 import 'package:enrutador/utilities/main_provider.dart';
 import 'package:enrutador/utilities/map_fun.dart';
 import 'package:enrutador/utilities/preferences.dart';
@@ -91,28 +92,61 @@ class _ViajeMapPageState extends State<MapMain>
                                 Icons.circle,
                                 color: Colors.white)),
                         markerDirection: MarkerDirection.heading)),
-                if (provider.contacto != null &&
-                    provider.contacto!.contactoEnlances.isNotEmpty)
-                  PolylineLayer(
-                      polylines: provider.contacto!.contactoEnlances
-                          .map((e) => Polyline(
-                                  points: [
-                                    LatLng(provider.contacto!.latitud,
-                                        provider.contacto!.longitud),
-                                    LatLng(
-                                        e.contactoIdRLat ??
-                                            provider.contacto!.latitud,
-                                        e.contactoIdRLng ??
-                                            provider.contacto!.longitud)
-                                  ],
-                                  borderColor: Colors.black,
-                                  borderStrokeWidth: 5.sp,
-                                  color: ThemaMain.green,
-                                  strokeCap: StrokeCap.round,
-                                  strokeWidth: 1.w,
-                                  pattern: StrokePattern.dotted(
-                                      spacingFactor: 6.sp)))
-                          .toList()),
+                if (provider.contacto != null)
+                  FutureBuilder(
+                      future: ReferenciasController.getIdR(
+                          idRContacto: provider.contacto!.id,
+                          lat: provider.contacto!.latitud,
+                          lng: provider.contacto!.longitud),
+                      builder: (context, snapshot) {
+                        final polylines = snapshot.data
+                                ?.map((e) => Polyline(
+                                        points: [
+                                          LatLng(
+                                              e.contactoIdLat, e.contactoIdLng),
+                                          LatLng(
+                                              e.contactoIdRLat ??
+                                                  provider.contacto!.latitud,
+                                              e.contactoIdRLng ??
+                                                  provider.contacto!.longitud)
+                                        ],
+                                        borderColor: Colors.black,
+                                        borderStrokeWidth: .4.w,
+                                        color: ThemaMain.primary,
+                                        strokeCap: StrokeCap.round,
+                                        strokeWidth: 1.w,
+                                        pattern: StrokePattern.dotted(
+                                            spacingFactor: 6.sp)))
+                                .toList() ??
+                            [Polyline(points: [])];
+                        return (polylines.firstOrNull?.points.isEmpty ?? true) ? SizedBox(): PolylineLayer(polylines: polylines);
+                      }),
+                if (provider.contacto != null)
+                  FutureBuilder(
+                      future: ReferenciasController.getIdPrin(
+                          idContacto: provider.contacto!.id,
+                          lat: provider.contacto!.latitud,
+                          lng: provider.contacto!.longitud),
+                      builder: (context, snapshot) {
+                        final polylines = snapshot.data
+                                ?.map((e) => Polyline(
+                                        points: [
+                                          LatLng(
+                                              e.contactoIdLat, e.contactoIdLng),
+                                          LatLng(
+                                              e.contactoIdRLat ??
+                                                  provider.contacto!.latitud,
+                                              e.contactoIdRLng ??
+                                                  provider.contacto!.longitud)
+                                        ],
+                                        borderColor: Colors.black,
+                                        borderStrokeWidth: .4.w,
+                                        color: ThemaMain.green,
+                                        strokeWidth: .8.w))
+                                .toList() ??
+                            [Polyline(points: [])];
+                        return (polylines.firstOrNull?.points.isEmpty ?? true) ? SizedBox(): PolylineLayer(polylines: polylines);
+                      }),
                 FutureBuilder(
                     future: ContactoController.getItems(),
                     builder: (context, snapshot) => AnimatedMarkerLayer(

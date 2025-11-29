@@ -30,6 +30,7 @@ dependencies:
   flutter_material_color_picker: ^1.2.0
   flutter_phone_direct_caller: ^2.2.1
   flutter_slider_drawer: ^3.0.2
+  geocoding: ^4.0.0
   get: ^4.7.2
   http: ^1.6.0
   image: ^4.5.4
@@ -52,7 +53,7 @@ dependencies:
   phone_numbers_parser: ^9.0.16
   phone_state: ^3.0.1
   photo_view: ^0.15.0
-  pro_image_editor: ^11.12.0
+  pro_image_editor: ^11.14.0
   provider: ^6.1.5+1
   share_plus: ^12.0.1
   shared_preferences: ^2.5.3
@@ -62,6 +63,7 @@ dependencies:
   sticky_grouped_list: ^3.1.0
   substring_highlight: ^1.0.33
   timelines_plus: ^1.0.8
+  translator: ^1.0.4+1
   url_launcher: ^6.3.2
   what3words: ^3.2.0
   whatsapp_unilink: ^2.1.0

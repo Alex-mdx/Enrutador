@@ -1,6 +1,8 @@
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'dart:math' as math;
 import 'package:open_location_code/open_location_code.dart';
+import 'package:geocoding/geocoding.dart';
 
 class Textos {
   static String conversionDiaNombre(DateTime fecha, DateTime now) {
@@ -127,6 +129,45 @@ class Textos {
     final pscode =
         PlusCode.encode(LatLng(latitud, longitud), codeLength: 11).toString();
     return pscode;
+  }
+
+  static Future<String?> psGeo(String fullPlusCode) async {
+    try {
+      // Validar el código
+      if (!PlusCode(fullPlusCode).isValid) {
+        throw Exception('Plus Code no válido: $fullPlusCode');
+      }
+      
+      // Convertir Plus Code a coordenadas
+      final codeArea = PlusCode(fullPlusCode).decode();
+      final latitude = codeArea.southWest.latitude;
+      final longitude = codeArea.southWest.longitude;
+      
+      // Obtener la localidad mediante reverse geocoding
+      final placemarks = await placemarkFromCoordinates(latitude, longitude);
+      
+      String locality = 'Ubicación desconocida';
+      
+      if (placemarks.isNotEmpty) {
+        final placemark = placemarks.first;
+        // Construir nombre de localidad
+        locality = placemark.locality ?? placemark.subAdministrativeArea ?? placemark.administrativeArea ?? 'Ubicación desconocida';
+        
+        // Agregar estado si está disponible
+        if (placemark.administrativeArea != null && placemark.administrativeArea != placemark.locality) {
+          locality += ', ${placemark.administrativeArea}';
+        }
+      }
+      
+      // Extraer la parte local del código
+      String localCode = fullPlusCode.substring(4);
+      
+      return '$localCode $locality';
+      
+    } catch (e) {
+      debugPrint("Error en conversión: $e");
+      return null;
+    }
   }
 
   static LatLng truncPlusCode(PlusCode code) {
