@@ -1,5 +1,6 @@
 import 'package:enrutador/utilities/main_provider.dart';
 import 'package:enrutador/views/home_view.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:flutter/services.dart';
@@ -11,6 +12,7 @@ import 'utilities/apis/rutas_app.dart';
 import 'utilities/preferences.dart';
 import 'utilities/services/navigation_key.dart';
 import 'utilities/theme/theme_app.dart';
+import 'firebase_options.dart';
 
 class MyHttpOverrides extends HttpOverrides {
   @override
@@ -23,6 +25,7 @@ class MyHttpOverrides extends HttpOverrides {
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   HttpOverrides.global = MyHttpOverrides();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await Preferences.init();
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitDown, DeviceOrientation.portraitUp]).then((_) {

@@ -21,6 +21,8 @@ class Preferences {
 
   static bool get enrutados => _preferences?.getBool('enrutados') ?? false;
   static set enrutados(bool value) => _preferences?.setBool('enrutados', value);
+  static bool get psCodeExt => _preferences?.getBool('psCodeExt') ?? true;
+  static set psCodeExt(bool value) => _preferences?.setBool('psCodeExt', value);
 
   static bool get autoNav => _preferences?.getBool('autoNav') ?? false;
   static set autoNav(bool value) => _preferences?.setBool('autoNav', value);

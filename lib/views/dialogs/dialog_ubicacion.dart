@@ -1,3 +1,4 @@
+import 'package:enrutador/utilities/preferences.dart';
 import 'package:enrutador/utilities/textos.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +10,7 @@ import 'package:oktoast/oktoast.dart';
 import 'package:open_location_code/open_location_code.dart';
 import 'package:sizer/sizer.dart';
 
+import '../../utilities/theme/theme_app.dart';
 import '../../utilities/theme/theme_color.dart';
 
 class DialogUbicacion extends StatefulWidget {
@@ -29,6 +31,30 @@ class _DialogUbicacionState extends State<DialogUbicacion> {
     return Dialog(
         child: Column(mainAxisSize: MainAxisSize.min, children: [
       Text("Cambio de ubicacion", style: TextStyle(fontSize: 16.sp)),
+      Text("Ver ubicacion",
+          style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.bold)),
+      Container(
+          decoration: BoxDecoration(
+              color: ThemaMain.background,
+              borderRadius: BorderRadius.circular(borderRadius)),
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+            Text("Plus Code", style: TextStyle(fontSize: 15.sp)),
+            DefaultTextStyle(
+                style: TextStyle(
+                    fontSize: 15.sp,
+                    fontWeight: FontWeight.bold,
+                    color: ThemaMain.darkBlue),
+                child: Row(mainAxisSize: MainAxisSize.min, children: [
+                  Text("Detallado"),
+                  Switch.adaptive(
+                      value: Preferences.psCodeExt,
+                      onChanged: (value) => setState(() {
+                            Preferences.psCodeExt = value;
+                          })),
+                  Text("Simple")
+                ]))
+          ])),
+      Divider(),
       Padding(
           padding: EdgeInsets.symmetric(horizontal: 1.w),
           child: Column(children: [

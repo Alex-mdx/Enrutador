@@ -52,11 +52,11 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
   Widget build(BuildContext context) {
     final provider = Provider.of<MainProvider>(context);
     return Padding(
-        padding: EdgeInsets.all(10.sp),
+        padding: EdgeInsets.all(8.sp),
         child: Column(children: [
           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
             SizedBox(
-                width: 46.w,
+                width: 50.w,
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -64,7 +64,7 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                         Row(children: [
                           Icon(LineIcons.wordFile,
                               size: 24.sp, color: ThemaMain.red),
-                          Text("///XXX.XXX.XXX",
+                          Text("/// word.word.word",
                               style: TextStyle(
                                   fontSize: 16.sp,
                                   fontWeight: FontWeight.bold)),
@@ -80,7 +80,24 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                               provider.contacto?.latitud ?? 0,
                               provider.contacto?.longitud ?? 0)),
                           builder: (context, snapshot) => TextButton.icon(
-                              onLongPress: () => showDialog(
+                              onLongPress: () async {
+                                await Clipboard.setData(ClipboardData(
+                                    text: Preferences.psCodeExt
+                                        ? (snapshot.data ?? "?")
+                                        : Textos.psCODE(
+                                            provider.contacto?.latitud ?? 0,
+                                            provider.contacto?.longitud ?? 0)));
+                                showToast("Plus Code copiados");
+                              },
+                              icon: Icon(LineIcons.mapMarked,
+                                  size: 20.sp, color: ThemaMain.primary),
+                              style: ButtonStyle(
+                                  minimumSize:
+                                      WidgetStatePropertyAll(Size(0, 0)),
+                                  padding: WidgetStatePropertyAll(
+                                      EdgeInsets.symmetric(
+                                          horizontal: 0, vertical: 0))),
+                              onPressed: () async => showDialog(
                                   context: context,
                                   builder: (context) =>
                                       DialogUbicacion(funLat: (lat) async {
@@ -107,18 +124,12 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                                                     0),
                                             zoom: 18);
                                       })),
-                              icon: Icon(LineIcons.mapMarked,
-                                  size: 20.sp, color: ThemaMain.primary),
-                              style: ButtonStyle(
-                                  padding: WidgetStatePropertyAll(
-                                      EdgeInsets.symmetric(
-                                          horizontal: 0, vertical: 0))),
-                              onPressed: () async {
-                                await Clipboard.setData(
-                                    ClipboardData(text: snapshot.data ?? "?"));
-                                showToast("Plus Code copiados");
-                              },
-                              label: AutoSizeText(snapshot.data ?? "?",
+                              label: AutoSizeText(
+                                  Preferences.psCodeExt
+                                      ? (snapshot.data ?? "?")
+                                      : Textos.psCODE(
+                                          provider.contacto?.latitud ?? 0,
+                                          provider.contacto?.longitud ?? 0),
                                   style: TextStyle(fontSize: 16.sp),
                                   minFontSize: 11,
                                   maxLines: 1,
@@ -132,7 +143,7 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                 child: SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Row(
-                        spacing: .25.w,
+                        spacing: .5.w,
                         mainAxisAlignment: MainAxisAlignment.end,
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -182,6 +193,7 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                               icon:
                                   Stack(alignment: Alignment.center, children: [
                                 bd.Badge(
+                                    showBadge: Preferences.tipoNav != -1,
                                     badgeStyle: bd.BadgeStyle(
                                         badgeColor: ThemaMain.black),
                                     position: bd.BadgePosition.topStart(
@@ -195,7 +207,7 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                                                     ? LineIcons.busAlt
                                                     : Preferences.tipoNav == 3
                                                         ? LineIcons.bicycle
-                                                        : Icons.launch,
+                                                        : LineIcons.car,
                                         color: ThemaMain.white,
                                         size: 15.sp),
                                     child: Icon(
@@ -286,13 +298,13 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                                                     })))),
                                 label: Text(
                                     provider.contacto?.agendar == null
-                                        ? "Agendar visita"
+                                        ? "Agendar"
                                         : "Visita ${Textos.conversionDiaNombre(provider.contacto!.agendar!, DateTime.now())}",
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
-                                        fontSize: 14.sp,
+                                        fontSize: 15.sp,
                                         fontWeight:
                                             provider.contacto?.agendar == null
                                                 ? FontWeight.normal

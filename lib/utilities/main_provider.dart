@@ -16,7 +16,7 @@ class MainProvider with ChangeNotifier implements TickerProvider {
   late AnimatedMapController _animaMap;
   MainProvider() {
     _animaMap = AnimatedMapController(
-        vsync: this, duration: Durations.extralong3, curve: Curves.easeInOut);
+        vsync: this, duration: Durations.extralong2, curve: Curves.easeInOut);
   }
   @override
   Ticker createTicker(TickerCallback onTick) => Ticker(onTick);

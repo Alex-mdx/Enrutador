@@ -19,11 +19,11 @@ class _ListW3wState extends State<ListW3w> {
       onTap: () async {
         await W3wFun.wordtocoor(widget.w3w.words);
       },
-      contentPadding: EdgeInsets.symmetric(horizontal: 0),
+      contentPadding: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
       dense: true,
       leading: Stack(alignment: Alignment.center, children: [
-        Icon(Icons.circle, size: 22.sp, color: ThemaMain.red),
-        Text("///", style: TextStyle(fontSize: 15.sp, color: ThemaMain.second)),
+        Icon(Icons.circle, size: 24.sp, color: ThemaMain.red),
+        Text("///", style: TextStyle(fontSize: 16.sp, color: ThemaMain.second)),
       ]),
       title: Text("///${widget.w3w.words}",
           style: TextStyle(

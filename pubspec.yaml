@@ -1,6 +1,6 @@
 name: enrutador
 description: "A new Flutter project."
-publish_to: 'mdx'
+publish_to: 'https://pub.dev'
 version: 0.1.0
 
 environment:
@@ -8,12 +8,14 @@ environment:
 
 dependencies:
   advanced_media_picker: ^0.1.2
+  animated_hint_textfield: ^1.1.1
   app_links: ^7.0.0
   auto_size_text: ^3.0.0
   avatar_glow: ^3.0.1
   badges: ^3.1.2
   cupertino_icons: ^1.0.8
   filesize: ^2.0.1
+  firebase_core: ^4.2.1
   flutter:
     sdk: flutter
   flutter_image_compress: ^2.4.0

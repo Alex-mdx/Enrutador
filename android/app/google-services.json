@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "672550936534",
+    "project_id": "enrutador-project",
+    "storage_bucket": "enrutador-project.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:672550936534:android:57987f32bca9dedfdf8e77",
+        "android_client_info": {
+          "package_name": "com.example.enrutador"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCO2dzoQp6544MUbudjtPiZzs31pihDV-g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
