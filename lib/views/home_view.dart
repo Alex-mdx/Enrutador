@@ -137,6 +137,24 @@ class _HomeViewState extends State<HomeView> {
                                   ])))),
                   GestureDetector(
                       onTap: () async =>
+                          await Navigation.pushNamed(route: "estatus"),
+                      child: Card(
+                          child: Padding(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 1.w, vertical: 1.h),
+                              child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text("Roles",
+                                        style: TextStyle(
+                                            fontSize: 16.sp,
+                                            fontWeight: FontWeight.bold)),
+                                    Icon(LineIcons.userTag,
+                                        size: 22.sp, color: ThemaMain.darkBlue)
+                                  ])))),
+                  GestureDetector(
+                      onTap: () async =>
                           await Navigation.pushNamed(route: "lada"),
                       child: Card(
                           child: Padding(

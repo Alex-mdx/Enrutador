@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:animated_hint_textfield/animated_hint_textfield.dart';
 import 'package:enrutador/controllers/contacto_controller.dart';
+import 'package:enrutador/models/geo_names_model.dart';
 import 'package:enrutador/models/what_3_words_model.dart';
 import 'package:enrutador/utilities/main_provider.dart';
 import 'package:enrutador/utilities/map_fun.dart';
@@ -10,6 +11,7 @@ import 'package:enrutador/utilities/theme/theme_app.dart';
 import 'package:enrutador/utilities/theme/theme_color.dart';
 import 'package:enrutador/utilities/w3w_fun.dart';
 import 'package:enrutador/views/widgets/card_contacto_widget.dart';
+import 'package:enrutador/views/widgets/list_geo_name.dart';
 import 'package:enrutador/views/widgets/list_w3w.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -18,6 +20,9 @@ import 'package:open_location_code/open_location_code.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 
+import '../../../models/geo_postal_model.dart';
+import '../../../utilities/geo_fun.dart';
+import '../list_geo_postal.dart';
 import 'row_filtro.dart';
 
 class SearchWidget extends StatefulWidget {
@@ -30,16 +35,33 @@ class SearchWidget extends StatefulWidget {
 class _SearchWidgetState extends State<SearchWidget> {
   FocusNode foc = FocusNode();
   List<What3WordsModel> w3wSuggest = [];
+  List<GeoNamesModel> geoNamesSuggest = [];
+  List<GeoPostalModel> geoPostalSuggest = [];
   bool buscar = false;
 
   Future<void> send(MainProvider provider) async {
     setState(() {
       buscar = true;
     });
-    var w3w = await W3wFun.suggets(provider.buscar.text);
-    setState(() {
-      w3wSuggest = w3w;
-    });
+    w3wSuggest.clear();
+    geoPostalSuggest.clear();
+    geoNamesSuggest.clear();
+    if (provider.buscar.text.split(".").length == 3) {
+      var w3w = await W3wFun.suggets(provider.buscar.text);
+      setState(() {
+        w3wSuggest = w3w;
+      });
+    } else if (provider.buscar.text.isNumericOnly) {
+      var geoPostal = await GeoFun.searchPostalCode(provider.buscar.text, null);
+      setState(() {
+        geoPostalSuggest = geoPostal;
+      });
+    } else {
+      var geoNames = await GeoFun.searchCity(provider.buscar.text, null);
+      setState(() {
+        geoNamesSuggest = geoNames;
+      });
+    }
     try {
       var coordenadas = Textos.truncPlusCode(PlusCode(provider.buscar.text));
       log("${coordenadas.toJson()}");
@@ -90,7 +112,7 @@ class _SearchWidgetState extends State<SearchWidget> {
               child: Column(children: [
                 AnimatedTextField(
                     animationType: Animationtype.slideReversed,
-                    animationDuration: Duration(seconds: 5),
+                    animationDuration: Duration(seconds: 4),
                     style: TextStyle(fontSize: 16.sp),
                     focusNode: foc,
                     onTapOutside: (event) {
@@ -122,6 +144,8 @@ class _SearchWidgetState extends State<SearchWidget> {
                                 iconSize: 22.sp,
                                 onPressed: () {
                                   w3wSuggest.clear();
+                                  geoPostalSuggest.clear();
+                                  geoNamesSuggest.clear();
                                   setState(() {
                                     provider.buscar.clear();
                                   });
@@ -146,73 +170,87 @@ class _SearchWidgetState extends State<SearchWidget> {
                     hintTextStyle:
                         TextStyle(fontSize: 15.sp, fontStyle: FontStyle.italic),
                     hintTexts: [
-                      'Nombre ej: Maria',
+                      'Nombre ej: Maria, Angela, Ana',
                       'Telefono ej: 99X XXX XXXX',
+                      'PlusCode ej: QR78+Q4 Miami, Florida, EE. UU',
                       'PlusCode ej: 76HF9WGR+W6F',
                       'What3Words ej: palabra.palabra.palabra',
-                      'Coordenadas ej: 21.377300, -90.059438'
+                      'Coordenadas ej: 21.377300, -90.059438',
+                      'Coordenadas ej: 21° 22\' 38.28", 90° 3\' 33.98"',
+                      'Codigo Postal ej: 12345',
+                      'Ciudad ej: Ciudad, Estado, Pais',
                     ]),
                 RowFiltro(),
-                if (provider.buscar.text != "")
-                  Column(children: [
-                    Container(
-                        constraints: BoxConstraints(maxHeight: 18.h),
-                        child: Scrollbar(
-                            child: ListView.builder(
-                                itemCount: w3wSuggest.length,
-                                shrinkWrap: true,
-                                padding: EdgeInsets.all(0),
-                                itemBuilder: (context, index) {
-                                  final w3w = w3wSuggest[index];
-                                  return ListW3w(w3w: w3w);
-                                }))),
-                    FutureBuilder(
-                        future:
-                            ContactoController.buscar(provider.buscar.text, 8),
-                        builder: (context, snapshot) {
-                          if (snapshot.hasData) {
-                            return Container(
-                                constraints: BoxConstraints(maxHeight: 28.h),
-                                child: Scrollbar(
-                                    child: ListView.builder(
-                                        itemCount: snapshot.data!.length,
-                                        shrinkWrap: true,
-                                        padding: EdgeInsets.all(0),
-                                        itemBuilder: (context, index) {
-                                          final contacto =
-                                              snapshot.data![index];
-                                          return CardContactoWidget(
-                                              entrada: provider.buscar.text,
-                                              contacto: contacto,
-                                              funContact: (p0) async {
-                                                provider.animaMap.centerOnPoint(
-                                                    LatLng(contacto.latitud,
-                                                        contacto.longitud),
-                                                    zoom: 18);
-                                                provider.mapSeguir = false;
-                                                provider.contacto =
-                                                    await ContactoController
-                                                        .getItem(
-                                                            lat: contacto
-                                                                .latitud,
-                                                            lng: contacto
-                                                                .longitud);
-                                                provider.buscar.clear();
-                                                await provider.slide.open();
-                                              },
-                                              compartir: false,
-                                              selectedVisible: false,
-                                              selected: null,
-                                              onSelected: (p0) {});
-                                        })));
-                          } else if (snapshot.hasError) {
-                            return Text("${snapshot.error}");
-                          } else {
-                            return LinearProgressIndicator();
-                          }
-                        })
-                  ])
+                if (provider.buscar.text != "") w3wBuilder(provider)
               ]))
         ]));
+  }
+
+  Column w3wBuilder(MainProvider provider) {
+    return Column(children: [
+      Container(
+          constraints: BoxConstraints(maxHeight: 20.h),
+          child: Scrollbar(
+              child: ListView.builder(
+                  itemCount: w3wSuggest.isNotEmpty
+                      ? w3wSuggest.length
+                      : geoNamesSuggest.isNotEmpty
+                          ? geoNamesSuggest.length
+                          : geoPostalSuggest.length,
+                  shrinkWrap: true,
+                  padding: EdgeInsets.all(0),
+                  itemBuilder: (context, index) {
+                    if (w3wSuggest.isNotEmpty) {
+                      final w3w = w3wSuggest[index];
+                      return ListW3w(w3w: w3w);
+                    } else if (geoPostalSuggest.isNotEmpty) {
+                      final geoPostal = geoPostalSuggest[index];
+                      return ListGeoPostal(model: geoPostal);
+                    } else {
+                      final geoName = geoNamesSuggest[index];
+                      return ListGeoName(model: geoName);
+                    }
+                  }))),
+      FutureBuilder(
+          future: ContactoController.buscar(provider.buscar.text, 8),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              return Container(
+                  constraints: BoxConstraints(maxHeight: 30.h),
+                  child: Scrollbar(
+                      child: ListView.builder(
+                          itemCount: snapshot.data!.length,
+                          shrinkWrap: true,
+                          padding: EdgeInsets.all(0),
+                          itemBuilder: (context, index) {
+                            final contacto = snapshot.data![index];
+                            return CardContactoWidget(
+                                entrada: provider.buscar.text,
+                                contacto: contacto,
+                                funContact: (p0) async {
+                                  provider.animaMap.centerOnPoint(
+                                      LatLng(
+                                          contacto.latitud, contacto.longitud),
+                                      zoom: 18);
+                                  provider.mapSeguir = false;
+                                  provider.contacto =
+                                      await ContactoController.getItem(
+                                          lat: contacto.latitud,
+                                          lng: contacto.longitud);
+                                  provider.buscar.clear();
+                                  await provider.slide.open();
+                                },
+                                compartir: false,
+                                selectedVisible: false,
+                                selected: null,
+                                onSelected: (p0) {});
+                          })));
+            } else if (snapshot.hasError) {
+              return Text("${snapshot.error}");
+            } else {
+              return LinearProgressIndicator();
+            }
+          })
+    ]);
   }
 }

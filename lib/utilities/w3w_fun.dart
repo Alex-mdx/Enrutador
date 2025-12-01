@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'package:enrutador/models/what_3_words_model.dart';
+import 'package:enrutador/utilities/trans_fun.dart';
 import 'package:flutter/material.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:what3words/what3words.dart';
@@ -21,7 +22,8 @@ class W3wFun {
       AutosuggestOptions opciones = AutosuggestOptions().setNResults(3);
       try {
         var len = await api.autosuggest(word, options: opciones).execute();
-        log(jsonEncode(len.data()?.toJson()["suggestions"] as List<Map<String, dynamic>>));
+        log(jsonEncode(
+            len.data()?.toJson()["suggestions"] as List<Map<String, dynamic>>));
         return (len.data()?.toJson()["suggestions"]
                 as List<Map<String, dynamic>>)
             .map((e) => What3WordsModel.fromJson(e))
@@ -42,7 +44,8 @@ class W3wFun {
       log("${len.data()} - ${len.error()?.message ?? "No"}");
       if (len.data() != null) {
       } else {
-        showToast("Error: ${len.error()?.message ?? "Desconocido"}");
+        var trad = await TransFun.trad(len.error()?.message ?? "Desconocido");
+        showToast("Error: $trad");
       }
     } catch (e) {
       debugPrint("error: $e");
