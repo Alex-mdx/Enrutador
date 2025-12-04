@@ -67,6 +67,7 @@ dependencies:
   timelines_plus: ^1.0.8
   translator: ^1.0.4+1
   url_launcher: ^6.3.2
+  weather: ^3.2.1
   what3words: ^3.2.0
   whatsapp_unilink: ^2.1.0
   widgets_to_image: ^2.0.1

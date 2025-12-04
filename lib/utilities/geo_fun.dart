@@ -10,24 +10,24 @@ class GeoFun {
   static Future<List<GeoPostalModel>> searchPostalCode(
       String postalCode, int? maxRows) async {
     try {
-      var url = Uri.parse(
-          "http://api.geonames.org/postalCodeSearchJSON?postalcode=$postalCode&maxRows=${maxRows ?? 6}&username=$username");
-      var response = await http.get(url);
-      if (response.statusCode == 200) {
-        var data = jsonDecode(response.body);
-        List<GeoPostalModel> postalCodes = [];
-        for (var element in data["postalCodes"]) {
-          postalCodes.add(GeoPostalModel.fromJson(element));
-        }
-        return postalCodes;
-      } else {
-        debugPrint("${response.statusCode} - ${response.body}");
-        return [];
+    var url = Uri.parse(
+        "http://api.geonames.org/postalCodeSearchJSON?postalcode=$postalCode&maxRows=${maxRows ?? 6}&username=$username");
+    var response = await http.get(url);
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+      List<GeoPostalModel> postalCodes = [];
+      for (var element in data["postalCodes"]) {
+        postalCodes.add(GeoPostalModel.fromJson(element));
       }
-    } catch (e) {
-      debugPrint("$e");
+      return postalCodes;
+    } else {
+      debugPrint("postal: ${response.statusCode} - ${response.body}");
       return [];
     }
+    } catch (e) {
+      debugPrint("postal: $e");
+      return [];
+    } 
   }
 
   static Future<List<GeoNamesModel>> searchCity(
@@ -44,11 +44,34 @@ class GeoFun {
         }
         return names;
       } else {
-        debugPrint("${response.statusCode} - ${response.body}");
+        debugPrint("geoNames: ${response.statusCode} - ${response.body}");
         return [];
       }
     } catch (e) {
-      debugPrint("$e");
+      debugPrint("geoNames: $e");
+      return [];
+    }
+  }
+
+  static Future<List<GeoNamesModel>> searchPlaceByCoordenates(
+      double lat, double lng, int maxRows) async {
+    try {
+      var url = Uri.parse(
+          "http://api.geonames.org/findNearbyPlaceNameJSON?lat=${lat.toStringAsFixed(3)}&lng=${lng.toStringAsFixed(3)}&maxRows=$maxRows&username=$username");
+      var response = await http.get(url);
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body);
+        List<GeoNamesModel> names = [];
+        for (var element in data["geonames"]) {
+          names.add(GeoNamesModel.fromJson(element));
+        }
+        return names;
+      } else {
+        debugPrint("geoNamesPlace: ${response.statusCode} - ${response.body}");
+        return [];
+      }
+    } catch (e) {
+      debugPrint("geoNamesPlace: $e");
       return [];
     }
   }

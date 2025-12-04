@@ -6,6 +6,8 @@ import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 
+import 'map_widget/lauch_main_icon.dart';
+
 class ListGeoName extends StatelessWidget {
   final GeoNamesModel model;
   const ListGeoName({super.key, required this.model});
@@ -24,8 +26,15 @@ class ListGeoName extends StatelessWidget {
         },
         dense: true,
         minVerticalPadding: 1,
-        leading: Icon(Icons.location_on, size: 22.sp, color: ThemaMain.green),
+        leading: Stack(alignment: Alignment.center, children: [
+          Icon(Icons.circle, size: 26.sp, color: ThemaMain.white),
+          Icon(Icons.location_on, size: 24.sp, color: ThemaMain.green)
+        ]),
         contentPadding: EdgeInsets.zero,
+        trailing: LauchMainIcon(
+            coordenadas:
+                LatLng(double.parse(model.lat), double.parse(model.lng)),
+            words: null),
         title: Text("${model.name}, ${model.adminName1}",
             style: TextStyle(
                 fontSize: 15.sp,

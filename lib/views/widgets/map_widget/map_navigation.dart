@@ -15,6 +15,7 @@ class MapNavigation extends StatefulWidget {
 
 class _MapNavigationState extends State<MapNavigation> {
   bool container = false;
+  bool followFix = false;
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<MainProvider>(context);
@@ -61,31 +62,33 @@ class _MapNavigationState extends State<MapNavigation> {
                         : Icons.border_inner_rounded,
                     color: ThemaMain.white)),
           IconButton.filled(
-              iconSize: 24.sp,
-              onPressed: () async => await provider.animaMap
-                  .animatedZoomIn(duration: Durations.medium1),
-              icon: Icon(Icons.zoom_in, color: ThemaMain.white)),
-          IconButton.filled(
-              iconSize: 24.sp,
-              onPressed: () async => await provider.animaMap
-                  .animatedZoomOut(duration: Durations.medium1),
-              icon: Icon(Icons.zoom_out, color: ThemaMain.white)),
-          IconButton.filled(
-              iconSize: 25.sp,
+              iconSize: 26.sp,
               onPressed: () async {
-                provider.mapSeguir = !provider.mapSeguir;
                 if (provider.mapSeguir) {
+                  setState(() {
+                    followFix = true;
+                  });
+
+                  if (followFix) {
+                    await provider.animaMap.centerOnPoint(
+                        LatLng(provider.local!.latitude!,
+                            provider.local!.longitude!),
+                        zoom: 18);
+                  }
+                } else {
+                  followFix = false;
+                  provider.mapSeguir = true;
                   provider.animaMap.animatedRotateReset();
-                  await provider.animaMap.centerOnPoint(
-                      LatLng(provider.local!.latitude!,
-                          provider.local!.longitude!),
-                      zoom: 18);
+                  await provider.animaMap.centerOnPoint(LatLng(
+                      provider.local!.latitude!, provider.local!.longitude!));
                 }
               },
               icon: Icon(
                   provider.mapSeguir
-                      ? Icons.my_location_outlined
-                      : Icons.location_searching,
+                      ? followFix
+                          ? Icons.my_location
+                          : Icons.location_searching
+                      : Icons.location_disabled,
                   color: ThemaMain.white))
         ]));
   }

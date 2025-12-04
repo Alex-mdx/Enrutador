@@ -219,7 +219,7 @@ class _DialogEnrutamientoState extends State<DialogEnrutamiento> {
                       if (snapshot.hasData) {
                         return snapshot.data!.isEmpty
                             ? Center(
-                                child: Text("Enrutamiento vacio",
+                                child: Text("Enrutamiento visitado",
                                     style: TextStyle(
                                         fontSize: 16.sp,
                                         fontStyle: FontStyle.italic)))
@@ -267,7 +267,26 @@ class _DialogEnrutamientoState extends State<DialogEnrutamiento> {
               LoadingAnimationWidget.fourRotatingDots(
                   color: ThemaMain.green, size: 20.sp)
             ]),
-      Text("Maximo 15 contactos enrutados", style: TextStyle(fontSize: 14.sp))
+      FutureBuilder(
+          future: EnrutarController.getItems(),
+          builder: (context, snapshot) {
+            return Stack(alignment: Alignment.center, children: [
+              LinearProgressIndicator(
+                  value: snapshot.hasData
+                      ? (snapshot.data
+                                  ?.where((element) => element.visitado == 1)
+                                  .length ??
+                              1) /
+                          (snapshot.data?.length ?? 1)
+                      : null,
+                  minHeight: 3.h,
+                  backgroundColor: ThemaMain.background,
+                  color: ThemaMain.green),
+              Text(
+                  "${snapshot.data?.where((element) => element.visitado == 1).length ?? 0} / ${snapshot.data?.length ?? 0}",
+                  style: TextStyle(fontSize: 14.sp))
+            ]);
+          })
     ]));
   }
 

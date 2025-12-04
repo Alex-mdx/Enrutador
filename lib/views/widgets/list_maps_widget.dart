@@ -7,6 +7,8 @@ import 'package:line_icons/line_icons.dart';
 import 'package:map_launcher/map_launcher.dart';
 import 'package:sizer/sizer.dart';
 
+import 'map_widget/launch_map_icon.dart';
+
 class ListMapsWidget extends StatefulWidget {
   final AvailableMap mapas;
   final double latitud;
@@ -67,22 +69,11 @@ class _ListMapsWidgetState extends State<ListMapsWidget> {
             ? Text("${widget.mapas.icon} - ${widget.mapas.mapType.name}",
                 style: TextStyle(fontSize: 14.sp))
             : null,
-        trailing: IconButton.filledTonal(
-            iconSize: 24.sp,
-            onPressed: () async => Preferences.tipoNav == -1
-                ? widget.launch(await widget.mapas.showMarker(
-                    zoom: 15,
-                    coords: Coords(widget.latitud, widget.longitud),
-                    title: widget.word))
-                : widget.launch(await widget.mapas.showDirections(
-                    directionsMode: DirectionsMode.values
-                        .where((e) => e.index == Preferences.tipoNav)
-                        .first,
-                    destinationTitle: widget.word,
-                    destination: Coords(widget.latitud, widget.longitud))),
-            icon: Icon( Preferences.tipoNav == 0 ? LineIcons.car
-                          : Preferences.tipoNav == 1 ? LineIcons.walking
-                              : Preferences.tipoNav == 2 ? LineIcons.busAlt
-                                  : Preferences.tipoNav == 3 ? LineIcons.bicycle :Icons.launch, color: ThemaMain.primary)));
+        trailing: LaunchMapIcon(
+            mapas: widget.mapas,
+            latitud: widget.latitud,
+            longitud: widget.longitud,
+            launch: widget.launch,
+            word: widget.word));
   }
 }

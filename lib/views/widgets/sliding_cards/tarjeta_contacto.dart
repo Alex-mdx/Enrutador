@@ -7,13 +7,12 @@ import 'package:enrutador/utilities/preferences.dart';
 import 'package:enrutador/utilities/services/dialog_services.dart';
 import 'package:enrutador/utilities/services/navigation_services.dart';
 import 'package:enrutador/views/dialogs/dialog_compartir.dart';
-import 'package:enrutador/views/dialogs/dialog_mapas.dart';
 import 'package:enrutador/views/dialogs/dialog_ubicacion.dart';
+import 'package:enrutador/views/widgets/map_widget/lauch_main_icon.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:line_icons/line_icons.dart';
-import 'package:map_launcher/map_launcher.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:open_location_code/open_location_code.dart';
 import 'package:provider/provider.dart';
@@ -24,7 +23,6 @@ import '../../../utilities/map_fun.dart';
 import '../../../utilities/textos.dart';
 import '../../../utilities/theme/theme_color.dart';
 import 'tarjeta_contacto_detalle.dart';
-import 'package:badges/badges.dart' as bd;
 
 class TarjetaContacto extends StatefulWidget {
   const TarjetaContacto({super.key});
@@ -156,74 +154,10 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                                         contacto: provider.contacto!)),
                                 icon: Icon(Icons.share,
                                     color: ThemaMain.darkBlue)),
-                          IconButton.filled(
-                              iconSize: 22.sp,
-                              style: ButtonStyle(
-                                  backgroundColor:
-                                      WidgetStatePropertyAll(ThemaMain.green)),
-                              color: ThemaMain.green,
-                              onPressed: () async {
-                                final availableMaps =
-                                    await MapLauncher.installedMaps;
-                                if (Preferences.mapa != "") {
-                                  await availableMaps
-                                      .firstWhere((element) =>
-                                          element.mapType.name ==
-                                          Preferences.mapa)
-                                      .showMarker(
-                                          zoom: 16,
-                                          coords: Coords(
-                                              provider.contacto!.latitud,
-                                              provider.contacto!.longitud),
-                                          title: provider
-                                                  .contacto?.nombreCompleto ??
-                                              "Ubicacion Seleccionada");
-                                } else {
-                                  showDialog(
-                                      context: context,
-                                      builder: (context) => DialogMapas(
-                                          words: provider
-                                                  .contacto?.nombreCompleto ??
-                                              "Ubicacion Seleccionada",
-                                          coordenadas: LatLng(
-                                              provider.contacto!.latitud,
-                                              provider.contacto!.longitud)));
-                                }
-                              },
-                              icon:
-                                  Stack(alignment: Alignment.center, children: [
-                                bd.Badge(
-                                    showBadge: Preferences.tipoNav != -1,
-                                    badgeStyle: bd.BadgeStyle(
-                                        badgeColor: ThemaMain.black),
-                                    position: bd.BadgePosition.topStart(
-                                        top: -10, start: -14),
-                                    badgeContent: Icon(
-                                        Preferences.tipoNav == 0
-                                            ? LineIcons.car
-                                            : Preferences.tipoNav == 1
-                                                ? LineIcons.walking
-                                                : Preferences.tipoNav == 2
-                                                    ? LineIcons.busAlt
-                                                    : Preferences.tipoNav == 3
-                                                        ? LineIcons.bicycle
-                                                        : LineIcons.car,
-                                        color: ThemaMain.white,
-                                        size: 15.sp),
-                                    child: Icon(
-                                        Preferences.mapa.contains("google")
-                                            ? LineIcons.mapMarker
-                                            : Preferences.mapa.contains("waze")
-                                                ? LineIcons.waze
-                                                : Preferences.mapa
-                                                        .contains("uber")
-                                                    ? LineIcons.uber
-                                                    : Preferences.mapa
-                                                            .contains("didi")
-                                                        ? LineIcons.taxi
-                                                        : Icons.launch_rounded,
-                                        color: ThemaMain.white))
-                              ])),
+                          LauchMainIcon(
+                              coordenadas: LatLng(provider.contacto?.latitud ?? 0,
+                                  provider.contacto?.longitud ?? 0),
+                              words: provider.contacto?.nombreCompleto),
                           if (provider.contacto?.id != null)
                             FutureBuilder(
                                 future: EnrutarController.getItemContacto(

@@ -1,13 +1,13 @@
 class GeoPostalModel {
   String adminCode2;
   String adminCode1;
-  String adminName2;
+  String? adminName2;
   double lat;
   double lng;
   String countryCode;
   String postalCode;
-  String adminName1;
-  String iso31662;
+  String? adminName1;
+  String? iso31662;
   String placeName;
 
   GeoPostalModel(

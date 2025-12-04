@@ -7,6 +7,8 @@ import 'package:line_icons/line_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 
+import 'map_widget/lauch_main_icon.dart';
+
 class ListGeoPostal extends StatelessWidget {
   final GeoPostalModel model;
   const ListGeoPostal({super.key, required this.model});
@@ -25,8 +27,14 @@ class ListGeoPostal extends StatelessWidget {
         },
         dense: true,
         minVerticalPadding: 1,
-        leading: Icon(LineIcons.mapSigns, size: 22.sp, color: ThemaMain.yellow),
-        contentPadding: EdgeInsets.zero,
+        leading: Stack(
+          alignment: Alignment.center,
+          children: [
+            Icon(Icons.circle, size: 26.sp, color: ThemaMain.white),
+            Icon(LineIcons.mapSigns, size: 24.sp, color: ThemaMain.yellow)
+          ]
+        ),
+        contentPadding: EdgeInsets.zero,trailing: LauchMainIcon(coordenadas: LatLng(model.lat,model.lng), words: null),
         title: Text("${model.adminName2}, ${model.adminName1}, ${model.postalCode}",
             style: TextStyle(
                 fontSize: 15.sp,

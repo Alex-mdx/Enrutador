@@ -52,11 +52,13 @@ class _SearchWidgetState extends State<SearchWidget> {
         w3wSuggest = w3w;
       });
     } else if (provider.buscar.text.isNumericOnly) {
+      debugPrint("postal");
       var geoPostal = await GeoFun.searchPostalCode(provider.buscar.text, null);
       setState(() {
         geoPostalSuggest = geoPostal;
       });
     } else {
+      debugPrint("geoNames");
       var geoNames = await GeoFun.searchCity(provider.buscar.text, null);
       setState(() {
         geoNamesSuggest = geoNames;
@@ -112,7 +114,7 @@ class _SearchWidgetState extends State<SearchWidget> {
               child: Column(children: [
                 AnimatedTextField(
                     animationType: Animationtype.slideReversed,
-                    animationDuration: Duration(seconds: 4),
+                    animationDuration: Duration(seconds: 3),
                     style: TextStyle(fontSize: 16.sp),
                     focusNode: foc,
                     onTapOutside: (event) {
@@ -178,7 +180,7 @@ class _SearchWidgetState extends State<SearchWidget> {
                       'Coordenadas ej: 21.377300, -90.059438',
                       'Coordenadas ej: 21° 22\' 38.28", 90° 3\' 33.98"',
                       'Codigo Postal ej: 12345',
-                      'Ciudad ej: Ciudad, Estado, Pais',
+                      'Ciudad ej: Ciudad, Estado, Pais'
                     ]),
                 RowFiltro(),
                 if (provider.buscar.text != "") w3wBuilder(provider)
