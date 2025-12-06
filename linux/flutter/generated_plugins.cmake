@@ -5,6 +5,7 @@
 list(APPEND FLUTTER_PLUGIN_LIST
   gtk
   pasteboard
+  rive_common
   url_launcher_linux
 )
 

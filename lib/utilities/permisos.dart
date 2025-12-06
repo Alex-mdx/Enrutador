@@ -1,4 +1,5 @@
 import 'package:location/location.dart' as lc;
+import 'package:permission_handler/permission_handler.dart';
 
 class Permisos {
   static Future<bool> ubicacion() async {
@@ -23,5 +24,17 @@ class Permisos {
       }
     }
     return false;
+  }
+
+  static Future<bool> phone() async {
+    var status = await Permission.phone.request();
+
+    return switch (status) {
+      PermissionStatus.denied ||
+      PermissionStatus.restricted ||
+      PermissionStatus.limited ||
+      PermissionStatus.permanentlyDenied => false,
+      PermissionStatus.provisional || PermissionStatus.granted => true,
+    };
   }
 }

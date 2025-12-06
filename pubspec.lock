@@ -733,6 +733,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.3"
+  graphs:
+    dependency: transitive
+    description:
+      name: graphs
+      sha256: "741bbf84165310a68ff28fe9e727332eef1407342fca52759cb21ad8177bb8d0"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.3.2"
   gtk:
     dependency: transitive
     description:
@@ -777,10 +785,10 @@ packages:
     dependency: "direct main"
     description:
       name: input_quantity
-      sha256: "18a0785ad7b5e081ef05d585f2ff7a31512ba29637efa38048281d5d0512e0ff"
+      sha256: "0b360eea9a08b3898372fe3000c9f7ebd32a0fe4a041d8888366b07d201461ba"
       url: "https://pub.dev"
     source: hosted
-    version: "2.5.1"
+    version: "2.5.2"
   internet_connection_checker_plus:
     dependency: "direct main"
     description:
@@ -1193,10 +1201,10 @@ packages:
     dependency: "direct main"
     description:
       name: phone_numbers_parser
-      sha256: cfd5217cd1c132f3cd07d7b91f29a44219333bb1723c0480044a9cbac0e47eed
+      sha256: "95fe667ce10b46c31fba50da3df4dd15272b0febd37091575e5135c087032e37"
       url: "https://pub.dev"
     source: hosted
-    version: "9.0.16"
+    version: "9.0.17"
   phone_state:
     dependency: "direct main"
     description:
@@ -1301,6 +1309,30 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.6.0"
+  rive:
+    dependency: transitive
+    description:
+      name: rive
+      sha256: "2551a44fa766a7ed3f52aa2b94feda6d18d00edc25dee5f66e72e9b365bb6d6c"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.13.20"
+  rive_animated_icon:
+    dependency: "direct main"
+    description:
+      name: rive_animated_icon
+      sha256: "717dfd645ced8eb9364ec7023f46921f9aaf7890d023226cd4ae2751c041073e"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.5"
+  rive_common:
+    dependency: transitive
+    description:
+      name: rive_common
+      sha256: "2ba42f80d37a4efd0696fb715787c4785f8a13361e8aea9227c50f1e78cf763a"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.4.15"
   rxdart:
     dependency: transitive
     description:

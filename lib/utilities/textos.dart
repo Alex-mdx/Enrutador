@@ -169,41 +169,36 @@ class Textos {
     }
   }
 
-  static Future<String> psShortToFull(String shortPlusCode) async {
+  static Future<LatLng?> psShortToFull(String shortPlusCode) async {
     try {
-      List<String> parts = shortPlusCode.split(' ');
+    List<String> parts = shortPlusCode.split(' ');
 
-      if (parts.length < 2) {
-        debugPrint("Formato incorrecto. Debe ser: \"V6RQ+WJ7 Umán, Yucatán\"");
-        return "";
-      }
-
-      String localCode = parts[0]; // "V6RQ+WJ7"
-      String locality = parts.sublist(1).join(' '); // "Umán, Yucatán"
-
-      final locations = await locationFromAddress(locality);
-
-      if (locations.isEmpty) {
-        throw Exception('No se pudo encontrar la localidad: $locality');
-      }
-
-      final location = locations.first;
-      final fullCodeForBase = psCODE(location.latitude, location.longitude);
-
-      String baseCode = fullCodeForBase.substring(0, 4);
-
-      String fullCode = '$baseCode$localCode';
-
-      if (PlusCode(fullCode).isValid) {
-        debugPrint("Formato incorrecto. Debe ser: \"V6RQ+WJ7 Umán, Yucatán\"");
-        return "";
-      }
-
-      return fullCode;
-    } catch (e) {
-      debugPrint("Error en conversion: $e");
-      return "";
+    if (parts.length < 2) {
+      var psCode = truncPlusCode(PlusCode(shortPlusCode));
+      return psCode;
     }
+
+    String localCode = parts[0]; // "V6RQ+WJ7"
+    String locality = parts.sublist(1).join(' '); // "Umán, Yucatán"
+
+    final locations = await locationFromAddress(locality);
+
+    if (locations.isEmpty) {
+      throw Exception('No se pudo encontrar la localidad: $locality');
+    }
+
+    final location = locations.first;
+    final fullCodeForBase = psCODE(location.latitude, location.longitude);
+
+    String baseCode = fullCodeForBase.substring(0, 4);
+
+    String fullCode = '$baseCode$localCode';
+
+    return truncPlusCode(PlusCode(fullCode));
+     } catch (e) {
+      debugPrint("Error en conversion: $e");
+      return null;
+    } 
   }
 
   static LatLng truncPlusCode(PlusCode code) {

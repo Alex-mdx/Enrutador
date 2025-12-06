@@ -1,10 +1,10 @@
 import 'dart:async';
+import 'package:auto_size_text/auto_size_text.dart';
+import 'package:avatar_glow/avatar_glow.dart';
 import 'package:enrutador/controllers/contacto_controller.dart';
-import 'package:enrutador/controllers/referencias_controller.dart';
-import 'package:enrutador/models/referencia_model.dart';
 import 'package:enrutador/utilities/main_provider.dart';
+import 'package:enrutador/utilities/permisos.dart';
 import 'package:enrutador/utilities/services/navigation_services.dart';
-import 'package:enrutador/utilities/textos.dart';
 import 'package:enrutador/utilities/theme/theme_color.dart';
 import 'package:enrutador/views/map_main.dart';
 import 'package:enrutador/views/widgets/map_widget/map_navigation.dart';
@@ -18,11 +18,13 @@ import 'package:latlong2/latlong.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:location/location.dart' as lc;
 import 'package:open_location_code/open_location_code.dart';
+import 'package:phone_state/phone_state.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 import 'package:app_links/app_links.dart';
 import '../utilities/uri_fun.dart';
 import 'widgets/map_widget/map_alternative.dart';
+import 'package:rive_animated_icon/rive_animated_icon.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -183,83 +185,71 @@ class _HomeViewState extends State<HomeView> {
                     title: Text("Enrutador", style: TextStyle(fontSize: 18.sp)),
                     toolbarHeight: 6.h,
                     actions: [
-                      OverflowBar(spacing: 1.w, children: [
-                        IconButton(
-                            iconSize: 24.sp,
-                            onPressed: () async {
-                              var a = await ContactoController.getItems();
-                              var newA = a
-                                  .where((element) =>
-                                      element.contactoEnlances.isNotEmpty)
-                                  .toList();
-                              for (var element in newA) {
-                                for (var modelRef in element.contactoEnlances) {
-                                  var ps = Textos.psCODE(modelRef.contactoIdLat,
-                                      modelRef.contactoIdLng);
-                                  var origenPS =
-                                      Textos.truncPlusCode(PlusCode(ps));
-                                  var origen = await ContactoController.getItem(
-                                      lat: double.parse(
-                                          origenPS.latitude.toStringAsFixed(6)),
-                                      lng: double.parse(origenPS.longitude
-                                          .toStringAsFixed(6)),
-                                      id: modelRef.idForanea);
-                                  var psRef = Textos.psCODE(
-                                      modelRef.contactoIdRLat ?? 0,
-                                      modelRef.contactoIdRLng ?? 0);
-                                  var refPS =
-                                      Textos.truncPlusCode(PlusCode(psRef));
-                                  var ref = await ContactoController.getItem(
-                                      lat: double.parse(
-                                          refPS.latitude.toStringAsFixed(6)),
-                                      lng: double.parse(
-                                          refPS.longitude.toStringAsFixed(6)),
-                                      id: modelRef.idRForenea);
-                                  debugPrint(
-                                      "${origen?.toJson()} - ${ref?.toJson()}");
-                                  if (origen != null && ref != null) {
-                                    ReferenciaModelo referencia =
-                                        ReferenciaModelo(
-                                            id: null,
-                                            idForanea: origen.id,
-                                            idRForenea: ref.id,
-                                            contactoIdLat: origen.latitud,
-                                            contactoIdLng: origen.longitud,
-                                            contactoIdRLat: ref.latitud,
-                                            contactoIdRLng: ref.longitud,
-                                            buscar: modelRef.buscar,
-                                            tipoCliente: modelRef.tipoCliente,
-                                            estatus: modelRef.estatus,
-                                            fecha: modelRef.fecha);
-                                    debugPrint("${referencia.toJson()}");
-                                    await ReferenciasController.insert(
-                                        referencia);
-                                  }
-                                }
-                                var tempNew =
-                                    await ContactoController.getItemId(
-                                        id: element.id!);
-                                var change =
-                                    tempNew!.copyWith(contactoEnlances: []);
-                                await ContactoController.update(change);
-                              }
-                            },
-                            icon: Icon(Icons.auto_fix_high,
-                                color: ThemaMain.background))
-                      ])
+                      OverflowBar(spacing: 1.w, children: [PhoneStateWidget()])
                     ]),
                 body: IgnorePointer(
                     ignoring:
                         provider.sliderDrawerKey.currentState?.isDrawerOpen ??
                             false,
                     child: AnimatedOpacity(
-                        duration: Durations.medium3,
+                        duration: Durations.medium1,
                         opacity: (provider.sliderDrawerKey.currentState
                                     ?.isDrawerOpen ??
                                 false)
                             ? .25
                             : 1,
                         child: Paginado(provider: provider))))));
+  }
+}
+
+class PhoneStateWidget extends StatelessWidget {
+  const PhoneStateWidget({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<PhoneState>(
+        stream: PhoneState.stream,
+        builder: (context, snapshot) => AnimatedOpacity(
+            opacity:
+                snapshot.data?.status == PhoneStateStatus.CALL_INCOMING ? 1 : 0,
+            duration: Durations.medium3,
+            child: Card(
+                child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 1.w, vertical: 0),
+                    child: Row(mainAxisSize: MainAxisSize.min, children: [
+                      AvatarGlow(
+                          glowCount: 2,
+                          glowColor: ThemaMain.primary,
+                          duration: Duration(seconds: 5),
+                          glowRadiusFactor: .5.w,
+                          startDelay: Duration(seconds: 2),
+                          child: RiveAnimatedIcon(
+                              riveIcon: RiveIcon.call,
+                              strokeWidth: 2.h,
+                              height: 4.h,
+                              width: 4.h)),
+                      Column(mainAxisSize: MainAxisSize.min, children: [
+                        SizedBox(
+                            width: 30.w,
+                            child: FutureBuilder(
+                                future: ContactoController.buscar(
+                                    "${snapshot.data?.number ?? -1}", 2),
+                                builder: (context, contacto) => AutoSizeText(
+                                    contacto.hasData
+                                        ? contacto.data!
+                                            .map((e) => e.nombreCompleto)
+                                            .toList()
+                                            .join(", ")
+                                        : "Llamando...\nDesconocido",
+                                    maxLines: 2,
+                                    minFontSize: 14,
+                                    textAlign: TextAlign.end,
+                                    overflow: TextOverflow.fade,
+                                    style: TextStyle(
+                                        fontSize: 16.sp,
+                                        fontWeight: FontWeight.bold))))
+                      ])
+                    ])))));
   }
 }
 
@@ -278,6 +268,7 @@ class PaginadoState extends State<Paginado> {
   void initState() {
     super.initState();
     widget.provider.logeo();
+    Permisos.phone();
     InternetConnection().onStatusChange.listen((InternetStatus status) {
       switch (status) {
         case InternetStatus.connected:
@@ -295,7 +286,7 @@ class PaginadoState extends State<Paginado> {
         widget.provider.animaMap.centerOnPoint(
             LatLng(widget.provider.local?.latitude ?? 0,
                 widget.provider.local?.longitude ?? 0),
-            duration: Duration(milliseconds: 300));
+            duration: Duration(milliseconds: 250));
       }
     });
     initDeepLinks();

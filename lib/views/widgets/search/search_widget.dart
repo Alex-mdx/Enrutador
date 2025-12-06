@@ -46,32 +46,17 @@ class _SearchWidgetState extends State<SearchWidget> {
     w3wSuggest.clear();
     geoPostalSuggest.clear();
     geoNamesSuggest.clear();
-    if (provider.buscar.text.split(".").length == 3) {
-      var w3w = await W3wFun.suggets(provider.buscar.text);
-      setState(() {
-        w3wSuggest = w3w;
-      });
-    } else if (provider.buscar.text.isNumericOnly) {
-      debugPrint("postal");
-      var geoPostal = await GeoFun.searchPostalCode(provider.buscar.text, null);
-      setState(() {
-        geoPostalSuggest = geoPostal;
-      });
-    } else {
-      debugPrint("geoNames");
-      var geoNames = await GeoFun.searchCity(provider.buscar.text, null);
-      setState(() {
-        geoNamesSuggest = geoNames;
-      });
-    }
+
     try {
-      var coordenadas = Textos.truncPlusCode(PlusCode(provider.buscar.text));
-      log("${coordenadas.toJson()}");
-      await MapFun.sendInitUri(
-          provider: provider,
-          lat: coordenadas.latitude,
-          lng: coordenadas.longitude);
-      return;
+      var coordenadas = await Textos.psShortToFull(provider.buscar.text);
+      log("${coordenadas?.toJson()}");
+      if (coordenadas != null) {
+        await MapFun.sendInitUri(
+            provider: provider,
+            lat: coordenadas.latitude,
+            lng: coordenadas.longitude);
+        return;
+      }
     } catch (e) {
       debugPrint("error: $e");
     }
@@ -89,9 +74,27 @@ class _SearchWidgetState extends State<SearchWidget> {
     } catch (e) {
       debugPrint("error: $e");
     }
-    setState(() {
-      buscar = false;
-    });
+    if (provider.buscar.text.split(".").length == 3) {
+      var w3w = await W3wFun.suggets(provider.buscar.text)
+          .timeout(Duration(seconds: 3));
+      setState(() {
+        w3wSuggest = w3w;
+      });
+    } else if (provider.buscar.text.isNumericOnly) {
+      debugPrint("postal");
+      var geoPostal = await GeoFun.searchPostalCode(provider.buscar.text, null)
+          .timeout(Duration(seconds: 3));
+      setState(() {
+        geoPostalSuggest = geoPostal;
+      });
+    } else {
+      debugPrint("geoNames");
+      var geoNames = await GeoFun.searchCity(provider.buscar.text, null)
+          .timeout(Duration(seconds: 3));
+      setState(() {
+        geoNamesSuggest = geoNames;
+      });
+    }
   }
 
   @override
@@ -123,7 +126,10 @@ class _SearchWidgetState extends State<SearchWidget> {
                       }
                     },
                     controller: provider.buscar,
-                    onSubmitted: (value) async => await send(provider),
+                    onSubmitted: (value) async =>
+                        await send(provider).whenComplete(() => setState(() {
+                              buscar = false;
+                            })),
                     onChanged: (value) => setState(() {
                           provider.buscar.text = value;
                         }),
@@ -136,7 +142,10 @@ class _SearchWidgetState extends State<SearchWidget> {
                                     color: ThemaMain.primary, size: 20.sp)
                                 : IconButton.filled(
                                     iconSize: 20.sp,
-                                    onPressed: () async => await send(provider),
+                                    onPressed: () async => await send(provider)
+                                        .whenComplete(() => setState(() {
+                                              buscar = false;
+                                            })),
                                     icon: Icon(Icons.send_rounded,
                                         color: ThemaMain.green))
                             : null,
@@ -150,8 +159,8 @@ class _SearchWidgetState extends State<SearchWidget> {
                                   geoNamesSuggest.clear();
                                   setState(() {
                                     provider.buscar.clear();
+                                    buscar = false;
                                   });
-
                                   if (foc.hasFocus) {
                                     foc.unfocus();
                                   }
@@ -162,15 +171,14 @@ class _SearchWidgetState extends State<SearchWidget> {
                                 padding: EdgeInsets.only(left: 2.w, top: 1.h),
                                 child: Icon(Icons.search_rounded,
                                     size: 22.sp, color: ThemaMain.primary)),
-                            crossFadeState: provider
-                                    .buscar.text.removeAllWhitespace.isNotEmpty
-                                ? CrossFadeState.showFirst
-                                : CrossFadeState.showSecond,
-                            duration: Durations.long1),
-                        contentPadding: EdgeInsets.symmetric(
-                            horizontal: 2.w, vertical: 1.h)),
-                    hintTextStyle:
-                        TextStyle(fontSize: 15.sp, fontStyle: FontStyle.italic),
+                            crossFadeState:
+                                provider.buscar.text.removeAllWhitespace.isNotEmpty
+                                    ? CrossFadeState.showFirst
+                                    : CrossFadeState.showSecond,
+                            duration: Durations.medium2),
+                        contentPadding:
+                            EdgeInsets.symmetric(horizontal: 2.w, vertical: 1.h)),
+                    hintTextStyle: TextStyle(fontSize: 15.sp, fontStyle: FontStyle.italic),
                     hintTexts: [
                       'Nombre ej: Maria, Angela, Ana',
                       'Telefono ej: 99X XXX XXXX',
