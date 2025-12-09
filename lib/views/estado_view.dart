@@ -7,6 +7,7 @@ import 'package:enrutador/utilities/theme/theme_color.dart';
 import 'package:enrutador/views/dialogs/dialogs_estados.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 import 'package:timelines_plus/timelines_plus.dart';
@@ -102,7 +103,7 @@ class _TiposViewState extends State<EstadoView> {
                             style: TextStyle(fontSize: 14.sp)))
                 ]),
             body: !carga
-                ? Center(child: CircularProgressIndicator())
+                ? Center(child: LoadingAnimationWidget.twoRotatingArc(color: ThemaMain.primary, size: 24.sp))
                 : estados.isEmpty
                     ? Center(
                         child: Text("No se ha ingresado ningun estado",

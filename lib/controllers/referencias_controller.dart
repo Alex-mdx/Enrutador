@@ -1,3 +1,4 @@
+import 'package:enrutador/controllers/sql_generator.dart';
 import 'package:enrutador/models/referencia_model.dart';
 import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart' as sql;
@@ -31,6 +32,7 @@ class ReferenciasController {
   static Future<void> insert(ReferenciaModelo data) async {
     final db = await database();
     var existencia = await getId(data);
+    await SqlGenerator.existColumna(add: "rol_id", database: db, nombreDB: nombreDB);
     if (existencia == null) {
       await db.insert(nombreDB, data.toJson(),
           conflictAlgorithm: sql.ConflictAlgorithm.replace);
@@ -43,6 +45,7 @@ class ReferenciasController {
 
   static Future<void> update(ReferenciaModelo data) async {
     final db = await database();
+    await SqlGenerator.existColumna(add: "rol_id", database: db, nombreDB: nombreDB);
     await db.update(nombreDB, data.toJson(),
         where: "id = ? OR (id_foranea = ? AND id_r_forenea = ?)",
         whereArgs: [data.id, data.idForanea, data.idRForenea],

@@ -4,6 +4,7 @@ class ReferenciaModelo {
   int? id;
   int? idForanea;
   int? idRForenea;
+  int? rolId;
   double contactoIdLat;
   double contactoIdLng;
   double? contactoIdRLat;
@@ -17,6 +18,7 @@ class ReferenciaModelo {
       {required this.id,
       required this.idForanea,
       required this.idRForenea,
+      required this.rolId,
       required this.contactoIdLat,
       required this.contactoIdLng,
       required this.contactoIdRLat,
@@ -30,6 +32,7 @@ class ReferenciaModelo {
           {int? id,
           int? idForanea,
           int? idRForenea,
+          int? rolId,
           double? contactoIdLat,
           double? contactoIdLng,
           double? contactoIdRLat,
@@ -42,6 +45,7 @@ class ReferenciaModelo {
           id: id ?? this.id,
           idForanea: idForanea ?? this.idForanea,
           idRForenea: idRForenea ?? this.idRForenea,
+          rolId: rolId ?? this.rolId,
           contactoIdLat: contactoIdLat ?? this.contactoIdLat,
           contactoIdLng: contactoIdLng ?? this.contactoIdLng,
           contactoIdRLat: contactoIdRLat ?? this.contactoIdRLat,
@@ -56,6 +60,7 @@ class ReferenciaModelo {
           id: json["id"],
           idForanea: json["id_foranea"],
           idRForenea: json["id_r_forenea"],
+          rolId: json["rol_id"],
           contactoIdLat:
               double.tryParse(json["contacto_id_lat"].toString()) ?? 1,
           contactoIdLng:
@@ -71,6 +76,7 @@ class ReferenciaModelo {
         "id": id,
         "id_foranea": idForanea,
         "id_r_forenea": idRForenea,
+        "rol_id": rolId,
         "contacto_id_lat": contactoIdLat,
         "contacto_id_lng": contactoIdLng,
         "contacto_id_r_lat": contactoIdRLat,

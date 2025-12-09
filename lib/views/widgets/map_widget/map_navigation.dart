@@ -86,9 +86,9 @@ class _MapNavigationState extends State<MapNavigation> {
               icon: Icon(
                   provider.mapSeguir
                       ? followFix
-                          ? Icons.my_location
-                          : Icons.location_searching
-                      : Icons.location_disabled,
+                          ? Icons.my_location_rounded
+                          : Icons.location_searching_rounded
+                      : Icons.location_disabled_rounded,
                   color: ThemaMain.white))
         ]));
   }

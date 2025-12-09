@@ -23,16 +23,16 @@ class _DialogIconPickerState extends State<DialogIconPicker> {
           child: SingleChildScrollView(
               child: Scrollbar(
                   child: Wrap(
-                      spacing: 0,
+                      spacing: .5.w,
                       runSpacing: 0,
                       children: LineIcons.values.values
-                          .map((e) => IconButton(
-                              iconSize: 24.sp,
-                              onPressed: () {
+                          .map((e) => GestureDetector(
+                              onTap: () {
                                 widget.iconFun(e);
                                 Navigation.pop();
                               },
-                              icon: Icon(e, color: ThemaMain.darkBlue)))
+                              child: Icon(e,
+                                  color: ThemaMain.darkBlue, size: 11.w)))
                           .toList()))))
     ]));
   }

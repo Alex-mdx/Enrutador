@@ -1,53 +1,51 @@
-import 'package:enrutador/controllers/tipo_controller.dart';
-import 'package:enrutador/models/tipos_model.dart';
-import 'package:enrutador/utilities/services/dialog_services.dart';
+import 'package:enrutador/controllers/roles_controller.dart';
+import 'package:enrutador/models/roles_model.dart';
 import 'package:enrutador/utilities/services/navigation_services.dart';
-import 'package:enrutador/views/dialogs/dialog_icon_picker.dart';
+import 'package:enrutador/utilities/theme/theme_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_material_color_picker/flutter_material_color_picker.dart';
+import 'package:line_icons/line_icons.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:sizer/sizer.dart';
+import '../../utilities/services/dialog_services.dart';
+import 'dialog_icon_picker.dart';
 
-import '../../utilities/theme/theme_color.dart';
+class DialogsRoles extends StatefulWidget {
+  final RolesModel? rol;
 
-class DialogsTipos extends StatefulWidget {
-  final TiposModelo? tipo;
-
-  const DialogsTipos({super.key, required this.tipo});
+  const DialogsRoles({super.key, required this.rol});
 
   @override
-  State<DialogsTipos> createState() => _DialogsTiposState();
+  State<DialogsRoles> createState() => _DialogsRolesState();
 }
 
-class _DialogsTiposState extends State<DialogsTipos> {
+class _DialogsRolesState extends State<DialogsRoles> {
   TextEditingController nombre = TextEditingController();
-  TextEditingController descricion = TextEditingController();
   IconData? iconMain;
   Color? colorsMain;
 
   @override
   void initState() {
     super.initState();
-    nombre.text = widget.tipo?.nombre ?? "";
-    descricion.text = widget.tipo?.descripcion ?? "";
-    iconMain = widget.tipo?.icon;
-    colorsMain = widget.tipo?.color;
+    nombre.text = widget.rol?.nombre ?? "";
+    iconMain = widget.rol?.icon;
+    colorsMain = widget.rol?.color;
   }
 
   @override
   Widget build(BuildContext context) {
     return Dialog(
         child: Column(mainAxisSize: MainAxisSize.min, children: [
-      Text(widget.tipo == null ? "Crear tipo" : "Actualizar tipo",
+      Text(widget.rol == null ? "Crear tipo" : "Actualizar tipo",
           style: TextStyle(fontSize: 16.sp)),
-      if (widget.tipo != null)
+      if (widget.rol != null)
         IconButton.filled(
             onPressed: () => Dialogs.showMorph(
                 title: "Eliminar tipo",
                 description: "¿Esta seguro de eliminar este tipo?",
                 loadingTitle: "Eliminando",
                 onAcceptPressed: (context) async {
-                  await TipoController.deleteItem(widget.tipo!.id!);
+                  await RolesController.deleteItem(widget.rol!.id ?? -1);
                   Navigation.pop();
                 }),
             icon: Icon(Icons.delete, color: ThemaMain.second),
@@ -68,22 +66,6 @@ class _DialogsTiposState extends State<DialogsTipos> {
                     contentPadding:
                         EdgeInsets.symmetric(horizontal: 2.w, vertical: 1.h))),
             Divider(),
-            TextFormField(
-                controller: descricion,
-                minLines: 1,
-                maxLines: 3,
-                textCapitalization: TextCapitalization.sentences,
-                decoration: InputDecoration(
-                    label: Text("Descripcion",
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                            fontStyle: FontStyle.italic,
-                            fontSize: 16.sp,
-                            color: ThemaMain.darkGrey)),
-                    contentPadding:
-                        EdgeInsets.symmetric(horizontal: 2.w, vertical: 1.h))),
-            Divider(),
             Wrap(runAlignment: WrapAlignment.center, children: [
               Row(mainAxisSize: MainAxisSize.min, children: [
                 Text("Icono:", style: TextStyle(fontSize: 16.sp)),
@@ -95,7 +77,7 @@ class _DialogsTiposState extends State<DialogsTipos> {
                             iconFun: (p0) => setState(() {
                                   iconMain = p0;
                                 }))),
-                    icon: Icon(iconMain ?? Icons.data_array,
+                    icon: Icon(iconMain ?? LineIcons.userTag,
                         color: ThemaMain.primary))
               ]),
               Row(mainAxisSize: MainAxisSize.min, children: [
@@ -129,30 +111,30 @@ class _DialogsTiposState extends State<DialogsTipos> {
             ]),
             ElevatedButton.icon(
                 icon: Icon(
-                    widget.tipo != null ? Icons.comment : Icons.add_comment,
+                    widget.rol != null ? Icons.comment : Icons.add_comment,
                     size: 22.sp,
                     color: ThemaMain.green),
                 onPressed: () async {
                   if (nombre.text.isNotEmpty || nombre.text != "") {
-                    if (widget.tipo != null) {
-                      var newTipo = widget.tipo!.copyWith(
+                    if (widget.rol != null) {
+                      var newTipo = widget.rol!.copyWith(
                           nombre: nombre.text,
-                          descripcion: descricion.text,
                           icon: iconMain,
                           color: colorsMain);
-                      await TipoController.update(newTipo);
-                      showToast("Tipo actualizado");
+                      await RolesController.update(newTipo);
+                      showToast("Rol actualizado");
                       Navigation.pop();
                     } else {
                       if (iconMain != null) {
-                        TiposModelo tipo = TiposModelo(
+                        RolesModel rol = RolesModel(
+                            id: null,
                             nombre: nombre.text,
-                            descripcion: descricion.text,
                             icon: iconMain,
-                            color: colorsMain);
-                        await TipoController.insert(tipo);
+                            color: colorsMain,
+                            tipo: null);
+                        await RolesController.insert(rol);
 
-                        showToast("Tipo creado");
+                        showToast("Rol creado");
                         Navigation.pop();
                       } else {
                         showToast("Seleccione un icono");
@@ -162,7 +144,7 @@ class _DialogsTiposState extends State<DialogsTipos> {
                     showToast("Ingrese un nombre");
                   }
                 },
-                label: Text(widget.tipo != null ? "Actualizar" : "Crear",
+                label: Text(widget.rol != null ? "Actualizar" : "Crear",
                     style: TextStyle(
                         fontSize: 16.sp, fontWeight: FontWeight.bold)))
           ]))

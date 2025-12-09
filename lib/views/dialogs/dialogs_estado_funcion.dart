@@ -99,54 +99,48 @@ class _DialogsEstadoFuncion extends State<DialogsEstadoFuncion> {
                         style: TextStyle(
                             fontSize: 14.sp, fontStyle: FontStyle.italic))
                     : SizedBox(
-                        width: 90.w,
-                        height: 12.h,
-                        child: Scrollbar(
-                            child: Timeline.builder(
-                                scrollDirection: Axis.horizontal,
-                                itemBuilder: (context, index) => Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          DragTarget(
-                                              onLeave: (data) =>
-                                                  aceptar[index] = false,
-                                              onMove: (details) =>
-                                                  aceptar[index] = true,
-                                              onAcceptWithDetails: (details) {
-                                                var newTemp = contacto.copyWith(
-                                                    estado: estados[index].id);
-                                                setState(() {
-                                                  contacto = newTemp;
-                                                });
-                                                debugPrint("aceptar on acep");
-                                                aceptar[index] = false;
-                                              },
-                                              builder: (context, candidateData, rejectedData) => AnimatedContainer(
-                                                  decoration: aceptar[index]
-                                                      ? BoxDecoration(
-                                                          color: aceptar[index]
-                                                              ? estados[index]
-                                                                      .color ??
-                                                                  ThemaMain
-                                                                      .primary
-                                                              : null,
-                                                          borderRadius:
-                                                              BorderRadius.circular(
-                                                                  borderRadius))
-                                                      : null,
-                                                  height: aceptar[index]
-                                                      ? 12.h
-                                                      : 21.sp,
-                                                  width: aceptar[index] ? 23.w : 21.sp,
-                                                  duration: Durations.medium1,
-                                                  alignment: Alignment.topCenter,
-                                                  child: aceptar[index] ? Padding(padding: EdgeInsets.all(10.sp), child: Text(estados[index].nombre, style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.bold))) : DotIndicator(size: contacto.estado == estados[index].id ? 24.sp : 20.sp, color: estados[index].color ?? ThemaMain.primary, child: contacto.estado == estados[index].id ? Icon(LineIcons.doubleCheck, color: ThemaMain.second, size: 20.sp) : null))),
-                                          if (index < estados.length - 1)
-                                            SizedBox(
-                                                width: 4.w,
-                                                child: DashedLineConnector())
-                                        ]),
-                                itemCount: estados.length))),
+                        height: 35.h,
+                        child: GridView.builder(
+                            scrollDirection: Axis.vertical,
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: estados.length),
+                            itemBuilder: (context, index) => DragTarget(
+                                onLeave: (data) => aceptar[index] = false,
+                                onMove: (details) => aceptar[index] = true,
+                                onAcceptWithDetails: (details) {
+                                  var newTemp = contacto.copyWith(
+                                      estado: estados[index].id);
+                                  setState(() {
+                                    contacto = newTemp;
+                                  });
+                                  debugPrint("aceptar on acep");
+                                  aceptar[index] = false;
+                                },
+                                builder: (context, candidateData, rejectedData) =>
+                                    AnimatedContainer(
+                                        decoration: aceptar[index]
+                                            ? BoxDecoration(
+                                                color: aceptar[index]
+                                                    ? estados[index].color ??
+                                                        ThemaMain.primary
+                                                    : null,
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                        borderRadius))
+                                            : null,
+                                        height: aceptar[index] ? 12.h : 21.sp,
+                                        width: aceptar[index] ? 23.w : 21.sp,
+                                        duration: Durations.medium1,
+                                        alignment: Alignment.topCenter,
+                                        child: aceptar[index]
+                                            ? Padding(
+                                                padding: EdgeInsets.all(10.sp),
+                                                child: Text(estados[index].nombre,
+                                                    style: TextStyle(
+                                                        fontSize: 15.sp,
+                                                        fontWeight: FontWeight.bold)))
+                                            : DotIndicator(size: contacto.estado == estados[index].id ? 24.sp : 20.sp, color: estados[index].color ?? ThemaMain.primary, child: contacto.estado == estados[index].id ? Icon(LineIcons.doubleCheck, color: ThemaMain.second, size: 20.sp) : null))))),
             Divider(),
             ElevatedButton.icon(
                 icon: Icon(Icons.contact_emergency,

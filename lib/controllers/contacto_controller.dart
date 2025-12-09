@@ -1,3 +1,4 @@
+import 'package:enrutador/controllers/referencias_controller.dart';
 import 'package:enrutador/models/contacto_model.dart';
 import 'package:enrutador/utilities/preferences.dart';
 import 'package:sqflite/sqflite.dart' as sql;
@@ -51,6 +52,21 @@ class ContactoController {
 
   static Future<void> update(ContactoModelo data) async {
     final db = await database();
+    var ref = await ReferenciasController.getIdPrin(
+        idContacto: data.id, lat: null, lng: null);
+    for (var element in ref) {
+      var modify = element.copyWith(
+          contactoIdLat: data.latitud, contactoIdLng: data.longitud);
+      await ReferenciasController.update(modify);
+    }
+    var refR = await ReferenciasController.getIdR(
+        idRContacto: data.id, lat: null, lng: null);
+    for (var element in refR) {
+      var modify = element.copyWith(
+          contactoIdRLat: data.latitud, contactoIdRLng: data.longitud);
+      await ReferenciasController.update(modify);
+    }
+
     await db.update(nombreDB, data.toJson(),
         where: "(latitud = ? AND longitud = ?) OR id = ?",
         whereArgs: [data.latitud, data.longitud, data.id],
@@ -89,7 +105,6 @@ class ContactoController {
           "latitud",
           "longitud",
           "agendar",
-          "contacto_enlances",
           "tipo",
           "estado",
           "nombre_completo"
@@ -104,14 +119,8 @@ class ContactoController {
 
   static Future<List<ContactoModelo>> getItems() async {
     final db = await database();
-    final modelo = (await db.query(nombreDB, columns: [
-      "id",
-      "latitud",
-      "longitud",
-      "contacto_enlances",
-      "tipo",
-      "estado"
-    ]));
+    final modelo = (await db.query(nombreDB,
+        columns: ["id", "latitud", "longitud", "tipo", "estado"]));
     List<ContactoModelo> model = [];
     for (var element in modelo) {
       model.add(ContactoModelo.fromJson(element));
@@ -217,6 +226,16 @@ class ContactoController {
 
   static Future<void> deleteItem(int id) async {
     final db = await database();
+    var ref = await ReferenciasController.getIdPrin(
+        idContacto: id, lat: null, lng: null);
+    for (var element in ref) {
+      await ReferenciasController.deleteItem(id: element.id);
+    }
+    var refR = await ReferenciasController.getIdR(
+        idRContacto: id, lat: null, lng: null);
+    for (var element in refR) {
+      await ReferenciasController.deleteItem(id: element.id);
+    }
     await db.delete(nombreDB, where: 'id = ?', whereArgs: [id]);
   }
 

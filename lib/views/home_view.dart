@@ -139,7 +139,7 @@ class _HomeViewState extends State<HomeView> {
                                   ])))),
                   GestureDetector(
                       onTap: () async =>
-                          await Navigation.pushNamed(route: "estatus"),
+                          await Navigation.pushNamed(route: "roles"),
                       child: Card(
                           child: Padding(
                               padding: EdgeInsets.symmetric(

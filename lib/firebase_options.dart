@@ -63,6 +63,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '672550936534',
     projectId: 'enrutador-project',
     storageBucket: 'enrutador-project.firebasestorage.app',
+    iosClientId: '672550936534-3aiv6o687r35d3kpet71udh4njt13ifo.apps.googleusercontent.com',
     iosBundleId: 'com.example.enrutador',
   );
+
 }

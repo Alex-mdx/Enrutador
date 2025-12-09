@@ -31,7 +31,7 @@ class _MapAlternativeState extends State<MapAlternative> {
                 : provider.cargaDatos
                     ? 4.h
                     : 2.h),
-        duration: Duration(seconds: 1),
+        duration: Duration(milliseconds: 500),
         child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -82,22 +82,6 @@ class _MapAlternativeState extends State<MapAlternative> {
                             iconSize: 22.sp,
                             onPressed: () async {
                               setState(() {
-                                provider.mapaReal = !provider.mapaReal;
-                              });
-                              if (provider.mapaReal) {
-                                showToast("Mapa Satelital");
-                              } else {
-                                showToast("Mapa Animado");
-                              }
-                            },
-                            icon: Icon(Icons.map,
-                                color: provider.mapaReal
-                                    ? ThemaMain.red
-                                    : ThemaMain.primary)),
-                        IconButton.filledTonal(
-                            iconSize: 22.sp,
-                            onPressed: () async {
-                              setState(() {
                                 Preferences.grid = !Preferences.grid;
                               });
 
@@ -113,7 +97,23 @@ class _MapAlternativeState extends State<MapAlternative> {
                                     : Icons.grid_off,
                                 color: Preferences.grid
                                     ? ThemaMain.primary
-                                    : ThemaMain.red))
+                                    : ThemaMain.red)),
+                        IconButton.filledTonal(
+                            iconSize: 22.sp,
+                            onPressed: () async {
+                              setState(() {
+                                provider.mapaReal = !provider.mapaReal;
+                              });
+                              if (provider.mapaReal) {
+                                showToast("Mapa Satelital");
+                              } else {
+                                showToast("Mapa Animado");
+                              }
+                            },
+                            icon: Icon(Icons.map,
+                                color: provider.mapaReal
+                                    ? ThemaMain.red
+                                    : ThemaMain.primary))
                       ]))
             ]));
   }

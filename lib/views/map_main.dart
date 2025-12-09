@@ -66,7 +66,7 @@ class _ViajeMapPageState extends State<MapMain>
                           maxZoom: 20,
                           maxNativeZoom: 19,
                           urlTemplate:
-                              'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                              'https://tile.openstreetmap.org/{z}/{x}/{y}.png?layers=SN',
                           retinaMode: false,
                           userAgentPackageName: 'com.enrutador.app'),
                   if (Preferences.grid)
@@ -119,7 +119,9 @@ class _ViajeMapPageState extends State<MapMain>
                                             spacingFactor: 6.sp)))
                                 .toList() ??
                             [Polyline(points: [])];
-                        return (polylines.firstOrNull?.points.isEmpty ?? true) ? SizedBox(): PolylineLayer(polylines: polylines);
+                        return (polylines.firstOrNull?.points.isEmpty ?? true)
+                            ? SizedBox()
+                            : PolylineLayer(polylines: polylines);
                       }),
                 if (provider.contacto != null)
                   FutureBuilder(
@@ -145,7 +147,9 @@ class _ViajeMapPageState extends State<MapMain>
                                         strokeWidth: .8.w))
                                 .toList() ??
                             [Polyline(points: [])];
-                        return (polylines.firstOrNull?.points.isEmpty ?? true) ? SizedBox(): PolylineLayer(polylines: polylines);
+                        return (polylines.firstOrNull?.points.isEmpty ?? true)
+                            ? SizedBox()
+                            : PolylineLayer(polylines: polylines);
                       }),
                 FutureBuilder(
                     future: ContactoController.getItems(),

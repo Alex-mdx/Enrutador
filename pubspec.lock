@@ -9,6 +9,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "91.0.0"
+  _flutterfire_internals:
+    dependency: transitive
+    description:
+      name: _flutterfire_internals
+      sha256: "8a1f5f3020ef2a74fb93f7ab3ef127a8feea33a7a2276279113660784ee7516a"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.3.64"
   advanced_media_picker:
     dependency: "direct main"
     description:
@@ -377,6 +385,30 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.1"
+  firebase_analytics:
+    dependency: "direct main"
+    description:
+      name: firebase_analytics
+      sha256: bfb80d92eee10a6585ebd5a7e60de5caf0f2c06329e5676c0578130aea1bfe85
+      url: "https://pub.dev"
+    source: hosted
+    version: "12.0.4"
+  firebase_analytics_platform_interface:
+    dependency: transitive
+    description:
+      name: firebase_analytics_platform_interface
+      sha256: "3b803077907def997044774f6c022d8e9204e9c0f5e205e3572d887c93dafd72"
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.0.4"
+  firebase_analytics_web:
+    dependency: transitive
+    description:
+      name: firebase_analytics_web
+      sha256: "0dbd96dbe77b51185319000c0078477fdcffb4abb0018c362dd9afb9845c1e06"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.6.1"
   firebase_core:
     dependency: "direct main"
     description:
@@ -401,6 +433,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.3.0"
+  firebase_crashlytics:
+    dependency: "direct main"
+    description:
+      name: firebase_crashlytics
+      sha256: bd4eadd620071ae48ef0e3617499be2a0ea4062d6d5c6fea6c1cec41ebbb2435
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.0.5"
+  firebase_crashlytics_platform_interface:
+    dependency: transitive
+    description:
+      name: firebase_crashlytics_platform_interface
+      sha256: a8ca502fe3aa48b4f0b9e6e3bc0019085a247b5d1214cd342a189457975662db
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.8.15"
   fixnum:
     dependency: transitive
     description:
@@ -474,26 +522,26 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_libphonenumber
-      sha256: fd92be0562cf88b62110452e649f5e6167bf405ac1a7806e31996a05303280ee
+      sha256: f3cafc1b9a6f9a70f41417cf11e551f98229b228a1bc37be554df544c4014284
       url: "https://pub.dev"
     source: hosted
-    version: "2.5.1"
+    version: "2.7.0"
   flutter_libphonenumber_android:
     dependency: transitive
     description:
       name: flutter_libphonenumber_android
-      sha256: "050883c2d168c3567ea9be4efb5eaf5d59e357c427e98da862beb05c3a014c55"
+      sha256: fd83952aacf392005400de5b7ba1e7ac5286fd84afbfbe0bb815bfa99e655044
       url: "https://pub.dev"
     source: hosted
-    version: "1.4.1"
-  flutter_libphonenumber_ios:
+    version: "2.0.0"
+  flutter_libphonenumber_darwin:
     dependency: transitive
     description:
-      name: flutter_libphonenumber_ios
-      sha256: c979da7ce78f97d24f70e9c596ec37a721daa83814776dbdcb38286de1942a4f
+      name: flutter_libphonenumber_darwin
+      sha256: "3379477597c12682ee9cd9ae40589e831ce46ce1c766729cc50e0b4d7dbd8757"
       url: "https://pub.dev"
     source: hosted
-    version: "1.4.0"
+    version: "2.1.0"
   flutter_libphonenumber_platform_interface:
     dependency: transitive
     description:

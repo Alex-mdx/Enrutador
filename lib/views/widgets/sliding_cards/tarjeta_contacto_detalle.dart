@@ -197,6 +197,8 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                                         tipo: p0.id,
                                                         tipoFecha:
                                                             DateTime.now());
+                                                debugPrint(
+                                                    "${newModel?.tipo ?? "Sin tipo"}");
                                                 await ContactoController.update(
                                                     newModel!);
                                                 funcion(contacto: newModel);
@@ -502,7 +504,7 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                                 ReferenciaModelo(
                                                     id: null,
                                                     idForanea: widget
-                                                        .contacto!.id,
+                                                        .contacto!.id,rolId: null,
                                                     contactoIdLat:
                                                         widget.contacto
                                                                 ?.latitud ??

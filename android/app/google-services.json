@@ -12,7 +12,12 @@
           "package_name": "com.example.enrutador"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "672550936534-8unl3cans2fcebk2ml15fafipes13k0o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCO2dzoQp6544MUbudjtPiZzs31pihDV-g"
@@ -20,7 +25,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "672550936534-8unl3cans2fcebk2ml15fafipes13k0o.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "672550936534-3aiv6o687r35d3kpet71udh4njt13ifo.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.enrutador"
+              }
+            }
+          ]
         }
       }
     }

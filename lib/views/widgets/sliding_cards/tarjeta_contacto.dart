@@ -54,25 +54,10 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
         child: Column(children: [
           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
             SizedBox(
-                width: 50.w,
+                width: 52.w,
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      /* if (kDebugMode)
-                        Row(children: [
-                          Icon(LineIcons.wordFile,
-                              size: 24.sp, color: ThemaMain.red),
-                          Text("/// word.word.word",
-                              style: TextStyle(
-                                  fontSize: 16.sp,
-                                  fontWeight: FontWeight.bold)),
-                          Text("${provider.contacto?.id ?? "NO"}",
-                              style: TextStyle(
-                                  fontSize: 14.sp,
-                                  fontStyle: FontStyle.italic)),
-                        ]), 
-                      if (kDebugMode)
-                        LinearProgressIndicator(color: ThemaMain.red),*/
                       FutureBuilder(
                           future: Textos.psGeo(Textos.psCODE(
                               provider.contacto?.latitud ?? 0,
@@ -155,7 +140,8 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                                 icon: Icon(Icons.share,
                                     color: ThemaMain.darkBlue)),
                           LauchMainIcon(
-                              coordenadas: LatLng(provider.contacto?.latitud ?? 0,
+                              coordenadas: LatLng(
+                                  provider.contacto?.latitud ?? 0,
                                   provider.contacto?.longitud ?? 0),
                               words: provider.contacto?.nombreCompleto),
                           if (provider.contacto?.id != null)
