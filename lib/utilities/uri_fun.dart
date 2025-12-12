@@ -12,6 +12,8 @@ import 'package:flutter/services.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:open_location_code/open_location_code.dart';
 
+import '../controllers/roles_controller.dart';
+import '../models/roles_model.dart';
 import 'map_fun.dart';
 import 'textos.dart';
 
@@ -132,6 +134,23 @@ class UriFun {
                 await EstadoController.update(model);
               } else {
                 await EstadoController.insert(model);
+              }
+
+              provider.cargaProgress++;
+            }
+            provider.estados = await EstadoController.getItems();
+            showToast("Estados guardados");
+            break;
+          case "roles":
+            List<dynamic> roles = datas["roles"];
+            provider.cargaLenght = roles.length;
+            for (var rol in roles) {
+              var model = RolesModel.fromJson(rol);
+              var datamodel = await RolesController.getId(model.id!);
+              if (datamodel != null) {
+                await RolesController.update(model);
+              } else {
+                await RolesController.insert(model);
               }
 
               provider.cargaProgress++;

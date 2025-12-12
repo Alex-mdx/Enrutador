@@ -4,6 +4,7 @@ import 'package:enrutador/models/estado_model.dart';
 import 'package:enrutador/utilities/services/navigation_services.dart';
 import 'package:enrutador/utilities/theme/theme_app.dart';
 import 'package:enrutador/utilities/theme/theme_color.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:line_icons/line_icons.dart';
@@ -98,13 +99,15 @@ class _DialogsEstadoFuncion extends State<DialogsEstadoFuncion> {
                     ? Text("No se han creado estados",
                         style: TextStyle(
                             fontSize: 14.sp, fontStyle: FontStyle.italic))
-                    : SizedBox(
-                        height: 35.h,
+                    : Container(
+                        constraints: BoxConstraints(maxHeight: 45.h),
                         child: GridView.builder(
+                            itemCount: estados.length,
+                            shrinkWrap: true,
                             scrollDirection: Axis.vertical,
                             gridDelegate:
                                 SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: estados.length),
+                                    crossAxisCount: 3),
                             itemBuilder: (context, index) => DragTarget(
                                 onLeave: (data) => aceptar[index] = false,
                                 onMove: (details) => aceptar[index] = true,
@@ -119,6 +122,9 @@ class _DialogsEstadoFuncion extends State<DialogsEstadoFuncion> {
                                 },
                                 builder: (context, candidateData, rejectedData) =>
                                     AnimatedContainer(
+                                        duration: kDebugMode
+                                            ? Durations.extralong4
+                                            : Durations.medium1,
                                         decoration: aceptar[index]
                                             ? BoxDecoration(
                                                 color: aceptar[index]
@@ -129,10 +135,9 @@ class _DialogsEstadoFuncion extends State<DialogsEstadoFuncion> {
                                                     BorderRadius.circular(
                                                         borderRadius))
                                             : null,
-                                        height: aceptar[index] ? 12.h : 21.sp,
-                                        width: aceptar[index] ? 23.w : 21.sp,
-                                        duration: Durations.medium1,
-                                        alignment: Alignment.topCenter,
+                                        height: aceptar[index] ? 5.w : 20.sp,
+                                        width: aceptar[index] ? 5.w : 20.sp,
+                                        alignment: Alignment.center,
                                         child: aceptar[index]
                                             ? Padding(
                                                 padding: EdgeInsets.all(10.sp),
