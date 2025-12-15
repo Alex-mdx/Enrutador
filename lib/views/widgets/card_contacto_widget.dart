@@ -2,7 +2,6 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:enrutador/controllers/contacto_controller.dart';
 import 'package:enrutador/models/contacto_model.dart';
 import 'package:enrutador/utilities/main_provider.dart';
-import 'package:enrutador/utilities/textos.dart';
 import 'package:enrutador/utilities/theme/theme_color.dart';
 import 'package:enrutador/views/dialogs/dialog_compartir.dart';
 import 'package:flutter/foundation.dart';
@@ -13,6 +12,8 @@ import 'package:sizer/sizer.dart';
 import 'package:substring_highlight/substring_highlight.dart';
 import '../../controllers/tipo_controller.dart';
 import 'package:badges/badges.dart' as bd;
+
+import '../../utilities/pluscode_fun.dart';
 
 class CardContactoWidget extends StatelessWidget {
   final ContactoModelo contacto;
@@ -114,7 +115,7 @@ class CardContactoWidget extends StatelessWidget {
                                             overflow: TextOverflow.ellipsis,
                                             style: TextStyle(fontSize: 15.sp)),
                                       SelectableText(
-                                          "Plus Code: ${Textos.psCODE(contacto.latitud, contacto.longitud)}",
+                                          "Plus Code: ${PlusCodeFun.psCODE(contacto.latitud, contacto.longitud)}",
                                           style: TextStyle(
                                               fontSize: 15.sp,
                                               fontWeight: FontWeight.bold,

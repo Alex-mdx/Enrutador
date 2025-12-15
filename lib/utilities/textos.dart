@@ -1,8 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'dart:math' as math;
-import 'package:open_location_code/open_location_code.dart';
-import 'package:geocoding/geocoding.dart';
 
 class Textos {
   static String conversionDiaNombre(DateTime fecha, DateTime now) {
@@ -124,90 +121,7 @@ class Textos {
     final regex = RegExp(r'[a-zA-Z]');
     return !regex.hasMatch(texto);
   }
-
-  static String psCODE(double latitud, double longitud) {
-    final pscode =
-        PlusCode.encode(LatLng(latitud, longitud), codeLength: 11).toString();
-    return pscode;
-  }
-
-  static Future<String?> psGeo(String fullPlusCode) async {
-    try {
-      // Validar el código
-      if (!PlusCode(fullPlusCode).isValid) {
-        throw Exception('Plus Code no válido: $fullPlusCode');
-      }
-
-      final codeArea = PlusCode(fullPlusCode).decode();
-      final latitude = codeArea.southWest.latitude;
-      final longitude = codeArea.southWest.longitude;
-
-      final placemarks = await placemarkFromCoordinates(latitude, longitude);
-
-      String locality = 'Ubicación desconocida';
-
-      if (placemarks.isNotEmpty) {
-        final placemark = placemarks.first;
-        locality = placemark.locality ??
-            placemark.subAdministrativeArea ??
-            placemark.administrativeArea ??
-            'Ubicación desconocida';
-
-        // Agregar estado si está disponible
-        if (placemark.administrativeArea != null &&
-            placemark.administrativeArea != placemark.locality) {
-          locality += ', ${placemark.administrativeArea}';
-        }
-      }
-
-      String localCode = fullPlusCode.substring(4);
-
-      return '$localCode $locality';
-    } catch (e) {
-      debugPrint("Error en conversión: $e");
-      return null;
-    }
-  }
-
-  static Future<LatLng?> psShortToFull(String shortPlusCode) async {
-    try {
-    List<String> parts = shortPlusCode.split(' ');
-
-    if (parts.length < 2) {
-      var psCode = truncPlusCode(PlusCode(shortPlusCode));
-      return psCode;
-    }
-
-    String localCode = parts[0]; // "V6RQ+WJ7"
-    String locality = parts.sublist(1).join(' '); // "Umán, Yucatán"
-
-    final locations = await locationFromAddress(locality);
-
-    if (locations.isEmpty) {
-      throw Exception('No se pudo encontrar la localidad: $locality');
-    }
-
-    final location = locations.first;
-    final fullCodeForBase = psCODE(location.latitude, location.longitude);
-
-    String baseCode = fullCodeForBase.substring(0, 4);
-
-    String fullCode = '$baseCode$localCode';
-
-    return truncPlusCode(PlusCode(fullCode));
-     } catch (e) {
-      debugPrint("Error en conversion: $e");
-      return null;
-    } 
-  }
-
-  static LatLng truncPlusCode(PlusCode code) {
-    var decode = code.decode();
-    var coordenadas = LatLng(
-        double.parse(decode.southWest.latitude.toStringAsFixed(6)),
-        double.parse(decode.southWest.longitude.toStringAsFixed(6)));
-    return coordenadas;
-  }
+  
 
   static String randomWord(int? number) {
     final random = math.Random();

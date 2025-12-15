@@ -1,34 +1,31 @@
-import 'dart:convert';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:enrutador/controllers/estado_controller.dart';
 import 'package:enrutador/controllers/referencias_controller.dart';
 import 'package:enrutador/utilities/main_provider.dart';
+import 'package:enrutador/utilities/pluscode_fun.dart';
 import 'package:enrutador/views/dialogs/dialog_send.dart';
 import 'package:enrutador/views/dialogs/dialogs_comunicar.dart';
 import 'package:enrutador/views/dialogs/dialogs_estado_funcion.dart';
+import 'package:enrutador/views/widgets/chip_referencia.dart';
+import 'package:enrutador/views/widgets/sliding_cards/tarjeta_contacto_foto.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:pasteboard/pasteboard.dart';
-import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:phone_numbers_parser/phone_numbers_parser.dart';
-import 'package:photo_view/photo_view.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
-import 'package:badges/badges.dart' as bd;
 import '../../../controllers/contacto_controller.dart';
 import '../../../controllers/enrutar_controller.dart';
 import '../../../controllers/tipo_controller.dart';
 import '../../../models/contacto_model.dart';
 import '../../../models/referencia_model.dart';
-import '../../../utilities/camara_fun.dart';
-import '../../../utilities/map_fun.dart';
 import '../../../utilities/services/dialog_services.dart';
 import '../../../utilities/textos.dart';
-import '../../../utilities/theme/theme_app.dart';
 import '../../../utilities/theme/theme_color.dart';
+import '../../dialogs/dialog_archivo.dart';
 import '../../dialogs/dialog_direccion.dart';
 import '../../dialogs/dialog_tipos_all.dart';
 
@@ -66,7 +63,10 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                     ? 29.h
                     : 27.h,
             child: Row(children: [
-              Expanded(flex: widget.compartir ? 8 : 4, child: fotos(provider)),
+              Expanded(
+                  flex: widget.compartir ? 8 : 4,
+                  child: TarjetaContactoFoto(
+                      contacto: widget.contacto, compartir: widget.compartir)),
               VerticalDivider(
                   width: widget.compartir ? 1.w : 2.sp,
                   indent: 1.h,
@@ -283,7 +283,7 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                               ]),
                           if (widget.compartir)
                             Text(
-                                "PlusCode: ${Textos.psCODE(widget.contacto?.latitud ?? 0, widget.contacto?.longitud ?? 0)}",
+                                "PlusCode: ${PlusCodeFun.psCODE(widget.contacto?.latitud ?? 0, widget.contacto?.longitud ?? 0)}",
                                 style: TextStyle(
                                     fontSize: 14.sp,
                                     fontWeight: FontWeight.bold)),
@@ -504,7 +504,8 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                                 ReferenciaModelo(
                                                     id: null,
                                                     idForanea: widget
-                                                        .contacto!.id,rolId: null,
+                                                        .contacto!.id,
+                                                    rolId: null,
                                                     contactoIdLat:
                                                         widget.contacto
                                                                 ?.latitud ??
@@ -553,7 +554,7 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                                                 0,
                                                             e.contactoIdRLng ??
                                                                 0),
-                                                        color: ThemaMain.green))
+                                                        origen: true))
                                                     .toList() ??
                                                 [])),
                                     SizedBox(
@@ -574,7 +575,7 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                                   latlng: LatLng(
                                                       e.contactoIdLat,
                                                       e.contactoIdLng),
-                                                  color: ThemaMain.primary))
+                                                  origen: false))
                                               .toList() ??
                                           []))
                             ]),
@@ -609,325 +610,22 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                     fontSize: 15.sp,
                                     fontWeight: FontWeight.bold,
                                     fontStyle: FontStyle.italic),
-                                minFontSize: 11,
+                                minFontSize: 10,
                                 maxLines: 5,
-                                overflow: TextOverflow.ellipsis)
+                                overflow: TextOverflow.ellipsis),
+                          if (!widget.compartir && kDebugMode)
+                            ElevatedButton.icon(
+                                onPressed: () => showDialog(
+                                    barrierDismissible: false,
+                                    context: context,
+                                    builder: (context) => DialogArchivo(
+                                        contacto: widget.contacto!)),
+                                icon: Icon(Icons.attachment,
+                                    size: 20.sp, color: ThemaMain.pink),
+                                label: Text("Archivos",
+                                    style: TextStyle(fontSize: 16.sp)))
                         ])
                   ])))
             ])));
-  }
-
-  Widget fotos(MainProvider provider) {
-    return Column(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
-      bd.Badge(
-          showBadge: !widget.compartir &&
-              (widget.contacto?.foto != null &&
-                  widget.contacto?.foto != "null"),
-          badgeStyle: bd.BadgeStyle(badgeColor: Colors.transparent),
-          badgeContent: GestureDetector(
-              onTap: () => Dialogs.showMorph(
-                  title: "Eliminar foto",
-                  description: "¿Desea eliminar la foto seleccionada?",
-                  loadingTitle: "Eliminando",
-                  onAcceptPressed: (context) async {
-                    var newModel = widget.contacto
-                        ?.copyWith(foto: "null", fotoFecha: DateTime.now());
-                    await ContactoController.update(newModel!);
-                    showToast("Foto eliminada");
-                    provider.contacto = newModel;
-                  }),
-              child: Icon(Icons.delete, color: ThemaMain.red, size: 18.sp)),
-          child: Container(
-              decoration: BoxDecoration(
-                  color: ThemaMain.background,
-                  borderRadius: BorderRadius.circular(borderRadius)),
-              child: (widget.contacto?.foto == null ||
-                      widget.contacto?.foto == "null")
-                  ? InkWell(
-                      onTap: () async {
-                        if (!widget.compartir) {
-                          final XFile? photo =
-                              (await CamaraFun.getGalleria(context))
-                                  .firstOrNull;
-
-                          if (photo != null) {
-                            final data = await photo.readAsBytes();
-                            try {
-                              var reducir =
-                                  await FlutterImageCompress.compressWithList(
-                                      data,
-                                      minHeight: 540,
-                                      minWidth: 960,
-                                      quality: 75);
-                              var newModel = widget.contacto?.copyWith(
-                                  foto: base64Encode(reducir),
-                                  fotoFecha: DateTime.now());
-                              await ContactoController.update(newModel!);
-                              provider.contacto = newModel;
-                            } catch (e) {
-                              showToast("Error al comprimir imagen");
-                            }
-                          }
-                        }
-                      },
-                      child: Icon(Icons.contacts,
-                          size: widget.compartir ? 30.w : 21.w,
-                          color: ThemaMain.primary))
-                  : InkWell(
-                      onLongPress: () async {
-                        try {
-                          await Pasteboard.writeImage(
-                              base64Decode(widget.contacto!.foto!));
-
-                          final files = await Pasteboard.files();
-                          debugPrint("$files");
-                          showToast("Imagen copiada al portapapeles");
-                        } catch (e) {
-                          debugPrint("$e");
-                        }
-                      },
-                      onDoubleTap: () async {
-                        if (!widget.compartir) {
-                          final XFile? photo =
-                              (await CamaraFun.getGalleria(context))
-                                  .firstOrNull;
-
-                          if (photo != null) {
-                            final data = await photo.readAsBytes();
-                            try {
-                              var reducir =
-                                  await FlutterImageCompress.compressWithList(
-                                      data,
-                                      minHeight: 540,
-                                      minWidth: 960,
-                                      quality: 75);
-                              var newModel = widget.contacto?.copyWith(
-                                  foto: base64Encode(reducir),
-                                  fotoFecha: DateTime.now());
-                              await ContactoController.update(newModel!);
-                              provider.contacto = newModel;
-                            } catch (e) {
-                              showToast("Error al comprimir imagen");
-                            }
-                          }
-                        }
-                      },
-                      onTap: () => showDialog(
-                          barrierDismissible: false,
-                          context: context,
-                          builder: (context) => Column(children: [
-                                Expanded(
-                                    child: PhotoView.customChild(
-                                        minScale:
-                                            PhotoViewComputedScale.contained,
-                                        maxScale:
-                                            PhotoViewComputedScale.contained *
-                                                2,
-                                        child: Image.memory(base64Decode(
-                                            widget.contacto?.foto ?? "a")))),
-                                Text(
-                                    "Ultima modificacion\n${Textos.fechaYMDHMS(fecha: widget.contacto!.fotoFecha!)}",
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                        fontSize: 16.sp,
-                                        fontWeight: FontWeight.bold,
-                                        color: ThemaMain.white))
-                              ])),
-                      child: ClipRRect(
-                          borderRadius:
-                              BorderRadiusGeometry.circular(borderRadius),
-                          child: Image.memory(
-                              base64Decode(widget.contacto?.foto ?? "a"),
-                              fit: widget.compartir
-                                  ? BoxFit.fitHeight
-                                  : BoxFit.cover,
-                              filterQuality: widget.compartir
-                                  ? FilterQuality.medium
-                                  : FilterQuality.low,
-                              width: widget.compartir ? 30.w : 21.w,
-                              height: widget.compartir ? 30.w : 21.w,
-                              gaplessPlayback: true,
-                              errorBuilder: (context, error, stackTrace) =>
-                                  Icon(Icons.broken_image,
-                                      color: ThemaMain.red,
-                                      size:
-                                          widget.compartir ? 30.w : 21.w)))))),
-      bd.Badge(
-          showBadge: !widget.compartir &&
-              (widget.contacto?.fotoReferencia != null &&
-                  widget.contacto?.fotoReferencia != "null"),
-          badgeStyle: bd.BadgeStyle(badgeColor: Colors.transparent),
-          badgeContent: GestureDetector(
-              onTap: () => Dialogs.showMorph(
-                  title: "Eliminar foto",
-                  description: "¿Desea eliminar la foto seleccionada?",
-                  loadingTitle: "Eliminando",
-                  onAcceptPressed: (context) async {
-                    var newModel = widget.contacto?.copyWith(
-                        fotoReferencia: "null",
-                        fotoReferenciaFecha: DateTime.now());
-                    await ContactoController.update(newModel!);
-                    showToast("Foto eliminada");
-                    provider.contacto = newModel;
-                  }),
-              child: Icon(Icons.delete, color: ThemaMain.red, size: 18.sp)),
-          child: Container(
-              decoration: BoxDecoration(
-                  color: ThemaMain.background,
-                  borderRadius: BorderRadius.circular(borderRadius)),
-              child: (widget.contacto?.fotoReferencia == null ||
-                      widget.contacto?.fotoReferencia == "null")
-                  ? InkWell(
-                      onTap: () async {
-                        if (!widget.compartir) {
-                          final XFile? photo =
-                              (await CamaraFun.getGalleria(context))
-                                  .firstOrNull;
-
-                          if (photo != null) {
-                            final data = await photo.readAsBytes();
-                            try {
-                              var reducir =
-                                  await FlutterImageCompress.compressWithList(
-                                      data,
-                                      minHeight: 540,
-                                      minWidth: 960,
-                                      quality: 75);
-                              var newModel = widget.contacto?.copyWith(
-                                  fotoReferencia: base64Encode(reducir),
-                                  fotoReferenciaFecha: DateTime.now());
-                              await ContactoController.update(newModel!);
-                              provider.contacto = newModel;
-                            } catch (e) {
-                              showToast("Error al comprimir imagen");
-                            }
-                          }
-                        }
-                      },
-                      child: Icon(Icons.image,
-                          color: ThemaMain.green,
-                          size: widget.compartir ? 30.w : 21.w))
-                  : InkWell(
-                      onLongPress: () async {
-                        try {
-                          await Pasteboard.writeImage(
-                              base64Decode(widget.contacto!.fotoReferencia!));
-
-                          final files = await Pasteboard.files();
-                          debugPrint("$files");
-                          showToast("Imagen copiada al portapapeles");
-                        } catch (e) {
-                          debugPrint("$e");
-                        }
-                      },
-                      onDoubleTap: () async {
-                        if (!widget.compartir) {
-                          final XFile? photo =
-                              (await CamaraFun.getGalleria(context))
-                                  .firstOrNull;
-
-                          if (photo != null) {
-                            final data = await photo.readAsBytes();
-                            try {
-                              var reducir =
-                                  await FlutterImageCompress.compressWithList(
-                                      data,
-                                      minHeight: 540,
-                                      minWidth: 960,
-                                      quality: 75);
-                              var newModel = widget.contacto?.copyWith(
-                                  fotoReferencia: base64Encode(reducir),
-                                  fotoReferenciaFecha: DateTime.now());
-                              await ContactoController.update(newModel!);
-                              provider.contacto = newModel;
-                            } catch (e) {
-                              showToast("Error al comprimir imagen");
-                            }
-                          }
-                        }
-                      },
-                      onTap: () => (!widget.compartir)
-                          ? showDialog(
-                              barrierDismissible: false,
-                              context: context,
-                              builder: (context) => Column(children: [
-                                    Expanded(
-                                        child: PhotoView.customChild(
-                                            minScale: PhotoViewComputedScale
-                                                .contained,
-                                            maxScale: PhotoViewComputedScale
-                                                    .contained *
-                                                2,
-                                            child: Image.memory(base64Decode(
-                                                widget.contacto
-                                                        ?.fotoReferencia ??
-                                                    "a")))),
-                                    Text(
-                                        "Ultima modificacion\n${Textos.fechaYMDHMS(fecha: widget.contacto!.fotoReferenciaFecha!)}",
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                            fontSize: 16.sp,
-                                            fontWeight: FontWeight.bold,
-                                            color: ThemaMain.white))
-                                  ]))
-                          : null,
-                      child: ClipRRect(
-                          borderRadius:
-                              BorderRadiusGeometry.circular(borderRadius),
-                          child: Image.memory(
-                              fit: widget.compartir
-                                  ? BoxFit.fitHeight
-                                  : BoxFit.cover,
-                              filterQuality: widget.compartir
-                                  ? FilterQuality.medium
-                                  : FilterQuality.low,
-                              width: widget.compartir ? 30.w : 21.w,
-                              height: widget.compartir ? 30.w : 21.w,
-                              base64Decode(
-                                  widget.contacto?.fotoReferencia ?? "a"),
-                              gaplessPlayback: true,
-                              errorBuilder: (context, error, stackTrace) =>
-                                  Icon(Icons.broken_image,
-                                      color: ThemaMain.red,
-                                      size: widget.compartir ? 30.w : 21.w))))))
-    ]);
-  }
-}
-
-class ChipReferencia extends StatelessWidget {
-  const ChipReferencia(
-      {super.key,
-      required this.ref,
-      required this.latlng,
-      required this.provider,
-      required this.color});
-
-  final ReferenciaModelo ref;
-  final MainProvider provider;
-  final Color color;
-  final LatLng latlng;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-        onLongPress: () async {
-          await ReferenciasController.deleteItem(id: ref.id);
-          showToast("Referencia eliminada");
-        },
-        child: Chip(
-            deleteIcon:
-                Icon(Icons.assistant_direction, size: 20.sp, color: color),
-            onDeleted: () async {
-              MapFun.sendInitUri(
-                  provider: provider,
-                  lat: latlng.latitude,
-                  lng: latlng.longitude);
-              await provider.slide.close();
-            },
-            padding: EdgeInsets.all(0),
-            labelPadding: EdgeInsets.all(4.sp),
-            label: Text("Ref",
-                style:
-                    TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold))));
   }
 }

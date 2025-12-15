@@ -6,7 +6,7 @@ import 'package:enrutador/models/geo_names_model.dart';
 import 'package:enrutador/models/what_3_words_model.dart';
 import 'package:enrutador/utilities/main_provider.dart';
 import 'package:enrutador/utilities/map_fun.dart';
-import 'package:enrutador/utilities/textos.dart';
+import 'package:enrutador/utilities/pluscode_fun.dart';
 import 'package:enrutador/utilities/theme/theme_app.dart';
 import 'package:enrutador/utilities/theme/theme_color.dart';
 import 'package:enrutador/utilities/w3w_fun.dart';
@@ -48,23 +48,22 @@ class _SearchWidgetState extends State<SearchWidget> {
     geoNamesSuggest.clear();
 
     try {
-      var coordenadas = await Textos.psShortToFull(provider.buscar.text);
-      log("${coordenadas?.toJson()}");
-      if (coordenadas != null) {
+      var coordenadas = await PlusCodeFun.convert(provider.buscar.text,toShortFormat: true);
+      var ps = PlusCodeFun.truncPlusCode(coordenadas);
+      log("${ps.toJson()}");
         await MapFun.sendInitUri(
             provider: provider,
-            lat: coordenadas.latitude,
-            lng: coordenadas.longitude);
+            lat: ps.latitude,
+            lng: ps.longitude);
         return;
-      }
     } catch (e) {
       debugPrint("error: $e");
     }
     try {
       var newText = provider.buscar.text.removeAllWhitespace.split(",");
       var text = LatLng(double.parse(newText[0]), double.parse(newText[1]));
-      var ps = Textos.psCODE(text.latitude, text.longitude);
-      var coordenadas = Textos.truncPlusCode(PlusCode(ps));
+      var ps = PlusCodeFun.psCODE(text.latitude, text.longitude);
+      var coordenadas = PlusCodeFun.truncPlusCode(ps);
       log("${coordenadas.toJson()}");
       await MapFun.sendInitUri(
           provider: provider,

@@ -7,7 +7,7 @@ String nombreDB = "roles";
 class RolesController {
   static Future<void> createTables(sql.Database database) async {
     await database.execute("""CREATE TABLE $nombreDB(
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
         nombre TEXT,
         icon INTEGER,
         color INTEGER,
@@ -41,10 +41,20 @@ class RolesController {
     }
   }
 
-  static Future<List<RolesModel>> getAll() async {
+  static Future<List<RolesModel>> getAll({int? long}) async {
     final db = await database();
-    final query = await db.query(nombreDB, orderBy: "id DESC");
+    final query = await db.query(nombreDB, orderBy: "id DESC", limit: long);
     debugPrint("$query");
+    return query.map((e) => RolesModel.fromJson(e)).toList();
+  }
+
+  static Future<List<RolesModel>> getBuscar(String? word) async {
+    final db = await database();
+    final query = await db.query(nombreDB,
+        orderBy: "id DESC",
+        limit: 5,
+        where: word != null ? "nombre LIKE ?" : null,
+        whereArgs: word != null ? ['%$word%'] : null);
     return query.map((e) => RolesModel.fromJson(e)).toList();
   }
 

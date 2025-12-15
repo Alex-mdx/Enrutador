@@ -52,9 +52,9 @@ class ReferenciasController {
         conflictAlgorithm: sql.ConflictAlgorithm.replace);
   }
 
-  static Future<List<ReferenciaModelo>> getItems() async {
+  static Future<List<ReferenciaModelo>> getItems({int? long}) async {
     final db = await database();
-    final query = await db.query(nombreDB);
+    final query = await db.query(nombreDB,limit: long);
     List<ReferenciaModelo> modelo = [];
     for (var element in query) {
       modelo.add(ReferenciaModelo.fromJson(element));

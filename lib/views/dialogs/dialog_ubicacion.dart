@@ -1,5 +1,5 @@
+import 'package:enrutador/utilities/pluscode_fun.dart';
 import 'package:enrutador/utilities/preferences.dart';
-import 'package:enrutador/utilities/textos.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -7,7 +7,6 @@ import 'package:get/get_utils/src/extensions/export.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:oktoast/oktoast.dart';
-import 'package:open_location_code/open_location_code.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../utilities/theme/theme_app.dart';
@@ -172,9 +171,9 @@ class _DialogUbicacionState extends State<DialogUbicacion> {
             if (latController.text.isNotEmpty &&
                 lngController.text.isNotEmpty) {
               try {
-                var ps = Textos.psCODE(double.parse(latController.text),
+                var ps = PlusCodeFun.psCODE(double.parse(latController.text),
                     double.parse(lngController.text));
-                var coord = Textos.truncPlusCode(PlusCode(ps));
+                var coord = PlusCodeFun.truncPlusCode(ps);
                 widget.funLat(coord);
               } catch (e) {
                 showToast("No se pudo convertir en coordenadas");
@@ -182,8 +181,7 @@ class _DialogUbicacionState extends State<DialogUbicacion> {
             } else if (w3wController.text.isNotEmpty) {
             } else if (psController.text.isNotEmpty) {
               try {
-                widget.funLat(Textos.truncPlusCode(
-                    PlusCode(psController.text.removeAllWhitespace)));
+                widget.funLat(PlusCodeFun.truncPlusCode(psController.text.removeAllWhitespace));
               } catch (e) {
                 debugPrint("error: $e");
                 showToast("Plus Code ingresado no valido");

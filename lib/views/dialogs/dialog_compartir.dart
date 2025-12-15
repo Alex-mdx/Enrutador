@@ -2,7 +2,6 @@ import 'package:enrutador/models/contacto_model.dart';
 import 'package:enrutador/utilities/camara_fun.dart';
 import 'package:enrutador/utilities/services/navigation_services.dart';
 import 'package:enrutador/utilities/share_fun.dart';
-import 'package:enrutador/utilities/textos.dart';
 import 'package:enrutador/views/widgets/sliding_cards/tarjeta_contacto_detalle.dart';
 import 'package:flutter/material.dart';
 import 'package:oktoast/oktoast.dart';
@@ -10,6 +9,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:sizer/sizer.dart';
 import 'package:widgets_to_image/widgets_to_image.dart';
 
+import '../../utilities/pluscode_fun.dart';
 import '../../utilities/theme/theme_color.dart';
 
 class DialogCompartir extends StatelessWidget {
@@ -32,7 +32,7 @@ class DialogCompartir extends StatelessWidget {
                   onPressed: () async => await ShareFun.share(
                       titulo: "Comparte este contacto",
                       mensaje:
-                          "${ShareFun.copiar}\n*Plus Code*: ${Textos.psCODE(contacto.latitud, contacto.longitud)}${contacto.nombreCompleto != null ? "\n*Nombre*: ${contacto.nombreCompleto}" : ""}${contacto.domicilio != null ? "\n*Domicilio*: ${contacto.domicilio}" : ""}${contacto.numero != null ? "\nTelefono: ${contacto.numero}" : ""}${contacto.otroNumero != null ? "\nTelefono alt: ${contacto.otroNumero}" : ""}${contacto.nota != null ? "\n*Notas*: ${contacto.nota}" : ""}"),
+                          "${ShareFun.copiar}\n*Plus Code*: ${PlusCodeFun.psCODE(contacto.latitud, contacto.longitud)}${contacto.nombreCompleto != null ? "\n*Nombre*: ${contacto.nombreCompleto}" : ""}${contacto.domicilio != null ? "\n*Domicilio*: ${contacto.domicilio}" : ""}${contacto.numero != null ? "\nTelefono: ${contacto.numero}" : ""}${contacto.otroNumero != null ? "\nTelefono alt: ${contacto.otroNumero}" : ""}${contacto.nota != null ? "\n*Notas*: ${contacto.nota}" : ""}"),
                   icon: Icon(Icons.text_snippet,
                       size: 32.sp, color: ThemaMain.primary)),
               Text("Texto",

@@ -3,7 +3,6 @@ import 'package:enrutador/controllers/enrutar_controller.dart';
 import 'package:enrutador/models/contacto_model.dart';
 import 'package:enrutador/utilities/main_provider.dart';
 import 'package:enrutador/utilities/services/dialog_services.dart';
-import 'package:enrutador/utilities/textos.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map_animations/flutter_map_animations.dart';
 import 'package:flutter_map_math/flutter_geo_math.dart';
@@ -13,6 +12,7 @@ import 'package:open_location_code/open_location_code.dart';
 import 'package:sizer/sizer.dart';
 import 'package:badges/badges.dart' as bd;
 import '../models/enrutar_model.dart';
+import 'pluscode_fun.dart';
 import 'theme/theme_color.dart';
 
 class MapFun {
@@ -22,7 +22,7 @@ class MapFun {
     var newindex = uri.indexOf("?q=");
     var newText = uri.replaceRange(0, newindex + 3, "");
     List<String> datas = newText.split(",");
-    var pc = Textos.psCODE(double.parse(datas[0]), double.parse(datas[1]));
+    var pc = PlusCodeFun.psCODE(double.parse(datas[0]), double.parse(datas[1]));
     var newlocation = PlusCode(pc).decode().southWest;
     await sendInitUri(
         provider: provider,
@@ -125,9 +125,9 @@ class MapFun {
       {required MainProvider provider,
       required double lat,
       required double lng}) async {
-    var pc = Textos.psCODE(double.parse(lat.toStringAsFixed(6)),
+    var pc = PlusCodeFun.psCODE(double.parse(lat.toStringAsFixed(6)),
         double.parse(lng.toStringAsFixed(6)));
-    var newlocation = Textos.truncPlusCode(PlusCode(pc));
+    var newlocation = PlusCodeFun.truncPlusCode(pc );
     provider.contacto = ContactoModelo(
         id: null,
         nombreCompleto: null,

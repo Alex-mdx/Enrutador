@@ -45,18 +45,15 @@ class ListRolesWidget extends StatelessWidget {
                       Expanded(
                           child: Padding(
                               padding: EdgeInsets.only(left: 2.w),
-                              child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Icon(estado.icon,
-                                        color: ThemaMain.white, size: 25.sp),
-                                    Text(estado.nombre,
-                                        style: TextStyle(
-                                            backgroundColor: ThemaMain.white,
-                                            fontSize: 16.sp,
-                                            fontWeight: FontWeight.bold))
-                                  ]))),
+                              child: OrdenWrap(dense: dense, widget: [
+                                Icon(estado.icon,
+                                    color: ThemaMain.white, size: 25.sp),
+                                Text(estado.nombre,
+                                    style: TextStyle(
+                                        backgroundColor: ThemaMain.white,
+                                        fontSize: 16.sp,
+                                        fontWeight: FontWeight.bold))
+                              ]))),
                       if (share)
                         IconButton.filledTonal(
                             iconSize: 20.sp,
@@ -77,5 +74,24 @@ class ListRolesWidget extends StatelessWidget {
                             icon: Icon(Icons.offline_share,
                                 color: ThemaMain.green))
                     ]))));
+  }
+}
+
+class OrdenWrap extends StatelessWidget {
+  final List<Widget> widget;
+  final bool dense;
+  const OrdenWrap({super.key, required this.widget, required this.dense});
+
+  @override
+  Widget build(BuildContext context) {
+    return dense
+        ? Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: widget)
+        : Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: widget);
   }
 }

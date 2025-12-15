@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 import 'package:enrutador/controllers/contacto_controller.dart';
 import 'package:enrutador/controllers/estado_controller.dart';
 import 'package:enrutador/controllers/tipo_controller.dart';
@@ -10,12 +9,11 @@ import 'package:enrutador/utilities/main_provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:oktoast/oktoast.dart';
-import 'package:open_location_code/open_location_code.dart';
 
 import '../controllers/roles_controller.dart';
 import '../models/roles_model.dart';
 import 'map_fun.dart';
-import 'textos.dart';
+import 'pluscode_fun.dart';
 
 class UriFun {
   static const _channel =
@@ -86,8 +84,8 @@ class UriFun {
               var model = ContactoModelo.fromJson(contacto);
               var datamodel = await ContactoController.getItem(
                   lat: model.latitud, lng: model.longitud);
-              var pc = Textos.psCODE(model.latitud, model.longitud);
-              var newlocation = PlusCode(pc).decode().southWest;
+              var pc = PlusCodeFun.psCODE(model.latitud, model.longitud);
+              var newlocation = PlusCodeFun.truncPlusCode(pc);
               debugPrint("result: ${model.toJson()}");
               if (datamodel != null) {
                 debugPrint("actualizar");

@@ -3,6 +3,7 @@ import 'package:enrutador/controllers/contacto_controller.dart';
 import 'package:enrutador/controllers/enrutar_controller.dart';
 import 'package:enrutador/models/enrutar_model.dart';
 import 'package:enrutador/utilities/main_provider.dart';
+import 'package:enrutador/utilities/pluscode_fun.dart';
 import 'package:enrutador/utilities/preferences.dart';
 import 'package:enrutador/utilities/services/dialog_services.dart';
 import 'package:enrutador/utilities/services/navigation_services.dart';
@@ -59,17 +60,15 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       FutureBuilder(
-                          future: Textos.psGeo(Textos.psCODE(
-                              provider.contacto?.latitud ?? 0,
-                              provider.contacto?.longitud ?? 0)),
+                          future: PlusCodeFun.convert(
+                              PlusCodeFun.psCODE(
+                                  provider.contacto?.latitud ?? 0,
+                                  provider.contacto?.longitud ?? 0),
+                              toShortFormat: Preferences.psCodeExt),
                           builder: (context, snapshot) => TextButton.icon(
                               onLongPress: () async {
-                                await Clipboard.setData(ClipboardData(
-                                    text: Preferences.psCodeExt
-                                        ? (snapshot.data ?? "?")
-                                        : Textos.psCODE(
-                                            provider.contacto?.latitud ?? 0,
-                                            provider.contacto?.longitud ?? 0)));
+                                await Clipboard.setData(
+                                    ClipboardData(text: snapshot.data ?? "?"));
                                 showToast("Plus Code copiados");
                               },
                               icon: Icon(LineIcons.mapMarked,
@@ -107,14 +106,9 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                                                     0),
                                             zoom: 18);
                                       })),
-                              label: AutoSizeText(
-                                  Preferences.psCodeExt
-                                      ? (snapshot.data ?? "?")
-                                      : Textos.psCODE(
-                                          provider.contacto?.latitud ?? 0,
-                                          provider.contacto?.longitud ?? 0),
+                              label: AutoSizeText(snapshot.data ?? "?",
                                   style: TextStyle(fontSize: 16.sp),
-                                  minFontSize: 11,
+                                  minFontSize: 10,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis))),
                       SelectableText(
