@@ -491,94 +491,111 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                       style: TextStyle(fontSize: 14.sp))
                               ]),
                           if (!widget.compartir)
-                            Row(children: [
-                              InkWell(
-                                  onTap: () => (provider.selectRefencia == null)
-                                      ? Dialogs.showMorph(
-                                          title: "Ingresar referencia",
-                                          description:
-                                              "Seleccione otro contacto para que sea referencia de este mismo",
-                                          loadingTitle: "cargando",
-                                          onAcceptPressed: (context) async {
-                                            provider.selectRefencia =
-                                                ReferenciaModelo(
-                                                    id: null,
-                                                    idForanea: widget
-                                                        .contacto!.id,
-                                                    rolId: null,
-                                                    contactoIdLat:
-                                                        widget.contacto
+                            Wrap(
+                                alignment: WrapAlignment.spaceBetween,
+                                crossAxisAlignment: WrapCrossAlignment.center,
+                                spacing: .5.w,
+                                children: [
+                                  InkWell(
+                                      onTap: () => (provider.selectRefencia ==
+                                              null)
+                                          ? Dialogs.showMorph(
+                                              title: "Ingresar referencia",
+                                              description:
+                                                  "Seleccione otro contacto para que sea referencia de este mismo",
+                                              loadingTitle: "cargando",
+                                              onAcceptPressed: (context) async {
+                                                provider.selectRefencia =
+                                                    ReferenciaModelo(
+                                                        id: null,
+                                                        idForanea:
+                                                            widget.contacto!.id,
+                                                        rolId: null,
+                                                        contactoIdLat: widget
+                                                                .contacto
                                                                 ?.latitud ??
                                                             0,
-                                                    idRForenea: null,
-                                                    contactoIdLng: widget
-                                                            .contacto
-                                                            ?.longitud ??
-                                                        0,
-                                                    contactoIdRLat: null,
-                                                    contactoIdRLng: null,
-                                                    buscar: -1,
-                                                    tipoCliente: -1,
-                                                    estatus: -1,
-                                                    fecha: DateTime.now());
-                                          })
-                                      : null,
-                                  child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Icon(Icons.person_add,
-                                            color: ThemaMain.green,
-                                            size: 20.sp),
-                                        Text(" Referencia: ",
-                                            style: TextStyle(fontSize: 16.sp))
-                                      ])),
-                              Wrap(
-                                  runAlignment: WrapAlignment.spaceBetween,
-                                  spacing: .5.w,
-                                  children: [
-                                    FutureBuilder(
-                                        future: ReferenciasController.getIdPrin(
-                                            idContacto: widget.contacto?.id,
-                                            lat: widget.contacto?.latitud,
-                                            lng: widget.contacto?.longitud),
-                                        builder: (context, snapshot) => Wrap(
-                                            runAlignment:
-                                                WrapAlignment.spaceBetween,
-                                            spacing: .5.w,
-                                            children: snapshot.data
-                                                    ?.map((e) => ChipReferencia(
-                                                        ref: e,
-                                                        provider: provider,
-                                                        latlng: LatLng(
-                                                            e.contactoIdRLat ??
-                                                                0,
-                                                            e.contactoIdRLng ??
-                                                                0),
-                                                        origen: true))
-                                                    .toList() ??
-                                                [])),
-                                    SizedBox(
-                                        height: 4.h, child: VerticalDivider())
-                                  ]),
-                              FutureBuilder(
-                                  future: ReferenciasController.getIdR(
-                                      idRContacto: widget.contacto?.id,
-                                      lat: widget.contacto?.latitud,
-                                      lng: widget.contacto?.longitud),
-                                  builder: (context, snapshot) => Wrap(
+                                                        idRForenea: null,
+                                                        contactoIdLng: widget
+                                                                .contacto
+                                                                ?.longitud ??
+                                                            0,
+                                                        contactoIdRLat: null,
+                                                        contactoIdRLng: null,
+                                                        buscar: -1,
+                                                        tipoCliente: -1,
+                                                        estatus: -1,
+                                                        fecha: DateTime.now());
+                                              })
+                                          : null,
+                                      child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Icon(Icons.person_add,
+                                                color: ThemaMain.green,
+                                                size: 6.w),
+                                            Text("Referencia: ",
+                                                style: TextStyle(
+                                                    fontSize: 15.sp,
+                                                    fontWeight:
+                                                        FontWeight.bold))
+                                          ])),
+                                  Wrap(
                                       runAlignment: WrapAlignment.spaceBetween,
+                                      alignment: WrapAlignment.center,
+                                      crossAxisAlignment:
+                                          WrapCrossAlignment.center,
                                       spacing: .5.w,
-                                      children: snapshot.data
-                                              ?.map((e) => ChipReferencia(
-                                                  ref: e,
-                                                  provider: provider,
-                                                  latlng: LatLng(
-                                                      e.contactoIdLat,
-                                                      e.contactoIdLng),
-                                                  origen: false))
-                                              .toList() ??
-                                          []))
-                            ]),
+                                      runSpacing: 0,
+                                      children: [
+                                        FutureBuilder(
+                                            future:
+                                                ReferenciasController.getIdPrin(
+                                                    idContacto:
+                                                        widget.contacto?.id,
+                                                    lat: widget
+                                                        .contacto?.latitud,
+                                                    lng: widget
+                                                        .contacto?.longitud),
+                                            builder: (context, snapshot) => Wrap(
+                                                runSpacing: 0,
+                                                spacing: .5.w,
+                                                children: snapshot.data
+                                                        ?.map((e) => ChipReferencia(
+                                                            ref: e,
+                                                            provider: provider,
+                                                            latlng: LatLng(
+                                                                e.contactoIdRLat ??
+                                                                    0,
+                                                                e.contactoIdRLng ??
+                                                                    0),
+                                                            origen: true))
+                                                        .toList() ??
+                                                    [])),
+                                        SizedBox(
+                                            height: 3.5.h,
+                                            width: .5.w,
+                                            child: VerticalDivider())
+                                      ]),
+                                  FutureBuilder(
+                                      future: ReferenciasController.getIdR(
+                                          idRContacto: widget.contacto?.id,
+                                          lat: widget.contacto?.latitud,
+                                          lng: widget.contacto?.longitud),
+                                      builder: (context, snapshot) => Wrap(
+                                          runSpacing: 0,
+                                          spacing: .5.w,
+                                          children: snapshot.data
+                                                  ?.map((e) => ChipReferencia(
+                                                      ref: e,
+                                                      provider: provider,
+                                                      latlng: LatLng(
+                                                          e.contactoIdLat,
+                                                          e.contactoIdLng),
+                                                      origen: false))
+                                                  .toList() ??
+                                              []))
+                                ]),
                           if (!widget.compartir)
                             TextButton(
                                 onPressed: () => showDialog(

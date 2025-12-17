@@ -1,9 +1,10 @@
-import 'package:enrutador/controllers/roles_controller.dart';
+
 import 'package:enrutador/models/referencia_model.dart';
 import 'package:enrutador/utilities/main_provider.dart';
 import 'package:enrutador/utilities/map_fun.dart';
 import 'package:enrutador/utilities/theme/theme_color.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get_utils/src/extensions/export.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:sizer/sizer.dart';
 import 'package:enrutador/views/dialogs/dialog_referencia.dart';
@@ -44,15 +45,15 @@ class ChipReferencia extends StatelessWidget {
             },
             padding: EdgeInsets.all(0),
             labelPadding: EdgeInsets.all(4.sp),
-            label: FutureBuilder(
-                future: RolesController.getId(ref.rolId ?? -1),
-                builder: (context, snapshot) {
-                  return Text(
-                      snapshot.connectionState == ConnectionState.waiting &&
-                              !snapshot.hasData
-                          ? "..."
-                          : snapshot.data?.nombre ?? "Ref. ?",
-                      style: TextStyle(fontSize: 14.sp));
-                })));
+            label: SizedBox(
+                width: 12.w,
+                child: Text(
+                    provider.roles
+                            .firstWhereOrNull(
+                                (element) => element.id == ref.rolId)
+                            ?.nombre ??
+                        "Ref. ?",
+                    style: TextStyle(fontSize: 13.sp),
+                    maxLines: 1))));
   }
 }

@@ -1,7 +1,9 @@
 import 'package:enrutador/controllers/estado_controller.dart';
+import 'package:enrutador/controllers/roles_controller.dart';
 import 'package:enrutador/controllers/tipo_controller.dart';
 import 'package:enrutador/models/contacto_model.dart';
 import 'package:enrutador/models/estado_model.dart';
+import 'package:enrutador/models/roles_model.dart';
 import 'package:enrutador/models/tipos_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -31,6 +33,13 @@ class MainProvider with ChangeNotifier implements TickerProvider {
   bool get internet => _internet;
   set internet(bool valor) {
     _internet = valor;
+    notifyListeners();
+  }
+
+  List<RolesModel> _roles = [];
+  List<RolesModel> get roles => _roles;
+  set roles(List<RolesModel> valor) {
+    _roles = valor;
     notifyListeners();
   }
 
@@ -152,5 +161,6 @@ class MainProvider with ChangeNotifier implements TickerProvider {
   Future<void> logeo() async {
     tipos = await TipoController.getItems();
     estados = await EstadoController.getItems();
+    roles = await RolesController.getAll();
   }
 }

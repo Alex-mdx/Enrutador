@@ -1,6 +1,7 @@
 import 'package:enrutador/controllers/referencias_controller.dart';
 import 'package:enrutador/controllers/roles_controller.dart';
 import 'package:enrutador/models/roles_model.dart';
+import 'package:enrutador/utilities/services/dialog_services.dart';
 import 'package:enrutador/utilities/services/navigation_services.dart';
 import 'package:enrutador/utilities/theme/theme_color.dart';
 import 'package:enrutador/views/widgets/list_roles_widget.dart';
@@ -62,6 +63,25 @@ class _DialogReferenciaState extends State<DialogReferencia> {
                   style:
                       TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold));
             }),
+      ElevatedButton.icon(
+          onPressed: () async => Dialogs.showMorph(
+              title: "Eliminar referencia",
+              description:
+                  "¿Estas seguro de eliminar esta referencia?\nAl hacerlo romperas el enlace entre el contacto y la referencia",
+              loadingTitle: "Eliminando",
+              onAcceptPressed: (context) async {
+                setState(() {
+                  press = true;
+                });
+                await ReferenciasController.deleteItem(
+                    id: widget.referencia!.id);
+                Navigation.pop();
+                setState(() {
+                  press = false;
+                });
+              }),
+          icon: Icon(Icons.delete, color: ThemaMain.red, size: 20.sp),
+          label: Text("Eliminar", style: TextStyle(fontSize: 16.sp))),
       Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(children: [
@@ -85,7 +105,6 @@ class _DialogReferenciaState extends State<DialogReferencia> {
                                 color: ThemaMain.red, size: 20.sp))
                         : null),
                 excludeSelected: true,
-                hideSelectedFieldWhenExpanded: true,
                 searchHintText: "Buscar Rol",
                 noResultFoundText: "No se encontraron resultados",
                 headerBuilder: (context, selectedItem, enabled) =>
