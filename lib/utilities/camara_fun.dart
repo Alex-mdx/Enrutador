@@ -6,12 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:path/path.dart' as path;
+import 'package:sizer/sizer.dart';
 import 'theme/theme_color.dart';
 
 class CamaraFun {
   static Future<List<XFile>> getGalleria(
-    BuildContext context,
-  ) async {
+      BuildContext context, String? nombre) async {
     var status = await [Permission.camera, Permission.photos].request();
     debugPrint("${status}");
     return await AdvancedMediaPicker.openPicker(
@@ -20,7 +20,7 @@ class CamaraFun {
         style: PickerStyle(
             crossAxisCount: 4,
             backgroundColor: ThemaMain.second,
-            titleWidget: Text("Seleccionar imagen")),
+            titleWidget: Text(nombre ?? "Seleccionar imagen",style: TextStyle(fontSize: 16.sp),)),
         cameraStyle: CameraStyle(),
         allowedTypes: PickerAssetType.image,
         maxVideoDuration: 60,

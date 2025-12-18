@@ -110,7 +110,7 @@ class _DialogReferenciaState extends State<DialogReferencia> {
                 headerBuilder: (context, selectedItem, enabled) =>
                     ListRolesWidget(
                         estado: selectedItem,
-                        fun: () {},
+                        fun: () => null,
                         share: false,
                         selectedVisible: false,
                         selected: true,
@@ -124,6 +124,7 @@ class _DialogReferenciaState extends State<DialogReferencia> {
                         estado: item,
                         fun: () {
                           controller.value = item;
+                          onItemSelect();
                         },
                         share: false,
                         selectedVisible: false,

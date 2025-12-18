@@ -5,8 +5,6 @@ import 'package:enrutador/utilities/textos.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:oktoast/oktoast.dart';
-import 'package:pasteboard/pasteboard.dart';
-import 'package:photo_view/photo_view.dart';
 import 'package:provider/provider.dart';
 import 'package:badges/badges.dart' as bd;
 import 'package:sizer/sizer.dart';
@@ -17,11 +15,14 @@ import '../../../utilities/camara_fun.dart';
 import '../../../utilities/services/dialog_services.dart';
 import '../../../utilities/theme/theme_app.dart';
 import '../../../utilities/theme/theme_color.dart';
+import '../galeria_widget.dart';
+import '../visualizador_widget.dart';
 
 class TarjetaContactoFoto extends StatefulWidget {
   final ContactoModelo? contacto;
   final bool compartir;
-  const TarjetaContactoFoto({super.key, required  this.contacto, required this.compartir});
+  const TarjetaContactoFoto(
+      {super.key, required this.contacto, required this.compartir});
 
   @override
   State<TarjetaContactoFoto> createState() => _TarjetaContactoFotoState();
@@ -59,9 +60,9 @@ class _TarjetaContactoFotoState extends State<TarjetaContactoFoto> {
                   ? InkWell(
                       onTap: () async {
                         if (!widget.compartir) {
-                          final XFile? photo =
-                              (await CamaraFun.getGalleria(context))
-                                  .firstOrNull;
+                          final XFile? photo = (await CamaraFun.getGalleria(
+                                  context, "Seleccionar Foto del Cliente"))
+                              .firstOrNull;
 
                           if (photo != null) {
                             final data = await photo.readAsBytes();
@@ -86,24 +87,22 @@ class _TarjetaContactoFotoState extends State<TarjetaContactoFoto> {
                       child: Icon(Icons.contacts,
                           size: widget.compartir ? 30.w : 21.w,
                           color: ThemaMain.primary))
-                  : InkWell(
-                      onLongPress: () async {
-                        try {
-                          await Pasteboard.writeImage(
-                              base64Decode(widget.contacto!.foto!));
-
-                          final files = await Pasteboard.files();
-                          debugPrint("$files");
-                          showToast("Imagen copiada al portapapeles");
-                        } catch (e) {
-                          debugPrint("$e");
-                        }
-                      },
+                  : GaleriaWidget(
+                      image64: widget.contacto?.foto,
+                      ontap: () => (!widget.compartir)
+                          ? showDialog(
+                              barrierDismissible: false,
+                              context: context,
+                              builder: (context) => VisualizadorWidget(
+                                  image64: widget.contacto?.foto,
+                                  carrusel:
+                                      "Ultima modificacion\n${Textos.fechaYMDHMS(fecha: widget.contacto!.fotoFecha!)}"))
+                          : null,
                       onDoubleTap: () async {
                         if (!widget.compartir) {
-                          final XFile? photo =
-                              (await CamaraFun.getGalleria(context))
-                                  .firstOrNull;
+                          final XFile? photo = (await CamaraFun.getGalleria(
+                                  context, "Seleccionar Foto del Cliente"))
+                              .firstOrNull;
 
                           if (photo != null) {
                             final data = await photo.readAsBytes();
@@ -125,46 +124,7 @@ class _TarjetaContactoFotoState extends State<TarjetaContactoFoto> {
                           }
                         }
                       },
-                      onTap: () => showDialog(
-                          barrierDismissible: false,
-                          context: context,
-                          builder: (context) => Column(children: [
-                                Expanded(
-                                    child: PhotoView.customChild(
-                                        minScale:
-                                            PhotoViewComputedScale.contained,
-                                        maxScale:
-                                            PhotoViewComputedScale.contained *
-                                                2,
-                                        child: Image.memory(base64Decode(
-                                            widget.contacto?.foto ?? "a")))),
-                                Text(
-                                    "Ultima modificacion\n${Textos.fechaYMDHMS(fecha: widget.contacto!.fotoFecha!)}",
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                        fontSize: 16.sp,
-                                        fontWeight: FontWeight.bold,
-                                        color: ThemaMain.white))
-                              ])),
-                      child: ClipRRect(
-                          borderRadius:
-                              BorderRadiusGeometry.circular(borderRadius),
-                          child: Image.memory(
-                              base64Decode(widget.contacto?.foto ?? "a"),
-                              fit: widget.compartir
-                                  ? BoxFit.fitHeight
-                                  : BoxFit.cover,
-                              filterQuality: widget.compartir
-                                  ? FilterQuality.medium
-                                  : FilterQuality.low,
-                              width: widget.compartir ? 30.w : 21.w,
-                              height: widget.compartir ? 30.w : 21.w,
-                              gaplessPlayback: true,
-                              errorBuilder: (context, error, stackTrace) =>
-                                  Icon(Icons.broken_image,
-                                      color: ThemaMain.red,
-                                      size:
-                                          widget.compartir ? 30.w : 21.w)))))),
+                      compartir: widget.compartir))),
       bd.Badge(
           showBadge: !widget.compartir &&
               (widget.contacto?.fotoReferencia != null &&
@@ -193,9 +153,9 @@ class _TarjetaContactoFotoState extends State<TarjetaContactoFoto> {
                   ? InkWell(
                       onTap: () async {
                         if (!widget.compartir) {
-                          final XFile? photo =
-                              (await CamaraFun.getGalleria(context))
-                                  .firstOrNull;
+                          final XFile? photo = (await CamaraFun.getGalleria(
+                                  context, "Seleccionar Foto del Domicilio"))
+                              .firstOrNull;
 
                           if (photo != null) {
                             final data = await photo.readAsBytes();
@@ -220,24 +180,22 @@ class _TarjetaContactoFotoState extends State<TarjetaContactoFoto> {
                       child: Icon(Icons.image,
                           color: ThemaMain.green,
                           size: widget.compartir ? 30.w : 21.w))
-                  : InkWell(
-                      onLongPress: () async {
-                        try {
-                          await Pasteboard.writeImage(
-                              base64Decode(widget.contacto!.fotoReferencia!));
-
-                          final files = await Pasteboard.files();
-                          debugPrint("$files");
-                          showToast("Imagen copiada al portapapeles");
-                        } catch (e) {
-                          debugPrint("$e");
-                        }
-                      },
+                  : GaleriaWidget(
+                      image64: widget.contacto?.fotoReferencia,
+                      ontap: () => (!widget.compartir)
+                          ? showDialog(
+                              barrierDismissible: false,
+                              context: context,
+                              builder: (context) => VisualizadorWidget(
+                                  image64: widget.contacto?.fotoReferencia,
+                                  carrusel:
+                                      "Ultima modificacion\n${Textos.fechaYMDHMS(fecha: widget.contacto!.fotoReferenciaFecha!)}"))
+                          : null,
                       onDoubleTap: () async {
                         if (!widget.compartir) {
-                          final XFile? photo =
-                              (await CamaraFun.getGalleria(context))
-                                  .firstOrNull;
+                          final XFile? photo = (await CamaraFun.getGalleria(
+                                  context, "Seleccionar Del Domicilio"))
+                              .firstOrNull;
 
                           if (photo != null) {
                             final data = await photo.readAsBytes();
@@ -259,50 +217,7 @@ class _TarjetaContactoFotoState extends State<TarjetaContactoFoto> {
                           }
                         }
                       },
-                      onTap: () => (!widget.compartir)
-                          ? showDialog(
-                              barrierDismissible: false,
-                              context: context,
-                              builder: (context) => Column(children: [
-                                    Expanded(
-                                        child: PhotoView.customChild(
-                                            minScale: PhotoViewComputedScale
-                                                .contained,
-                                            maxScale: PhotoViewComputedScale
-                                                    .contained *
-                                                2,
-                                            child: Image.memory(base64Decode(
-                                                widget.contacto
-                                                        ?.fotoReferencia ??
-                                                    "a")))),
-                                    Text(
-                                        "Ultima modificacion\n${Textos.fechaYMDHMS(fecha: widget.contacto!.fotoReferenciaFecha!)}",
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                            fontSize: 16.sp,
-                                            fontWeight: FontWeight.bold,
-                                            color: ThemaMain.white))
-                                  ]))
-                          : null,
-                      child: ClipRRect(
-                          borderRadius:
-                              BorderRadiusGeometry.circular(borderRadius),
-                          child: Image.memory(
-                              fit: widget.compartir
-                                  ? BoxFit.fitHeight
-                                  : BoxFit.cover,
-                              filterQuality: widget.compartir
-                                  ? FilterQuality.medium
-                                  : FilterQuality.low,
-                              width: widget.compartir ? 30.w : 21.w,
-                              height: widget.compartir ? 30.w : 21.w,
-                              base64Decode(
-                                  widget.contacto?.fotoReferencia ?? "a"),
-                              gaplessPlayback: true,
-                              errorBuilder: (context, error, stackTrace) =>
-                                  Icon(Icons.broken_image,
-                                      color: ThemaMain.red,
-                                      size: widget.compartir ? 30.w : 21.w))))))
+                      compartir: widget.compartir)))
     ]);
   }
 }

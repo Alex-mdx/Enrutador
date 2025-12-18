@@ -534,7 +534,7 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                             Icon(Icons.person_add,
                                                 color: ThemaMain.green,
                                                 size: 6.w),
-                                            Text("Referencia: ",
+                                            Text("Ref(s):",
                                                 style: TextStyle(
                                                     fontSize: 15.sp,
                                                     fontWeight:
