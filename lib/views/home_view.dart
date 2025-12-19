@@ -233,13 +233,12 @@ class PhoneStateWidget extends StatelessWidget {
                             width: 30.w,
                             child: FutureBuilder(
                                 future: ContactoController.buscar(
-                                    "${snapshot.data?.number ?? -1}", 2),
+                                    (snapshot.data?.number ?? "-1").replaceAll(" ", ""), 2),
                                 builder: (context, contacto) => AutoSizeText(
                                     contacto.hasData
                                         ? contacto.data!
                                             .map((e) => e.nombreCompleto)
-                                            .toList()
-                                            .join(", ")
+                                            .toList().firstOrNull ?? "Desconocido"
                                         : "Llamando...\nDesconocido",
                                     maxLines: 2,
                                     minFontSize: 14,

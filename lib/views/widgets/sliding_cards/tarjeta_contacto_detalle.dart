@@ -630,7 +630,7 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                 minFontSize: 10,
                                 maxLines: 5,
                                 overflow: TextOverflow.ellipsis),
-                          if (!widget.compartir && kDebugMode)
+                          if (!widget.compartir)
                             ElevatedButton.icon(
                                 onPressed: () => showDialog(
                                     barrierDismissible: false,
