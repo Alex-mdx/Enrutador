@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_map_animations/flutter_map_animations.dart';
 import 'package:flutter_slider_drawer/flutter_slider_drawer.dart';
-import 'package:location/location.dart' as ld;
+import 'package:geolocator/geolocator.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 import '../models/referencia_model.dart';
@@ -65,9 +65,9 @@ class MainProvider with ChangeNotifier implements TickerProvider {
     notifyListeners();
   }
 
-  ld.LocationData? _local;
-  ld.LocationData? get local => _local;
-  set local(ld.LocationData? valor) {
+  Position? _local;
+  Position? get local => _local;
+  set local(Position? valor) {
     _local = valor;
     notifyListeners();
   }

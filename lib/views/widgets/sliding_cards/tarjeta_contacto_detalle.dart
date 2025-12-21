@@ -64,7 +64,7 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                     : 27.h,
             child: Row(children: [
               Expanded(
-                  flex: widget.compartir ? 8 : 4,
+                  flex: widget.compartir ? 10 : 5,
                   child: TarjetaContactoFoto(
                       contacto: widget.contacto, compartir: widget.compartir)),
               VerticalDivider(
@@ -72,7 +72,7 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                   indent: 1.h,
                   endIndent: 1.h),
               Expanded(
-                  flex: 12,
+                  flex: 16,
                   child: Scrollbar(
                       child: ListView(children: [
                     Column(

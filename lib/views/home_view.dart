@@ -13,10 +13,10 @@ import 'package:enrutador/views/widgets/search/search_widget.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slider_drawer/flutter_slider_drawer.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:line_icons/line_icons.dart';
-import 'package:location/location.dart' as lc;
 import 'package:open_location_code/open_location_code.dart';
 import 'package:phone_state/phone_state.dart';
 import 'package:provider/provider.dart';
@@ -233,12 +233,16 @@ class PhoneStateWidget extends StatelessWidget {
                             width: 30.w,
                             child: FutureBuilder(
                                 future: ContactoController.buscar(
-                                    (snapshot.data?.number ?? "-1").replaceAll(" ", ""), 2),
+                                    (snapshot.data?.number ?? "-1")
+                                        .replaceAll(" ", ""),
+                                    2),
                                 builder: (context, contacto) => AutoSizeText(
                                     contacto.hasData
                                         ? contacto.data!
-                                            .map((e) => e.nombreCompleto)
-                                            .toList().firstOrNull ?? "Desconocido"
+                                                .map((e) => e.nombreCompleto)
+                                                .toList()
+                                                .firstOrNull ??
+                                            "Desconocido"
                                         : "Llamando...\nDesconocido",
                                     maxLines: 2,
                                     minFontSize: 14,
@@ -261,12 +265,14 @@ class Paginado extends StatefulWidget {
 }
 
 class PaginadoState extends State<Paginado> {
-  lc.Location location = lc.Location();
+  final LocationSettings locationSettings =
+      LocationSettings(accuracy: LocationAccuracy.high, distanceFilter: 100);
   final AppLinks appLinks = AppLinks();
   @override
   void initState() {
     super.initState();
     widget.provider.logeo();
+    Permisos.determinePosition();
     Permisos.phone();
     InternetConnection().onStatusChange.listen((InternetStatus status) {
       switch (status) {
@@ -279,13 +285,14 @@ class PaginadoState extends State<Paginado> {
       }
     });
 
-    location.onLocationChanged.listen((lc.LocationData currentLocation) {
-      widget.provider.local = currentLocation;
+    Geolocator.getPositionStream(locationSettings: locationSettings)
+        .listen((Position? position) {
+      widget.provider.local = position;
       if (widget.provider.mapSeguir) {
         widget.provider.animaMap.centerOnPoint(
             LatLng(widget.provider.local?.latitude ?? 0,
                 widget.provider.local?.longitude ?? 0),
-            duration: Duration(milliseconds: 250));
+            duration: Duration(milliseconds: 100));
       }
     });
     initDeepLinks();

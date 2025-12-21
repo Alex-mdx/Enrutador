@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:enrutador/controllers/archivo_controller.dart';
 import 'package:enrutador/utilities/services/dialog_services.dart';
+import 'package:enrutador/utilities/services/navigation_services.dart';
 import 'package:enrutador/utilities/textos.dart';
 import 'package:enrutador/views/widgets/visualizador_widget.dart';
 import 'package:flutter/material.dart';
@@ -38,7 +39,7 @@ class _DialogArchivoState extends State<DialogArchivo> {
                 isGalleryImportAllowed: true,
                 noOfPages: 1,
                 iosScannerOptions:
-                    IosScannerOptions(jpgCompressionQuality: .70)));
+                    IosScannerOptions(jpgCompressionQuality: .9)));
             if (data?.isNotEmpty ?? false) {
               var archivoTemp = XFile(data!.first);
               var base = base64Encode(await archivoTemp.readAsBytes());
@@ -116,7 +117,7 @@ class _DialogArchivoState extends State<DialogArchivo> {
                                                           iosScannerOptions:
                                                               IosScannerOptions(
                                                                   jpgCompressionQuality:
-                                                                      .70)));
+                                                                      .9)));
                                               if (data?.isNotEmpty ?? false) {
                                                 var archivoTemp =
                                                     XFile(data!.first);
@@ -144,7 +145,11 @@ class _DialogArchivoState extends State<DialogArchivo> {
                                 ])));
                   }
                 })
-          ]))
+          ])),
+      ElevatedButton.icon(
+          onPressed: () => Navigation.pop(),
+          icon: Icon(Icons.close, color: ThemaMain.red, size: 20.sp),
+          label: Text("Cerrar", style: TextStyle(fontSize: 16.sp)))
     ]));
   }
 }

@@ -50,7 +50,7 @@ class _ViajeMapPageState extends State<MapMain>
                 minZoom: 8,
                 maxZoom: 20,
                 initialCenter: LatLng(
-                    provider.local!.latitude!, provider.local!.longitude!)),
+                    provider.local!.latitude, provider.local!.longitude)),
             children: [
                 Stack(children: [
                   provider.mapaReal

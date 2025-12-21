@@ -48,7 +48,7 @@ class _SearchWidgetState extends State<SearchWidget> {
     geoNamesSuggest.clear();
 
     try {
-      var coordenadas = await PlusCodeFun.convert(provider.buscar.text,toShortFormat: true);
+      var coordenadas = await PlusCodeFun.convert(provider.buscar.text,toShortFormat: false);
       var ps = PlusCodeFun.truncPlusCode(coordenadas);
       log("${ps.toJson()}");
         await MapFun.sendInitUri(
@@ -181,8 +181,8 @@ class _SearchWidgetState extends State<SearchWidget> {
                     hintTexts: [
                       'Nombre ej: Maria, Angela, Ana',
                       'Telefono ej: 99X XXX XXXX',
-                      'PlusCode ej: QR78+Q4 Miami, Florida, EE. UU',
-                      'PlusCode ej: 76HF9WGR+W6F',
+                      'PlusCode ej: Codigo+Codigo',
+                      'PlusCode Simple ej: Codigo, Ciudad, Estado, Pais',
                       'What3Words ej: palabra.palabra.palabra',
                       'Coordenadas ej: 21.377300, -90.059438',
                       'Coordenadas ej: 21° 22\' 38.28", 90° 3\' 33.98"',

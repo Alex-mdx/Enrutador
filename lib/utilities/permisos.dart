@@ -1,30 +1,7 @@
-import 'package:location/location.dart' as lc;
+import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class Permisos {
-  static Future<bool> ubicacion() async {
-    lc.Location location = lc.Location();
-
-    bool serviceEnabled;
-    lc.PermissionStatus permissionGranted;
-
-    serviceEnabled = await location.serviceEnabled();
-    if (!serviceEnabled) {
-      serviceEnabled = await location.requestService();
-      if (!serviceEnabled) {
-        return false;
-      }
-    }
-
-    permissionGranted = await location.hasPermission();
-    if (permissionGranted == lc.PermissionStatus.denied) {
-      permissionGranted = await location.requestPermission();
-      if (permissionGranted != lc.PermissionStatus.granted) {
-        return true;
-      }
-    }
-    return false;
-  }
 
   static Future<bool> phone() async {
     var status = await Permission.phone.request();
@@ -37,4 +14,29 @@ class Permisos {
       PermissionStatus.provisional || PermissionStatus.granted => true,
     };
   }
+
+  static Future<bool> determinePosition() async {
+  bool serviceEnabled;
+  LocationPermission permission;
+  serviceEnabled = await Geolocator.isLocationServiceEnabled();
+  if (!serviceEnabled) {
+    return Future.error('Location services are disabled.');
+  }
+
+  permission = await Geolocator.checkPermission();
+  if (permission == LocationPermission.denied) {
+    permission = await Geolocator.requestPermission();
+    if (permission == LocationPermission.denied) {
+      return Future.error('Location permissions are denied');
+    }
+  }
+  
+  if (permission == LocationPermission.deniedForever) {
+    return Future.error(
+      'Location permissions are permanently denied, we cannot request permissions.');
+  }
+  return true;
+}
+
+  
 }

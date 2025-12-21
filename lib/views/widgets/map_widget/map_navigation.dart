@@ -71,8 +71,8 @@ class _MapNavigationState extends State<MapNavigation> {
 
                   if (followFix) {
                     await provider.animaMap.centerOnPoint(
-                        LatLng(provider.local!.latitude!,
-                            provider.local!.longitude!),
+                        LatLng(provider.local!.latitude,
+                            provider.local!.longitude),
                         zoom: 18);
                   }
                 } else {
@@ -80,7 +80,7 @@ class _MapNavigationState extends State<MapNavigation> {
                   provider.mapSeguir = true;
                   provider.animaMap.animatedRotateReset();
                   await provider.animaMap.centerOnPoint(LatLng(
-                      provider.local!.latitude!, provider.local!.longitude!));
+                      provider.local!.latitude, provider.local!.longitude));
                 }
               },
               icon: Icon(

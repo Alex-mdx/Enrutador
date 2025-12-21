@@ -45,8 +45,8 @@ class ChipReferencia extends StatelessWidget {
                       DialogReferencia(referencia: ref, origen: origen));
             },
             child: Row(mainAxisSize: MainAxisSize.min, children: [
-              SizedBox(
-                  width: 16.w,
+              Container(
+                  constraints: BoxConstraints(maxWidth: 17.w),
                   child: AutoSizeText(
                       provider.roles
                               .firstWhereOrNull(
@@ -57,8 +57,8 @@ class ChipReferencia extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       minFontSize: 8,
                       style: TextStyle(
-                          fontSize: 16.sp, fontWeight: FontWeight.bold))),
-              SizedBox(width: 1.w),
+                          fontSize: 15.sp, fontWeight: FontWeight.bold))),
+              SizedBox(width: .5.w),
               Icon(Icons.assistant_direction,
                   size: 22.sp,
                   color: origen ? ThemaMain.green : ThemaMain.primary)

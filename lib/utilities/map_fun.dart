@@ -16,7 +16,6 @@ import 'pluscode_fun.dart';
 import 'theme/theme_color.dart';
 
 class MapFun {
-  static const tierraRadio = 6378;
   static Future<void> getUri(
       {required MainProvider provider, required String uri}) async {
     var newindex = uri.indexOf("?q=");
@@ -127,7 +126,7 @@ class MapFun {
       required double lng}) async {
     var pc = PlusCodeFun.psCODE(double.parse(lat.toStringAsFixed(6)),
         double.parse(lng.toStringAsFixed(6)));
-    var newlocation = PlusCodeFun.truncPlusCode(pc );
+    var newlocation = PlusCodeFun.truncPlusCode(pc);
     provider.contacto = ContactoModelo(
         id: null,
         nombreCompleto: null,
@@ -156,7 +155,8 @@ class MapFun {
           width: 21.sp,
           height: 21.sp,
           rotate: true,
-          point: LatLng(newlocation.latitude, newlocation.longitude),
+          point: LatLng(double.parse(newlocation.latitude.toStringAsFixed(6)),
+              double.parse(newlocation.longitude.toStringAsFixed(6))),
           builder: (context, animation) => InkWell(
               onTap: () async {
                 provider.animaMap.centerOnPoint(

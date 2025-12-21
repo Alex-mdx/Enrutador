@@ -59,8 +59,8 @@ class NavegarView extends StatelessWidget {
                               child: ListMapsWidget(
                                   word: "Mi direccion",
                                   mapas: mapas,
-                                  latitud: provider.local!.latitude!,
-                                  longitud: provider.local!.longitude!,
+                                  latitud: provider.local!.latitude,
+                                  longitud: provider.local!.longitude,
                                   launch: (p0) => showToast("Mapa lanzado")));
                         });
               } else if (snapshot.hasError) {

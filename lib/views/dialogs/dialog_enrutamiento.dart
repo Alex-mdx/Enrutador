@@ -174,7 +174,7 @@ class _DialogEnrutamientoState extends State<DialogEnrutamiento> {
                                       fontStyle: FontStyle.italic)))
                           : Scrollbar(
                               child: Container(
-                                  constraints: BoxConstraints(maxHeight: 35.h),
+                                  constraints: BoxConstraints(maxHeight: 32.h),
                                   child: ListView.builder(
                                       padding: EdgeInsets.symmetric(
                                           horizontal: 1.w, vertical: 1.h),
@@ -226,7 +226,7 @@ class _DialogEnrutamientoState extends State<DialogEnrutamiento> {
                             : Scrollbar(
                                 child: Container(
                                     constraints:
-                                        BoxConstraints(maxHeight: 35.h),
+                                        BoxConstraints(maxHeight: 32.h),
                                     child: ListView.builder(
                                         padding: EdgeInsets.symmetric(
                                             horizontal: 1.w, vertical: 1.h),

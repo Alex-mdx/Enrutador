@@ -7,6 +7,7 @@ import 'package:get/get_utils/src/extensions/export.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:oktoast/oktoast.dart';
+import 'package:open_location_code/open_location_code.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../utilities/theme/theme_app.dart';
@@ -167,7 +168,7 @@ class _DialogUbicacionState extends State<DialogUbicacion> {
                           EdgeInsets.symmetric(horizontal: 2.w, vertical: 1.h)))
           ])),
       ElevatedButton.icon(
-          onPressed: () {
+          onPressed: () async {
             if (latController.text.isNotEmpty &&
                 lngController.text.isNotEmpty) {
               try {
@@ -181,7 +182,10 @@ class _DialogUbicacionState extends State<DialogUbicacion> {
             } else if (w3wController.text.isNotEmpty) {
             } else if (psController.text.isNotEmpty) {
               try {
-                widget.funLat(PlusCodeFun.truncPlusCode(psController.text.removeAllWhitespace));
+                var short = await PlusCodeFun.convert(psController.text,
+                    toShortFormat: false);
+                debugPrint("short: $short");
+                widget.funLat(PlusCodeFun.truncPlusCode(short));
               } catch (e) {
                 debugPrint("error: $e");
                 showToast("Plus Code ingresado no valido");

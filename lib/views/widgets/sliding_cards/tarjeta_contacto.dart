@@ -79,33 +79,47 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                                   padding: WidgetStatePropertyAll(
                                       EdgeInsets.symmetric(
                                           horizontal: 0, vertical: 0))),
-                              onPressed: () async => showDialog(
-                                  context: context,
-                                  builder: (context) =>
-                                      DialogUbicacion(funLat: (lat) async {
-                                        var temp = provider.contacto!.copyWith(
-                                            latitud: double.parse(lat?.latitude
-                                                    .toStringAsFixed(6) ??
-                                                "0"),
-                                            longitud: double.parse(lat
-                                                    ?.longitude
-                                                    .toStringAsFixed(6) ??
-                                                "0"));
-                                        funcion(contacto: temp);
-                                        Navigation.pop();
-                                        await ContactoController.update(temp);
+                              onPressed: () async {
+                                if (provider.contacto != null) {
+                                  showDialog(
+                                      context: context,
+                                      builder: (context) =>
+                                          DialogUbicacion(funLat: (lat) async {
+                                            var temp = provider.contacto!
+                                                .copyWith(
+                                                    latitud: double.parse(
+                                                        lat
+                                                                ?.latitude
+                                                                .toStringAsFixed(
+                                                                    6) ??
+                                                            "0"),
+                                                    longitud: double.parse(lat
+                                                            ?.longitude
+                                                            .toStringAsFixed(
+                                                                6) ??
+                                                        "0"));
+                                            funcion(contacto: temp);
+                                            Navigation.pop();
+                                            await ContactoController.update(
+                                                temp);
 
-                                        provider.contacto =
-                                            await ContactoController.getItem(
-                                                lat: temp.latitud,
-                                                lng: temp.longitud);
-                                        provider.animaMap.centerOnPoint(
-                                            LatLng(
-                                                provider.contacto?.latitud ?? 0,
-                                                provider.contacto?.longitud ??
-                                                    0),
-                                            zoom: 18);
-                                      })),
+                                            provider.contacto =
+                                                await ContactoController
+                                                    .getItem(
+                                                        lat: temp.latitud,
+                                                        lng: temp.longitud);
+                                            provider.animaMap.centerOnPoint(
+                                                LatLng(
+                                                    provider.contacto
+                                                            ?.latitud ??
+                                                        0,
+                                                    provider.contacto
+                                                            ?.longitud ??
+                                                        0),
+                                                zoom: 18);
+                                          }));
+                                }
+                              },
                               label: AutoSizeText(snapshot.data ?? "?",
                                   style: TextStyle(fontSize: 16.sp),
                                   minFontSize: 10,
