@@ -20,7 +20,6 @@ dependencies:
   firebase_analytics: ^12.1.0
   firebase_core: ^4.3.0
   firebase_crashlytics: ^5.0.5
-  geolocator: ^14.0.2
   flutter:
     sdk: flutter
   flutter_image_compress: ^2.4.0
@@ -38,6 +37,8 @@ dependencies:
   flutter_phone_direct_caller: ^2.2.1
   flutter_slider_drawer: ^3.0.2
   geocoding: ^4.0.0
+  ###Ni le muevas al geolocator, require el 14.0.1 para funcionar junto la package_info_plus
+  geolocator: ^14.0.1
   get: ^4.7.3
   http: ^1.6.0
   image: ^4.7.1
@@ -52,7 +53,7 @@ dependencies:
   open_location_code: ^1.0.1
   open_route_service: ^1.2.7
   overflow_text_animated: ^0.0.6
-  package_info_plus: ^8.3.1
+  package_info_plus: ^9.0.0
   pasteboard: ^0.4.0
   path: ^1.9.1
   path_provider: ^2.1.5
