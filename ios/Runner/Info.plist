@@ -55,23 +55,25 @@
 	<string>Esta app necesita acceso a tu galería para seleccionar fotos.</string>
 	<key>CFBundleDocumentTypes</key>
 	<array>
-			<dict>
-					<key>CFBundleTypeName</key>
-					<string>JSON File</string>
-					<key>LSItemContentTypes</key>
-					<array>
-							<string>public.json</string>
-					</array>
-					<key>LSHandlerRank</key>
-					<string>Alternate</string>
-			</dict>
+		<dict>
+			<key>CFBundleTypeName</key>
+			<string>JSON File</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>public.json</string>
+			</array>
+			<key>LSHandlerRank</key>
+			<string>Alternate</string>
+		</dict>
 	</array>
 	<key>UTExportedTypeDeclarations</key>
 	<array>
-			<dict>
-					<key>UTTypeIdentifier</key>
-					<string>public.json</string>
-			</dict>
+		<dict>
+			<key>UTTypeIdentifier</key>
+			<string>public.json</string>
+		</dict>
 	</array>
+	<key>GIDClientID</key>
+	<string>672550936534-3aiv6o687r35d3kpet71udh4njt13ifo.apps.googleusercontent.com</string>
 </dict>
 </plist>

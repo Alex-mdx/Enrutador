@@ -11,6 +11,9 @@ class Preferences {
   static bool get thema => _preferences?.getBool('thema') ?? true;
   static set thema(bool value) => _preferences?.setBool('thema', value);
 
+  static bool get login => _preferences?.getBool('login') ?? false;
+  static set login(bool value) => _preferences?.setBool('login', value);
+
   static String get mapa => _preferences?.getString('mapa') ?? "";
   static set mapa(String value) => _preferences?.setString('mapa', value);
   static String get lada => _preferences?.getString('lada') ?? "";

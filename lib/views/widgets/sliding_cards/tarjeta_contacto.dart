@@ -65,14 +65,12 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                                   provider.contacto?.latitud ?? 0,
                                   provider.contacto?.longitud ?? 0),
                               toShortFormat: Preferences.psCodeExt),
-                          builder: (context, snapshot) => TextButton.icon(
+                          builder: (context, snapshot) => TextButton(
                               onLongPress: () async {
                                 await Clipboard.setData(
                                     ClipboardData(text: snapshot.data ?? "?"));
                                 showToast("Plus Code copiados");
                               },
-                              icon: Icon(LineIcons.mapMarked,
-                                  size: 20.sp, color: ThemaMain.primary),
                               style: ButtonStyle(
                                   minimumSize:
                                       WidgetStatePropertyAll(Size(0, 0)),
@@ -120,8 +118,8 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                                           }));
                                 }
                               },
-                              label: AutoSizeText(snapshot.data ?? "?",
-                                  style: TextStyle(fontSize: 16.sp),
+                              child: AutoSizeText(snapshot.data ?? "?",
+                                  style: TextStyle(fontSize: 16.sp), 
                                   minFontSize: 10,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis))),

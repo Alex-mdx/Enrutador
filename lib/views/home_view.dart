@@ -10,6 +10,7 @@ import 'package:enrutador/views/map_main.dart';
 import 'package:enrutador/views/widgets/map_widget/map_navigation.dart';
 import 'package:enrutador/views/widgets/map_widget/map_sliding.dart';
 import 'package:enrutador/views/widgets/search/search_widget.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slider_drawer/flutter_slider_drawer.dart';
@@ -172,6 +173,26 @@ class _HomeViewState extends State<HomeView> {
                                             fontWeight: FontWeight.bold)),
                                     Icon(Icons.perm_phone_msg,
                                         size: 20.sp, color: ThemaMain.pink)
+                                  ])))),
+                  GestureDetector(
+                      onTap: () async {
+                        await FirebaseAuth.instance.signOut();
+                        await Navigation.pushNamed(route: "loginState");
+                      },
+                      child: Card(
+                          child: Padding(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 1.w, vertical: 1.h),
+                              child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text("Cerrar",
+                                        style: TextStyle(
+                                            fontSize: 16.sp,
+                                            fontWeight: FontWeight.bold)),
+                                    Icon(Icons.logout,
+                                        size: 20.sp, color: ThemaMain.pink)
                                   ]))))
                 ])),
             child: Scaffold(
@@ -265,8 +286,7 @@ class Paginado extends StatefulWidget {
 }
 
 class PaginadoState extends State<Paginado> {
-  final LocationSettings locationSettings =
-      LocationSettings(accuracy: LocationAccuracy.high, distanceFilter: 100);
+  final LocationSettings locationSettings = Permisos.location();
   final AppLinks appLinks = AppLinks();
   @override
   void initState() {

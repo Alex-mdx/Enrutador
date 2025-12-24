@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:enrutador/utilities/main_provider.dart';
 import 'package:enrutador/views/home_view.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
@@ -6,7 +8,7 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:flutter/services.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_localizations/flutter_localizations.dart'; 
 import 'package:oktoast/oktoast.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
@@ -29,10 +31,11 @@ Future<void> main() async {
   HttpOverrides.global = MyHttpOverrides();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   final analitic = FirebaseAnalytics.instance;
-  await analitic.logEvent(
-      name: "abierto_bitch",
-      parameters: {"version": "1.0.0", "platform": "android"});
+  // await analitic.logEvent(
+  //     name: "abierto_bitch",
+  //     parameters: {"version": "1.0.0", "platform": "android"});
   FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
+  
   await Preferences.init();
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitDown, DeviceOrientation.portraitUp]).then((_) {
@@ -44,6 +47,7 @@ Future<void> main() async {
 
 class Main extends StatelessWidget {
   const Main({super.key});
+
   @override
   Widget build(BuildContext context) => Sizer(
       builder: (context, orientation, deviceType) => OKToast(
