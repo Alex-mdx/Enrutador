@@ -54,7 +54,7 @@ class Permisos {
           accuracy: LocationAccuracy.bestForNavigation,
           distanceFilter: 0,
           forceLocationManager: false,
-          intervalDuration: const Duration(milliseconds: 1000),
+          intervalDuration: const Duration(milliseconds: 350),
           foregroundNotificationConfig: const ForegroundNotificationConfig(
               notificationText: "Navegación en curso...",
               notificationTitle: "Servicio de Ubicación",

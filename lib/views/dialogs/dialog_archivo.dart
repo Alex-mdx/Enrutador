@@ -39,7 +39,7 @@ class _DialogArchivoState extends State<DialogArchivo> {
                 isGalleryImportAllowed: true,
                 noOfPages: 1,
                 iosScannerOptions:
-                    IosScannerOptions(jpgCompressionQuality: .9)));
+                    IosScannerOptions(jpgCompressionQuality: 1)));
             if (data?.isNotEmpty ?? false) {
               var archivoTemp = XFile(data!.first);
               var base = base64Encode(await archivoTemp.readAsBytes());
@@ -117,7 +117,7 @@ class _DialogArchivoState extends State<DialogArchivo> {
                                                           iosScannerOptions:
                                                               IosScannerOptions(
                                                                   jpgCompressionQuality:
-                                                                      .9)));
+                                                                      1)));
                                               if (data?.isNotEmpty ?? false) {
                                                 var archivoTemp =
                                                     XFile(data!.first);

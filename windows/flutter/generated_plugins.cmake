@@ -8,6 +8,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   firebase_auth
   firebase_core
   geolocator_windows
+  objectbox_flutter_libs
   pasteboard
   permission_handler_windows
   rive_common

@@ -2,13 +2,13 @@ import 'dart:async';
 
 import 'package:enrutador/utilities/main_provider.dart';
 import 'package:enrutador/views/home_view.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:flutter/services.dart';
-import 'package:flutter_localizations/flutter_localizations.dart'; 
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_map_tile_caching/flutter_map_tile_caching.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
@@ -17,6 +17,9 @@ import 'utilities/preferences.dart';
 import 'utilities/services/navigation_key.dart';
 import 'utilities/theme/theme_app.dart';
 import 'firebase_options.dart';
+
+import 'package:path/path.dart' as path;
+import 'package:path_provider/path_provider.dart';
 
 class MyHttpOverrides extends HttpOverrides {
   @override
@@ -30,12 +33,22 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   HttpOverrides.global = MyHttpOverrides();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  final analitic = FirebaseAnalytics.instance;
+  // final analitic = FirebaseAnalytics.instance;
   // await analitic.logEvent(
   //     name: "abierto_bitch",
   //     parameters: {"version": "1.0.0", "platform": "android"});
+  try {
+    await FMTCObjectBoxBackend().initialise(); // The default/built-in backend
+  } catch (error) {
+    var absPath = path.join(
+        (await getApplicationDocumentsDirectory()).absolute.path, 'fmtc');
+    debugPrint(absPath);
+    final dir = Directory(absPath);
+
+    await dir.delete(recursive: true);
+  }
   FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
-  
+
   await Preferences.init();
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitDown, DeviceOrientation.portraitUp]).then((_) {

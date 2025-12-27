@@ -485,18 +485,18 @@ packages:
     dependency: "direct main"
     description:
       name: firebase_crashlytics
-      sha256: bd4eadd620071ae48ef0e3617499be2a0ea4062d6d5c6fea6c1cec41ebbb2435
+      sha256: "8d52022ee6fdd224e92c042f297d1fd0ec277195c49f39fa61b8cc500a639f00"
       url: "https://pub.dev"
     source: hosted
-    version: "5.0.5"
+    version: "5.0.6"
   firebase_crashlytics_platform_interface:
     dependency: transitive
     description:
       name: firebase_crashlytics_platform_interface
-      sha256: a8ca502fe3aa48b4f0b9e6e3bc0019085a247b5d1214cd342a189457975662db
+      sha256: "97c6a97b35e3d3dafe38fb053a65086a1efb125022d292161405848527cc25a4"
       url: "https://pub.dev"
     source: hosted
-    version: "3.8.15"
+    version: "3.8.16"
   fixnum:
     dependency: transitive
     description:
@@ -505,6 +505,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.1"
+  flat_buffers:
+    dependency: transitive
+    description:
+      name: flat_buffers
+      sha256: "380bdcba5664a718bfd4ea20a45d39e13684f5318fcd8883066a55e21f37f4c3"
+      url: "https://pub.dev"
+    source: hosted
+    version: "23.5.26"
   flutter:
     dependency: "direct main"
     description: flutter
@@ -675,6 +683,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.0-dev.8"
+  flutter_map_tile_caching:
+    dependency: "direct main"
+    description:
+      name: flutter_map_tile_caching
+      sha256: "90e097223d8ab74425cf15b449a03adfa4d4c28406dc757e1c396aff0f9beba7"
+      url: "https://pub.dev"
+    source: hosted
+    version: "10.1.1"
   flutter_material_color_picker:
     dependency: "direct main"
     description:
@@ -929,10 +945,10 @@ packages:
     dependency: "direct main"
     description:
       name: image
-      sha256: "48c11d0943b93b6fb29103d956ff89aafeae48f6058a3939649be2093dcff0bf"
+      sha256: "492bd52f6c4fbb6ee41f781ff27765ce5f627910e1e0cbecfa3d9add5562604c"
       url: "https://pub.dev"
     source: hosted
-    version: "4.7.1"
+    version: "4.7.2"
   input_quantity:
     dependency: "direct main"
     description:
@@ -1149,6 +1165,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.2"
+  objectbox:
+    dependency: transitive
+    description:
+      name: objectbox
+      sha256: "3cc186749178a3556e1020c9082d0897d0f9ecbdefcc27320e65c5bc650f0e57"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.3.1"
+  objectbox_flutter_libs:
+    dependency: transitive
+    description:
+      name: objectbox_flutter_libs
+      sha256: cd754766e04229a4f51250f121813d9a3c1a74fc21cd68e48b3c6085cbcd6c85
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.3.1"
   oktoast:
     dependency: "direct main"
     description:
@@ -1409,10 +1441,10 @@ packages:
     dependency: "direct main"
     description:
       name: pro_image_editor
-      sha256: "90ac24b8d4bc0c8ea6df8438a6e389aae901dd8afa9ee436b334f4ddd0675ccd"
+      sha256: "36e8040cf851a2d80dccba49294244e9b96c4fe5d211783d39f3f6270ce81af2"
       url: "https://pub.dev"
     source: hosted
-    version: "11.15.0"
+    version: "11.15.2"
   proj4dart:
     dependency: transitive
     description:

@@ -1,4 +1,5 @@
 import 'package:dynamic_background/dynamic_background.dart';
+import 'package:enrutador/utilities/services/dialog_services.dart';
 import 'package:enrutador/utilities/theme/theme_color.dart';
 import 'package:enrutador/utilities/trans_fun.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -9,6 +10,8 @@ import 'package:line_icons/line_icons.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:rive_animated_icon/rive_animated_icon.dart';
 import 'package:sizer/sizer.dart';
+
+import '../utilities/theme/theme_app.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -26,9 +29,7 @@ class _LoginViewState extends State<LoginView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text('Login', style: TextStyle(fontSize: 18.sp)),
-        ),
+        appBar: AppBar(title: Text('Login', style: TextStyle(fontSize: 18.sp))),
         body: DynamicBg(
             painterData: ScrollerPainterData(
                 shape: ScrollerShape.circles,
@@ -53,41 +54,85 @@ class _LoginViewState extends State<LoginView> {
                                     decoration: InputDecoration(
                                         fillColor: ThemaMain.background,
                                         labelText: 'Correo Electronico'))),
-                            TextFormField(
-                                enabled: !carga,
-                                obscureText: show,
-                                controller: password,
-                                keyboardType: TextInputType.visiblePassword,
-                                decoration: InputDecoration(
-                                    fillColor: ThemaMain.background,
-                                    labelText: 'Password',
-                                    suffixIcon: IconButton(
-                                        onPressed: () =>
-                                            setState(() => show = !show),
-                                        icon: Icon(show
-                                            ? Icons.visibility_off
-                                            : Icons.visibility)))),
+                            Padding(
+                                padding: EdgeInsets.all(12.sp),
+                                child: TextFormField(
+                                    enabled: !carga,
+                                    obscureText: show,
+                                    controller: password,
+                                    keyboardType: TextInputType.visiblePassword,
+                                    decoration: InputDecoration(
+                                        fillColor: ThemaMain.background,
+                                        labelText: 'Password',
+                                        suffixIcon: IconButton(
+                                            onPressed: () =>
+                                                setState(() => show = !show),
+                                            icon: Icon(show
+                                                ? Icons.visibility_off
+                                                : Icons.visibility))))),
+                            Container(
+                                decoration: BoxDecoration(
+                                    color: ThemaMain.dialogbackground,
+                                    borderRadius:
+                                        BorderRadius.circular(borderRadius)),
+                                child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Checkbox.adaptive(
+                                          value: false, onChanged: (value) {}),
+                                      Text("Aceptar permisos y politica de uso",
+                                          style: TextStyle(
+                                              fontSize: 14.sp,
+                                              fontWeight: FontWeight.bold))
+                                    ])),
                             ElevatedButton.icon(
                                 onPressed: () async {
-                                  try {
-                                    setState(() => carga = true);
-                                    var result = await FirebaseAuth.instance
-                                        .signInWithEmailAndPassword(
-                                            email: email.text,
-                                            password: password.text);
-                                    debugPrint(result.toString());
-                                  } catch (e) {
-                                    setState(() => carga = false);
-                                    var tr = await TransFun.trad(e.toString());
-                                    showToast(tr);
+                                  UserCredential? user;
+                                  if (email.text.isNotEmpty &&
+                                      password.text.isNotEmpty) {
+                                    try {
+                                      setState(() => carga = true);
+                                      user = await FirebaseAuth.instance
+                                          .signInWithEmailAndPassword(
+                                              email: email.text,
+                                              password: password.text);
+                                      debugPrint("result: ${user.toString()}");
+                                      
+                                        setState(() => carga = false);
+                                    } catch (e) {
+                                      var tr =
+                                          await TransFun.trad(e.toString());
+                                      showToast(tr);
+                                      await Dialogs.showMorph(
+                                              title: "Crear cuenta",
+                                              description:
+                                                  "Se intento acceder con un usuario y contraseña inexistente\n¿Deseas crear una cuenta con estos datos?",
+                                              loadingTitle: "Creando",
+                                              onAcceptPressed: (context) async {
+                                                var result = await FirebaseAuth
+                                                    .instance
+                                                    .createUserWithEmailAndPassword(
+                                                        email: email.text,
+                                                        password:
+                                                            password.text);
+                                                debugPrint(
+                                                    "${result.toString()}");
+                                              })
+                                          .whenComplete(() =>
+                                              setState(() => carga = false));
+                                    }
+                                  } else {
+                                    showToast(
+                                        "Ingrese ${email.text.isEmpty ? "Correo electronico en su respectivo campo" : ""}${email.text.isEmpty && password.text.isEmpty ? " y " : ""}${password.text.isEmpty ? "Contraseña en su respectivo campo" : ""}");
                                   }
                                 },
-                                icon: !carga
+                                icon: carga
                                     ? RiveAnimatedIcon(
                                         riveIcon: RiveIcon.profile,
                                         color: ThemaMain.primary,
-                                        strokeWidth: 2.w,
-                                        onTap: () {})
+                                        strokeWidth: 6.w,
+                                        height: 6.w,
+                                        width: 6.w)
                                     : Icon(Icons.login,
                                         size: 22.sp, color: ThemaMain.primary),
                                 label: Text('Iniciar Sesion',
