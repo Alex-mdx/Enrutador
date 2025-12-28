@@ -175,6 +175,24 @@ class _HomeViewState extends State<HomeView> {
                                         size: 20.sp, color: ThemaMain.pink)
                                   ])))),
                   GestureDetector(
+                      onTap: () async =>
+                          await Navigation.pushNamed(route: "regionesMapa"),
+                      child: Card(
+                          child: Padding(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 1.w, vertical: 1.h),
+                              child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text("Regionar",
+                                        style: TextStyle(
+                                            fontSize: 16.sp,
+                                            fontWeight: FontWeight.bold)),
+                                    Icon(LineIcons.layerGroup,
+                                        size: 20.sp, color: ThemaMain.primary)
+                                  ])))),
+                  GestureDetector(
                       onTap: () async {
                         await FirebaseAuth.instance.signOut();
                         await Navigation.pushNamed(route: "loginState");

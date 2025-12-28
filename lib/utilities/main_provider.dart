@@ -156,6 +156,13 @@ class MainProvider with ChangeNotifier implements TickerProvider {
     notifyListeners();
   }
 
+  bool _descargarZona = false;
+  bool get descargarZona => _descargarZona;
+  set descargarZona(bool valor) {
+    _descargarZona = valor;
+    notifyListeners();
+  }
+
   //?Funciones
 
   Future<void> logeo() async {

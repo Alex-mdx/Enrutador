@@ -42,10 +42,12 @@ class _ViajeMapPageState extends State<MapMain>
                 onMapReady: () => provider.mapSeguir = true,
                 onPointerDown: (event, point) => provider.mapSeguir = false,
                 keepAlive: true,
-                onTap: (tapPosition, point) async => await MapFun.touch(
-                    provider: provider,
-                    lat: point.latitude,
-                    lng: point.longitude),
+                onTap: (tapPosition, point) async => provider.descargarZona
+                    ? null
+                    : await MapFun.touch(
+                        provider: provider,
+                        lat: point.latitude,
+                        lng: point.longitude),
                 initialZoom: 17,
                 minZoom: 8,
                 maxZoom: 20,
@@ -92,7 +94,7 @@ class _ViajeMapPageState extends State<MapMain>
                                 Icons.circle,
                                 color: Colors.white)),
                         markerDirection: MarkerDirection.heading)),
-                if (provider.contacto != null)
+                if (provider.contacto != null && !provider.descargarZona)
                   FutureBuilder(
                       future: ReferenciasController.getIdR(
                           idRContacto: provider.contacto!.id,
@@ -123,7 +125,7 @@ class _ViajeMapPageState extends State<MapMain>
                             ? SizedBox()
                             : PolylineLayer(polylines: polylines);
                       }),
-                if (provider.contacto != null)
+                if (provider.contacto != null && !provider.descargarZona)
                   FutureBuilder(
                       future: ReferenciasController.getIdPrin(
                           idContacto: provider.contacto!.id,
@@ -151,15 +153,16 @@ class _ViajeMapPageState extends State<MapMain>
                             ? SizedBox()
                             : PolylineLayer(polylines: polylines);
                       }),
-                FutureBuilder(
-                    future: ContactoController.getItems(),
-                    builder: (context, snapshot) => AnimatedMarkerLayer(
-                        alignment: Alignment.center,
-                        markers: !snapshot.hasData
-                            ? []
-                            : snapshot.data!
-                                .map((e) => MapFun.marcadores(provider, e))
-                                .toList())),
+                if (!provider.descargarZona)
+                  FutureBuilder(
+                      future: ContactoController.getItems(),
+                      builder: (context, snapshot) => AnimatedMarkerLayer(
+                          alignment: Alignment.center,
+                          markers: !snapshot.hasData
+                              ? []
+                              : snapshot.data!
+                                  .map((e) => MapFun.marcadores(provider, e))
+                                  .toList())),
                 AnimatedMarkerLayer(
                     alignment: Alignment.center, markers: [...provider.marker]),
                 MapCompass.cupertino(

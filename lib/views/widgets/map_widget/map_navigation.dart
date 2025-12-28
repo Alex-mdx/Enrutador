@@ -29,6 +29,11 @@ class _MapNavigationState extends State<MapNavigation> {
                     : 2.h),
         duration: Duration(seconds: 1),
         child: Column(spacing: .5.h, mainAxisSize: MainAxisSize.min, children: [
+          if (provider.descargarZona)
+            IconButton.filled(
+                onPressed: () {},
+                icon: Icon(Icons.save_rounded,
+                    size: 26.sp, color: ThemaMain.green)),
           if (provider.contacto != null)
             IconButton.filled(
                 iconSize: 24.sp,

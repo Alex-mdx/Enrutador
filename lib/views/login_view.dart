@@ -1,5 +1,6 @@
 import 'package:dynamic_background/dynamic_background.dart';
 import 'package:enrutador/utilities/services/dialog_services.dart';
+import 'package:enrutador/utilities/services/navigation_services.dart';
 import 'package:enrutador/utilities/theme/theme_color.dart';
 import 'package:enrutador/utilities/trans_fun.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -97,8 +98,13 @@ class _LoginViewState extends State<LoginView> {
                                               email: email.text,
                                               password: password.text);
                                       debugPrint("result: ${user.toString()}");
-                                      
-                                        setState(() => carga = false);
+                                      if (user.user!.emailVerified) {
+                                        await Navigation.pushNamed(route: "home");
+                                      } else {
+                                        await Navigation.pushNamed(route: "loginState");
+                                      }
+
+                                      setState(() => carga = false);
                                     } catch (e) {
                                       var tr =
                                           await TransFun.trad(e.toString());
@@ -115,8 +121,11 @@ class _LoginViewState extends State<LoginView> {
                                                         email: email.text,
                                                         password:
                                                             password.text);
-                                                debugPrint(
-                                                    "${result.toString()}");
+                                                debugPrint(result.toString());
+                                                if (result.user != null) {
+                                                  showToast(
+                                                      "Cuenta creada exitosamente");
+                                                }
                                               })
                                           .whenComplete(() =>
                                               setState(() => carga = false));

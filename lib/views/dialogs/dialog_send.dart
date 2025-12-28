@@ -35,6 +35,7 @@ class DialogSend extends StatefulWidget {
 
 class _DialogSendState extends State<DialogSend> {
   String? ladaFinal;
+  bool send = false;
   @override
   void initState() {
     ladaFinal = widget.lada;
@@ -45,85 +46,101 @@ class _DialogSendState extends State<DialogSend> {
   Widget build(BuildContext context) {
     TextEditingController controller =
         TextEditingController(text: widget.entradaTexto);
-    return Dialog(
-        child: Column(mainAxisSize: MainAxisSize.min, children: [
-      Padding(
-          padding: EdgeInsets.symmetric(horizontal: 1.w),
-          child: Text(widget.cabeza,
-              style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold))),
-      Divider(),
-      Padding(
-          padding: EdgeInsets.all(8.sp),
-          child: Column(children: [
-            if (widget.fecha != null)
-              Text(
-                  "Ultima modificacion: ${Textos.fechaYMDHMS(fecha: widget.fecha!)}",
-                  style:
-                      TextStyle(fontSize: 15.sp, fontStyle: FontStyle.italic)),
-            TextField(
-                textCapitalization: TextCapitalization.sentences,
-                minLines: 1,
-                maxLines: 5,
-                maxLength: widget.lenght,
-                controller: controller,
-                textInputAction: widget.input,
-                keyboardType: widget.tipoTeclado,
-                decoration: InputDecoration(
-                    prefixIcon: widget.lenght != null
-                        ? Preferences.lada == ""
-                            ? IconButton.filled(
-                                iconSize: 20.sp,
-                                onPressed: () => showDialog(
-                                    context: context,
-                                    builder: (context) => DialogLada(
-                                        ladaGet: (p0) => setState(() {
-                                              ladaFinal = p0;
-                                            }))),
-                                icon: Icon(Icons.numbers_rounded,
-                                    color: ThemaMain.primary))
-                            : TextButton(
-                                onPressed: () => showDialog(
-                                    context: context,
-                                    builder: (context) => DialogLada(
-                                        ladaGet: (p0) => setState(() {
-                                              ladaFinal = p0;
-                                            }))),
-                                child: Text(ladaFinal ?? Preferences.lada,
-                                    style: TextStyle(
-                                        fontSize: 15.sp,
-                                        fontWeight: FontWeight.bold)))
-                        : null,
-                    contentPadding:
-                        EdgeInsets.symmetric(horizontal: 2.w, vertical: 1.h))),
-            Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
-              ElevatedButton.icon(
-                  icon: Icon(Icons.close, size: 22.sp, color: ThemaMain.red),
-                  onPressed: () => Navigation.pop(),
-                  label: Text("Cerrar", style: TextStyle(fontSize: 16.sp))),
-              ElevatedButton.icon(
-                  icon: Icon(LineIcons.userCheck,
-                      size: 22.sp, color: ThemaMain.green),
-                  onPressed: () {
-                    if (controller.text != "" || controller.text.isEmpty) {
-                      if (widget.lenght != null) {
-                        if (controller.text.length == widget.lenght) {
-                          widget.fun(
-                              "${widget.lenght == null ? "" : ladaFinal ?? Preferences.lada}${controller.text}");
-                          Navigation.pop();
-                        } else {
-                          showToast(
-                              "Se necesitan 10 digitos para que sea un numero telefonico valido");
+    return PopScope(
+      canPop: !send,
+      child: Dialog(
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+        Padding(
+            padding: EdgeInsets.symmetric(horizontal: 1.w),
+            child: Text(widget.cabeza,
+                style:
+                    TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold))),
+        Divider(),
+        Padding(
+            padding: EdgeInsets.all(8.sp),
+            child: Column(children: [
+              if (widget.fecha != null)
+                Text(
+                    "Ultima modificacion: ${Textos.fechaYMDHMS(fecha: widget.fecha!)}",
+                    style: TextStyle(
+                        fontSize: 15.sp, fontStyle: FontStyle.italic)),
+              TextField(
+                  textCapitalization: TextCapitalization.sentences,
+                  minLines: 1,
+                  maxLines: 5,
+                  enabled: !send,
+                  maxLength: widget.lenght,
+                  controller: controller,
+                  textInputAction: widget.input,
+                  keyboardType: widget.tipoTeclado,
+                  decoration: InputDecoration(
+                      prefixIcon: widget.lenght != null
+                          ? Preferences.lada == "" && ladaFinal == null
+                              ? IconButton.filled(
+                                  iconSize: 20.sp,
+                                  onPressed: () => showDialog(
+                                      context: context,
+                                      builder: (context) => DialogLada(
+                                          ladaGet: (p0) => setState(() {
+                                                ladaFinal = p0;
+                                              }))),
+                                  icon: Icon(Icons.numbers_rounded,
+                                      color: ThemaMain.primary))
+                              : TextButton(
+                                  onPressed: () => showDialog(
+                                      context: context,
+                                      builder: (context) => DialogLada(
+                                          ladaGet: (p0) => setState(() {
+                                                ladaFinal = p0;
+                                              }))),
+                                  child: Text(ladaFinal ?? Preferences.lada,
+                                      style: TextStyle(
+                                          fontSize: 15.sp,
+                                          fontWeight: FontWeight.bold)))
+                          : null,
+                      contentPadding: EdgeInsets.symmetric(
+                          horizontal: 2.w, vertical: 1.h))),
+              Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
+                ElevatedButton.icon(
+                    icon: Icon(Icons.close,
+                        size: 22.sp,
+                        color: send ? ThemaMain.darkGrey : ThemaMain.red),
+                    onPressed: () => send ? null : Navigation.pop(),
+                    label: Text("Cerrar", style: TextStyle(fontSize: 16.sp))),
+                ElevatedButton.icon(
+                    icon: Icon(LineIcons.userCheck,
+                        size: 22.sp,
+                        color: send ? ThemaMain.darkGrey : ThemaMain.green),
+                    onPressed: () async {
+                      if (!send) {
+                        if (controller.text != "" || controller.text.isEmpty) {
+                          if (widget.lenght != null) {
+                            if (controller.text.length == widget.lenght) {
+                              setState(() {
+                                send = true;
+                              });
+                              await widget.fun(
+                                  "${widget.lenght == null ? "" : ladaFinal ?? Preferences.lada}${controller.text}");
+                              Navigation.pop();
+                            } else {
+                              showToast(
+                                  "Se necesitan 10 digitos para que sea un numero telefonico valido");
+                            }
+                          } else {
+                            setState(() {
+                              send = true;
+                            });
+                            await widget.fun(
+                                "${widget.lenght == null ? "" : ladaFinal ?? Preferences.lada}${controller.text}");
+                            Navigation.pop();
+                          }
                         }
-                      } else {
-                        widget.fun(
-                            "${widget.lenght == null ? "" : ladaFinal ?? Preferences.lada}${controller.text}");
-                        Navigation.pop();
                       }
-                    }
-                  },
-                  label: Text("Aceptar", style: TextStyle(fontSize: 16.sp)))
-            ])
-          ]))
-    ]));
+                    },
+                    label: Text("Aceptar", style: TextStyle(fontSize: 16.sp)))
+              ])
+            ]))
+      ])),
+    );
   }
 }
