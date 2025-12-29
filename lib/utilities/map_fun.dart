@@ -150,20 +150,19 @@ class MapFun {
         fotoReferenciaFecha: null,
         what3Words: null,
         nota: null);
-    provider.marker = [
-      AnimatedMarker(
-          width: 21.sp,
-          height: 21.sp,
-          rotate: true,
-          point: LatLng(double.parse(newlocation.latitude.toStringAsFixed(6)),
-              double.parse(newlocation.longitude.toStringAsFixed(6))),
-          builder: (context, animation) => InkWell(
-              onTap: () async {
-                provider.animaMap.centerOnPoint(
-                    LatLng(
-                        double.parse(newlocation.latitude.toStringAsFixed(6)),
-                        double.parse(newlocation.longitude.toStringAsFixed(6))),
-                    zoom: 18);
+    provider.marker = AnimatedMarker(
+        width: 21.sp,
+        height: 21.sp,
+        rotate: true,
+        point: LatLng(double.parse(newlocation.latitude.toStringAsFixed(6)),
+            double.parse(newlocation.longitude.toStringAsFixed(6))),
+        builder: (context, animation) => InkWell(
+            onTap: () async {
+              provider.animaMap.centerOnPoint(
+                  LatLng(double.parse(newlocation.latitude.toStringAsFixed(6)),
+                      double.parse(newlocation.longitude.toStringAsFixed(6))),
+                  zoom: 18);
+              if (!provider.descargarZona) {
                 provider.contacto = ContactoModelo(
                     id: null,
                     nombreCompleto: null,
@@ -190,15 +189,19 @@ class MapFun {
                     what3Words: null,
                     nota: null);
                 await provider.slide.open();
-              },
-              child: Stack(alignment: Alignment.center, children: [
-                Image.asset("assets/mark_point2.png"),
-                Padding(
-                    padding: EdgeInsets.only(bottom: 5.sp),
-                    child: Icon(
-                        size: 20.sp, Icons.add_circle, color: ThemaMain.red))
-              ])))
-    ];
+              }
+            },
+            child: Stack(alignment: Alignment.center, children: [
+              Image.asset("assets/mark_point2.png"),
+              Padding(
+                  padding: EdgeInsets.only(bottom: 5.sp),
+                  child: Icon(
+                      size: 20.sp,
+                      Icons.add_circle,
+                      color: provider.descargarZona
+                          ? ThemaMain.green
+                          : ThemaMain.red))
+            ])));
   }
 
   static AnimatedMarker marcadores(MainProvider provider, ContactoModelo e) {
@@ -230,6 +233,7 @@ class MapFun {
                 debugPrint("$err");
                 showToast("No se pudo obtener sus fotos, intente de nuevo");
               }
+
               await provider.slide.open();
             },
             child: bd.Badge(

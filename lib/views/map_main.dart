@@ -3,6 +3,7 @@ import 'package:enrutador/controllers/referencias_controller.dart';
 import 'package:enrutador/utilities/main_provider.dart';
 import 'package:enrutador/utilities/map_fun.dart';
 import 'package:enrutador/utilities/preferences.dart';
+import 'package:enrutador/utilities/services/dialog_services.dart';
 import 'package:enrutador/utilities/theme/theme_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -42,12 +43,10 @@ class _ViajeMapPageState extends State<MapMain>
                 onMapReady: () => provider.mapSeguir = true,
                 onPointerDown: (event, point) => provider.mapSeguir = false,
                 keepAlive: true,
-                onTap: (tapPosition, point) async => provider.descargarZona
-                    ? null
-                    : await MapFun.touch(
-                        provider: provider,
-                        lat: point.latitude,
-                        lng: point.longitude),
+                onTap: (tapPosition, point) async => await MapFun.touch(
+                    provider: provider,
+                    lat: point.latitude,
+                    lng: point.longitude),
                 initialZoom: 17,
                 minZoom: 8,
                 maxZoom: 20,
@@ -94,37 +93,38 @@ class _ViajeMapPageState extends State<MapMain>
                                 Icons.circle,
                                 color: Colors.white)),
                         markerDirection: MarkerDirection.heading)),
-                if (provider.contacto != null && !provider.descargarZona)
-                  FutureBuilder(
-                      future: ReferenciasController.getIdR(
-                          idRContacto: provider.contacto!.id,
-                          lat: provider.contacto!.latitud,
-                          lng: provider.contacto!.longitud),
-                      builder: (context, snapshot) {
-                        final polylines = snapshot.data
-                                ?.map((e) => Polyline(
-                                        points: [
-                                          LatLng(
-                                              e.contactoIdLat, e.contactoIdLng),
-                                          LatLng(
-                                              e.contactoIdRLat ??
-                                                  provider.contacto!.latitud,
-                                              e.contactoIdRLng ??
-                                                  provider.contacto!.longitud)
-                                        ],
-                                        borderColor: Colors.black,
-                                        borderStrokeWidth: .4.w,
-                                        color: ThemaMain.primary,
-                                        strokeCap: StrokeCap.round,
-                                        strokeWidth: 1.w,
-                                        pattern: StrokePattern.dotted(
-                                            spacingFactor: 6.sp)))
-                                .toList() ??
-                            [Polyline(points: [])];
-                        return (polylines.firstOrNull?.points.isEmpty ?? true)
-                            ? SizedBox()
-                            : PolylineLayer(polylines: polylines);
-                      }),
+                if (provider.descargarZona)
+                  if (provider.contacto != null && !provider.descargarZona)
+                    FutureBuilder(
+                        future: ReferenciasController.getIdR(
+                            idRContacto: provider.contacto!.id,
+                            lat: provider.contacto!.latitud,
+                            lng: provider.contacto!.longitud),
+                        builder: (context, snapshot) {
+                          final polylines = snapshot.data
+                                  ?.map((e) => Polyline(
+                                          points: [
+                                            LatLng(e.contactoIdLat,
+                                                e.contactoIdLng),
+                                            LatLng(
+                                                e.contactoIdRLat ??
+                                                    provider.contacto!.latitud,
+                                                e.contactoIdRLng ??
+                                                    provider.contacto!.longitud)
+                                          ],
+                                          borderColor: Colors.black,
+                                          borderStrokeWidth: .4.w,
+                                          color: ThemaMain.primary,
+                                          strokeCap: StrokeCap.round,
+                                          strokeWidth: 1.w,
+                                          pattern: StrokePattern.dotted(
+                                              spacingFactor: 6.sp)))
+                                  .toList() ??
+                              [Polyline(points: [])];
+                          return (polylines.firstOrNull?.points.isEmpty ?? true)
+                              ? SizedBox()
+                              : PolylineLayer(polylines: polylines);
+                        }),
                 if (provider.contacto != null && !provider.descargarZona)
                   FutureBuilder(
                       future: ReferenciasController.getIdPrin(
@@ -163,8 +163,57 @@ class _ViajeMapPageState extends State<MapMain>
                               : snapshot.data!
                                   .map((e) => MapFun.marcadores(provider, e))
                                   .toList())),
+                if (provider.marker != null)
+                  AnimatedMarkerLayer(
+                      alignment: Alignment.center, markers: [provider.marker!]),
                 AnimatedMarkerLayer(
-                    alignment: Alignment.center, markers: [...provider.marker]),
+                    markers: provider.zona
+                        .map((e) => AnimatedMarker(
+                            point: e,
+                            builder: (context, marker) => InkWell(
+                                onLongPress: () => Dialogs.showMorph(
+                                    title: "Eliminar punto",
+                                    description:
+                                        "Deseas eliminare este punto de la zona\nSe eliminar los puntos creados luego de este",
+                                    loadingTitle: "Eliminando",
+                                    onAcceptPressed: (context) async {
+                                      var indexed = provider.zona.indexOf(e);
+                                      for (var i = indexed;
+                                          i < provider.zona.length;
+                                          i++) {
+                                        provider.zona.removeAt(i);
+                                      }
+                                    }),
+                                onTap: () async {
+                                  await provider.animaMap
+                                      .centerOnPoint(e, zoom: 18);
+                                },
+                                child: Container(
+                                    width: 6.w,
+                                    height: 6.w,
+                                    decoration: BoxDecoration(
+                                        border: Border.all(
+                                            strokeAlign:
+                                                BorderSide.strokeAlignInside,
+                                            color: ThemaMain.darkGrey,
+                                            width: .5.w),
+                                        color: ThemaMain.green,
+                                        shape: BoxShape.circle)))))
+                        .toList()),
+                if (provider.descargarZona && provider.zona.isNotEmpty)
+                  PolylineLayer(polylines: [
+                    Polyline(
+                        points: [
+                          ...provider.zona.map((e) => e),
+                          if (provider.zona.length == 4) provider.zona.first
+                        ],
+                        borderColor: Colors.black,
+                        borderStrokeWidth: .4.w,
+                        color: ThemaMain.green,
+                        strokeCap: StrokeCap.butt,
+                        strokeWidth: 1.w,
+                        pattern: StrokePattern.dotted(spacingFactor: 6.sp))
+                  ]),
                 MapCompass.cupertino(
                     padding: EdgeInsets.only(top: 12.h, right: 4.w),
                     hideIfRotatedNorth: false)

@@ -10,6 +10,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter_map_animations/flutter_map_animations.dart';
 import 'package:flutter_slider_drawer/flutter_slider_drawer.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 import '../models/referencia_model.dart';
@@ -86,9 +87,9 @@ class MainProvider with ChangeNotifier implements TickerProvider {
     notifyListeners();
   }
 
-  List<AnimatedMarker> _marker = [];
-  List<AnimatedMarker> get marker => _marker;
-  set marker(List<AnimatedMarker> valor) {
+  AnimatedMarker? _marker;
+  AnimatedMarker? get marker => _marker;
+  set marker(AnimatedMarker? valor) {
     _marker = valor;
     notifyListeners();
   }
@@ -162,6 +163,14 @@ class MainProvider with ChangeNotifier implements TickerProvider {
     _descargarZona = valor;
     notifyListeners();
   }
+
+  List<LatLng> _zona = [];
+  List<LatLng> get zona => _zona;
+  set zona(List<LatLng> valor) {
+    _zona = valor;
+    notifyListeners();
+  }
+
 
   //?Funciones
 

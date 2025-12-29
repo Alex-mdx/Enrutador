@@ -245,7 +245,7 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                                 if (provider.contacto?.id == null) {
                                   await ContactoController.insert(
                                       provider.contacto!);
-                                  provider.marker.clear();
+                                  provider.marker = null;
                                   provider.contacto =
                                       await ContactoController.getItem(
                                           lat: provider.contacto!.latitud,

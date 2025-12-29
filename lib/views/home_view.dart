@@ -1,7 +1,4 @@
 import 'dart:async';
-import 'package:auto_size_text/auto_size_text.dart';
-import 'package:avatar_glow/avatar_glow.dart';
-import 'package:enrutador/controllers/contacto_controller.dart';
 import 'package:enrutador/utilities/main_provider.dart';
 import 'package:enrutador/utilities/permisos.dart';
 import 'package:enrutador/utilities/services/navigation_services.dart';
@@ -19,13 +16,11 @@ import 'package:internet_connection_checker_plus/internet_connection_checker_plu
 import 'package:latlong2/latlong.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:open_location_code/open_location_code.dart';
-import 'package:phone_state/phone_state.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 import 'package:app_links/app_links.dart';
 import '../utilities/uri_fun.dart';
 import 'widgets/map_widget/map_alternative.dart';
-import 'package:rive_animated_icon/rive_animated_icon.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -222,10 +217,7 @@ class _HomeViewState extends State<HomeView> {
                         icon: Icon(Icons.menu,
                             color: ThemaMain.darkBlue, size: 20.sp)),
                     title: Text("Enrutador", style: TextStyle(fontSize: 18.sp)),
-                    toolbarHeight: 6.h,
-                    actions: [
-                      OverflowBar(spacing: 1.w, children: [PhoneStateWidget()])
-                    ]),
+                    toolbarHeight: 6.h),
                 body: IgnorePointer(
                     ignoring:
                         provider.sliderDrawerKey.currentState?.isDrawerOpen ??
@@ -238,60 +230,6 @@ class _HomeViewState extends State<HomeView> {
                             ? .25
                             : 1,
                         child: Paginado(provider: provider))))));
-  }
-}
-
-class PhoneStateWidget extends StatelessWidget {
-  const PhoneStateWidget({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return StreamBuilder<PhoneState>(
-        stream: PhoneState.stream,
-        builder: (context, snapshot) => AnimatedOpacity(
-            opacity:
-                snapshot.data?.status == PhoneStateStatus.CALL_INCOMING ? 1 : 0,
-            duration: Durations.medium3,
-            child: Card(
-                child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 1.w, vertical: 0),
-                    child: Row(mainAxisSize: MainAxisSize.min, children: [
-                      AvatarGlow(
-                          glowCount: 2,
-                          glowColor: ThemaMain.primary,
-                          duration: Duration(seconds: 5),
-                          glowRadiusFactor: .5.w,
-                          startDelay: Duration(seconds: 2),
-                          child: RiveAnimatedIcon(
-                              riveIcon: RiveIcon.call,
-                              strokeWidth: 2.h,
-                              height: 4.h,
-                              width: 4.h)),
-                      Column(mainAxisSize: MainAxisSize.min, children: [
-                        SizedBox(
-                            width: 30.w,
-                            child: FutureBuilder(
-                                future: ContactoController.buscar(
-                                    (snapshot.data?.number ?? "-1")
-                                        .replaceAll(" ", ""),
-                                    2),
-                                builder: (context, contacto) => AutoSizeText(
-                                    contacto.hasData
-                                        ? contacto.data!
-                                                .map((e) => e.nombreCompleto)
-                                                .toList()
-                                                .firstOrNull ??
-                                            "Desconocido"
-                                        : "Llamando...\nDesconocido",
-                                    maxLines: 2,
-                                    minFontSize: 14,
-                                    textAlign: TextAlign.end,
-                                    overflow: TextOverflow.fade,
-                                    style: TextStyle(
-                                        fontSize: 16.sp,
-                                        fontWeight: FontWeight.bold))))
-                      ])
-                    ])))));
   }
 }
 
@@ -354,7 +292,8 @@ class PaginadoState extends State<Paginado> {
       MapMain(),
       Align(alignment: Alignment.bottomRight, child: MapNavigation()),
       Align(alignment: Alignment.bottomLeft, child: MapAlternative()),
-      Align(alignment: Alignment.topLeft, child: SearchWidget()),
+      if (!widget.provider.descargarZona)
+        Align(alignment: Alignment.topLeft, child: SearchWidget()),
       MapSliding()
     ]);
   }
