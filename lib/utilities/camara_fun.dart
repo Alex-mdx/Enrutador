@@ -13,7 +13,7 @@ class CamaraFun {
   static Future<List<XFile>> getGalleria(
       BuildContext context, String? nombre) async {
     var status = await [Permission.camera, Permission.photos].request();
-    debugPrint("${status}");
+    debugPrint("$status");
     return await AdvancedMediaPicker.openPicker(
         context: context,
         isNeedVideoCamera: false,

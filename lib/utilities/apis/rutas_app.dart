@@ -1,3 +1,4 @@
+import 'package:enrutador/utilities/preferences.dart';
 import 'package:enrutador/views/contactos_view.dart';
 import 'package:enrutador/views/estado_view.dart';
 import 'package:enrutador/views/lada_view.dart';
@@ -14,7 +15,7 @@ import '../../views/roles_view.dart';
 
 class AppRoutes {
   static String initialRoute =
-      (!kDebugMode && FirebaseAuth.instance.currentUser?.emailVerified == false)
+      (kDebugMode && FirebaseAuth.instance.currentUser?.emailVerified == false && !Preferences.login)
           ? 'account'
           : kDebugMode && FirebaseAuth.instance.currentUser == null
               ? 'loginState'
@@ -32,7 +33,7 @@ class AppRoutes {
     account: (_) => const AccountView(),
     regionesMapa: (_) => const RegionesMapa()
   };
-  static get routes => _routes;
+  static Map<String, Widget Function(BuildContext)> get routes => _routes;
   static String get home => 'home';
   static String get tipos => 'tipos';
   static String get contacto => 'contactos';

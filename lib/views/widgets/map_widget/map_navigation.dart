@@ -241,7 +241,7 @@ class _MapNavigationState extends State<MapNavigation> {
       if (context.mounted) {
         showToast('Error al iniciar descarga: $e');
       }
-      print('Error en _iniciarDescargaRegion: $e');
+      debugPrint('Error en _iniciarDescargaRegion: $e');
     }
   }
 
@@ -309,7 +309,7 @@ class _MapNavigationState extends State<MapNavigation> {
                                     : null,
                                 strokeWidth: 8,
                                 backgroundColor:
-                                    ThemaMain.background.withOpacity(0.3),
+                                    ThemaMain.background.withAlpha(128),
                                 valueColor: AlwaysStoppedAnimation<Color>(
                                     descargaCompleta
                                         ? ThemaMain.green
@@ -326,7 +326,7 @@ class _MapNavigationState extends State<MapNavigation> {
                       Container(
                           padding: EdgeInsets.all(2.w),
                           decoration: BoxDecoration(
-                              color: ThemaMain.background.withOpacity(0.2),
+                              color: ThemaMain.background.withAlpha(90),
                               borderRadius:
                                   BorderRadius.circular(borderRadius / 2)),
                           child: Column(children: [
@@ -366,7 +366,7 @@ class _MapNavigationState extends State<MapNavigation> {
     return Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
       Text(label,
           style: TextStyle(
-              color: ThemaMain.white.withOpacity(0.7), fontSize: 12.sp)),
+              color: ThemaMain.white.withAlpha(178), fontSize: 12.sp)),
       Text(value,
           style: TextStyle(
               color: color ?? ThemaMain.white,

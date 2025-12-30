@@ -5,7 +5,7 @@ import 'package:image/image.dart' as img;
 import 'package:line_icons/line_icons.dart';
 
 class Parser {
-  static int? toInt(var variableBool) {
+  static int? toInt(dynamic variableBool) {
     if (variableBool != null) {
       int parseo = variableBool == true
           ? 1

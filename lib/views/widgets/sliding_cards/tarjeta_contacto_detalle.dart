@@ -8,7 +8,6 @@ import 'package:enrutador/views/dialogs/dialogs_comunicar.dart';
 import 'package:enrutador/views/dialogs/dialogs_estado_funcion.dart';
 import 'package:enrutador/views/widgets/chip_referencia.dart';
 import 'package:enrutador/views/widgets/sliding_cards/tarjeta_contacto_foto.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:latlong2/latlong.dart';
