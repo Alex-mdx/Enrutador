@@ -113,10 +113,10 @@ class _ViajeMapPageState extends State<MapMain>
                                                     provider.contacto!.longitud)
                                           ],
                                           borderColor: Colors.black,
-                                          borderStrokeWidth: .4.w,
+                                          borderStrokeWidth: .3.w,
                                           color: ThemaMain.primary,
                                           strokeCap: StrokeCap.round,
-                                          strokeWidth: 1.w,
+                                          strokeWidth: .8.w,
                                           pattern: StrokePattern.dotted(
                                               spacingFactor: 6.sp)))
                                   .toList() ??
@@ -144,9 +144,9 @@ class _ViajeMapPageState extends State<MapMain>
                                                   provider.contacto!.longitud)
                                         ],
                                         borderColor: Colors.black,
-                                        borderStrokeWidth: .4.w,
+                                        borderStrokeWidth: .3.w,
                                         color: ThemaMain.green,
-                                        strokeWidth: .8.w))
+                                        strokeWidth: .6.w))
                                 .toList() ??
                             [Polyline(points: [])];
                         return (polylines.firstOrNull?.points.isEmpty ?? true)

@@ -9,6 +9,7 @@ import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_map_tile_caching/flutter_map_tile_caching.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
@@ -48,7 +49,8 @@ Future<void> main() async {
     await dir.delete(recursive: true);
   }
   FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
-
+  await GoogleSignIn.instance
+      .initialize(serverClientId: Firebase.app().options.androidClientId);
   await Preferences.init();
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitDown, DeviceOrientation.portraitUp]).then((_) {

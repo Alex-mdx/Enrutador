@@ -63,7 +63,7 @@ android {
     }
 
     buildTypes {
-        getByName("release") { // Usamos getByName("release") si no se usa la sintaxis de bloque
+        getByName("release") {
             isShrinkResources = true
             isMinifyEnabled = true
             
@@ -71,7 +71,7 @@ android {
                 getDefaultProguardFile("proguard-android.txt"),
                 "proguard-rules.pro"  
             )
-            signingConfig = signingConfigs.getByName("release") // ⬅️ ¡CORREGIDO!
+            signingConfig = signingConfigs.getByName("release")
         }
     }
 }
@@ -79,7 +79,6 @@ android {
 
 dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
-    implementation(platform("com.google.firebase:firebase-bom:34.6.0"))
     implementation("com.google.firebase:firebase-crashlytics")
     implementation("com.google.firebase:firebase-analytics")
 

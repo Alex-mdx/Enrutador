@@ -20,7 +20,7 @@ class UsuarioModel {
       required this.adminTipo,
       required this.status,
       required this.creacion,
-      required this.actualizacion});
+      this.actualizacion});
 
   UsuarioModel copyWith(
           {int? id,
@@ -52,7 +52,8 @@ class UsuarioModel {
       adminTipo: json["admin_tipo"],
       status: Parser.toInt(json["status"]),
       creacion: DateTime.tryParse(json["creacion"]),
-      actualizacion: DateTime.tryParse(json["actualizacion"]));
+      actualizacion: DateTime.tryParse(json["actualizacion"]) ??
+          DateTime.now());
 
   Map<String, dynamic> toJson() => {
         "id": id,

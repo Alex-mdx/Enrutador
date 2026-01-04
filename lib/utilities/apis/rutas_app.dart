@@ -1,4 +1,3 @@
-import 'package:enrutador/utilities/preferences.dart';
 import 'package:enrutador/views/contactos_view.dart';
 import 'package:enrutador/views/estado_view.dart';
 import 'package:enrutador/views/lada_view.dart';
@@ -15,7 +14,7 @@ import '../../views/roles_view.dart';
 
 class AppRoutes {
   static String initialRoute =
-      (kDebugMode && FirebaseAuth.instance.currentUser?.emailVerified == false && !Preferences.login)
+      (kDebugMode && FirebaseAuth.instance.currentUser?.emailVerified == true)
           ? 'account'
           : kDebugMode && FirebaseAuth.instance.currentUser == null
               ? 'loginState'
