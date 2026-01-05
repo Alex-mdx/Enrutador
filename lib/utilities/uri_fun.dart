@@ -41,7 +41,7 @@ class UriFun {
         // Paso 3: Parsear JSON
         await _parseJsonSafe(content, provider);
       } catch (e) {
-        debugPrint('❌ Error seguro: $e');
+        debugPrint('X Error seguro: $e');
       }
     }
   }
@@ -72,93 +72,92 @@ class UriFun {
     try {
       if (!provider.cargaDatos) {
         provider.cargaDatos = true;
-        debugPrint("intentando mostrar datos");
         Map<String, dynamic> datas = jsonDecode(content.toString());
-        debugPrint("contenido parseado $datas");
-        debugPrint(datas.keys.single);
-        switch (datas.keys.firstOrNull) {
-          case "contactos":
-            List<dynamic> contactos = datas["contactos"];
-            provider.cargaLenght = contactos.length;
-            for (var contacto in contactos) {
-              var model = ContactoModelo.fromJson(contacto);
-              var datamodel = await ContactoController.getItem(
-                  lat: model.latitud, lng: model.longitud);
-              var pc = PlusCodeFun.psCODE(model.latitud, model.longitud);
-              var newlocation = PlusCodeFun.truncPlusCode(pc);
-              debugPrint("result: ${model.toJson()}");
-              if (datamodel != null) {
-                debugPrint("actualizar");
-                var newPlus = model;
-                await ContactoController.update(newPlus);
-              } else {
-                var newPlus = model.copyWith(
-                    latitud:
-                        double.parse(newlocation.latitude.toStringAsFixed(6)),
-                    longitud:
-                        double.parse(newlocation.longitude.toStringAsFixed(6)));
-                debugPrint("nuevo");
-                await ContactoController.insert(newPlus);
-              }
+        for (var clave in datas.keys) {
+          switch (clave) {
+            case "contactos":
+              List<dynamic> contactos = datas["contactos"];
+              provider.cargaLenght = contactos.length;
+              for (var contacto in contactos) {
+                var model = ContactoModelo.fromJson(contacto);
+                var datamodel = await ContactoController.getItem(
+                    lat: model.latitud, lng: model.longitud);
+                var pc = PlusCodeFun.psCODE(model.latitud, model.longitud);
+                var newlocation = PlusCodeFun.truncPlusCode(pc);
+                debugPrint("result: ${model.toJson()}");
+                if (datamodel != null) {
+                  debugPrint("actualizar");
+                  var newPlus = model;
+                  await ContactoController.update(newPlus);
+                } else {
+                  var newPlus = model.copyWith(
+                      latitud:
+                          double.parse(newlocation.latitude.toStringAsFixed(6)),
+                      longitud: double.parse(
+                          newlocation.longitude.toStringAsFixed(6)));
+                  debugPrint("nuevo");
+                  await ContactoController.insert(newPlus);
+                }
 
-              provider.cargaProgress++;
-            }
-            showToast("Contactos guardados");
-            break;
-          case "tipos":
-            List<dynamic> tipos = datas["tipos"];
-            provider.cargaLenght = tipos.length;
-            for (var tipo in tipos) {
-              var model = TiposModelo.fromJson(tipo);
-              var datamodel = await TipoController.getItem(data: model.id!);
-              if (datamodel != null) {
-                await TipoController.update(model);
-              } else {
-                await TipoController.insert(model);
+                provider.cargaProgress++;
               }
+              showToast("Contactos guardados");
+              break;
+            case "tipos":
+              List<dynamic> tipos = datas["tipos"];
+              provider.cargaLenght = tipos.length;
+              for (var tipo in tipos) {
+                var model = TiposModelo.fromJson(tipo);
+                var datamodel = await TipoController.getItem(data: model.id!);
+                if (datamodel != null) {
+                  await TipoController.update(model);
+                } else {
+                  await TipoController.insert(model);
+                }
 
-              provider.cargaProgress++;
-            }
-            provider.tipos = await TipoController.getItems();
-            showToast("Tipos guardados");
-            break;
-          case "estados":
-            List<dynamic> estados = datas["estados"];
-            provider.cargaLenght = estados.length;
-            for (var tipo in estados) {
-              var model = EstadoModel.fromJson(tipo);
-              var datamodel = await EstadoController.getItem(data: model.id!);
-              if (datamodel != null) {
-                await EstadoController.update(model);
-              } else {
-                await EstadoController.insert(model);
+                provider.cargaProgress++;
               }
+              provider.tipos = await TipoController.getItems();
+              showToast("Tipos guardados");
+              break;
+            case "estados":
+              List<dynamic> estados = datas["estados"];
+              provider.cargaLenght = estados.length;
+              for (var tipo in estados) {
+                var model = EstadoModel.fromJson(tipo);
+                var datamodel = await EstadoController.getItem(data: model.id!);
+                if (datamodel != null) {
+                  await EstadoController.update(model);
+                } else {
+                  await EstadoController.insert(model);
+                }
 
-              provider.cargaProgress++;
-            }
-            provider.estados = await EstadoController.getItems();
-            showToast("Estados guardados");
-            break;
-          case "roles":
-            List<dynamic> roles = datas["roles"];
-            provider.cargaLenght = roles.length;
-            for (var rol in roles) {
-              var model = RolesModel.fromJson(rol);
-              var datamodel = await RolesController.getId(model.id!);
-              if (datamodel != null) {
-                await RolesController.update(model);
-              } else {
-                await RolesController.insert(model);
+                provider.cargaProgress++;
               }
+              provider.estados = await EstadoController.getItems();
+              showToast("Estados guardados");
+              break;
+            case "roles":
+              List<dynamic> roles = datas["roles"];
+              provider.cargaLenght = roles.length;
+              for (var rol in roles) {
+                var model = RolesModel.fromJson(rol);
+                var datamodel = await RolesController.getId(model.id!);
+                if (datamodel != null) {
+                  await RolesController.update(model);
+                } else {
+                  await RolesController.insert(model);
+                }
 
-              provider.cargaProgress++;
-            }
-            provider.estados = await EstadoController.getItems();
-            showToast("Estados guardados");
-            break;
-          default:
-            showToast("No se detecto el tipo de dato a mostrar");
-            break;
+                provider.cargaProgress++;
+              }
+              provider.estados = await EstadoController.getItems();
+              showToast("Roles guardados");
+              break;
+            default:
+              showToast("No se detecto el tipo de dato a mostrar");
+              break;
+          }
         }
         provider.cargaDatos = false;
         provider.cargaLenght = 0;

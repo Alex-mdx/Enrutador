@@ -7,6 +7,8 @@ import 'package:enrutador/utilities/textos.dart';
 import 'package:enrutador/views/widgets/visualizador_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:badges/badges.dart' as bd;
+import 'package:line_icons/line_icons.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:sizer/sizer.dart';
 import 'package:cunning_document_scanner/cunning_document_scanner.dart';
@@ -24,6 +26,21 @@ class DialogArchivo extends StatefulWidget {
 }
 
 class _DialogArchivoState extends State<DialogArchivo> {
+  bool carga = false;
+  List<ArchivoModel> archivos = [];
+  @override
+  void initState() {
+    super.initState();
+    init();
+  }
+
+  Future<void> init() async {
+    setState(() => carga = true);
+    archivos =
+        await ArchivoController.getAllByContactoId(widget.contacto.id ?? -1);
+    setState(() => carga = false);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -48,6 +65,7 @@ class _DialogArchivoState extends State<DialogArchivo> {
                   archivo: base,
                   contactoId: widget.contacto.id ?? -1);
               await ArchivoController.insert(archivo);
+              await init();
               setState(() {});
             }
           },
@@ -58,93 +76,82 @@ class _DialogArchivoState extends State<DialogArchivo> {
           padding: const EdgeInsets.all(8.0),
           child: Column(children: [
             Divider(),
-            FutureBuilder(
-                future: ArchivoController.getAllByContactoId(
-                    widget.contacto.id ?? -1),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else if (snapshot.hasError) {
-                    return Center(
-                        child: Text(
-                            'Error al cargar archivos: ${snapshot.error}'));
-                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return const Center(
-                        child: Text(
-                            'No hay archivos adjuntos para este contacto.'));
-                  } else {
-                    final List<ArchivoModel> archivos = snapshot.data!;
-                    return Scrollbar(
-                        child: SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            child: Row(
-                                mainAxisSize: MainAxisSize.max,
-                                spacing: .5.w,
-                                children: [
-                                  for (var archivo in archivos)
-                                    bd.Badge(
-                                        onTap: () async => Dialogs.showMorph(
-                                            title: "Eliminar archivo",
-                                            description:
-                                                "¿Estas seguro de eliminar el archivo?",
-                                            loadingTitle: "Eliminando archivo",
-                                            onAcceptPressed: (context) async {
-                                              await ArchivoController.delete(
-                                                  archivo.id ?? -1);
-                                            }),
-                                        badgeContent: Icon(Icons.delete,
-                                            size: 15.sp,
-                                            color: ThemaMain.dialogbackground),
-                                        badgeStyle: bd.BadgeStyle(
-                                            badgeColor: ThemaMain.red),
-                                        child: GaleriaWidget(
-                                            image64: archivo.archivo,
-                                            ontap: () => showDialog(
-                                                context: context,
-                                                builder: (context) =>
-                                                    VisualizadorWidget(
-                                                        image64:
-                                                            archivo.archivo,
-                                                        carrusel:
-                                                            "Fecha Creacion: ${Textos.fechaYMDHMS(fecha: archivo.actualizacion!)}")),
-                                            onDoubleTap: () async {
-                                              var data =
-                                                  (await CunningDocumentScanner
-                                                      .getPictures(
-                                                          isGalleryImportAllowed:
-                                                              true,
-                                                          noOfPages: 1,
-                                                          iosScannerOptions:
-                                                              IosScannerOptions(
-                                                                  jpgCompressionQuality:
-                                                                      1)));
-                                              if (data?.isNotEmpty ?? false) {
-                                                var archivoTemp =
-                                                    XFile(data!.first);
-                                                var base = base64Encode(
-                                                    await archivoTemp
-                                                        .readAsBytes());
-                                                ArchivoModel archivoNew =
-                                                    archivo.copyWith(
-                                                        archivo: base,
-                                                        actualizacion:
-                                                            DateTime.now());
-                                                ArchivoModel(
-                                                    nombre: "test",
-                                                    archivo: base,
-                                                    contactoId:
-                                                        widget.contacto.id ??
-                                                            -1);
-                                                await ArchivoController.update(
-                                                    archivoNew);
-                                                setState(() {});
-                                              }
-                                            },
-                                            compartir: false,
-                                            minFit: 16.w))
-                                ])));
-                  }
-                })
+            if (carga)
+              Center(
+                  child: LoadingAnimationWidget.progressiveDots(
+                      color: ThemaMain.primary, size: 24.sp))
+            else if (archivos.isEmpty)
+              Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
+                Icon(LineIcons.alternateFileAlt,
+                    size: 22.sp, color: ThemaMain.pink),
+                Text('No hay archivos adjuntos para este contacto',
+                    style:
+                        TextStyle(fontSize: 15.sp, fontStyle: FontStyle.italic))
+              ])
+            else
+              Scrollbar(
+                  child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                          mainAxisSize: MainAxisSize.max,
+                          spacing: .5.w,
+                          children: [
+                            for (var archivo in archivos)
+                              bd.Badge(
+                                  onTap: () async => Dialogs.showMorph(
+                                      title: "Eliminar archivo",
+                                      description:
+                                          "¿Estas seguro de eliminar el archivo?",
+                                      loadingTitle: "Eliminando archivo",
+                                      onAcceptPressed: (context) async {
+                                        await ArchivoController.delete(
+                                            archivo.id ?? -1);
+                                        await init();
+                                      }),
+                                  badgeContent: Icon(Icons.delete,
+                                      size: 15.sp,
+                                      color: ThemaMain.dialogbackground),
+                                  badgeStyle:
+                                      bd.BadgeStyle(badgeColor: ThemaMain.red),
+                                  child: GaleriaWidget(
+                                      image64: archivo.archivo,
+                                      ontap: () => showDialog(
+                                          context: context,
+                                          builder: (context) => VisualizadorWidget(
+                                              image64: archivo.archivo,
+                                              carrusel:
+                                                  "Fecha Creacion: ${Textos.fechaYMDHMS(fecha: archivo.actualizacion!)}")),
+                                      onDoubleTap: () async {
+                                        var data = (await CunningDocumentScanner
+                                            .getPictures(
+                                                isGalleryImportAllowed: true,
+                                                noOfPages: 1,
+                                                iosScannerOptions:
+                                                    IosScannerOptions(
+                                                        jpgCompressionQuality:
+                                                            1)));
+                                        if (data?.isNotEmpty ?? false) {
+                                          var archivoTemp = XFile(data!.first);
+                                          var base = base64Encode(
+                                              await archivoTemp.readAsBytes());
+                                          ArchivoModel archivoNew =
+                                              archivo.copyWith(
+                                                  archivo: base,
+                                                  actualizacion:
+                                                      DateTime.now());
+                                          ArchivoModel(
+                                              nombre: "test",
+                                              archivo: base,
+                                              contactoId:
+                                                  widget.contacto.id ?? -1);
+                                          await ArchivoController.update(
+                                              archivoNew);
+                                          await init();
+                                        }
+                                      },
+                                      compartir: false,
+                                      minFit: 16.w))
+                          ])))
           ])),
       ElevatedButton.icon(
           onPressed: () => Navigation.pop(),

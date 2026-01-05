@@ -178,7 +178,7 @@ class _ContactosViewState extends State<ContactosView> {
                             ? 1
                             : (contactos.length >= 100
                                 ? (snapshot.data ?? 1)
-                                : contactos.length)) /
+                                : index * 100)) /
                         100)
                     .ceil();
                 return Column(children: [

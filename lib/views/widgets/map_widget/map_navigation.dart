@@ -277,13 +277,12 @@ class _MapNavigationState extends State<MapNavigation> {
                   // Cerrar el diálogo automáticamente cuando termine
                   Future.delayed(Duration(milliseconds: 500), () {
                     if (dialogContext.mounted) {
-                      
                       provider.descargarZona = false;
                       provider.zona.clear();
                       showToast(
                           "Descarga completada: $tilesExitosos tiles descargados",
                           duration: Duration(seconds: 3));
-                          Navigation.pop();
+                      Navigation.pop();
                     }
                   });
                 }

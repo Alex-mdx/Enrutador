@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:enrutador/utilities/preferences.dart';
 import 'package:enrutador/utilities/textos.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +9,7 @@ import 'package:oktoast/oktoast.dart';
 import 'package:sizer/sizer.dart';
 
 import '../models/usuario_model.dart';
+import '../utilities/services/navigation_services.dart';
 import '../utilities/theme/theme_color.dart';
 import 'widgets/card_accout.dart';
 
@@ -226,7 +228,18 @@ class _AccountViewState extends State<AccountView> {
                   builder: (context, snapshot) {
                     return ElevatedButton.icon(
                         iconAlignment: IconAlignment.end,
-                        onPressed: () {},
+                        onPressed: () async {
+                          if (FirebaseAuth
+                                      .instance.currentUser!.emailVerified ==
+                                  true &&
+                              snapshot.data?.docs.firstOrNull
+                                      ?.data()["empleado_id"] !=
+                                  null) {
+                                    Preferences.login = true;
+                            await Navigation.pushNamedAndRemoveUntil(
+                                routeName: "home", predicate: (route) => false);
+                          }
+                        },
                         icon: Icon(Icons.navigate_next,
                             size: 20.sp,
                             color: FirebaseAuth.instance.currentUser!.emailVerified == true &&

@@ -4,10 +4,10 @@ import 'package:enrutador/utilities/permisos.dart';
 import 'package:enrutador/utilities/services/navigation_services.dart';
 import 'package:enrutador/utilities/theme/theme_color.dart';
 import 'package:enrutador/views/map_main.dart';
+import 'package:enrutador/views/widgets/card_accout.dart';
 import 'package:enrutador/views/widgets/map_widget/map_navigation.dart';
 import 'package:enrutador/views/widgets/map_widget/map_sliding.dart';
 import 'package:enrutador/views/widgets/search/search_widget.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slider_drawer/flutter_slider_drawer.dart';
@@ -188,10 +188,9 @@ class _HomeViewState extends State<HomeView> {
                                         size: 20.sp, color: ThemaMain.primary)
                                   ])))),
                   GestureDetector(
-                      onTap: () async {
-                        await FirebaseAuth.instance.signOut();
-                        await Navigation.pushNamed(route: "loginState");
-                      },
+                      onTap: () async => showDialog(
+                          context: context,
+                          builder: (context) => Dialog(child: CardAccout())),
                       child: Card(
                           child: Padding(
                               padding: EdgeInsets.symmetric(
@@ -200,12 +199,12 @@ class _HomeViewState extends State<HomeView> {
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Text("Cerrar",
+                                    Text("Perfil",
                                         style: TextStyle(
                                             fontSize: 16.sp,
                                             fontWeight: FontWeight.bold)),
-                                    Icon(Icons.logout,
-                                        size: 20.sp, color: ThemaMain.pink)
+                                    Icon(Icons.person,
+                                        size: 20.sp, color: ThemaMain.green)
                                   ]))))
                 ])),
             child: Scaffold(

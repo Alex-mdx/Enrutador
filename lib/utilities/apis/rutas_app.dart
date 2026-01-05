@@ -1,3 +1,4 @@
+import 'package:enrutador/utilities/preferences.dart';
 import 'package:enrutador/views/contactos_view.dart';
 import 'package:enrutador/views/estado_view.dart';
 import 'package:enrutador/views/lada_view.dart';
@@ -6,7 +7,6 @@ import 'package:enrutador/views/navegar_view.dart';
 import 'package:enrutador/views/regiones_mapa.dart';
 import 'package:enrutador/views/tipos_view.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../../views/account_view.dart';
 import '../../views/home_view.dart';
@@ -14,9 +14,9 @@ import '../../views/roles_view.dart';
 
 class AppRoutes {
   static String initialRoute =
-      (kDebugMode && FirebaseAuth.instance.currentUser?.emailVerified == true)
+      (FirebaseAuth.instance.currentUser?.emailVerified == false && !Preferences.login) || (FirebaseAuth.instance.currentUser?.emailVerified == true && !Preferences.login)
           ? 'account'
-          : kDebugMode && FirebaseAuth.instance.currentUser == null
+          : FirebaseAuth.instance.currentUser == null
               ? 'loginState'
               : 'home';
 

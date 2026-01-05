@@ -1,14 +1,10 @@
 import 'dart:developer';
-import 'dart:ffi';
-
 import 'package:dynamic_background/dynamic_background.dart';
-import 'package:enrutador/utilities/funcion_parser.dart';
 import 'package:enrutador/utilities/services/dialog_services.dart';
 import 'package:enrutador/utilities/services/navigation_services.dart';
 import 'package:enrutador/utilities/theme/theme_color.dart';
 import 'package:enrutador/utilities/trans_fun.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:line_icons/line_icons.dart';
@@ -103,11 +99,15 @@ class _LoginViewState extends State<LoginView> {
                                               password: password.text);
                                       log("result: ${user.toString()}");
                                       if (user.user!.emailVerified) {
-                                        await Navigation.pushNamed(
-                                            route: "home");
+                                        await Navigation
+                                            .pushNamedAndRemoveUntil(
+                                                routeName: "home",
+                                                predicate: (route) => false);
                                       } else {
-                                        await Navigation.pushNamed(
-                                            route: "account");
+                                        await Navigation
+                                            .pushNamedAndRemoveUntil(
+                                                routeName: "account",
+                                                predicate: (route) => false);
                                       }
                                       setState(() => carga = false);
                                     } catch (e) {
@@ -153,9 +153,13 @@ class _LoginViewState extends State<LoginView> {
                                         password: password.text);
                                 log("result: ${user.toString()}");
                                 if (user.user!.emailVerified) {
-                                  await Navigation.pushNamed(route: "home");
+                                  await Navigation.pushNamedAndRemoveUntil(
+                                      routeName: "home",
+                                      predicate: (route) => false);
                                 } else {
-                                  await Navigation.pushNamed(route: "account");
+                                  await Navigation.pushNamedAndRemoveUntil(
+                                      routeName: "account",
+                                      predicate: (route) => false);
                                 }
                               }
                             } catch (e) {
@@ -212,8 +216,13 @@ class _LoginViewState extends State<LoginView> {
                       AuthCredential cred = GoogleAuthProvider.credential(
                           idToken: auth.authentication.idToken);
 
-                      await FirebaseAuth.instance.signInWithCredential(cred);
-                      showToast("Autenticación exitosa");
+                      var user = await FirebaseAuth.instance
+                          .signInWithCredential(cred);
+                      if (user.user != null) {
+                        await Navigation.pushNamedAndRemoveUntil(
+                            routeName: "account", predicate: (route) => false);
+                        showToast("Autenticación exitosa");
+                      }
                     }
                   }
                 } catch (e) {

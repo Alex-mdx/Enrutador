@@ -596,7 +596,11 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                               []))
                                 ]),
                           if (!widget.compartir)
-                            TextButton(
+                            TextButton(style: ButtonStyle(
+                                          padding: WidgetStatePropertyAll(
+                                              EdgeInsets.symmetric(
+                                                  vertical: 0,
+                                                  horizontal: 1.w))),
                                 onPressed: () => showDialog(
                                     barrierDismissible: false,
                                     context: context,
@@ -631,12 +635,16 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                 overflow: TextOverflow.ellipsis),
                           if (!widget.compartir)
                             ElevatedButton.icon(
+                                style: ButtonStyle(
+                                    padding: WidgetStatePropertyAll(
+                                        EdgeInsets.symmetric(
+                                            vertical: 0, horizontal: 1.w))),
                                 onPressed: () => showDialog(
                                     barrierDismissible: false,
                                     context: context,
                                     builder: (context) => DialogArchivo(
                                         contacto: widget.contacto!)),
-                                icon: Icon(Icons.attachment,
+                                icon: Icon(LineIcons.alternateFileAlt,
                                     size: 20.sp, color: ThemaMain.pink),
                                 label: Text("Archivos",
                                     style: TextStyle(fontSize: 16.sp)))
