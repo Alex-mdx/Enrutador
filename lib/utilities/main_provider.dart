@@ -1,5 +1,6 @@
 import 'package:enrutador/controllers/estado_controller.dart';
 import 'package:enrutador/controllers/roles_controller.dart';
+import 'package:enrutador/controllers/sql_generator.dart';
 import 'package:enrutador/controllers/tipo_controller.dart';
 import 'package:enrutador/models/contacto_model.dart';
 import 'package:enrutador/models/estado_model.dart';
@@ -13,6 +14,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
+import '../controllers/contacto_controller.dart';
 import '../models/referencia_model.dart';
 
 class MainProvider with ChangeNotifier implements TickerProvider {
@@ -175,6 +177,11 @@ class MainProvider with ChangeNotifier implements TickerProvider {
   //?Funciones
 
   Future<void> logeo() async {
+    var db = await ContactoController.database();
+    await SqlGenerator.existColumna(add: "uuid", database: db, nombreDB: "contacto");
+    await SqlGenerator.existColumna(add: "status", database: db, nombreDB: "contacto");
+    await SqlGenerator.existColumna(add: "creado", database: db, nombreDB: "contacto");
+    await SqlGenerator.existColumna(add: "modificado", database: db, nombreDB: "contacto");
     tipos = await TipoController.getItems();
     estados = await EstadoController.getItems();
     roles = await RolesController.getAll();

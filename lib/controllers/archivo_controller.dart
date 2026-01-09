@@ -45,6 +45,13 @@ class ArchivoController {
     return maps.map((x) => ArchivoModel.fromJson(x)).toList();
   }
 
+  static Future<ArchivoModel?> getId(int id) async {
+    final db = await database();
+    final Map<String, dynamic> maps = (await db.query(nombreDB,
+        where: "id = ?", whereArgs: [id])).first;
+    return  maps.isNotEmpty ? ArchivoModel.fromJson(maps) : null;
+  }
+
   static Future<List<ArchivoModel>> getAllByContactoId(int contactoId) async {
     final db = await database();
     final List<Map<String, dynamic>> maps = await db.query(nombreDB,

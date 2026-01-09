@@ -28,6 +28,10 @@ class ContactoModelo {
   DateTime? fotoReferenciaFecha;
   String? what3Words;
   String? nota;
+  String? uuid;
+  int? status;
+  DateTime? creado;
+  DateTime? modificado;
 
   ContactoModelo(
       {this.id,
@@ -51,7 +55,11 @@ class ContactoModelo {
       required this.fotoReferencia,
       required this.fotoReferenciaFecha,
       required this.what3Words,
-      required this.nota});
+      required this.nota,
+      this.uuid,
+      this.status,
+      this.creado,
+      this.modificado});
 
   ContactoModelo copyWith(
           {int? id,
@@ -76,7 +84,10 @@ class ContactoModelo {
           DateTime? fotoReferenciaFecha,
           String? what3Words,
           String? nota,
-          DateTime? creado}) =>
+          String? uuid,
+          int? status,
+          DateTime? creado,
+          DateTime? modificado  }) =>
       ContactoModelo(
           id: id ?? this.id,
           nombreCompleto: nombreCompleto ?? this.nombreCompleto,
@@ -99,7 +110,11 @@ class ContactoModelo {
           fotoReferencia: fotoReferencia ?? this.fotoReferencia,
           fotoReferenciaFecha: fotoReferenciaFecha ?? this.fotoReferenciaFecha,
           what3Words: what3Words ?? this.what3Words,
-          nota: nota ?? this.nota);
+          nota: nota ?? this.nota,
+          uuid: uuid ?? this.uuid,
+          status: status ?? this.status,
+          creado: creado ?? this.creado,
+          modificado: modificado ?? this.modificado);
 
   factory ContactoModelo.fromJson(Map<String, dynamic> json) => ContactoModelo(
       id: json["id"],
@@ -126,7 +141,11 @@ class ContactoModelo {
       fotoReferenciaFecha:
           DateTime.tryParse(json["foto_referencia_fecha"].toString()),
       what3Words: json["what_3_words"],
-      nota: json["nota"]);
+      nota: json["nota"],
+      uuid: json["uuid"],
+      status: Parser.toInt(json["status"]),
+      creado: DateTime.tryParse(json["creado"].toString()),
+      modificado: DateTime.now());
 
   Map<String, dynamic> toJson() => {
         "id": id,
@@ -163,7 +182,11 @@ class ContactoModelo {
             ? null
             : Textos.fechaYMDHMS(fecha: fotoReferenciaFecha!),
         "what_3_words": what3Words,
-        "nota": nota
+        "nota": nota,
+        "uuid": uuid,
+        "status": status,
+        "creado": creado!.toIso8601String(),
+        "modificado": modificado!.toIso8601String()
       };
   static List<ReferenciaModelo> generar1(String texto) {
     try {

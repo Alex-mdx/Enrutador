@@ -24,6 +24,22 @@ class CardAccout extends StatefulWidget {
 }
 
 class _CardAccoutState extends State<CardAccout> {
+  Future<void> name(String nombre) async {
+    var db = FirebaseFirestore.instance;
+    var data = await db
+        .collection("users")
+        .where("uuid", isEqualTo: FirebaseAuth.instance.currentUser?.uid)
+        .get();
+    var user = data.docs.firstOrNull == null
+        ? null
+        : UsuarioModel.fromJson(data.docs.firstOrNull!.data());
+    if (user == null) return;
+    var model = user.copyWith(nombre: nombre, actualizacion: DateTime.now());
+    await db.collection("users").doc(data.docs.first.id).update(model.toJson());
+    await FirebaseAuth.instance.currentUser?.updateDisplayName(nombre);
+    await FirebaseAuth.instance.currentUser?.reload();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -42,10 +58,7 @@ class _CardAccoutState extends State<CardAccout> {
                                 builder: (context) => DialogSend(
                                     cabeza: "Ingresar nombre de cuenta",
                                     fun: (value) async {
-                                      await FirebaseAuth.instance.currentUser
-                                          ?.updateDisplayName(value);
-                                      await FirebaseAuth.instance.currentUser
-                                          ?.reload();
+                                      await name(value ?? "");
                                       setState(() {
                                         showToast(
                                             "Nombre de la cuenta actualizada");

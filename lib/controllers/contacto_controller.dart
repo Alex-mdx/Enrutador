@@ -32,7 +32,10 @@ class ContactoController {
           foto_referencia_fecha INTEGER,
           what_3_words TEXT,
           nota TEXT,
-          plus_code TEXT
+          uuid TEXT,
+          status INTEGER,
+          creado INTEGER,
+          modificado INTEGER
       )""");
   }
 

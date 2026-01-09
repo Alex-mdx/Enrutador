@@ -2,7 +2,9 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:advanced_media_picker/advanced_media_picker.dart';
+import 'package:cunning_document_scanner/cunning_document_scanner.dart';
 import 'package:flutter/material.dart';
+import 'package:oktoast/oktoast.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:path/path.dart' as path;
@@ -20,7 +22,10 @@ class CamaraFun {
         style: PickerStyle(
             crossAxisCount: 4,
             backgroundColor: ThemaMain.second,
-            titleWidget: Text(nombre ?? "Seleccionar imagen",style: TextStyle(fontSize: 16.sp),)),
+            titleWidget: Text(
+              nombre ?? "Seleccionar imagen",
+              style: TextStyle(fontSize: 16.sp),
+            )),
         cameraStyle: CameraStyle(),
         allowedTypes: PickerAssetType.image,
         maxVideoDuration: 60,
@@ -41,5 +46,24 @@ class CamaraFun {
       debugPrint("$e");
       return null;
     }
+  }
+
+  static Future<Uint8List?> scanner() async {
+    List<String>? data;
+    try {
+      data = await CunningDocumentScanner.getPictures(
+          isGalleryImportAllowed: true,
+          noOfPages: 1,
+          iosScannerOptions: IosScannerOptions(jpgCompressionQuality: 1));
+    } catch (e) {
+      showToast("Error al escanear");
+    }
+
+    if (data?.isNotEmpty ?? false) {
+      var archivoTemp = XFile(data!.first);
+      var base = (await archivoTemp.readAsBytes());
+      return base;
+    }
+    return null;
   }
 }

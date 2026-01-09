@@ -13,25 +13,32 @@ class GaleriaWidget extends StatelessWidget {
   final Function() onDoubleTap;
   final bool compartir;
   final double? minFit;
+  final Function()? onLongPress;
   const GaleriaWidget(
       {super.key,
       required this.image64,
       required this.onDoubleTap,
       required this.ontap,
-      required this.compartir,this.minFit});
+      required this.compartir,
+      this.minFit,
+      this.onLongPress});
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
         onLongPress: () async {
-          try {
-            await Pasteboard.writeImage(base64Decode(image64!));
+          if (onLongPress != null) {
+            onLongPress!();
+          } else {
+            try {
+              await Pasteboard.writeImage(base64Decode(image64!));
 
-            final files = await Pasteboard.files();
-            debugPrint("$files");
-            showToast("Imagen copiada al portapapeles");
-          } catch (e) {
-            debugPrint("$e");
+              final files = await Pasteboard.files();
+              debugPrint("$files");
+              showToast("Imagen copiada al portapapeles");
+            } catch (e) {
+              debugPrint("$e");
+            }
           }
         },
         onDoubleTap: () async => await onDoubleTap(),
@@ -43,7 +50,7 @@ class GaleriaWidget extends StatelessWidget {
                 filterQuality:
                     compartir ? FilterQuality.medium : FilterQuality.low,
                 width: compartir ? 30.w : minFit ?? 21.w,
-                height: compartir ? 30.w :minFit ?? 21.w,
+                height: compartir ? 30.w : minFit ?? 21.w,
                 base64Decode(image64 ?? "a"),
                 gaplessPlayback: true,
                 errorBuilder: (context, error, stackTrace) => Icon(

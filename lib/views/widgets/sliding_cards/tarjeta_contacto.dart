@@ -119,12 +119,12 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                                 }
                               },
                               child: AutoSizeText(snapshot.data ?? "?",
-                                  style: TextStyle(fontSize: 16.sp), 
-                                  minFontSize: 10,
+                                  style: TextStyle(fontSize: 16.sp),
+                                  minFontSize: 9,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis))),
-                      SelectableText(
-                          "${kDebugMode ? "|${provider.contacto?.id}| " : ""}${provider.contacto?.latitud.toStringAsFixed(6)}, ${provider.contacto?.longitud.toStringAsFixed(6)}",
+                      Text(
+                          "${kDebugMode ? "|${provider.contacto?.id}| " : ""}${PlusCodeFun.truncPlusCode(PlusCodeFun.psCODE(provider.contacto?.latitud ?? 0, provider.contacto?.longitud ?? 0)).latitude} ${PlusCodeFun.truncPlusCode(PlusCodeFun.psCODE(provider.contacto?.latitud ?? 0, provider.contacto?.longitud ?? 0)).longitude}",
                           style: TextStyle(
                               fontSize: 15.sp, fontStyle: FontStyle.italic))
                     ])),
@@ -187,7 +187,6 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                           if (provider.contacto?.id != null)
                             ElevatedButton.icon(
                                 style: ButtonStyle(
-                                    elevation: WidgetStatePropertyAll(2),
                                     padding: WidgetStatePropertyAll(
                                         EdgeInsets.symmetric(
                                             horizontal: .5.w, vertical: 0))),
@@ -288,7 +287,12 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                                   : provider.contacto?.id == null
                                       ? Icon(Icons.save, color: ThemaMain.green)
                                       : Icon(Icons.delete,
-                                          color: ThemaMain.red))
+                                          color: ThemaMain.red)),
+                          IconButton.filledTonal(
+                              iconSize: 18.sp,
+                              icon: Icon(Icons.sync_disabled,
+                                  color: ThemaMain.pink),
+                              onPressed: () async {})
                         ])))
           ]),
           TarjetaContactoDetalle(contacto: provider.contacto, compartir: false)

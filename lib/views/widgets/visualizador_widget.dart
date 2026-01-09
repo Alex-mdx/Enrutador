@@ -17,7 +17,7 @@ class VisualizadorWidget extends StatelessWidget {
       Expanded(
           child: PhotoView.customChild(
               minScale: PhotoViewComputedScale.contained,
-              maxScale: PhotoViewComputedScale.contained * 2,
+              maxScale: PhotoViewComputedScale.contained * 3,
               child: Image.memory(base64Decode(image64!)))),
       Text(carrusel,
           textAlign: TextAlign.center,
