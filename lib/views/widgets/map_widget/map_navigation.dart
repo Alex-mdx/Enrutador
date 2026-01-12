@@ -100,7 +100,7 @@ class _MapNavigationState extends State<MapNavigation> {
                           bool descargar = false;
                           CameraFit camara = CameraFit.coordinates(
                               coordinates: provider.zona,
-                              maxZoom: 19,
+                              maxZoom: 18,
                               padding: EdgeInsets.symmetric(
                                   horizontal: 10.w, vertical: 10.h));
                           await provider.animaMap
@@ -178,10 +178,11 @@ class _MapNavigationState extends State<MapNavigation> {
                       }
                     } else {
                       followFix = false;
-                      provider.mapSeguir = true;
+                      
                       provider.animaMap.animatedRotateReset();
                       await provider.animaMap.centerOnPoint(LatLng(
                           provider.local!.latitude, provider.local!.longitude));
+                      provider.mapSeguir = true;
                     }
                   },
                   icon: Icon(

@@ -19,8 +19,10 @@ import 'package:open_location_code/open_location_code.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 import 'package:app_links/app_links.dart';
+import '../controllers/contacto_controller.dart';
 import '../utilities/uri_fun.dart';
 import 'widgets/map_widget/map_alternative.dart';
+import 'package:badges/badges.dart' as bd;
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -35,7 +37,7 @@ class _HomeViewState extends State<HomeView> {
     return Consumer<MainProvider>(
         builder: (context, provider, child) => SliderDrawer(
             key: provider.sliderDrawerKey,
-            animationDuration: 250,
+            animationDuration: 300,
             appBar: Placeholder(),
             sliderOpenSize: 34.w,
             isDraggable: false,
@@ -215,8 +217,28 @@ class _HomeViewState extends State<HomeView> {
                             }),
                         icon: Icon(Icons.menu,
                             color: ThemaMain.darkBlue, size: 20.sp)),
+                    toolbarHeight: 6.h,
                     title: Text("Enrutador", style: TextStyle(fontSize: 18.sp)),
-                    toolbarHeight: 6.h),
+                    actions: [
+                      FutureBuilder(
+                          future: ContactoController.getCountPendiente(),
+                          builder: (context, snapshot) => bd.Badge(
+                              badgeStyle:
+                                  bd.BadgeStyle(badgeColor: ThemaMain.red),
+                              badgeAnimation: bd.BadgeAnimation.slide(),
+                              position: bd.BadgePosition.topStart(),
+                              badgeContent: Text(snapshot.data.toString(),
+                                  style: TextStyle(
+                                      fontSize: 14.sp,
+                                      fontWeight: FontWeight.bold)),
+                              child: IconButton.filledTonal(
+                                  iconSize: 22.sp,
+                                  onPressed: () async =>
+                                      await Navigation.pushNamed(
+                                          route: "pendientes"),
+                                  icon: Icon(LineIcons.alternateCloudUpload,
+                                      color: ThemaMain.red))))
+                    ]),
                 body: IgnorePointer(
                     ignoring:
                         provider.sliderDrawerKey.currentState?.isDrawerOpen ??

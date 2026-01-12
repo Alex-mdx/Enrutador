@@ -34,6 +34,8 @@ class ContactoController {
           nota TEXT,
           uuid TEXT,
           status INTEGER,
+          pendiente INTEGER,
+          aceptado_uuid TEXT,
           creado INTEGER,
           modificado INTEGER
       )""");
@@ -115,6 +117,24 @@ class ContactoController {
         orderBy: "id DESC"));
     List<ContactoModelo> model = [];
     for (var element in modelo) {
+      model.add(ContactoModelo.fromJson(element));
+    }
+    return model;
+  }
+
+  static Future<int> getCountPendiente() async {
+    final db = await database();
+    final result = await db.query(nombreDB,
+        columns: ["pendiente"], where: "pendiente IS NULL OR pendiente = 1");
+    return result.length;
+  }
+
+  static Future<List<ContactoModelo>> getPendientes() async {
+    final db = await database();
+    final result = await db.query(nombreDB,
+        where: "pendiente IS NULL OR pendiente = 1",limit: 50,orderBy: "modificado DESC");
+    List<ContactoModelo> model = [];
+    for (var element in result) {
       model.add(ContactoModelo.fromJson(element));
     }
     return model;

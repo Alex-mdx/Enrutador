@@ -4,6 +4,7 @@ import 'package:enrutador/views/estado_view.dart';
 import 'package:enrutador/views/lada_view.dart';
 import 'package:enrutador/views/login_view.dart';
 import 'package:enrutador/views/navegar_view.dart';
+import 'package:enrutador/views/pendientes_home.dart';
 import 'package:enrutador/views/regiones_mapa.dart';
 import 'package:enrutador/views/tipos_view.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -14,7 +15,10 @@ import '../../views/roles_view.dart';
 
 class AppRoutes {
   static String initialRoute =
-      (FirebaseAuth.instance.currentUser?.emailVerified == false && !Preferences.login) || (FirebaseAuth.instance.currentUser?.emailVerified == true && !Preferences.login)
+      (FirebaseAuth.instance.currentUser?.emailVerified == false &&
+                  !Preferences.login) ||
+              (FirebaseAuth.instance.currentUser?.emailVerified == true &&
+                  !Preferences.login)
           ? 'account'
           : FirebaseAuth.instance.currentUser == null
               ? 'loginState'
@@ -30,7 +34,8 @@ class AppRoutes {
     roles: (_) => const RolesView(),
     loginState: (_) => const LoginView(),
     account: (_) => const AccountView(),
-    regionesMapa: (_) => const RegionesMapa()
+    regionesMapa: (_) => const RegionesMapa(),
+    pendientes: (_) => const PendientesHome()
   };
   static Map<String, Widget Function(BuildContext)> get routes => _routes;
   static String get home => 'home';
@@ -43,4 +48,5 @@ class AppRoutes {
   static String get loginState => 'loginState';
   static String get account => 'account';
   static String get regionesMapa => 'regionesMapa';
+  static String get pendientes => 'pendientes';
 }

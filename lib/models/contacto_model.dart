@@ -17,7 +17,6 @@ class ContactoModelo {
   int? otroNumero;
   DateTime? otroNumeroFecha;
   DateTime? agendar;
-  List<ReferenciaModelo> contactoEnlances;
   int? tipo;
   DateTime? tipoFecha;
   int? estado;
@@ -30,6 +29,8 @@ class ContactoModelo {
   String? nota;
   String? uuid;
   int? status;
+  int? pendiente;
+  String? aceptadoUuid;
   DateTime? creado;
   DateTime? modificado;
 
@@ -45,7 +46,6 @@ class ContactoModelo {
       required this.otroNumero,
       required this.otroNumeroFecha,
       required this.agendar,
-      required this.contactoEnlances,
       required this.tipo,
       required this.tipoFecha,
       required this.estado,
@@ -56,6 +56,8 @@ class ContactoModelo {
       required this.fotoReferenciaFecha,
       required this.what3Words,
       required this.nota,
+      this.pendiente,
+      this.aceptadoUuid,
       this.uuid,
       this.status,
       this.creado,
@@ -84,6 +86,8 @@ class ContactoModelo {
           DateTime? fotoReferenciaFecha,
           String? what3Words,
           String? nota,
+          int? pendiente,
+          String? aceptadoUuid,
           String? uuid,
           int? status,
           DateTime? creado,
@@ -100,7 +104,6 @@ class ContactoModelo {
           otroNumero: otroNumero ?? this.otroNumero,
           otroNumeroFecha: otroNumeroFecha ?? this.otroNumeroFecha,
           agendar: agendar,
-          contactoEnlances: contactoEnlances ?? this.contactoEnlances,
           tipo: tipo ?? this.tipo,
           tipoFecha: tipoFecha ?? this.tipoFecha,
           estado: estado ?? this.estado,
@@ -111,6 +114,8 @@ class ContactoModelo {
           fotoReferenciaFecha: fotoReferenciaFecha ?? this.fotoReferenciaFecha,
           what3Words: what3Words ?? this.what3Words,
           nota: nota ?? this.nota,
+          pendiente: pendiente ?? this.pendiente,
+          aceptadoUuid: aceptadoUuid ?? this.aceptadoUuid,
           uuid: uuid ?? this.uuid,
           status: status ?? this.status,
           creado: creado ?? this.creado,
@@ -130,7 +135,6 @@ class ContactoModelo {
       otroNumero: Parser.toInt(json["otro_numero"]),
       otroNumeroFecha: DateTime.tryParse(json["otro_numero_fecha"].toString()),
       agendar: DateTime.tryParse(json["agendar"].toString()),
-      contactoEnlances: generar1(json["contacto_enlances"].toString()),
       tipo: json["tipo"],
       tipoFecha: DateTime.tryParse(json["tipo_fecha"].toString()),
       estado: json["estado"],
@@ -142,6 +146,8 @@ class ContactoModelo {
           DateTime.tryParse(json["foto_referencia_fecha"].toString()),
       what3Words: json["what_3_words"],
       nota: json["nota"],
+      pendiente: Parser.toInt(json["pendiente"]),
+      aceptadoUuid: json["aceptado_uuid"],
       uuid: json["uuid"],
       status: Parser.toInt(json["status"]),
       creado: DateTime.tryParse(json["creado"].toString()),
@@ -165,8 +171,6 @@ class ContactoModelo {
             ? null
             : Textos.fechaYMDHMS(fecha: otroNumeroFecha!),
         "agendar": agendar == null ? null : Textos.fechaYMD(fecha: agendar!),
-        "contacto_enlances":
-            jsonEncode(contactoEnlances.map((x) => x.toJson()).toList()),
         "tipo": tipo,
         "tipo_fecha":
             tipoFecha == null ? null : Textos.fechaYMDHMS(fecha: tipoFecha!),
@@ -185,8 +189,10 @@ class ContactoModelo {
         "nota": nota,
         "uuid": uuid,
         "status": status,
-        "creado": creado!.toIso8601String(),
-        "modificado": modificado!.toIso8601String()
+        "pendiente": pendiente ?? 0,
+        "aceptado_uuid": aceptadoUuid,
+        "creado": creado?.toIso8601String(),
+        "modificado": modificado?.toIso8601String()
       };
   static List<ReferenciaModelo> generar1(String texto) {
     try {

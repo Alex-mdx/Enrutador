@@ -52,7 +52,6 @@ class _ContactosViewState extends State<ContactosView> {
       carga = true;
     });
   }
-
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<MainProvider>(context);

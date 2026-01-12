@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:enrutador/controllers/usuario_controller.dart';
 import 'package:enrutador/utilities/services/dialog_services.dart';
 import 'package:enrutador/utilities/theme/theme_app.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -9,6 +10,7 @@ import 'package:line_icons/line_icons.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:sizer/sizer.dart';
 
+import '../../controllers/usuario_fire.dart';
 import '../../models/usuario_model.dart';
 import '../../utilities/preferences.dart';
 import '../../utilities/services/navigation_services.dart';
@@ -25,17 +27,15 @@ class CardAccout extends StatefulWidget {
 
 class _CardAccoutState extends State<CardAccout> {
   Future<void> name(String nombre) async {
-    var db = FirebaseFirestore.instance;
-    var data = await db
-        .collection("users")
-        .where("uuid", isEqualTo: FirebaseAuth.instance.currentUser?.uid)
-        .get();
-    var user = data.docs.firstOrNull == null
-        ? null
-        : UsuarioModel.fromJson(data.docs.firstOrNull!.data());
-    if (user == null) return;
-    var model = user.copyWith(nombre: nombre, actualizacion: DateTime.now());
-    await db.collection("users").doc(data.docs.first.id).update(model.toJson());
+    var doc = await UsuarioFire.getItem(
+        table: "uuid", query: FirebaseAuth.instance.currentUser?.uid ?? "");
+    if (doc == null) return;
+    var model = doc.copyWith(nombre: nombre, actualizacion: DateTime.now());
+
+    var actualizado = await UsuarioFire.updateItem(data: model);
+    if (actualizado) {
+      await UsuarioController.insert(model);
+    }
     await FirebaseAuth.instance.currentUser?.updateDisplayName(nombre);
     await FirebaseAuth.instance.currentUser?.reload();
   }
@@ -74,15 +74,15 @@ class _CardAccoutState extends State<CardAccout> {
                                     borderRadius:
                                         BorderRadius.circular(borderRadius),
                                     child: Image.network(FirebaseAuth.instance.currentUser!.photoURL!,
-                                        width: 24.sp,
-                                        height: 24.sp,
+                                        width: 12.w,
+                                        height: 12.w,
                                         errorBuilder:
                                             (context, error, stackTrace) =>
                                                 Icon(Icons.account_circle,
-                                                    size: 24.sp,
+                                                    size: 12.w,
                                                     color: ThemaMain.yellow)))
                                 : Icon(Icons.person,
-                                    size: 24.sp, color: ThemaMain.darkBlue),
+                                    size: 12.w, color: ThemaMain.darkBlue),
                             label: Text(
                                 FirebaseAuth.instance.currentUser?.displayName ?? "Sin nombre",
                                 style: TextStyle(fontSize: 16.sp))),
@@ -149,12 +149,10 @@ class _CardAccoutState extends State<CardAccout> {
                                       size: 24.sp, color: ThemaMain.darkBlue)))
                         ]),
                         FutureBuilder(
-                            future: FirebaseFirestore.instance
-                                .collection("users")
-                                .where("uuid",
-                                    isEqualTo:
-                                        FirebaseAuth.instance.currentUser?.uid)
-                                .get(),
+                            future: UsuarioFire.getItem(
+                                table: "uuid",
+                                query: FirebaseAuth.instance.currentUser?.uid ??
+                                    ""),
                             builder: (context, snapshot) {
                               return TextButton.icon(
                                   onPressed: () async {
@@ -165,29 +163,20 @@ class _CardAccoutState extends State<CardAccout> {
                                             cabeza:
                                                 "Vincular con numero de empleado",
                                             fun: (valor) async {
-                                              debugPrint(valor);
                                               showToast("Buscando..");
-                                              var db =
-                                                  FirebaseFirestore.instance;
-                                              var data = await db
-                                                  .collection("users")
-                                                  .where("empleado_id",
-                                                      isEqualTo: int.tryParse(
-                                                          valor ?? "0"))
-                                                  .get();
-                                              user =
-                                                  data.docs.firstOrNull == null
-                                                      ? null
-                                                      : UsuarioModel.fromJson(
-                                                          data.docs.firstOrNull!
-                                                              .data());
-                                              debugPrint(
-                                                  "${data.docs.map((e) => e.data()).toList()}");
+                                              user = await UsuarioFire.getItem(
+                                                  table: "empleado_id",
+                                                  query: valor ?? "0",
+                                                  itsNumber: true);
                                             },
                                             tipoTeclado: TextInputType.number,
                                             fecha: null,
                                             entradaTexto: ""));
-                                    if (user != null) {
+                                    if (user != null &&
+                                        user?.uuid != null &&
+                                        user?.uuid ==
+                                            FirebaseAuth
+                                                .instance.currentUser?.uid) {
                                       await Dialogs.showMorph(
                                           title: "Desea Enlazar Empleado",
                                           description:
@@ -198,31 +187,39 @@ class _CardAccoutState extends State<CardAccout> {
                                                 actualizacion: DateTime.now(),
                                                 uuid: FirebaseAuth
                                                     .instance.currentUser?.uid);
-                                            var db = FirebaseFirestore.instance;
-                                            var data = await db
-                                                .collection("users")
-                                                .where("id",
-                                                    isEqualTo: user!.id)
-                                                .get();
-                                            await db
-                                                .collection("users")
-                                                .doc(data.docs.first.id)
-                                                .set(model.toJson());
-                                            await FirebaseAuth
-                                                .instance.currentUser
-                                                ?.updateDisplayName(
-                                                    user!.nombre);
-                                            await FirebaseAuth
-                                                .instance.currentUser
-                                                ?.reload();
-                                            setState(() {
-                                              showToast(
-                                                  "Vinculado a ${user!.nombre}");
-                                            });
+                                            var doc = await UsuarioFire.getItem(
+                                                table: "id",
+                                                query: user!.id.toString(),
+                                                itsNumber: true);
+                                            if (doc != null &&
+                                                doc.empleadoId != null) {
+                                              await UsuarioFire.sendItem(
+                                                  data: model,
+                                                  table: "id",
+                                                  query: doc.id.toString(),
+                                                  itsNumber: true);
+                                              await UsuarioController.insert(model);
+                                              await FirebaseAuth
+                                                  .instance.currentUser
+                                                  ?.updateDisplayName(
+                                                      user!.nombre);
+                                              await FirebaseAuth
+                                                  .instance.currentUser
+                                                  ?.reload();
+                                              setState(() {
+                                                showToast(
+                                                    "Vinculado a ${user!.nombre}");
+                                              });
+                                            }
                                           });
                                     } else {
-                                      showToast(
-                                          "No se encontro ningun empleado con el numero proporcionado");
+                                      if (user?.uuid != null) {
+                                        showToast(
+                                            "El empleado ${user!.nombre}, ya esta asignado a un empleado diferente");
+                                      } else {
+                                        showToast(
+                                            "No se encontro ningun empleado con el numero proporcionado");
+                                      }
                                     }
                                   },
                                   icon: Icon(
@@ -234,7 +231,7 @@ class _CardAccoutState extends State<CardAccout> {
                                           ? ThemaMain.green
                                           : ThemaMain.darkBlue),
                                   label: Text(
-                                      "${snapshot.data?.docs.firstOrNull?.data()["empleado_id"] ?? "N. Empleado"}",
+                                      "${snapshot.data?.empleadoId ?? "N. Empleado"}",
                                       style: TextStyle(
                                           fontSize: 16.sp,
                                           fontWeight: snapshot.hasData

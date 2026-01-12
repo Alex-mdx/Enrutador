@@ -178,6 +178,8 @@ class MainProvider with ChangeNotifier implements TickerProvider {
 
   Future<void> logeo() async {
     var db = await ContactoController.database();
+    await SqlGenerator.existColumna(add: "aceptado_uuid", database: db, nombreDB: "contacto");
+    await SqlGenerator.existColumna(add: "pendiente", database: db, nombreDB: "contacto");
     await SqlGenerator.existColumna(add: "uuid", database: db, nombreDB: "contacto");
     await SqlGenerator.existColumna(add: "status", database: db, nombreDB: "contacto");
     await SqlGenerator.existColumna(add: "creado", database: db, nombreDB: "contacto");

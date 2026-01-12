@@ -6,7 +6,9 @@ import 'package:enrutador/utilities/theme/theme_color.dart';
 import 'package:enrutador/views/dialogs/dialog_compartir.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:oktoast/oktoast.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 import 'package:substring_highlight/substring_highlight.dart';
@@ -29,9 +31,9 @@ class CardContactoWidget extends StatelessWidget {
       required this.funContact,
       required this.compartir,
       required this.selectedVisible,
-      required this.selected,
+      this.selected,
       required this.onSelected,
-      required this.entrada});
+      this.entrada});
 
   @override
   Widget build(BuildContext context) {
@@ -114,12 +116,22 @@ class CardContactoWidget extends StatelessWidget {
                                             minFontSize: 12,
                                             overflow: TextOverflow.ellipsis,
                                             style: TextStyle(fontSize: 15.sp)),
-                                      SelectableText(
-                                          "Plus Code: ${PlusCodeFun.psCODE(contacto.latitud, contacto.longitud)}",
-                                          style: TextStyle(
-                                              fontSize: 15.sp,
-                                              fontWeight: FontWeight.bold,
-                                              fontStyle: FontStyle.italic)),
+                                      InkWell(
+                                          onLongPress: () async {
+                                            await Clipboard.setData(
+                                                ClipboardData(
+                                                    text: PlusCodeFun.psCODE(
+                                                        contacto.latitud,
+                                                        contacto.longitud)));
+                                            showToast("Plus Code copiado");
+                                          },
+                                          child: Text(
+                                              "Plus Code: ${PlusCodeFun.psCODE(contacto.latitud, contacto.longitud)}",
+                                              style: TextStyle(
+                                                  fontSize: 15.sp,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontStyle:
+                                                      FontStyle.italic))),
                                       Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.spaceBetween,

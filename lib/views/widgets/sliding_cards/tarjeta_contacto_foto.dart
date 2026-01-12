@@ -72,7 +72,7 @@ class _TarjetaContactoFotoState extends State<TarjetaContactoFoto> {
                                       data,
                                       minHeight: 540,
                                       minWidth: 960,
-                                      quality: 75);
+                                      quality: 70);
                               var newModel = widget.contacto?.copyWith(
                                   foto: base64Encode(reducir),
                                   fotoFecha: DateTime.now());
@@ -112,7 +112,7 @@ class _TarjetaContactoFotoState extends State<TarjetaContactoFoto> {
                                       data,
                                       minHeight: 540,
                                       minWidth: 960,
-                                      quality: 75);
+                                      quality: 70);
                               var newModel = widget.contacto?.copyWith(
                                   foto: base64Encode(reducir),
                                   fotoFecha: DateTime.now());
@@ -165,7 +165,7 @@ class _TarjetaContactoFotoState extends State<TarjetaContactoFoto> {
                                       data,
                                       minHeight: 540,
                                       minWidth: 960,
-                                      quality: 75);
+                                      quality: 70);
                               var newModel = widget.contacto?.copyWith(
                                   fotoReferencia: base64Encode(reducir),
                                   fotoReferenciaFecha: DateTime.now());
@@ -205,7 +205,7 @@ class _TarjetaContactoFotoState extends State<TarjetaContactoFoto> {
                                       data,
                                       minHeight: 540,
                                       minWidth: 960,
-                                      quality: 75);
+                                      quality: 70);
                               var newModel = widget.contacto?.copyWith(
                                   fotoReferencia: base64Encode(reducir),
                                   fotoReferenciaFecha: DateTime.now());

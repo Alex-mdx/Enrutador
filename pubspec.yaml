@@ -40,6 +40,7 @@ dependencies:
   flutter_map_tile_caching: ^10.1.1
   flutter_material_color_picker: ^1.2.0
   flutter_phone_direct_caller: ^2.2.1
+  flutter_slidable: ^4.0.3
   flutter_slider_drawer: ^3.0.2
   geocoding: ^4.0.0
   ###Ni le muevas al geolocator, require el 14.0.1 para funcionar junto la package_info_plus

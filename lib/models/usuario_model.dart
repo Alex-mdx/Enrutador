@@ -2,7 +2,7 @@ import 'package:enrutador/utilities/funcion_parser.dart';
 
 class UsuarioModel {
   int id;
-  String? uuid; // Cambiado de int? a String? para almacenar el UID de Firebase
+  String? uuid;
   String? nombre;
   int? contactoId;
   int? empleadoId;
@@ -24,7 +24,7 @@ class UsuarioModel {
 
   UsuarioModel copyWith(
           {int? id,
-          String? uuid, // Cambiado de int? a String?
+          String? uuid,
           String? nombre,
           int? contactoId,
           int? empleadoId,
@@ -52,8 +52,8 @@ class UsuarioModel {
       adminTipo: json["admin_tipo"],
       status: Parser.toInt(json["status"]),
       creacion: DateTime.tryParse(json["creacion"]),
-      actualizacion: DateTime.tryParse(json["actualizacion"]) ??
-          DateTime.now());
+      actualizacion:
+          DateTime.tryParse(json["actualizacion"]) ?? DateTime.now());
 
   Map<String, dynamic> toJson() => {
         "id": id,
