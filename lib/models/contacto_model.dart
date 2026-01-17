@@ -28,6 +28,13 @@ class ContactoModelo {
   String? what3Words;
   String? nota;
   String? uuid;
+  String? uuidFoto;
+  String? uuidFotoReferencia;
+  String? uuidDomicilio;
+  String? uuidNumero;
+  String? uuidOtroNumero;
+  String? uuidTipo;
+  String? uuidEstado;
   int? status;
   int? pendiente;
   String? aceptadoUuid;
@@ -59,6 +66,13 @@ class ContactoModelo {
       this.pendiente,
       this.aceptadoUuid,
       this.uuid,
+      this.uuidFoto,
+      this.uuidFotoReferencia,
+      this.uuidDomicilio,
+      this.uuidNumero,
+      this.uuidOtroNumero,
+      this.uuidTipo,
+      this.uuidEstado,
       this.status,
       this.creado,
       this.modificado});
@@ -89,6 +103,13 @@ class ContactoModelo {
           int? pendiente,
           String? aceptadoUuid,
           String? uuid,
+          String? uuidFoto,
+          String? uuidFotoReferencia,
+          String? uuidDomicilio,
+          String? uuidNumero,
+          String? uuidOtroNumero,
+          String? uuidTipo,
+          String? uuidEstado,
           int? status,
           DateTime? creado,
           DateTime? modificado  }) =>
@@ -109,7 +130,14 @@ class ContactoModelo {
           estado: estado ?? this.estado,
           estadoFecha: estadoFecha ?? this.estadoFecha,
           foto: foto ?? this.foto,
+          uuidFoto: uuidFoto ?? this.uuidFoto,
           fotoFecha: fotoFecha ?? this.fotoFecha,
+          uuidFotoReferencia: uuidFotoReferencia ?? this.uuidFotoReferencia,
+          uuidDomicilio: uuidDomicilio ?? this.uuidDomicilio,
+          uuidNumero: uuidNumero ?? this.uuidNumero,
+          uuidOtroNumero: uuidOtroNumero ?? this.uuidOtroNumero,
+          uuidTipo: uuidTipo ?? this.uuidTipo,
+          uuidEstado: uuidEstado ?? this.uuidEstado,
           fotoReferencia: fotoReferencia ?? this.fotoReferencia,
           fotoReferenciaFecha: fotoReferenciaFecha ?? this.fotoReferenciaFecha,
           what3Words: what3Words ?? this.what3Words,
@@ -140,10 +168,17 @@ class ContactoModelo {
       estado: json["estado"],
       estadoFecha: DateTime.tryParse(json["estado_fecha"].toString()),
       foto: json["foto"],
+      uuidFoto: json["uuid_foto"],
       fotoFecha: DateTime.tryParse(json["foto_fecha"].toString()),
       fotoReferencia: json["foto_referencia"],
+      uuidFotoReferencia: json["uuid_foto_referencia"],
       fotoReferenciaFecha:
           DateTime.tryParse(json["foto_referencia_fecha"].toString()),
+      uuidDomicilio: json["uuid_domicilio"],
+      uuidNumero: json["uuid_numero"],
+      uuidOtroNumero: json["uuid_otro_numero"],
+      uuidTipo: json["uuid_tipo"],
+      uuidEstado: json["uuid_estado"],
       what3Words: json["what_3_words"],
       nota: json["nota"],
       pendiente: Parser.toInt(json["pendiente"]),
@@ -185,6 +220,13 @@ class ContactoModelo {
         "foto_referencia_fecha": fotoReferenciaFecha == null
             ? null
             : Textos.fechaYMDHMS(fecha: fotoReferenciaFecha!),
+        "uuid_foto": uuidFoto,
+        "uuid_foto_referencia": uuidFotoReferencia,
+        "uuid_domicilio": uuidDomicilio,
+        "uuid_numero": uuidNumero,
+        "uuid_otro_numero": uuidOtroNumero,
+        "uuid_tipo": uuidTipo,
+        "uuid_estado": uuidEstado,
         "what_3_words": what3Words,
         "nota": nota,
         "uuid": uuid,

@@ -51,4 +51,10 @@ class UsuarioController {
     final result = await db.query(nombreDB, where: 'id = ?', whereArgs: [id]);
     return result.isNotEmpty ? UsuarioModel.fromJson(result.first) : null;
   }
+
+  static Future<UsuarioModel?> getItemUuid(String uuid) async {
+    final db = await database();
+    final result = await db.query(nombreDB, where: 'uuid = ?', whereArgs: [uuid]);
+    return result.isNotEmpty ? UsuarioModel.fromJson(result.first) : null;
+  }
 }

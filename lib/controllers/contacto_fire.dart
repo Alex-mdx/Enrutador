@@ -24,19 +24,21 @@ class ContactoFire {
     return ContactoModelo.fromJson(querySnapshot.docs.first.data());
   }
 
-  static Future<void> send({required ContactoModelo contacto}) async {
+  static Future<bool> send({required ContactoModelo contacto}) async {
     var data = await getItem(id: contacto.id);
     if (data == null) {
       var rdm = Textos.randomWord(30);
       await db.collection(name).doc(rdm).set(contacto
           .copyWith(uuid: FirebaseAuth.instance.currentUser!.uid, status: 1)
           .toJson());
+      return true;
     } else {
       var docId = await getDocId(id: contacto.id);
-      if (docId == null) return;
+      if (docId == null) return false;
       await db.collection(name).doc(docId).update(contacto
           .copyWith(uuid: FirebaseAuth.instance.currentUser!.uid, status: 1)
           .toJson());
+      return true;
     }
   }
 }

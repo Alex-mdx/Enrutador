@@ -2,12 +2,14 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:enrutador/controllers/usuario_controller.dart';
+import 'package:enrutador/utilities/main_provider.dart';
 import 'package:enrutador/utilities/services/dialog_services.dart';
 import 'package:enrutador/utilities/theme/theme_app.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:oktoast/oktoast.dart';
+import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../controllers/usuario_fire.dart';
@@ -42,6 +44,7 @@ class _CardAccoutState extends State<CardAccout> {
 
   @override
   Widget build(BuildContext context) {
+    final provider = Provider.of<MainProvider>(context);
     return Card(
         child: Padding(
             padding: EdgeInsets.all(4.sp),
@@ -132,6 +135,12 @@ class _CardAccoutState extends State<CardAccout> {
                               flex: 1,
                               child: IconButton(
                                   onPressed: () async {
+                                    var contacto = await UsuarioFire.getItem(table: "uuid", query: "${FirebaseAuth.instance.currentUser?.uid}");
+                                    if(contacto != null){
+                                      await UsuarioController.insert(contacto);
+                                      provider.usuario = contacto;
+                                    }
+                                    
                                     await FirebaseAuth.instance.currentUser
                                         ?.reload();
                                     setState(() {});

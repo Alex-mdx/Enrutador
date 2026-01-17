@@ -9,8 +9,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
+import 'package:rive_animated_icon/rive_animated_icon.dart';
 import 'package:sizer/sizer.dart';
 import 'package:timelines_plus/timelines_plus.dart';
+import '../controllers/estado_fire.dart';
 import 'widgets/list_estado_widget.dart';
 
 class EstadoView extends StatefulWidget {
@@ -52,6 +54,25 @@ class _TiposViewState extends State<EstadoView> {
             appBar: AppBar(
                 title: Text("Estados", style: TextStyle(fontSize: 18.sp)),
                 actions: [
+                  ElevatedButton.icon(
+                      onPressed: () => Dialogs.showMorph(
+                          title: "Estados",
+                          description:
+                              "¿Enviar directamente para que se guarden en la base de datos?",
+                          loadingTitle: "Enviando",
+                          onAcceptPressed: (context) async {
+                            for (var i = 0; i < estados.length; i++) {
+                              await EstadoFire.send(estado: estados[i]);
+                            }
+                            send();
+                          }),
+                      icon: RiveAnimatedIcon(
+                          riveIcon: RiveIcon.reload2,
+                          color: ThemaMain.green,
+                          height: 22.sp,
+                          strokeWidth: 2.w,
+                          width: 22.sp),
+                      label: Text("Todo", style: TextStyle(fontSize: 14.sp))),
                   ElevatedButton.icon(
                       onPressed: () async {
                         var estados = await EstadoController.getItems();
@@ -103,7 +124,9 @@ class _TiposViewState extends State<EstadoView> {
                             style: TextStyle(fontSize: 14.sp)))
                 ]),
             body: !carga
-                ? Center(child: LoadingAnimationWidget.twoRotatingArc(color: ThemaMain.primary, size: 24.sp))
+                ? Center(
+                    child: LoadingAnimationWidget.twoRotatingArc(
+                        color: ThemaMain.primary, size: 24.sp))
                 : estados.isEmpty
                     ? Center(
                         child: Text("No se ha ingresado ningun estado",
@@ -128,7 +151,8 @@ class _TiposViewState extends State<EstadoView> {
                                         builder: (context) => DialogsEstados(
                                             estado: estados[index]));
                                     await send();
-                                  },dense: false),
+                                  },
+                                  dense: false),
                               SizedBox(
                                   height: 1.h, child: DashedLineConnector()),
                               if (estados.length - 1 == index) DotIndicator()

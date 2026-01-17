@@ -1,11 +1,16 @@
+import 'dart:developer';
+
 import 'package:enrutador/controllers/estado_controller.dart';
 import 'package:enrutador/controllers/roles_controller.dart';
 import 'package:enrutador/controllers/sql_generator.dart';
 import 'package:enrutador/controllers/tipo_controller.dart';
+import 'package:enrutador/controllers/usuario_controller.dart';
 import 'package:enrutador/models/contacto_model.dart';
 import 'package:enrutador/models/estado_model.dart';
 import 'package:enrutador/models/roles_model.dart';
 import 'package:enrutador/models/tipos_model.dart';
+import 'package:enrutador/models/usuario_model.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_map_animations/flutter_map_animations.dart';
@@ -173,19 +178,52 @@ class MainProvider with ChangeNotifier implements TickerProvider {
     notifyListeners();
   }
 
+  UsuarioModel? _usuario;
+  UsuarioModel? get usuario => _usuario;
+  set usuario(UsuarioModel? valor) {
+    _usuario = valor;
+    notifyListeners();
+  }
 
   //?Funciones
 
   Future<void> logeo() async {
     var db = await ContactoController.database();
-    await SqlGenerator.existColumna(add: "aceptado_uuid", database: db, nombreDB: "contacto");
-    await SqlGenerator.existColumna(add: "pendiente", database: db, nombreDB: "contacto");
-    await SqlGenerator.existColumna(add: "uuid", database: db, nombreDB: "contacto");
-    await SqlGenerator.existColumna(add: "status", database: db, nombreDB: "contacto");
-    await SqlGenerator.existColumna(add: "creado", database: db, nombreDB: "contacto");
-    await SqlGenerator.existColumna(add: "modificado", database: db, nombreDB: "contacto");
+    await SqlGenerator.existColumna(
+        add: "aceptado_uuid", database: db, nombreDB: "contacto");
+    await SqlGenerator.existColumna(
+        add: "pendiente", database: db, nombreDB: "contacto");
+    await SqlGenerator.existColumna(
+        add: "uuid", database: db, nombreDB: "contacto");
+    await SqlGenerator.existColumna(
+        add: "status", database: db, nombreDB: "contacto");
+    await SqlGenerator.existColumna(
+        add: "creado", database: db, nombreDB: "contacto");
+    await SqlGenerator.existColumna(
+        add: "modificado", database: db, nombreDB: "contacto");
+    await SqlGenerator.existColumna(
+        add: "uuid_foto", database: db, nombreDB: "contacto");
+        await SqlGenerator.existColumna(
+        add: "uuid_foto_referencia", database: db, nombreDB: "contacto");
+        await SqlGenerator.existColumna(
+        add: "uuid_domicilio", database: db, nombreDB: "contacto");
+        await SqlGenerator.existColumna(
+        add: "uuid_numero", database: db, nombreDB: "contacto");
+        await SqlGenerator.existColumna(
+        add: "uuid_otro_num", database: db, nombreDB: "contacto");
+        await SqlGenerator.existColumna(
+        add: "uuid_tipo", database: db, nombreDB: "contacto");
+        await SqlGenerator.existColumna(
+        add: "uuid_estado", database: db, nombreDB: "contacto");
+        await SqlGenerator.existColumna(
+        add: "uuid_otro_num", database: db, nombreDB: "contacto");
+        await SqlGenerator.existColumna(
+        add: "uuid_otro_num", database: db, nombreDB: "contacto");
     tipos = await TipoController.getItems();
     estados = await EstadoController.getItems();
     roles = await RolesController.getAll();
+    usuario = await UsuarioController.getItemUuid(
+        FirebaseAuth.instance.currentUser?.uid ?? "");
+    log("USUARIO: ${usuario?.toJson()}");
   }
 }

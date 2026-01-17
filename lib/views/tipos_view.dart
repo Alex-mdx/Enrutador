@@ -7,8 +7,10 @@ import 'package:enrutador/utilities/theme/theme_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:provider/provider.dart';
+import 'package:rive_animated_icon/rive_animated_icon.dart';
 import 'package:sizer/sizer.dart';
 
+import '../controllers/tipo_fire.dart';
 import 'dialogs/dialogs_tipos.dart';
 import 'widgets/list_tipo_widget.dart';
 
@@ -52,6 +54,25 @@ class _TiposViewState extends State<TiposView> {
               title: Text("Tipos", style: TextStyle(fontSize: 18.sp)),
               actions: [
                 ElevatedButton.icon(
+                    onPressed: () => Dialogs.showMorph(
+                        title: "Tipos",
+                        description:
+                            "¿Enviar directamente para que se guarden en la base de datos?",
+                        loadingTitle: "Enviando",
+                        onAcceptPressed: (context) async {
+                          for (var i = 0; i < contactos.length; i++) {
+                            await TipoFire.send(tipo: contactos[i]);
+                          }
+                          send();
+                        }),
+                    icon: RiveAnimatedIcon(
+                        riveIcon: RiveIcon.reload2,
+                        color: ThemaMain.green,
+                        height: 22.sp,
+                        strokeWidth: 2.w,
+                        width: 22.sp),
+                    label: Text("Todo", style: TextStyle(fontSize: 14.sp))),
+                ElevatedButton.icon(
                     onPressed: () async {
                       var tipo = await TipoController.getItems();
                       Dialogs.showMorph(
@@ -89,14 +110,12 @@ class _TiposViewState extends State<TiposView> {
                         var archivo = await ShareFun.shareDatas(
                             nombre: "tipos", datas: temp);
                         if (archivo.isNotEmpty) {
-                              await ShareFun.share(
-                                  titulo:
-                                      "Este es un contenido compacto de tipos",
-                                  mensaje: "objeto de contactos",
-                                  files: archivo
-                                      .map((e) => XFile(e.path))
-                                      .toList());
-                            }
+                          await ShareFun.share(
+                              titulo: "Este es un contenido compacto de tipos",
+                              mensaje: "objeto de contactos",
+                              files:
+                                  archivo.map((e) => XFile(e.path)).toList());
+                        }
                       },
                       child: Text(
                           "Enviar (${selects.where((element) => element == true).length})",
