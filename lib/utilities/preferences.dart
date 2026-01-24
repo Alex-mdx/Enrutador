@@ -23,9 +23,6 @@ class Preferences {
   static bool get camara => _preferences?.getBool('camara') ?? false;
   static set camara(bool value) => _preferences?.setBool('camara', value);
 
-  static bool get galeria => _preferences?.getBool('galeria') ?? false;
-  static set galeria(bool value) => _preferences?.setBool('galeria', value);
-
   static bool get contactos => _preferences?.getBool('contactos') ?? false;
   static set contactos(bool value) => _preferences?.setBool('contactos', value);
 

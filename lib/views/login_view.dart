@@ -31,6 +31,11 @@ class _LoginViewState extends State<LoginView> {
   bool show = true;
 
   bool carga = false;
+  bool politica = [
+    Preferences.camara,
+    Preferences.ubicacion,
+    Preferences.contactos
+  ].every((element) => element);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -75,56 +80,50 @@ class _LoginViewState extends State<LoginView> {
                                             icon: Icon(show
                                                 ? Icons.visibility_off
                                                 : Icons.visibility))))),
-                            Container(
-                                decoration: BoxDecoration(
-                                    color: ThemaMain.dialogbackground,
-                                    borderRadius:
-                                        BorderRadius.circular(borderRadius)),
-                                child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Checkbox.adaptive(
-                                          checkColor: ThemaMain.primary,
-                                          activeColor: ThemaMain.green,
-                                          value: Preferences.camara &&
-                                              Preferences.contactos &&
-                                              Preferences.ubicacion,
-                                          onChanged: (value) => showDialog(
-                                              context: context,
-                                              builder: (context) =>
-                                                  DialogPoliticaUso())),
-                                      Text("Aceptar politicas de uso",
-                                          style: TextStyle(fontSize: 14.sp))
-                                    ])),
+                            ElevatedButton.icon(
+                                style: ButtonStyle(
+                                    backgroundColor: WidgetStatePropertyAll(
+                                        ThemaMain.dialogbackground)),
+                                onPressed: () => showDialog(
+                                    context: context,
+                                    builder: (context) => DialogPoliticaUso()),
+                                label: Text("Aceptar politicas de uso",
+                                    style: TextStyle(fontSize: 14.sp)),
+                                icon: Icon(Icons.check_box_outline_blank)),
                             ElevatedButton.icon(
                                 onPressed: () async {
-                                  if (email.text.isNotEmpty &&
-                                      password.text.isNotEmpty) {
-                                    setState(() => carga = true);
-                                    try {
-                                      var user = await FirebaseAuth.instance
-                                          .signInWithEmailAndPassword(
-                                              email: email.text,
-                                              password: password.text);
-                                      log("result: ${user.toString()}");
-                                      if (user.user!.emailVerified) {
-                                        await Navigation
-                                            .pushNamedAndRemoveUntil(
-                                                routeName: "home",
-                                                predicate: (route) => false);
-                                      } else {
-                                        await Navigation
-                                            .pushNamedAndRemoveUntil(
-                                                routeName: "account",
-                                                predicate: (route) => false);
+                                  if (politica) {
+                                    if (email.text.isNotEmpty &&
+                                        password.text.isNotEmpty) {
+                                      setState(() => carga = true);
+                                      try {
+                                        var user = await FirebaseAuth.instance
+                                            .signInWithEmailAndPassword(
+                                                email: email.text,
+                                                password: password.text);
+                                        log("result: ${user.toString()}");
+                                        if (user.user!.emailVerified) {
+                                          await Navigation
+                                              .pushNamedAndRemoveUntil(
+                                                  routeName: "home",
+                                                  predicate: (route) => false);
+                                        } else {
+                                          await Navigation
+                                              .pushNamedAndRemoveUntil(
+                                                  routeName: "account",
+                                                  predicate: (route) => false);
+                                        }
+                                        setState(() => carga = false);
+                                      } catch (e) {
+                                        var tr =
+                                            await TransFun.trad(e.toString());
+                                        showToast(tr);
+                                        setState(() => carga = false);
                                       }
-                                      setState(() => carga = false);
-                                    } catch (e) {
-                                      var tr =
-                                          await TransFun.trad(e.toString());
-                                      showToast(tr);
-                                      setState(() => carga = false);
                                     }
+                                  } else {
+                                    showToast(
+                                        "Debes aceptar las politicas de uso");
                                   }
                                 },
                                 icon: carga
@@ -141,44 +140,49 @@ class _LoginViewState extends State<LoginView> {
                           ]))),
               ElevatedButton.icon(
                   onPressed: () async {
-                    if (email.text.isNotEmpty && password.text.isNotEmpty) {
-                      setState(() => carga = true);
-                      await Dialogs.showMorph(
-                          title: "Crear cuenta",
-                          description:
-                              "Se intento acceder con un usuario y contraseña inexistente\n¿Deseas crear una cuenta y acceder a la aplicacion con estos datos?",
-                          loadingTitle: "Creando",
-                          onAcceptPressed: (context) async {
-                            var result = await FirebaseAuth.instance
-                                .createUserWithEmailAndPassword(
-                                    email: email.text, password: password.text);
-                            log(result.toString());
-                            try {
-                              if (result.user != null) {
-                                showToast("Cuenta creada exitosamente");
-                                var user = await FirebaseAuth.instance
-                                    .signInWithEmailAndPassword(
-                                        email: email.text,
-                                        password: password.text);
-                                log("result: ${user.toString()}");
-                                if (user.user!.emailVerified) {
-                                  await Navigation.pushNamedAndRemoveUntil(
-                                      routeName: "home",
-                                      predicate: (route) => false);
-                                } else {
-                                  await Navigation.pushNamedAndRemoveUntil(
-                                      routeName: "account",
-                                      predicate: (route) => false);
+                    if (politica) {
+                      if (email.text.isNotEmpty && password.text.isNotEmpty) {
+                        setState(() => carga = true);
+                        await Dialogs.showMorph(
+                            title: "Crear cuenta",
+                            description:
+                                "Se intento acceder con un usuario y contraseña inexistente\n¿Deseas crear una cuenta y acceder a la aplicacion con estos datos?",
+                            loadingTitle: "Creando",
+                            onAcceptPressed: (context) async {
+                              var result = await FirebaseAuth.instance
+                                  .createUserWithEmailAndPassword(
+                                      email: email.text,
+                                      password: password.text);
+                              log(result.toString());
+                              try {
+                                if (result.user != null) {
+                                  showToast("Cuenta creada exitosamente");
+                                  var user = await FirebaseAuth.instance
+                                      .signInWithEmailAndPassword(
+                                          email: email.text,
+                                          password: password.text);
+                                  log("result: ${user.toString()}");
+                                  if (user.user!.emailVerified) {
+                                    await Navigation.pushNamedAndRemoveUntil(
+                                        routeName: "home",
+                                        predicate: (route) => false);
+                                  } else {
+                                    await Navigation.pushNamedAndRemoveUntil(
+                                        routeName: "account",
+                                        predicate: (route) => false);
+                                  }
                                 }
+                              } catch (e) {
+                                var tr = await TransFun.trad(e.toString());
+                                showToast(tr);
                               }
-                            } catch (e) {
-                              var tr = await TransFun.trad(e.toString());
-                              showToast(tr);
-                            }
-                          }).whenComplete(() => setState(() => carga = false));
+                            }).whenComplete(() => setState(() => carga = false));
+                      } else {
+                        showToast(
+                            "Ingrese ${email.text.isEmpty ? "Correo electronico en su respectivo campo" : ""}${email.text.isEmpty && password.text.isEmpty ? " y " : ""}${password.text.isEmpty ? "Contraseña en su respectivo campo" : ""}");
+                      }
                     } else {
-                      showToast(
-                          "Ingrese ${email.text.isEmpty ? "Correo electronico en su respectivo campo" : ""}${email.text.isEmpty && password.text.isEmpty ? " y " : ""}${password.text.isEmpty ? "Contraseña en su respectivo campo" : ""}");
+                      showToast("Debes aceptar las politicas de uso");
                     }
                   },
                   icon: Icon(LineIcons.userPlus,
@@ -218,20 +222,30 @@ class _LoginViewState extends State<LoginView> {
                   text: "Entrar con Google",
                   textStyle: TextStyle(fontSize: 16.sp), onPressed: () async {
                 try {
-                  if (GoogleSignIn.instance.supportsAuthenticate()) {
-                    var auth = await GoogleSignIn.instance.authenticate();
-                    if (auth.authentication.idToken != null) {
-                      // Usar GoogleAuthProvider.credential para obtener la credencial correcta
-                      AuthCredential cred = GoogleAuthProvider.credential(
-                          idToken: auth.authentication.idToken);
+                  if (politica) {
+                    if (GoogleSignIn.instance.supportsAuthenticate()) {
+                      var auth = await GoogleSignIn.instance.authenticate();
+                      if (auth.authentication.idToken != null) {
+                        // Usar GoogleAuthProvider.credential para obtener la credencial correcta
+                        AuthCredential cred = GoogleAuthProvider.credential(
+                            idToken: auth.authentication.idToken);
 
-                      var user = await FirebaseAuth.instance
-                          .signInWithCredential(cred);
-                      if (user.user != null) {
-                        await Navigation.pushNamedAndRemoveUntil(
-                            routeName: "account", predicate: (route) => false);
-                        showToast("Autenticación exitosa");
+                        var user = await FirebaseAuth.instance
+                            .signInWithCredential(cred);
+                        if (user.user != null) {
+                          if (user.user!.emailVerified) {
+                            await Navigation.pushNamedAndRemoveUntil(
+                                routeName: "home", predicate: (route) => false);
+                          } else {
+                            await Navigation.pushNamedAndRemoveUntil(
+                                routeName: "account",
+                                predicate: (route) => false);
+                          }
+                          showToast("Autenticación exitosa");
+                        }
                       }
+                    } else {
+                      showToast("Debes aceptar las politicas de uso");
                     }
                   }
                 } catch (e) {
