@@ -1,3 +1,4 @@
+import 'package:enrutador/utilities/preferences.dart';
 import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -12,24 +13,40 @@ class Permisos {
       PermissionStatus.limited ||
       PermissionStatus.permanentlyDenied =>
         false,
-      PermissionStatus.provisional || PermissionStatus.granted => true,
+      PermissionStatus.provisional || PermissionStatus.granted => true
     };
   }
 
   static Future<bool> camera() async {
-    var status = await [Permission.camera, Permission.photos].request();
-    bool all = status.values.every((element) => element.isGranted);
-    return all;
+    var status = await Permission.camera.request();
+    if (status.isDenied ||
+        status.isRestricted ||
+        status.isLimited ||
+        status.isPermanentlyDenied) {
+      return false;
+    }
+    return true;
   }
 
   static Future<bool> determinePosition() async {
     bool serviceEnabled;
-    LocationPermission permission;
+    
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
       return Future.error('Location services are disabled.');
     }
+var permission = await location();
+    
 
+    if (permission == LocationPermission.deniedForever) {
+      return Future.error(
+          'Location permissions are permanently denied, we cannot request permissions.');
+    }
+    return true;
+  }
+
+  static Future<LocationPermission> geolocation() async {
+    LocationPermission permission;
     permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
@@ -37,12 +54,7 @@ class Permisos {
         return Future.error('Location permissions are denied');
       }
     }
-
-    if (permission == LocationPermission.deniedForever) {
-      return Future.error(
-          'Location permissions are permanently denied, we cannot request permissions.');
-    }
-    return true;
+    return permission;
   }
 
   static LocationSettings location() {
@@ -54,7 +66,7 @@ class Permisos {
           accuracy: LocationAccuracy.bestForNavigation,
           distanceFilter: 0,
           forceLocationManager: false,
-          intervalDuration: const Duration(milliseconds: 350),
+          intervalDuration: const Duration(milliseconds: 100),
           foregroundNotificationConfig: const ForegroundNotificationConfig(
               notificationText: "Navegación en curso...",
               notificationTitle: "Servicio de Ubicación",
@@ -72,5 +84,12 @@ class Permisos {
           accuracy: LocationAccuracy.high, distanceFilter: 0);
     }
     return locationSettings;
+  }
+
+  static Future<void> permisosPoliticas() async {
+    Preferences.contactos = await Permission.phone.isGranted;
+    Preferences.camara = await Permission.camera.isGranted;
+    var permission = await geolocation();
+    Preferences.ubicacion = permission == LocationPermission.always || permission == LocationPermission.whileInUse;
   }
 }

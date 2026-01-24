@@ -1,5 +1,7 @@
 import 'dart:developer';
 import 'package:dynamic_background/dynamic_background.dart';
+import 'package:enrutador/utilities/camara_fun.dart';
+import 'package:enrutador/utilities/preferences.dart';
 import 'package:enrutador/utilities/services/dialog_services.dart';
 import 'package:enrutador/utilities/services/navigation_services.dart';
 import 'package:enrutador/utilities/theme/theme_color.dart';
@@ -14,6 +16,7 @@ import 'package:sign_in_button/sign_in_button.dart';
 import 'package:sizer/sizer.dart';
 
 import '../utilities/theme/theme_app.dart';
+import 'dialogs/dialog_politica_uso.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -81,11 +84,17 @@ class _LoginViewState extends State<LoginView> {
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       Checkbox.adaptive(
-                                          value: false, onChanged: (value) {}),
-                                      Text("Aceptar permisos y politica de uso",
-                                          style: TextStyle(
-                                              fontSize: 14.sp,
-                                              fontWeight: FontWeight.bold))
+                                          checkColor: ThemaMain.primary,
+                                          activeColor: ThemaMain.green,
+                                          value: Preferences.camara &&
+                                              Preferences.contactos &&
+                                              Preferences.ubicacion,
+                                          onChanged: (value) => showDialog(
+                                              context: context,
+                                              builder: (context) =>
+                                                  DialogPoliticaUso())),
+                                      Text("Aceptar politicas de uso",
+                                          style: TextStyle(fontSize: 14.sp))
                                     ])),
                             ElevatedButton.icon(
                                 onPressed: () async {

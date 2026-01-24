@@ -134,7 +134,7 @@ class _PendientesHomeState extends State<PendientesHome> {
                   onAcceptPressed: (contexto) async {
                     var data = contactos[index].copyWith(
                         pendiente: 0,
-                        aceptadoUuid: provider.usuario?.uuid ?? "");
+                        aceptadoEmpleado: provider.usuario?.empleadoId?.toString());
                     var result = await ContactoFire.send(contacto: data);
                     if (result) {
                       await ContactoController.update(data);

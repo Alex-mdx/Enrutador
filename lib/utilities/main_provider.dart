@@ -190,11 +190,11 @@ class MainProvider with ChangeNotifier implements TickerProvider {
   Future<void> logeo() async {
     var db = await ContactoController.database();
     await SqlGenerator.existColumna(
-        add: "aceptado_uuid", database: db, nombreDB: "contacto");
+        add: "aceptado_empleado", database: db, nombreDB: "contacto");
     await SqlGenerator.existColumna(
         add: "pendiente", database: db, nombreDB: "contacto");
     await SqlGenerator.existColumna(
-        add: "uuid", database: db, nombreDB: "contacto");
+        add: "empleado_id", database: db, nombreDB: "contacto");
     await SqlGenerator.existColumna(
         add: "status", database: db, nombreDB: "contacto");
     await SqlGenerator.existColumna(
@@ -202,23 +202,23 @@ class MainProvider with ChangeNotifier implements TickerProvider {
     await SqlGenerator.existColumna(
         add: "modificado", database: db, nombreDB: "contacto");
     await SqlGenerator.existColumna(
-        add: "uuid_foto", database: db, nombreDB: "contacto");
+        add: "empleado_foto", database: db, nombreDB: "contacto");
         await SqlGenerator.existColumna(
-        add: "uuid_foto_referencia", database: db, nombreDB: "contacto");
+        add: "empleado_foto_referencia", database: db, nombreDB: "contacto");
         await SqlGenerator.existColumna(
-        add: "uuid_domicilio", database: db, nombreDB: "contacto");
+        add: "empleado_domicilio", database: db, nombreDB: "contacto");
         await SqlGenerator.existColumna(
-        add: "uuid_numero", database: db, nombreDB: "contacto");
+        add: "empleado_numero", database: db, nombreDB: "contacto");
         await SqlGenerator.existColumna(
-        add: "uuid_otro_num", database: db, nombreDB: "contacto");
+        add: "empleado_otro_num", database: db, nombreDB: "contacto");
         await SqlGenerator.existColumna(
-        add: "uuid_tipo", database: db, nombreDB: "contacto");
+        add: "empleado_tipo", database: db, nombreDB: "contacto");
         await SqlGenerator.existColumna(
-        add: "uuid_estado", database: db, nombreDB: "contacto");
+        add: "empleado_estado", database: db, nombreDB: "contacto");
         await SqlGenerator.existColumna(
-        add: "uuid_otro_num", database: db, nombreDB: "contacto");
+        add: "empleado_otro_num", database: db, nombreDB: "contacto");
         await SqlGenerator.existColumna(
-        add: "uuid_otro_num", database: db, nombreDB: "contacto");
+        add: "empleado_otro_num", database: db, nombreDB: "contacto");
     tipos = await TipoController.getItems();
     estados = await EstadoController.getItems();
     roles = await RolesController.getAll();

@@ -15,6 +15,12 @@ class TipoFire {
     return querySnapshot.docs.first.id;
   }
 
+  static Future<List<TiposModelo>> getItems() async {
+    final querySnapshot = await db.collection(name).get();
+    if (querySnapshot.docs.isEmpty) return [];
+    return querySnapshot.docs.map((e) => TiposModelo.fromJson(e.data())).toList();
+  }
+
   static Future<TiposModelo?> getItem({required int? id}) async {
     if (id == null) return null;
     final querySnapshot =

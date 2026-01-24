@@ -169,6 +169,8 @@ class MapFun {
                         double.parse(newlocation.latitude.toStringAsFixed(6)),
                     longitud:
                         double.parse(newlocation.longitude.toStringAsFixed(6)),
+                    pendiente: 1,
+                    status: 1,
                     domicilio: null,
                     fechaDomicilio: null,
                     numero: null,

@@ -6,6 +6,7 @@ import 'package:enrutador/utilities/share_fun.dart';
 import 'package:enrutador/utilities/theme/theme_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:oktoast/oktoast.dart';
 import 'package:provider/provider.dart';
 import 'package:rive_animated_icon/rive_animated_icon.dart';
 import 'package:sizer/sizer.dart';
@@ -53,25 +54,27 @@ class _TiposViewState extends State<TiposView> {
           appBar: AppBar(
               title: Text("Tipos", style: TextStyle(fontSize: 18.sp)),
               actions: [
-                ElevatedButton.icon(
-                    onPressed: () => Dialogs.showMorph(
-                        title: "Tipos",
-                        description:
-                            "¿Enviar directamente para que se guarden en la base de datos?",
-                        loadingTitle: "Enviando",
-                        onAcceptPressed: (context) async {
-                          for (var i = 0; i < contactos.length; i++) {
-                            await TipoFire.send(tipo: contactos[i]);
-                          }
-                          send();
-                        }),
-                    icon: RiveAnimatedIcon(
-                        riveIcon: RiveIcon.reload2,
-                        color: ThemaMain.green,
-                        height: 22.sp,
-                        strokeWidth: 2.w,
-                        width: 22.sp),
-                    label: Text("Todo", style: TextStyle(fontSize: 14.sp))),
+                if (contactos.isNotEmpty)
+                  ElevatedButton.icon(
+                      onPressed: () => Dialogs.showMorph(
+                          title: "Tipos",
+                          description:
+                              "¿Enviar directamente para que se guarden en la base de datos?",
+                          loadingTitle: "Enviando",
+                          onAcceptPressed: (context) async {
+                            for (var i = 0; i < contactos.length; i++) {
+                              await TipoFire.send(tipo: contactos[i]);
+                            }
+                            showToast("Tipos enviados correctamente");
+                            await send();
+                          }),
+                      icon: RiveAnimatedIcon(
+                          riveIcon: RiveIcon.reload2,
+                          color: ThemaMain.green,
+                          height: 22.sp,
+                          strokeWidth: 2.w,
+                          width: 22.sp),
+                      label: Text("Todo", style: TextStyle(fontSize: 14.sp))),
                 ElevatedButton.icon(
                     onPressed: () async {
                       var tipo = await TipoController.getItems();
@@ -125,30 +128,74 @@ class _TiposViewState extends State<TiposView> {
               ? Center(child: CircularProgressIndicator())
               : contactos.isEmpty
                   ? Center(
-                      child: Text("No se ha ingresado ningun contacto",
-                          style: TextStyle(
-                              fontSize: 16.sp, fontWeight: FontWeight.bold)))
-                  : ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: contactos.length,
-                      itemBuilder: (context, index) {
-                        TiposModelo tipo = contactos[index];
-                        return ListTipoWidget(
-                            share: true,
-                            tipo: tipo,
-                            selected: selects[index],
-                            selectedVisible: true,
-                            onSelected: (p0) => setState(() {
-                                  selects[index] = !selects[index];
-                                }),
-                            fun: () async {
-                              await showDialog(
-                                  context: context,
-                                  builder: (context) =>
-                                      DialogsTipos(tipo: tipo));
+                      child: TextButton.icon(
+                          onPressed: () async {
+                            bool result = false;
+                            await Dialogs.showMorph(
+                                title: "Descargar tipos",
+                                description:
+                                    "Desea descargar los tipos de la base de datos?",
+                                loadingTitle: "procesando",
+                                onAcceptPressed: (context) async =>
+                                    setState(() {
+                                      result = true;
+                                    }));
+                            if (result) {
+                              carga = false;
+                              var cont = await TipoFire.getItems();
+                              for (var element in cont) {
+                                await TipoController.insert(element);
+                              }
                               await send();
-                            });
-                      }),
+                            }
+                          },
+                          icon: Icon(Icons.refresh, size: 20.sp),
+                          label: Text("No se ha ingresado ningun tipo",
+                              style: TextStyle(
+                                  fontSize: 16.sp,
+                                  fontWeight: FontWeight.bold))))
+                  : RefreshIndicator(
+                      onRefresh: () async {
+                        bool result = false;
+                        await Dialogs.showMorph(
+                            title: "Descargar tipos",
+                            description:
+                                "Desea descargar los tipos de la base de datos?",
+                            loadingTitle: "procesando",
+                            onAcceptPressed: (context) async => setState(() {
+                                  result = true;
+                                }));
+                        if (result) {
+                          carga = false;
+                          var cont = await TipoFire.getItems();
+                          for (var element in cont) {
+                            await TipoController.insert(element);
+                          }
+                          await send();
+                        }
+                      },
+                      child: ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: contactos.length,
+                          itemBuilder: (context, index) {
+                            TiposModelo tipo = contactos[index];
+                            return ListTipoWidget(
+                                share: true,
+                                tipo: tipo,
+                                selected: selects[index],
+                                selectedVisible: true,
+                                onSelected: (p0) => setState(() {
+                                      selects[index] = !selects[index];
+                                    }),
+                                fun: () async {
+                                  await showDialog(
+                                      context: context,
+                                      builder: (context) =>
+                                          DialogsTipos(tipo: tipo));
+                                  await send();
+                                });
+                          }),
+                    ),
           floatingActionButton: FloatingActionButton(
               onPressed: () async {
                 await showDialog(

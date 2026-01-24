@@ -23,7 +23,11 @@ class EstadoController {
 
   static Future<void> insert(EstadoModel data) async {
     final db = await database();
-
+    var modelo = await getItem(data: data.id!);
+    if (modelo != null) {
+      await update(data);
+      return;
+    }
     await db.insert(nombreDB, data.toJson(),
         conflictAlgorithm: sql.ConflictAlgorithm.replace);
   }
@@ -47,7 +51,7 @@ class EstadoController {
 
   static Future<List<EstadoModel>> getItems() async {
     final db = await database();
-    final modelo = (await db.query(nombreDB,orderBy: "orden ASC"));
+    final modelo = (await db.query(nombreDB, orderBy: "orden ASC"));
     List<EstadoModel> model = [];
     for (var element in modelo) {
       model.add(EstadoModel.fromJson(element));

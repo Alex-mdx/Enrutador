@@ -1,10 +1,13 @@
 import 'package:enrutador/controllers/roles_controller.dart';
+import 'package:enrutador/controllers/roles_fire.dart';
 import 'package:enrutador/models/roles_model.dart';
 import 'package:enrutador/views/dialogs/dialogs_roles.dart';
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:oktoast/oktoast.dart';
 import 'package:provider/provider.dart';
+import 'package:rive_animated_icon/rive_animated_icon.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:sizer/sizer.dart';
 
@@ -53,6 +56,27 @@ class _RolesViewState extends State<RolesView> {
           appBar: AppBar(
               title: Text("Roles", style: TextStyle(fontSize: 18.sp)),
               actions: [
+                if (roles.isNotEmpty)
+                  ElevatedButton.icon(
+                      onPressed: () => Dialogs.showMorph(
+                          title: "Roles",
+                          description:
+                              "¿Enviar directamente para que se guarden en la base de datos?",
+                          loadingTitle: "Enviando",
+                          onAcceptPressed: (context) async {
+                            for (var i = 0; i < roles.length; i++) {
+                              await RolesFire.send(rol: roles[i]);
+                            }
+                            showToast("Roles enviados correctamente");
+                            await send();
+                          }),
+                      icon: RiveAnimatedIcon(
+                          riveIcon: RiveIcon.reload2,
+                          color: ThemaMain.green,
+                          height: 22.sp,
+                          strokeWidth: 2.w,
+                          width: 22.sp),
+                      label: Text("Todo", style: TextStyle(fontSize: 14.sp))),
                 ElevatedButton.icon(
                     onPressed: () async {
                       var roles = await RolesController.getAll();
@@ -69,12 +93,14 @@ class _RolesViewState extends State<RolesView> {
                                   titulo:
                                       "Este es un contenido compacto de tipos",
                                   mensaje: "objeto de contactos",
-                                  files:
-                                      archivo.map((e) => XFile(e.path)).toList());
+                                  files: archivo
+                                      .map((e) => XFile(e.path))
+                                      .toList());
                             }
                           });
                     },
-                    label: Text("Enviar todo", style: TextStyle(fontSize: 14.sp)),
+                    label:
+                        Text("Enviar todo", style: TextStyle(fontSize: 14.sp)),
                     icon: Icon(Icons.done_all,
                         color: ThemaMain.primary, size: 20.sp)),
                 if (selects.any((element) => element == true))
@@ -92,7 +118,8 @@ class _RolesViewState extends State<RolesView> {
                           await ShareFun.share(
                               titulo: "Este es un contenido compacto de roles",
                               mensaje: "objeto de contactos",
-                              files: archivo.map((e) => XFile(e.path)).toList());
+                              files:
+                                  archivo.map((e) => XFile(e.path)).toList());
                         }
                       },
                       child: Text(

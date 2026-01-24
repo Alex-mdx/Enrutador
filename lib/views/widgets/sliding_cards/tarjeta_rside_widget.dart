@@ -170,6 +170,33 @@ class _TarjetaRsideWidgetState extends State<TarjetaRsideWidget> {
                               showToast("Marcador limpiado");
                             });
                       }
+                    }else{
+                      await Dialogs.showMorph(
+                          title: "Inhabilitar Punteo",
+                          description:
+                              "¿Desea inhabilitar este punteo?\nYa no se tendra acceso a este marcador",
+                          loadingTitle: "Inhabilitando",
+                          onAcceptPressed: (context) async {
+                            await ContactoController.deleteItem(
+                                provider.contacto!.id!);
+                            var model = ContactoModelo.fromJson({
+                              "id": provider.contacto!.id,
+                              "latitud": provider.contacto!.latitud,
+                              "longitud": provider.contacto!.longitud
+                            });
+                            provider.contacto = model.copyWith(pendiente: 1,status: 0);
+                            await MapFun.touch(
+                                provider: provider,
+                                lat: model.latitud,
+                                lng: model.longitud);
+                            var datas =
+                                await EnrutarController.getItemContacto(
+                                    contactoId: provider.contacto!.id ?? -1);
+                            if (datas != null) {
+                              await EnrutarController.deleteItem(datas.id!);
+                            }
+                            showToast("Marcador inhabilitado");
+                          });
                     }
                   },
                   icon: esperar

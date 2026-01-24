@@ -6,7 +6,6 @@ import 'package:cunning_document_scanner/cunning_document_scanner.dart';
 import 'package:flutter/material.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:path/path.dart' as path;
 import 'package:sizer/sizer.dart';
 import 'theme/theme_color.dart';
@@ -14,8 +13,6 @@ import 'theme/theme_color.dart';
 class CamaraFun {
   static Future<List<XFile>> getGalleria(
       BuildContext context, String? nombre) async {
-    var status = await [Permission.camera, Permission.photos].request();
-    debugPrint("$status");
     return await AdvancedMediaPicker.openPicker(
         context: context,
         isNeedVideoCamera: false,
@@ -24,7 +21,7 @@ class CamaraFun {
             backgroundColor: ThemaMain.second,
             titleWidget: Text(
               nombre ?? "Seleccionar imagen",
-              style: TextStyle(fontSize: 16.sp),
+              style: TextStyle(fontSize: 16.sp)
             )),
         cameraStyle: CameraStyle(),
         allowedTypes: PickerAssetType.image,

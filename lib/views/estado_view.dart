@@ -8,6 +8,7 @@ import 'package:enrutador/views/dialogs/dialogs_estados.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:oktoast/oktoast.dart';
 import 'package:provider/provider.dart';
 import 'package:rive_animated_icon/rive_animated_icon.dart';
 import 'package:sizer/sizer.dart';
@@ -54,25 +55,27 @@ class _TiposViewState extends State<EstadoView> {
             appBar: AppBar(
                 title: Text("Estados", style: TextStyle(fontSize: 18.sp)),
                 actions: [
-                  ElevatedButton.icon(
-                      onPressed: () => Dialogs.showMorph(
-                          title: "Estados",
-                          description:
-                              "¿Enviar directamente para que se guarden en la base de datos?",
-                          loadingTitle: "Enviando",
-                          onAcceptPressed: (context) async {
-                            for (var i = 0; i < estados.length; i++) {
-                              await EstadoFire.send(estado: estados[i]);
-                            }
-                            send();
-                          }),
-                      icon: RiveAnimatedIcon(
-                          riveIcon: RiveIcon.reload2,
-                          color: ThemaMain.green,
-                          height: 22.sp,
-                          strokeWidth: 2.w,
-                          width: 22.sp),
-                      label: Text("Todo", style: TextStyle(fontSize: 14.sp))),
+                  if (estados.isNotEmpty)
+                    ElevatedButton.icon(
+                        onPressed: () => Dialogs.showMorph(
+                            title: "Estados",
+                            description:
+                                "¿Enviar directamente para que se guarden en la base de datos?",
+                            loadingTitle: "Enviando",
+                            onAcceptPressed: (context) async {
+                              for (var i = 0; i < estados.length; i++) {
+                                await EstadoFire.send(estado: estados[i]);
+                              }
+                              showToast("Estados enviados correctamente");
+                              send();
+                            }),
+                        icon: RiveAnimatedIcon(
+                            riveIcon: RiveIcon.reload2,
+                            color: ThemaMain.green,
+                            height: 22.sp,
+                            strokeWidth: 2.w,
+                            width: 22.sp),
+                        label: Text("Todo", style: TextStyle(fontSize: 14.sp))),
                   ElevatedButton.icon(
                       onPressed: () async {
                         var estados = await EstadoController.getItems();
@@ -129,35 +132,82 @@ class _TiposViewState extends State<EstadoView> {
                         color: ThemaMain.primary, size: 24.sp))
                 : estados.isEmpty
                     ? Center(
-                        child: Text("No se ha ingresado ningun estado",
-                            style: TextStyle(
-                                fontSize: 16.sp, fontWeight: FontWeight.bold)))
-                    : Timeline.builder(
-                        theme: TimelineThemeData.vertical(),
-                        itemBuilder: (context, index) => Column(children: [
-                              SizedBox(
-                                  height: 1.h, child: DashedLineConnector()),
-                              ListEstadoWidget(
-                                  share: true,
-                                  estado: estados[index],
-                                  selected: selects[index],
-                                  selectedVisible: true,
-                                  onSelected: (p0) => setState(() {
-                                        selects[index] = !selects[index];
-                                      }),
-                                  fun: () async {
-                                    await showDialog(
-                                        context: context,
-                                        builder: (context) => DialogsEstados(
-                                            estado: estados[index]));
-                                    await send();
-                                  },
-                                  dense: false),
-                              SizedBox(
-                                  height: 1.h, child: DashedLineConnector()),
-                              if (estados.length - 1 == index) DotIndicator()
-                            ]),
-                        itemCount: estados.length),
+                        child: TextButton.icon(
+                            onPressed: () async {
+                              bool result = false;
+                              await Dialogs.showMorph(
+                                  title: "Descargar estados",
+                                  description:
+                                      "Desea descargar los estados de la base de datos?",
+                                  loadingTitle: "procesando",
+                                  onAcceptPressed: (context) async =>
+                                      setState(() {
+                                        result = true;
+                                      }));
+                              if (result) {
+                                carga = false;
+                                var cont = await EstadoFire.getItems();
+                                for (var element in cont) {
+                                  await EstadoController.insert(element);
+                                }
+                                await send();
+                              }
+                            },
+                            icon: Icon(Icons.refresh, size: 24.sp),
+                            label: Text("No se ha ingresado ningun estado",
+                                style: TextStyle(
+                                    fontSize: 16.sp,
+                                    fontWeight: FontWeight.bold))))
+                    : RefreshIndicator(
+                        onRefresh: () async {
+                          bool result = false;
+                          await Dialogs.showMorph(
+                              title: "Descargar estados",
+                              description:
+                                  "Desea descargar los estados de la base de datos?",
+                              loadingTitle: "procesando",
+                              onAcceptPressed: (context) async => setState(() {
+                                    result = true;
+                                  }));
+                          if (result) {
+                            carga = false;
+                            var cont = await EstadoFire.getItems();
+                            for (var element in cont) {
+                              await EstadoController.insert(element);
+                            }
+                            await send();
+                          }
+                        },
+                        child: Timeline.builder(
+                            theme: TimelineThemeData.vertical(),
+                            itemBuilder: (context, index) => Column(children: [
+                                  SizedBox(
+                                      height: 1.h,
+                                      child: DashedLineConnector()),
+                                  ListEstadoWidget(
+                                      share: true,
+                                      estado: estados[index],
+                                      selected: selects[index],
+                                      selectedVisible: true,
+                                      onSelected: (p0) => setState(() {
+                                            selects[index] = !selects[index];
+                                          }),
+                                      fun: () async {
+                                        await showDialog(
+                                            context: context,
+                                            builder: (context) =>
+                                                DialogsEstados(
+                                                    estado: estados[index]));
+                                        await send();
+                                      },
+                                      dense: false),
+                                  SizedBox(
+                                      height: 1.h,
+                                      child: DashedLineConnector()),
+                                  if (estados.length - 1 == index)
+                                    DotIndicator()
+                                ]),
+                            itemCount: estados.length)),
             floatingActionButton: FloatingActionButton(
                 onPressed: () async {
                   await showDialog(

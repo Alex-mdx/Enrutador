@@ -223,6 +223,7 @@ class _HomeViewState extends State<HomeView> {
                       FutureBuilder(
                           future: ContactoController.getCountPendiente(),
                           builder: (context, snapshot) => bd.Badge(
+                              showBadge: snapshot.hasData && snapshot.data != 0,
                               badgeStyle:
                                   bd.BadgeStyle(badgeColor: ThemaMain.red),
                               badgeAnimation: bd.BadgeAnimation.slide(),
@@ -289,7 +290,7 @@ class PaginadoState extends State<Paginado> {
         widget.provider.animaMap.centerOnPoint(
             LatLng(widget.provider.local?.latitude ?? 0,
                 widget.provider.local?.longitude ?? 0),
-            duration: Duration(milliseconds: 100));
+            duration: Duration(milliseconds: 50));
       }
     });
     initDeepLinks();

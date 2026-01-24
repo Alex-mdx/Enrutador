@@ -23,7 +23,11 @@ class TipoController {
 
   static Future<void> insert(TiposModelo data) async {
     final db = await database();
-
+    var modelo = await getItem(data: data.id!);
+    if (modelo != null) {
+      await update(data);
+      return;
+    }
     await db.insert(nombreDB, data.toJson(),
         conflictAlgorithm: sql.ConflictAlgorithm.replace);
   }
