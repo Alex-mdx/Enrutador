@@ -138,8 +138,26 @@ class _RolesViewState extends State<RolesView> {
                           children: [
                           Icon(LineIcons.userTag,
                               size: 24.sp, color: ThemaMain.red),
-                          Text("No hay roles creados",
-                              style: TextStyle(fontSize: 16.sp))
+                          TextButton.icon(onPressed: () async {
+                              bool result = false;
+                              await Dialogs.showMorph(
+                                  title: "Descargar roles",
+                                  description:
+                                      "Desea descargar los roles de la base de datos?",
+                                  loadingTitle: "procesando",
+                                  onAcceptPressed: (context) async =>
+                                      setState(() {
+                                        result = true;
+                                      }));
+                              if (result) {
+                                carga = false;
+                                var cont = await RolesFire.getItems();
+                                for (var element in cont) {
+                                  await RolesController.insert(element);
+                                }
+                                await send();
+                              }}, icon: Icon(Icons.refresh), label: Text("No hay roles creados",style: TextStyle(fontSize: 16.sp)),
+                              )
                         ]))
                   : GridView.builder(
                       itemCount: roles.length,

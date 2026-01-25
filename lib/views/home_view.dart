@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:enrutador/utilities/main_provider.dart';
 import 'package:enrutador/utilities/permisos.dart';
+import 'package:enrutador/utilities/services/dialog_services.dart';
 import 'package:enrutador/utilities/services/navigation_services.dart';
 import 'package:enrutador/utilities/theme/theme_color.dart';
 import 'package:enrutador/views/map_main.dart';
@@ -10,6 +11,7 @@ import 'package:enrutador/views/widgets/map_widget/map_sliding.dart';
 import 'package:enrutador/views/widgets/search/search_widget.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_slider_drawer/flutter_slider_drawer.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
@@ -32,6 +34,7 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
+  bool out = false;
   @override
   Widget build(BuildContext context) {
     return Consumer<MainProvider>(
@@ -251,7 +254,18 @@ class _HomeViewState extends State<HomeView> {
                                 false)
                             ? .25
                             : 1,
-                        child: Paginado(provider: provider))))));
+                        child: PopScope(
+                            canPop: false,
+                            onPopInvokedWithResult: (didPop, result) async {
+                              await Dialogs.showMorph(
+                                  title: "Salir",
+                                  description: "¿Desea salir de la aplicación?",
+                                  loadingTitle: "Cerrando aplicacion",
+                                  onAcceptPressed: (context) async {
+                                    await SystemNavigator.pop();
+                                  });
+                            },
+                            child: Paginado(provider: provider)))))));
   }
 }
 

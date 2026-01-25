@@ -281,6 +281,7 @@ class _CardAccoutState extends State<CardAccout> {
                                 onAcceptPressed: (context) async {
                                   await FirebaseAuth.instance.signOut();
                                   Preferences.login = false;
+                                  await UsuarioController.deleteAll();
                                   showToast("Sesión cerrada");
                                   await Navigation.pushNamedAndRemoveUntil(
                                       routeName: "loginState",
@@ -300,6 +301,7 @@ class _CardAccoutState extends State<CardAccout> {
                                     loadingTitle: "Eliminando cuenta",
                                     onAcceptPressed: (context) async {
                                       var db = FirebaseFirestore.instance;
+                                      await UsuarioController.deleteAll();
                                       var data = await db
                                           .collection("users")
                                           .where("uuid",

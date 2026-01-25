@@ -46,6 +46,11 @@ class UsuarioController {
     await db.delete(nombreDB, where: 'id = ?', whereArgs: [id]);
   }
 
+  static Future<void> deleteAll() async {
+    final db = await database();
+    await db.delete(nombreDB);
+  }
+
   static Future<UsuarioModel?> getItem(int id) async {
     final db = await database();
     final result = await db.query(nombreDB, where: 'id = ?', whereArgs: [id]);

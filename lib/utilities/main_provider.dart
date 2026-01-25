@@ -203,22 +203,18 @@ class MainProvider with ChangeNotifier implements TickerProvider {
         add: "modificado", database: db, nombreDB: "contacto");
     await SqlGenerator.existColumna(
         add: "empleado_foto", database: db, nombreDB: "contacto");
-        await SqlGenerator.existColumna(
+    await SqlGenerator.existColumna(
         add: "empleado_foto_referencia", database: db, nombreDB: "contacto");
-        await SqlGenerator.existColumna(
+    await SqlGenerator.existColumna(
         add: "empleado_domicilio", database: db, nombreDB: "contacto");
-        await SqlGenerator.existColumna(
+    await SqlGenerator.existColumna(
         add: "empleado_numero", database: db, nombreDB: "contacto");
-        await SqlGenerator.existColumna(
+    await SqlGenerator.existColumna(
         add: "empleado_otro_num", database: db, nombreDB: "contacto");
-        await SqlGenerator.existColumna(
+    await SqlGenerator.existColumna(
         add: "empleado_tipo", database: db, nombreDB: "contacto");
-        await SqlGenerator.existColumna(
+    await SqlGenerator.existColumna(
         add: "empleado_estado", database: db, nombreDB: "contacto");
-        await SqlGenerator.existColumna(
-        add: "empleado_otro_num", database: db, nombreDB: "contacto");
-        await SqlGenerator.existColumna(
-        add: "empleado_otro_num", database: db, nombreDB: "contacto");
     tipos = await TipoController.getItems();
     estados = await EstadoController.getItems();
     roles = await RolesController.getAll();
