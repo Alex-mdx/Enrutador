@@ -278,12 +278,12 @@ class _DialogEnrutamientoState extends State<DialogEnrutamiento> {
                                   .length ??
                               1) /
                           (snapshot.data?.length ?? 1)
-                      : null,
+                      : 0,
                   minHeight: 3.h,
                   backgroundColor: ThemaMain.background,
                   color: ThemaMain.green),
               Text(
-                  "${snapshot.data?.where((element) => element.visitado == 1).length ?? 0} / ${snapshot.data?.length ?? 0}",
+                  "${snapshot.data?.where((element) => element.visitado == 1).length ?? 1} / ${snapshot.data?.length ?? 1}",
                   style: TextStyle(fontSize: 14.sp))
             ]);
           })

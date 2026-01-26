@@ -44,11 +44,11 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
   Widget build(BuildContext context) {
     final provider = Provider.of<MainProvider>(context);
     return Padding(
-        padding: EdgeInsets.all(8.sp),
+        padding: EdgeInsets.all(4.sp),
         child: Column(children: [
           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
             SizedBox(
-                width: 52.w,
+                width: 54.w,
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -113,7 +113,7 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                               },
                               child: AutoSizeText(snapshot.data ?? "?",
                                   style: TextStyle(fontSize: 16.sp),
-                                  minFontSize: 9,
+                                  minFontSize: 8,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis))),
                       InkWell(

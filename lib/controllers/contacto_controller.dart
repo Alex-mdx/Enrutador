@@ -125,14 +125,18 @@ class ContactoController {
   static Future<int> getCountPendiente() async {
     final db = await database();
     final result = await db.query(nombreDB,
-        columns: ["pendiente"], where: "pendiente IS NULL OR pendiente = 1");
+        orderBy: "modificado DESC",
+        columns: ["pendiente"],
+        where: "pendiente IS NULL OR pendiente = 1");
     return result.length;
   }
 
   static Future<List<ContactoModelo>> getPendientes() async {
     final db = await database();
     final result = await db.query(nombreDB,
-        where: "pendiente IS NULL OR pendiente = 1",limit: 50,orderBy: "modificado DESC");
+        where: "pendiente IS NULL OR pendiente = 1",
+        limit: 50,
+        orderBy: "modificado DESC");
     List<ContactoModelo> model = [];
     for (var element in result) {
       model.add(ContactoModelo.fromJson(element));

@@ -5,7 +5,7 @@ class UsuarioModel {
   String? uuid;
   String? nombre;
   int? contactoId;
-  int? empleadoId;
+  String? empleadoId;
   int? adminTipo;
   int? status;
   DateTime? creacion;
@@ -27,7 +27,7 @@ class UsuarioModel {
           String? uuid,
           String? nombre,
           int? contactoId,
-          int? empleadoId,
+          String? empleadoId,
           int? adminTipo,
           int? status,
           DateTime? creacion,

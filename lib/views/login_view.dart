@@ -33,11 +33,6 @@ class _LoginViewState extends State<LoginView> {
   bool show = true;
 
   bool carga = false;
-  bool politica = [
-    Preferences.camara,
-    Preferences.ubicacion,
-    Preferences.contactos
-  ].every((element) => element = true);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -92,15 +87,18 @@ class _LoginViewState extends State<LoginView> {
                                 label: Text("Aceptar politicas de uso",
                                     style: TextStyle(fontSize: 15.sp)),
                                 icon: Icon(
-                                    politica
+                                    Preferences.camara && Preferences.ubicacion && Preferences.contactos
                                         ? Icons.check_circle
                                         : Icons.check_box_outline_blank,
+                                    color: Preferences.camara && Preferences.ubicacion && Preferences.contactos
+                                        ? ThemaMain.green
+                                        : ThemaMain.red,
                                     size: 18.sp)),
                             Consumer<MainProvider>(
                                 builder: (context, provider, child) =>
                                     ElevatedButton.icon(
                                         onPressed: () async {
-                                          if (politica) {
+                                          if (Preferences.camara && Preferences.ubicacion && Preferences.contactos) {
                                             if (email.text.isNotEmpty &&
                                                 password.text.isNotEmpty) {
                                               setState(() => carga = true);
@@ -142,7 +140,7 @@ class _LoginViewState extends State<LoginView> {
               Consumer<MainProvider>(
                   builder: (context, provider, child) => ElevatedButton.icon(
                       onPressed: () async {
-                        if (politica) {
+                        if (Preferences.camara && Preferences.ubicacion && Preferences.contactos) {
                           if (email.text.isNotEmpty &&
                               password.text.isNotEmpty) {
                             setState(() => carga = true);
@@ -218,35 +216,38 @@ class _LoginViewState extends State<LoginView> {
                   label: Text('Resetear contraseña',
                       style: TextStyle(fontSize: 16.sp))),
               Consumer<MainProvider>(
-                builder: (context, provider, child) => SignInButton(
-                    Buttons.google,
-                    text: "Entrar con Google",
-                    textStyle: TextStyle(fontSize: 16.sp), onPressed: () async {
-                  try {
-                    setState(() => carga = true);
-                    if (politica) {
-                      if (GoogleSignIn.instance.supportsAuthenticate()) {
-                        var auth = await GoogleSignIn.instance.authenticate();
-                        if (auth.authentication.idToken != null) {
-                          // Usar GoogleAuthProvider.credential para obtener la credencial correcta
-                          AuthCredential cred = GoogleAuthProvider.credential(
-                              idToken: auth.authentication.idToken);
-                          var user = await FirebaseAuth.instance
-                              .signInWithCredential(cred);
-                          await inLogin(user, provider);
+                  builder: (context, provider, child) => SignInButton(
+                          Buttons.google,
+                          text: "Entrar con Google",
+                          textStyle: TextStyle(fontSize: 16.sp),
+                          onPressed: () async {
+                        try {
+                          setState(() => carga = true);
+                          if (Preferences.camara && Preferences.ubicacion && Preferences.contactos) {
+                            if (GoogleSignIn.instance.supportsAuthenticate()) {
+                              var auth =
+                                  await GoogleSignIn.instance.authenticate();
+                              if (auth.authentication.idToken != null) {
+                                // Usar GoogleAuthProvider.credential para obtener la credencial correcta
+                                AuthCredential cred =
+                                    GoogleAuthProvider.credential(
+                                        idToken: auth.authentication.idToken);
+                                var user = await FirebaseAuth.instance
+                                    .signInWithCredential(cred);
+                                await inLogin(user, provider);
+                              }
+                            }
+                          } else {
+                            showToast("Debes aceptar las politicas de uso");
+                          }
+                        } catch (e) {
+                          setState(() => carga = false);
+                          debugPrint(e.toString());
+                          var tr = await TransFun.trad(e.toString());
+                          showToast(tr);
                         }
-                      } else {
-                        showToast("Debes aceptar las politicas de uso");
-                      }
-                    }
-                  } catch (e) {
-                    setState(() => carga = false);
-                    debugPrint(e.toString());
-                    var tr = await TransFun.trad(e.toString());
-                    showToast(tr);
-                  }
-                }),
-              )
+                        setState(() => carga = false);
+                      }))
             ])));
   }
 

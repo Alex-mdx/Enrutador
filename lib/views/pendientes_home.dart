@@ -43,11 +43,17 @@ class _PendientesHomeState extends State<PendientesHome> {
   }
 
   @override
+  void dispose() { 
+    
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final provider = Provider.of<MainProvider>(context);
     return Scaffold(
         appBar: AppBar(
-            title: Text("Pendientes", style: TextStyle(fontSize: 18.sp)),
+            title: Text("Mis Pendientes", style: TextStyle(fontSize: 18.sp)),
             toolbarHeight: 6.h,
             actions: [
               ElevatedButton.icon(
@@ -134,7 +140,8 @@ class _PendientesHomeState extends State<PendientesHome> {
                   onAcceptPressed: (contexto) async {
                     var data = contactos[index].copyWith(
                         pendiente: 0,
-                        aceptadoEmpleado: provider.usuario?.empleadoId?.toString());
+                        aceptadoEmpleado:
+                            provider.usuario?.empleadoId?.toString());
                     var result = await ContactoFire.send(contacto: data);
                     if (result) {
                       await ContactoController.update(data);

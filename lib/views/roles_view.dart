@@ -138,7 +138,8 @@ class _RolesViewState extends State<RolesView> {
                           children: [
                           Icon(LineIcons.userTag,
                               size: 24.sp, color: ThemaMain.red),
-                          TextButton.icon(onPressed: () async {
+                          TextButton.icon(
+                            onPressed: () async {
                               bool result = false;
                               await Dialogs.showMorph(
                                   title: "Descargar roles",
@@ -156,34 +157,59 @@ class _RolesViewState extends State<RolesView> {
                                   await RolesController.insert(element);
                                 }
                                 await send();
-                              }}, icon: Icon(Icons.refresh), label: Text("No hay roles creados",style: TextStyle(fontSize: 16.sp)),
-                              )
+                              }
+                            },
+                            icon: Icon(Icons.refresh),
+                            label: Text("No hay roles creados",
+                                style: TextStyle(fontSize: 16.sp)),
+                          )
                         ]))
-                  : GridView.builder(
-                      itemCount: roles.length,
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                              childAspectRatio: 1.3, crossAxisCount: 2),
-                      itemBuilder: (context, index) {
-                        return ListRolesWidget(
-                            estado: roles[index],
-                            fun: () async {
-                              await showDialog(
-                                  context: context,
-                                  builder: (context) =>
-                                      DialogsRoles(rol: roles[index]));
-                              await send();
-                            },
-                            share: true,
-                            selectedVisible: true,
-                            selected: selects[index],
-                            onSelected: (value) {
-                              setState(() {
-                                selects[index] = value!;
-                              });
-                            },
-                            dense: false);
-                      }),
+                  : RefreshIndicator(
+                      onRefresh: () async {
+                        bool result = false;
+                        await Dialogs.showMorph(
+                            title: "Descargar roles",
+                            description:
+                                "Desea descargar los roles de la base de datos?",
+                            loadingTitle: "procesando",
+                            onAcceptPressed: (context) async => setState(() {
+                                  result = true;
+                                }));
+                        if (result) {
+                          carga = false;
+                          var cont = await RolesFire.getItems();
+                          for (var element in cont) {
+                            await RolesController.insert(element);
+                          }
+                          await send();
+                        }
+                      },
+                      child: GridView.builder(
+                          itemCount: roles.length,
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                                  childAspectRatio: 1.3, crossAxisCount: 2),
+                          itemBuilder: (context, index) {
+                            return ListRolesWidget(
+                                estado: roles[index],
+                                fun: () async {
+                                  await showDialog(
+                                      context: context,
+                                      builder: (context) =>
+                                          DialogsRoles(rol: roles[index]));
+                                  await send();
+                                },
+                                share: true,
+                                selectedVisible: true,
+                                selected: selects[index],
+                                onSelected: (value) {
+                                  setState(() {
+                                    selects[index] = value!;
+                                  });
+                                },
+                                dense: false);
+                          }),
+                    ),
           floatingActionButton: FloatingActionButton(
               onPressed: () async {
                 await showDialog(

@@ -226,7 +226,7 @@ class _HomeViewState extends State<HomeView> {
                       FutureBuilder(
                           future: ContactoController.getCountPendiente(),
                           builder: (context, snapshot) => bd.Badge(
-                              showBadge: snapshot.hasData && snapshot.data != 0,
+                              showBadge: snapshot.hasData || snapshot.data == 1,
                               badgeStyle:
                                   bd.BadgeStyle(badgeColor: ThemaMain.red),
                               badgeAnimation: bd.BadgeAnimation.slide(),
@@ -241,7 +241,7 @@ class _HomeViewState extends State<HomeView> {
                                       await Navigation.pushNamed(
                                           route: "pendientes"),
                                   icon: Icon(LineIcons.alternateCloudUpload,
-                                      color: ThemaMain.red))))
+                                      color:snapshot.hasData || snapshot.data == 1?  ThemaMain.red : ThemaMain.primary))))
                     ]),
                 body: IgnorePointer(
                     ignoring:

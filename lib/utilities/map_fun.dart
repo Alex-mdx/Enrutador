@@ -240,7 +240,7 @@ class MapFun {
                 badgeStyle: bd.BadgeStyle(
                     badgeColor: Colors.black, shape: bd.BadgeShape.twitter),
                 showBadge: e.estado != null && (e.estado ?? -1) != -1,
-                badgeAnimation: bd.BadgeAnimation.fade(),
+                badgeAnimation: bd.BadgeAnimation.slide(),
                 badgeContent: Icon(Icons.circle,
                     color: provider.estados
                         .firstWhereOrNull((element) => element.id == e.estado)

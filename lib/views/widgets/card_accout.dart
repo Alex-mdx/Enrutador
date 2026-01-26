@@ -135,12 +135,15 @@ class _CardAccoutState extends State<CardAccout> {
                               flex: 1,
                               child: IconButton(
                                   onPressed: () async {
-                                    var contacto = await UsuarioFire.getItem(table: "uuid", query: "${FirebaseAuth.instance.currentUser?.uid}");
-                                    if(contacto != null){
+                                    var contacto = await UsuarioFire.getItem(
+                                        table: "uuid",
+                                        query:
+                                            "${FirebaseAuth.instance.currentUser?.uid}");
+                                    if (contacto != null) {
                                       await UsuarioController.insert(contacto);
                                       provider.usuario = contacto;
                                     }
-                                    
+
                                     await FirebaseAuth.instance.currentUser
                                         ?.reload();
                                     setState(() {});
@@ -181,11 +184,12 @@ class _CardAccoutState extends State<CardAccout> {
                                             tipoTeclado: TextInputType.number,
                                             fecha: null,
                                             entradaTexto: ""));
+                                    log(user?.toJson().toString() ?? "");
                                     if (user != null &&
-                                        user?.uuid != null &&
-                                        user?.uuid ==
-                                            FirebaseAuth
-                                                .instance.currentUser?.uid) {
+                                        (user?.uuid == null ||
+                                            user?.uuid ==
+                                                FirebaseAuth.instance
+                                                    .currentUser?.uid)) {
                                       await Dialogs.showMorph(
                                           title: "Desea Enlazar Empleado",
                                           description:
@@ -207,7 +211,8 @@ class _CardAccoutState extends State<CardAccout> {
                                                   table: "id",
                                                   query: doc.id.toString(),
                                                   itsNumber: true);
-                                              await UsuarioController.insert(model);
+                                              await UsuarioController.insert(
+                                                  model);
                                               await FirebaseAuth
                                                   .instance.currentUser
                                                   ?.updateDisplayName(
@@ -327,9 +332,8 @@ class _CardAccoutState extends State<CardAccout> {
 
                                       Preferences.login = false;
                                       showToast("Cuenta eliminada");
-                                      await Navigation.pushNamedAndRemoveUntil(
-                                          routeName: "loginState",
-                                          predicate: (route) => false);
+                                      await Navigation.pushReplacementNamed(
+                                          routeName: "loginState");
                                     }),
                                 icon: Icon(LineIcons.userSlash,
                                     size: 24.sp, color: ThemaMain.pink),

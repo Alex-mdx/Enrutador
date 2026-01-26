@@ -103,7 +103,7 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                                   .contacto?.nombreCompleto,
                                               fun: (p0) async {
                                                 var newModel = widget.contacto
-                                                    ?.copyWith(
+                                                    ?.copyWith(empleadoId: provider.usuario?.empleadoId,
                                                         nombreCompleto:
                                                             Textos.normalizar(
                                                                 p0 ?? ""));
@@ -151,6 +151,9 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                                 var newModel = widget.contacto
                                                     ?.copyWith(
                                                         domicilio: p0,
+                                                        empleadoDomicilio:
+                                                            provider.usuario
+                                                                ?.empleadoId,
                                                         fechaDomicilio:
                                                             DateTime.now());
                                                 await ContactoController.update(
@@ -193,7 +196,9 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                               selected: (p0) async {
                                                 var newModel = widget.contacto
                                                     ?.copyWith(
-                                                        tipo: p0.id,
+                                                        tipo: p0.id,empleadoTipo: 
+                                                            provider.usuario
+                                                                ?.empleadoId,
                                                         tipoFecha:
                                                             DateTime.now());
                                                 debugPrint(
@@ -248,7 +253,8 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                                         ?.copyWith(
                                                             estado: p0,
                                                             estadoFecha:
-                                                                DateTime.now());
+                                                                DateTime.now(),
+                                                            empleadoEstado: provider.usuario?.empleadoId);
                                                     await ContactoController
                                                         .update(newModel!);
                                                     funcion(contacto: newModel);
@@ -344,7 +350,8 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                                             numero: int.parse(
                                                                 p0.toString()),
                                                             numeroFecha:
-                                                                DateTime.now());
+                                                                DateTime.now(),
+                                                            empleadoNumero: provider.usuario?.empleadoId);
                                                     await ContactoController
                                                         .update(newModel!);
                                                     funcion(contacto: newModel);
@@ -441,6 +448,9 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                                             otroNumero:
                                                                 int.parse(p0
                                                                     .toString()),
+                                                            empleadoOtroNumero:
+                                                                provider.usuario
+                                                                    ?.empleadoId,
                                                             otroNumeroFecha:
                                                                 DateTime.now());
                                                     await ContactoController
@@ -608,7 +618,7 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                         entradaTexto: widget.contacto?.nota,
                                         fun: (p0) async {
                                           var newModel = widget.contacto
-                                              ?.copyWith(nota: p0);
+                                              ?.copyWith(nota: p0,empleadoId: provider.usuario?.empleadoId);
                                           await ContactoController.update(
                                               newModel!);
                                           provider.contacto = newModel;

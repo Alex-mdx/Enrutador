@@ -170,7 +170,7 @@ class _TarjetaRsideWidgetState extends State<TarjetaRsideWidget> {
                               showToast("Marcador limpiado");
                             });
                       }
-                    }else{
+                    } else {
                       await Dialogs.showMorph(
                           title: "Inhabilitar Punteo",
                           description:
@@ -184,14 +184,14 @@ class _TarjetaRsideWidgetState extends State<TarjetaRsideWidget> {
                               "latitud": provider.contacto!.latitud,
                               "longitud": provider.contacto!.longitud
                             });
-                            provider.contacto = model.copyWith(pendiente: 1,status: 0);
+                            provider.contacto =
+                                model.copyWith(pendiente: 1, status: 0);
                             await MapFun.touch(
                                 provider: provider,
                                 lat: model.latitud,
                                 lng: model.longitud);
-                            var datas =
-                                await EnrutarController.getItemContacto(
-                                    contactoId: provider.contacto!.id ?? -1);
+                            var datas = await EnrutarController.getItemContacto(
+                                contactoId: provider.contacto!.id ?? -1);
                             if (datas != null) {
                               await EnrutarController.deleteItem(datas.id!);
                             }
@@ -205,7 +205,37 @@ class _TarjetaRsideWidgetState extends State<TarjetaRsideWidget> {
                           ? provider.contacto?.id == null
                               ? Icon(Icons.save, color: ThemaMain.green)
                               : Icon(Icons.delete, color: ThemaMain.red)
-                          : Icon(LineIcons.userSlash, color: ThemaMain.pink)))
+                          : Icon(LineIcons.userSlash, color: ThemaMain.pink))),
+          if (provider.contacto?.id != null)
+            IconButton.filledTonal(
+                iconSize: 18.sp,
+                onPressed: () async {
+                  var contact =
+                      await ContactoFire.getItem(id: provider.contacto!.id);
+                  if (contact != null) {
+                    if (contact.modificado != provider.contacto!.modificado) {
+                      Dialogs.showMorph(
+                          title: "Cambios detectados",
+                          description:
+                              "¿Desea sincronizar los cambios?\nSe van a descargar los cambios del servidor y se van a sobreescribir los cambios locales",
+                          loadingTitle: "Sincronizando",
+                          onAcceptPressed: (context) async {
+                            await ContactoController.update(contact);
+                            provider.contacto = contact;
+                            showToast("Contacto sincronizado");
+                          });
+                    } else {
+                      showToast("Contacto sincronizado");
+                    }
+                  } else {
+                    showToast("Contacto no encontrado en el servidor");
+                  }
+                  /* } else {
+                    showToast("Sin internet");
+                  } */
+                },
+                icon: Icon(LineIcons.alternateCloudDownload,
+                    color: ThemaMain.darkBlue))
         ]);
   }
 }

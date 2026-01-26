@@ -21,158 +21,6 @@ class AccountView extends StatefulWidget {
 }
 
 class _AccountViewState extends State<AccountView> {
-  List<UsuarioModel> usuarios = [
-    UsuarioModel(
-        id: 1,
-        uuid: null,
-        nombre: 'Martha patricia Tun',
-        contactoId: null,
-        empleadoId: 10020395,
-        adminTipo: 1,
-        status: 1,
-        creacion: DateTime.now(),
-        actualizacion: DateTime.now()),
-    UsuarioModel(
-        id: 2,
-        uuid: null,
-        nombre: 'Maribel Ake',
-        contactoId: null,
-        empleadoId: 10016280,
-        adminTipo: 1,
-        status: 1,
-        creacion: DateTime.now(),
-        actualizacion: DateTime.now()),
-    UsuarioModel(
-        id: 3,
-        uuid: null,
-        nombre: 'Maria Esther Rodriguez',
-        contactoId: null,
-        empleadoId: 10020441,
-        adminTipo: 1,
-        status: 1,
-        creacion: DateTime.now(),
-        actualizacion: DateTime.now()),
-    UsuarioModel(
-        id: 4,
-        uuid: null,
-        nombre: 'Erick Daniel Huchin',
-        contactoId: null,
-        empleadoId: 10023726,
-        adminTipo: 1,
-        status: 1,
-        creacion: DateTime.now(),
-        actualizacion: DateTime.now()),
-    UsuarioModel(
-        id: 5,
-        uuid: null,
-        nombre: 'Jose Gerardo Esteban Castro',
-        contactoId: null,
-        empleadoId: 10010357,
-        adminTipo: 1,
-        status: 1,
-        creacion: DateTime.now(),
-        actualizacion: DateTime.now()),
-    UsuarioModel(
-        id: 6,
-        uuid: null,
-        nombre: 'Rommel Yahir Garcia',
-        contactoId: null,
-        empleadoId: 10017701,
-        adminTipo: 1,
-        status: 1,
-        creacion: DateTime.now(),
-        actualizacion: DateTime.now()),
-    UsuarioModel(
-        id: 7,
-        uuid: null,
-        nombre: 'Dianele Yaquelin Gutierrez',
-        contactoId: null,
-        empleadoId: 10022228,
-        adminTipo: 1,
-        status: 1,
-        creacion: DateTime.now(),
-        actualizacion: DateTime.now()),
-    UsuarioModel(
-        id: 8,
-        uuid: null,
-        nombre: 'Astrid Montserrat Canul',
-        contactoId: null,
-        empleadoId: 10022872,
-        adminTipo: 1,
-        status: 1,
-        creacion: DateTime.now(),
-        actualizacion: DateTime.now()),
-    UsuarioModel(
-        id: 9,
-        uuid: null,
-        nombre: 'Wendy Misolha Angulo',
-        contactoId: null,
-        empleadoId: 10023528,
-        adminTipo: 1,
-        status: 1,
-        creacion: DateTime.now(),
-        actualizacion: DateTime.now()),
-    UsuarioModel(
-        id: 10,
-        uuid: null,
-        nombre: 'Cesar Andres Sandoval',
-        contactoId: null,
-        empleadoId: 10018890,
-        adminTipo: 1,
-        status: 1,
-        creacion: DateTime.now(),
-        actualizacion: DateTime.now()),
-    UsuarioModel(
-        id: 11,
-        uuid: null,
-        nombre: 'Jose Gabino Magaña',
-        contactoId: null,
-        empleadoId: 10020717,
-        adminTipo: 1,
-        status: 1,
-        creacion: DateTime.now(),
-        actualizacion: DateTime.now()),
-    UsuarioModel(
-        id: 12,
-        uuid: null,
-        nombre: 'Alexis Armando De Jesus Castro',
-        contactoId: null,
-        empleadoId: 10022990,
-        adminTipo: 0,
-        status: 5,
-        creacion: DateTime.now(),
-        actualizacion: DateTime.now()),
-    UsuarioModel(
-        id: 13,
-        uuid: null,
-        nombre: 'Perla De La Cruz',
-        contactoId: null,
-        empleadoId: 10023514,
-        adminTipo: 1,
-        status: 1,
-        creacion: DateTime.now(),
-        actualizacion: DateTime.now()),
-    UsuarioModel(
-        id: 14,
-        uuid: null,
-        nombre: 'Antonio De Jesus Moya',
-        contactoId: null,
-        empleadoId: 10023518,
-        adminTipo: 1,
-        status: 1,
-        creacion: DateTime.now(),
-        actualizacion: DateTime.now()),
-    UsuarioModel(
-        id: 15,
-        uuid: null,
-        nombre: 'Moises Ernesto Angulo',
-        contactoId: null,
-        empleadoId: 10023803,
-        adminTipo: 1,
-        status: 1,
-        creacion: DateTime.now(),
-        actualizacion: DateTime.now())
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -183,23 +31,7 @@ class _AccountViewState extends State<AccountView> {
               IconButton(
                   onPressed: () async {
                     try {
-                      // Obtener el usuario actual
-                      final currentUser = FirebaseAuth.instance.currentUser;
-                      if (currentUser?.emailVerified == false) {
-                        showToast("Usuario no verificado");
-                        return;
-                      }
-                      for (var element in usuarios) {
-                        var model = element.copyWith(
-                            creacion: DateTime.now(),
-                            actualizacion: DateTime.now());
-                        final db = FirebaseFirestore.instance;
-                        var rdm = Textos.randomWord(30);
-                        await db
-                            .collection('users')
-                            .doc(rdm)
-                            .set(model.toJson());
-                      }
+                    
 
                       showToast("Usuario guardado correctamente");
                     } catch (e) {
@@ -235,9 +67,8 @@ class _AccountViewState extends State<AccountView> {
                               snapshot.data?.docs.firstOrNull
                                       ?.data()["empleado_id"] !=
                                   null) {
-                                    Preferences.login = true;
-                            await Navigation.pushNamedAndRemoveUntil(
-                                routeName: "home", predicate: (route) => false);
+                            Preferences.login = true;
+                            await Navigation.pushNamed(route: "home");
                           }
                         },
                         icon: Icon(Icons.navigate_next,
