@@ -4,16 +4,15 @@ import 'package:enrutador/controllers/referencias_controller.dart';
 import 'package:enrutador/utilities/main_provider.dart';
 import 'package:enrutador/utilities/pluscode_fun.dart';
 import 'package:enrutador/views/dialogs/dialog_send.dart';
-import 'package:enrutador/views/dialogs/dialogs_comunicar.dart';
 import 'package:enrutador/views/dialogs/dialogs_estado_funcion.dart';
 import 'package:enrutador/views/widgets/chip_referencia.dart';
+import 'package:enrutador/views/widgets/sliding_cards/tarjeta_contacto_call.dart';
 import 'package:enrutador/views/widgets/sliding_cards/tarjeta_contacto_foto.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:oktoast/oktoast.dart';
-import 'package:phone_numbers_parser/phone_numbers_parser.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 import '../../../controllers/contacto_controller.dart';
@@ -103,7 +102,10 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                                   .contacto?.nombreCompleto,
                                               fun: (p0) async {
                                                 var newModel = widget.contacto
-                                                    ?.copyWith(empleadoId: provider.usuario?.empleadoId,
+                                                    ?.copyWith(
+                                                        empleadoId: provider
+                                                            .usuario
+                                                            ?.empleadoId,
                                                         nombreCompleto:
                                                             Textos.normalizar(
                                                                 p0 ?? ""));
@@ -196,9 +198,10 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                               selected: (p0) async {
                                                 var newModel = widget.contacto
                                                     ?.copyWith(
-                                                        tipo: p0.id,empleadoTipo: 
-                                                            provider.usuario
-                                                                ?.empleadoId,
+                                                        tipo: p0.id,
+                                                        empleadoTipo: provider
+                                                            .usuario
+                                                            ?.empleadoId,
                                                         tipoFecha:
                                                             DateTime.now());
                                                 debugPrint(
@@ -254,7 +257,9 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                                             estado: p0,
                                                             estadoFecha:
                                                                 DateTime.now(),
-                                                            empleadoEstado: provider.usuario?.empleadoId);
+                                                            empleadoEstado:
+                                                                provider.usuario
+                                                                    ?.empleadoId);
                                                     await ContactoController
                                                         .update(newModel!);
                                                     funcion(contacto: newModel);
@@ -301,203 +306,54 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                           Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                if (!widget.compartir)
-                                  ElevatedButton.icon(
-                                      style: ButtonStyle(
-                                          padding: WidgetStatePropertyAll(
-                                              EdgeInsets.symmetric(
-                                                  vertical: 0,
-                                                  horizontal: 1.w))),
-                                      iconAlignment: IconAlignment.end,
-                                      onLongPress: () async {
-                                        await Clipboard.setData(ClipboardData(
-                                            text: widget.contacto?.numero
-                                                    .toString() ??
-                                                "Sin numero"));
-                                        showToast("Telefono principal copiado");
-                                      },
-                                      onPressed: () {
-                                        Iterable<PhoneNumber> country;
-                                        country = PhoneNumber
-                                            .findPotentialPhoneNumbers(
-                                                (widget.contacto?.numero ?? "0")
-                                                    .toString());
-                                        debugPrint(
-                                            "${country.toList().map((e) => e).toList()}");
-                                        String? lada =
-                                            country.firstOrNull?.countryCode;
-                                        debugPrint(lada);
-                                        showDialog(
-                                            barrierDismissible: false,
-                                            context: context,
-                                            builder: (context) => DialogSend(
-                                                lenght: 10,
-                                                lada: lada == null
-                                                    ? null
-                                                    : "+$lada",
-                                                entradaTexto: (widget
-                                                            .contacto?.numero ??
-                                                        "")
-                                                    .toString()
-                                                    .replaceFirst("$lada", ""),
-                                                fun: (p0) async {
-                                                  if (int.tryParse(
-                                                          p0.toString()) !=
-                                                      null) {
-                                                    var newModel = widget
-                                                        .contacto
-                                                        ?.copyWith(
-                                                            numero: int.parse(
-                                                                p0.toString()),
-                                                            numeroFecha:
-                                                                DateTime.now(),
-                                                            empleadoNumero: provider.usuario?.empleadoId);
-                                                    await ContactoController
-                                                        .update(newModel!);
-                                                    funcion(contacto: newModel);
-                                                    provider.contacto =
-                                                        newModel;
-                                                  } else {
-                                                    showToast(
-                                                        "Numero ingresado no valido");
-                                                  }
-                                                },
-                                                tipoTeclado:
-                                                    TextInputType.phone,
-                                                fecha: widget
-                                                    .contacto?.numeroFecha,
-                                                cabeza:
-                                                    "Ingresar numero telefonico del contacto"));
-                                      },
-                                      label: Text("Telefono\n${PhoneNumber.findPotentialPhoneNumbers((widget.contacto?.numero ?? "0").toString()).firstOrNull?.formatNsn() ?? 0}",
-                                          style: TextStyle(
-                                              fontSize: 15.sp,
-                                              fontWeight: FontWeight.bold)),
-                                      icon: PhoneNumber.findPotentialPhoneNumbers((widget.contacto?.numero ?? "0").toString())
-                                                  .firstOrNull
-                                                  ?.isValid(
-                                                      type: PhoneNumberType
-                                                          .mobile) ??
-                                              false
-                                          ? GestureDetector(
-                                              onTap: () => showDialog(
-                                                  context: context,
-                                                  builder: (context) =>
-                                                      DialogsComunicar(number: (widget.contacto?.numero ?? 0).toString())),
-                                              child: Stack(alignment: Alignment.center, children: [
-                                                Icon(Icons.circle,
-                                                    size: 24.sp,
-                                                    color: ThemaMain.green),
-                                                Icon(LineIcons.tty,
-                                                    size: 20.sp,
-                                                    color: ThemaMain.second)
-                                              ]))
-                                          : null)
-                                else
-                                  Text(
-                                      "Telefono\n${PhoneNumber.findPotentialPhoneNumbers((widget.contacto?.numero ?? "0").toString()).firstOrNull?.formatNsn() ?? 0}",
-                                      style: TextStyle(fontSize: 14.sp)),
-                                if (!widget.compartir)
-                                  ElevatedButton.icon(
-                                      style: ButtonStyle(
-                                          padding: WidgetStatePropertyAll(
-                                              EdgeInsets.symmetric(
-                                                  vertical: 0,
-                                                  horizontal: 1.w))),
-                                      iconAlignment: IconAlignment.start,
-                                      onLongPress: () async {
-                                        await Clipboard.setData(ClipboardData(
-                                            text: widget.contacto?.otroNumero
-                                                    .toString() ??
-                                                "Sin numero"));
-                                        showToast(
-                                            "Telefono alternativo copiado");
-                                      },
-                                      onPressed: () {
-                                        Iterable<PhoneNumber> country;
-                                        country = PhoneNumber
-                                            .findPotentialPhoneNumbers(
-                                                (widget.contacto?.otroNumero ??
-                                                        "0")
-                                                    .toString());
-                                        debugPrint(
-                                            "${country.toList().map((e) => e).toList()}");
-                                        String? lada =
-                                            country.firstOrNull?.countryCode;
-                                        debugPrint(lada);
-                                        showDialog(
-                                            barrierDismissible: false,
-                                            context: context,
-                                            builder: (context) => DialogSend(
-                                                lenght: 10,
-                                                lada: lada == null
-                                                    ? null
-                                                    : "+$lada",
-                                                entradaTexto: (widget.contacto
-                                                            ?.otroNumero ??
-                                                        "")
-                                                    .toString()
-                                                    .replaceFirst("$lada", ""),
-                                                fun: (p0) async {
-                                                  if (int.tryParse(
-                                                          p0.toString()) !=
-                                                      null) {
-                                                    var newModel = widget
-                                                        .contacto
-                                                        ?.copyWith(
-                                                            otroNumero:
-                                                                int.parse(p0
-                                                                    .toString()),
-                                                            empleadoOtroNumero:
-                                                                provider.usuario
-                                                                    ?.empleadoId,
-                                                            otroNumeroFecha:
-                                                                DateTime.now());
-                                                    await ContactoController
-                                                        .update(newModel!);
-                                                    funcion(contacto: newModel);
-                                                    provider.contacto =
-                                                        newModel;
-                                                  } else {
-                                                    showToast(
-                                                        "Numero ingresado no valido");
-                                                  }
-                                                },
-                                                tipoTeclado:
-                                                    TextInputType.phone,
-                                                fecha: widget
-                                                    .contacto?.otroNumeroFecha,
-                                                cabeza:
-                                                    "Ingresar numero alternatico del contacto"));
-                                      },
-                                      label: Text("Otro Tel\n${PhoneNumber.findPotentialPhoneNumbers((widget.contacto?.otroNumero ?? "0").toString()).firstOrNull?.formatNsn() ?? 0}",
-                                          style: TextStyle(
-                                              fontSize: 15.sp,
-                                              fontWeight: FontWeight.bold)),
-                                      icon: PhoneNumber.findPotentialPhoneNumbers((widget.contacto?.otroNumero ?? "0").toString())
-                                                  .firstOrNull
-                                                  ?.isValid(
-                                                      type: PhoneNumberType
-                                                          .mobile) ??
-                                              false
-                                          ? GestureDetector(
-                                              onTap: () => showDialog(
-                                                  context: context,
-                                                  builder: (context) =>
-                                                      DialogsComunicar(number: (widget.contacto?.otroNumero ?? 0).toString())),
-                                              child: Stack(alignment: Alignment.center, children: [
-                                                Icon(Icons.circle,
-                                                    size: 24.sp,
-                                                    color: ThemaMain.green),
-                                                Icon(LineIcons.tty,
-                                                    size: 20.sp,
-                                                    color: ThemaMain.second)
-                                              ]))
-                                          : null)
-                                else
-                                  Text(
-                                      "Otro Telefono\n${PhoneNumber.findPotentialPhoneNumbers((widget.contacto?.otroNumero ?? "0").toString()).firstOrNull?.formatNsn() ?? 0}",
-                                      style: TextStyle(fontSize: 14.sp))
+                                TarjetaContactoCall(
+                                    number: widget.contacto?.numero.toString(),
+                                    fechaNum: widget.contacto?.numeroFecha,
+                                    compartir: widget.compartir,
+                                    mensaje: "Telefono",
+                                    entradaTexto:
+                                        "Ingresar Telefono del contacto",
+                                    fun: (p0) async {
+                                      if (int.tryParse(p0.toString()) != null) {
+                                        var newModel = provider.contacto
+                                            ?.copyWith(
+                                                numero:
+                                                    int.parse(p0.toString()),
+                                                numeroFecha: DateTime.now(),
+                                                empleadoNumero: provider
+                                                    .usuario?.empleadoId);
+                                        await ContactoController.update(
+                                            newModel!);
+                                        provider.contacto = newModel;
+                                      } else {
+                                        showToast("Telefono no valido");
+                                      }
+                                    }),
+                                TarjetaContactoCall(
+                                    number:
+                                        widget.contacto?.otroNumero.toString(),
+                                    fechaNum: widget.contacto?.otroNumeroFecha,
+                                    compartir: widget.compartir,
+                                    mensaje: "Otro Num",
+                                    iconAlignment: IconAlignment.start,
+                                    entradaTexto:
+                                        "Ingresar otro numero del contacto",
+                                    fun: (p0) async {
+                                      if (int.tryParse(p0.toString()) != null) {
+                                        var newModel = provider.contacto
+                                            ?.copyWith(
+                                                otroNumero:
+                                                    int.parse(p0.toString()),
+                                                otroNumeroFecha: DateTime.now(),
+                                                empleadoOtroNumero: provider
+                                                    .usuario?.empleadoId);
+                                        await ContactoController.update(
+                                            newModel!);
+                                        provider.contacto = newModel;
+                                      } else {
+                                        showToast("Telefono no valido");
+                                      }
+                                    }),
                               ]),
                           if (!widget.compartir)
                             Wrap(
@@ -606,11 +462,11 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                               []))
                                 ]),
                           if (!widget.compartir)
-                            TextButton(style: ButtonStyle(
-                                          padding: WidgetStatePropertyAll(
-                                              EdgeInsets.symmetric(
-                                                  vertical: 0,
-                                                  horizontal: 1.w))),
+                            TextButton(
+                                style: ButtonStyle(
+                                    padding: WidgetStatePropertyAll(
+                                        EdgeInsets.symmetric(
+                                            vertical: 0, horizontal: 1.w))),
                                 onPressed: () => showDialog(
                                     barrierDismissible: false,
                                     context: context,
@@ -618,7 +474,10 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                         entradaTexto: widget.contacto?.nota,
                                         fun: (p0) async {
                                           var newModel = widget.contacto
-                                              ?.copyWith(nota: p0,empleadoId: provider.usuario?.empleadoId);
+                                              ?.copyWith(
+                                                  nota: p0,
+                                                  empleadoId: provider
+                                                      .usuario?.empleadoId);
                                           await ContactoController.update(
                                               newModel!);
                                           provider.contacto = newModel;

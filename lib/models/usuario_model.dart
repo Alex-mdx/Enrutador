@@ -48,7 +48,7 @@ class UsuarioModel {
       uuid: json["uuid"],
       nombre: json["nombre"],
       contactoId: json["contacto_id"],
-      empleadoId: json["empleado_id"],
+      empleadoId: json["empleado_id"].toString(),
       adminTipo: json["admin_tipo"],
       status: Parser.toInt(json["status"]),
       creacion: DateTime.tryParse(json["creacion"]),

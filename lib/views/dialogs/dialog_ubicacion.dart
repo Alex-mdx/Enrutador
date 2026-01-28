@@ -110,11 +110,13 @@ class _DialogUbicacionState extends State<DialogUbicacion> {
                       onPressed: () async {
                         try {
                           var string =
-                              (await Clipboard.getData(Clipboard.kTextPlain))!
-                                  .text
+                              (await Clipboard.getData(Clipboard.kTextPlain))
+                                  ?.text
                                   ?.removeAllWhitespace;
-                          latController.text = string!.split(",")[0];
-                          lngController.text = string.split(",")[1];
+                          if (string != null) {
+                            latController.text = string.split(",")[0];
+                            lngController.text = string.split(",")[1];
+                          }
                         } catch (e) {
                           showToast("No se detecto coordenadas");
                         }

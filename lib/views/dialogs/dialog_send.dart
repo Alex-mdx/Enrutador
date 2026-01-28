@@ -1,8 +1,11 @@
+import 'package:enrutador/utilities/number_fun.dart';
 import 'package:enrutador/utilities/preferences.dart';
 import 'package:enrutador/utilities/services/navigation_services.dart';
 import 'package:enrutador/utilities/textos.dart';
 import 'package:enrutador/utilities/theme/theme_color.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:sizer/sizer.dart';
@@ -36,16 +39,16 @@ class DialogSend extends StatefulWidget {
 class _DialogSendState extends State<DialogSend> {
   String? ladaFinal;
   bool send = false;
+  TextEditingController controller = TextEditingController();
   @override
   void initState() {
     ladaFinal = widget.lada;
+    controller.text = widget.entradaTexto ?? "";
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    TextEditingController controller =
-        TextEditingController(text: widget.entradaTexto);
     return PopScope(
         canPop: !send,
         child: Dialog(
@@ -97,6 +100,35 @@ class _DialogSendState extends State<DialogSend> {
                                         style: TextStyle(
                                             fontSize: 15.sp,
                                             fontWeight: FontWeight.bold)))
+                            : null,
+                        suffixIcon: widget.lenght != null
+                            ? IconButton.filledTonal(
+                                iconSize: 20.sp,
+                                onPressed: () async {
+                                  var number = (await Clipboard.getData(
+                                          Clipboard.kTextPlain))
+                                      ?.text
+                                      ?.removeAllWhitespace;
+                                  debugPrint("pegar: $number");
+                                  if (number != null) {
+                                    setState(() {
+                                      ladaFinal = NumberFun.onlyLada(number) ==
+                                              null
+                                          ? Preferences.lada == ""
+                                              ? null
+                                              : "+${Preferences.lada}"
+                                          : "+${NumberFun.onlyLada(number)}";
+                                      controller.text =
+                                          NumberFun.formatNumber(number)
+                                              .removeAllWhitespace;
+                                    });
+                                  } else {
+                                    showToast(
+                                        "No hay numero en el portapapeles");
+                                  }
+                                },
+                                icon: Icon(Icons.content_paste_go,
+                                    color: ThemaMain.primary))
                             : null,
                         contentPadding: EdgeInsets.symmetric(
                             horizontal: 2.w, vertical: 1.h))),
