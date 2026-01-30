@@ -1209,10 +1209,10 @@ packages:
     dependency: "direct main"
     description:
       name: map_launcher
-      sha256: "39af937533f3d9af306357c28546ded909a0f81c76097e118724df4d0713d2f2"
+      sha256: "85ae218777b79c830477ed59d97f5ee9d6025b00c47b05d0b901f4dd7d2297cc"
       url: "https://pub.dev"
     source: hosted
-    version: "4.4.2"
+    version: "4.4.3"
   matcher:
     dependency: transitive
     description:
@@ -1585,10 +1585,10 @@ packages:
     dependency: "direct main"
     description:
       name: pro_image_editor
-      sha256: fff02d53bb57af875c18175e4be86ea92a996b3bd2a16ed5e45d1925f6a6a011
+      sha256: "6565d5403d246fe0b65fd6d5e96adb7ce800b101a2c90b0dc3f9d3698035c088"
       url: "https://pub.dev"
     source: hosted
-    version: "11.16.0"
+    version: "11.18.3"
   proj4dart:
     dependency: transitive
     description:

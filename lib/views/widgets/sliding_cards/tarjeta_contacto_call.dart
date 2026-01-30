@@ -42,15 +42,16 @@ class TarjetaContactoCall extends StatelessWidget {
             showToast("$mensaje copiado");
           },
           onPressed: () {
-            String? lada = NumberFun.onlyLada(number ?? "0");
+            String? lada = NumberFun.onlyLada(number);
             showDialog(
                 barrierDismissible: false,
                 context: context,
                 builder: (context) => DialogSend(
                     lenght: 10,
                     lada: lada == null ? null : "+$lada",
-                    entradaTexto: NumberFun.formatNumber(number ?? "0")
-                        .removeAllWhitespace,
+                    entradaTexto: number == null
+                        ? null
+                        : NumberFun.formatNumber(number!).removeAllWhitespace,
                     fun: (p0) async {
                       if (fun != null) {
                         fun!(p0!);
@@ -71,7 +72,7 @@ class TarjetaContactoCall extends StatelessWidget {
                   onTap: () => showDialog(
                       context: context,
                       builder: (context) =>
-                          DialogsComunicar(number: number ?? "0")),
+                          DialogsComunicar(number: number!)),
                   child: Stack(alignment: Alignment.center, children: [
                     Icon(Icons.circle, size: 25.sp, color: ThemaMain.green),
                     Icon(LineIcons.tty, size: 23.sp, color: ThemaMain.second)

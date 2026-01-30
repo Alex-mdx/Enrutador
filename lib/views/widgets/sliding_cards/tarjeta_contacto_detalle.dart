@@ -103,6 +103,7 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                               fun: (p0) async {
                                                 var newModel = widget.contacto
                                                     ?.copyWith(
+                                                        pendiente: 1,
                                                         empleadoId: provider
                                                             .usuario
                                                             ?.empleadoId,
@@ -152,6 +153,7 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                               fun: (p0) async {
                                                 var newModel = widget.contacto
                                                     ?.copyWith(
+                                                        pendiente: 1,
                                                         domicilio: p0,
                                                         empleadoDomicilio:
                                                             provider.usuario
@@ -169,14 +171,14 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                           widget.contacto?.domicilio ??
                                               "Domicilio: Sin Domicilio",
                                           style: TextStyle(fontSize: 16.sp),
-                                          minFontSize: 13,
+                                          minFontSize: 14,
                                           maxLines: 2,
                                           overflow: TextOverflow.ellipsis))
                                 else
                                   AutoSizeText(
                                       widget.contacto?.domicilio ??
                                           "Domicilio: Sin Domicilio",
-                                      style: TextStyle(fontSize: 16.sp),
+                                      style: TextStyle(fontSize: 15.sp),
                                       minFontSize: 12,
                                       maxLines: 3,
                                       overflow: TextOverflow.ellipsis)
@@ -198,6 +200,7 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                               selected: (p0) async {
                                                 var newModel = widget.contacto
                                                     ?.copyWith(
+                                                        pendiente: 1,
                                                         tipo: p0.id,
                                                         empleadoTipo: provider
                                                             .usuario
@@ -254,6 +257,7 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                                     var newModel = widget
                                                         .contacto
                                                         ?.copyWith(
+                                                            pendiente: 1,
                                                             estado: p0,
                                                             estadoFecha:
                                                                 DateTime.now(),
@@ -307,7 +311,7 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 TarjetaContactoCall(
-                                    number: widget.contacto?.numero.toString(),
+                                    number: widget.contacto?.numero?.toString(),
                                     fechaNum: widget.contacto?.numeroFecha,
                                     compartir: widget.compartir,
                                     mensaje: "Telefono",
@@ -317,6 +321,7 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                       if (int.tryParse(p0.toString()) != null) {
                                         var newModel = provider.contacto
                                             ?.copyWith(
+                                                pendiente: 1,
                                                 numero:
                                                     int.parse(p0.toString()),
                                                 numeroFecha: DateTime.now(),
@@ -331,7 +336,7 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                     }),
                                 TarjetaContactoCall(
                                     number:
-                                        widget.contacto?.otroNumero.toString(),
+                                        widget.contacto?.otroNumero?.toString(),
                                     fechaNum: widget.contacto?.otroNumeroFecha,
                                     compartir: widget.compartir,
                                     mensaje: "Otro Num",
@@ -342,6 +347,7 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                       if (int.tryParse(p0.toString()) != null) {
                                         var newModel = provider.contacto
                                             ?.copyWith(
+                                                pendiente: 1,
                                                 otroNumero:
                                                     int.parse(p0.toString()),
                                                 otroNumeroFecha: DateTime.now(),
@@ -353,7 +359,7 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                       } else {
                                         showToast("Telefono no valido");
                                       }
-                                    }),
+                                    })
                               ]),
                           if (!widget.compartir)
                             Wrap(
@@ -475,6 +481,7 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                         fun: (p0) async {
                                           var newModel = widget.contacto
                                               ?.copyWith(
+                                                  pendiente: 1,
                                                   nota: p0,
                                                   empleadoId: provider
                                                       .usuario?.empleadoId);

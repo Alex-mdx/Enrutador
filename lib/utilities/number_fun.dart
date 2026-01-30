@@ -27,7 +27,8 @@ class NumberFun {
     return "($lada) ${country.firstOrNull?.formatNsn() ?? "0"}";
   }
 
-  static String? onlyLada(String number) {
+  static String? onlyLada(String? number) {
+    if (number == null) return null;
     Iterable<PhoneNumber> country;
     country = PhoneNumber.findPotentialPhoneNumbers(number);
     debugPrint("${country.toList().map((e) => e).toList()}");

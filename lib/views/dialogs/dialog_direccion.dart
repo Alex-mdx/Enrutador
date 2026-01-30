@@ -30,27 +30,33 @@ class _DialogDireccionState extends State<DialogDireccion> {
     super.initState();
     calle = TextEditingController(
         text: Textos.obtenerEntre(
-            palabra: widget.word ?? "", palabra1: "C. ", palabra2: ","));
+            palabra: widget.word ?? "Domicilio conocido",
+            palabra1: "C. ",
+            palabra2: ","));
     nint = TextEditingController(
         text: Textos.obtenerEntre(
-            palabra: widget.word ?? "", palabra1: "int: ", palabra2: " y"));
+            palabra: widget.word ?? "S/n", palabra1: "int: ", palabra2: " y"));
     next = TextEditingController(
         text: Textos.obtenerEntre(
-            palabra: widget.word ?? "", palabra1: "ext: ", palabra2: ","));
+            palabra: widget.word ?? "Ø", palabra1: "ext: ", palabra2: ","));
     cruz1 = TextEditingController(
         text: Textos.obtenerEntre(
-            palabra: widget.word ?? "",
+            palabra: widget.word ?? "Ø",
             palabra1: " entre cruz. 1: ",
             palabra2: " x"));
     cruz2 = TextEditingController(
         text: Textos.obtenerEntre(
-            palabra: widget.word ?? "", palabra1: " cruz. 2: ", palabra2: ","));
+            palabra: widget.word ?? "Ø",
+            palabra1: " cruz. 2: ",
+            palabra2: ","));
     colonia = TextEditingController(
         text: Textos.obtenerEntre(
-            palabra: widget.word ?? "", palabra1: "Colonia: ", palabra2: ","));
+            palabra: widget.word ?? "Sin Colonia",
+            palabra1: "Colonia: ",
+            palabra2: ","));
     postal = TextEditingController(
         text: Textos.obtenerEntre(
-            palabra: widget.word ?? "", palabra1: "CP: ", palabra2: "."));
+            palabra: widget.word ?? "Ø", palabra1: "CP: ", palabra2: "."));
   }
 
   @override
@@ -62,6 +68,20 @@ class _DialogDireccionState extends State<DialogDireccion> {
           child: Text("Ingresar Domicilio",
               style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold))),
       Divider(),
+      ElevatedButton.icon(
+          icon: Icon(LineIcons.eraser, size: 18.sp, color: ThemaMain.red),
+          onPressed: () {
+            setState(() {
+              calle.clear();
+              nint.clear();
+              next.clear();
+              cruz1.clear();
+              cruz2.clear();
+              colonia.clear();
+              postal.clear();
+            });
+          },
+          label: Text("Limpiar", style: TextStyle(fontSize: 15.sp))),
       Padding(
           padding: EdgeInsets.all(8.sp),
           child: Column(children: [
@@ -90,7 +110,7 @@ class _DialogDireccionState extends State<DialogDireccion> {
                                     horizontal: 2.w, vertical: 1.h)))),
                     Text(", "),
                     SizedBox(
-                        width: 24.w,
+                        width: 22.w,
                         child: TextField(
                             textCapitalization: TextCapitalization.sentences,
                             controller: nint,
@@ -102,7 +122,7 @@ class _DialogDireccionState extends State<DialogDireccion> {
                                     horizontal: 2.w, vertical: 1.h)))),
                     Text(" y "),
                     SizedBox(
-                        width: 24.w,
+                        width: 22.w,
                         child: TextField(
                             textCapitalization: TextCapitalization.sentences,
                             controller: next,
@@ -151,7 +171,7 @@ class _DialogDireccionState extends State<DialogDireccion> {
                               contentPadding: EdgeInsets.symmetric(
                                   horizontal: 2.w, vertical: 1.h)))),
                   SizedBox(
-                      width: 35.w,
+                      width: 32.w,
                       child: TextField(
                           textCapitalization: TextCapitalization.sentences,
                           controller: postal,

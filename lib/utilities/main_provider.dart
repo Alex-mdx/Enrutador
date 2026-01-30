@@ -215,6 +215,8 @@ class MainProvider with ChangeNotifier implements TickerProvider {
         add: "empleado_tipo", database: db, nombreDB: "contacto");
     await SqlGenerator.existColumna(
         add: "empleado_estado", database: db, nombreDB: "contacto");
+    await SqlGenerator.existColumna(
+        add: "sincronizado", database: db, nombreDB: "contacto");
     tipos = await TipoController.getItems();
     estados = await EstadoController.getItems();
     roles = await RolesController.getAll();

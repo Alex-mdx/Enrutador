@@ -174,7 +174,7 @@ class _TarjetaRsideWidgetState extends State<TarjetaRsideWidget> {
                       await Dialogs.showMorph(
                           title: "Inhabilitar Punteo",
                           description:
-                              "¿Desea inhabilitar este punteo?\nYa no se tendra acceso a este marcador",
+                              "¿Desea inhabilitar este punteo?\nYa no se tendra acceso a este marcador de manera local",
                           loadingTitle: "Inhabilitando",
                           onAcceptPressed: (context) async {
                             await ContactoController.deleteItem(
@@ -210,32 +210,39 @@ class _TarjetaRsideWidgetState extends State<TarjetaRsideWidget> {
             IconButton.filledTonal(
                 iconSize: 18.sp,
                 onPressed: () async {
-                  var contact =
-                      await ContactoFire.getItem(id: provider.contacto!.id);
-                  if (contact != null) {
-                    if (contact.modificado != provider.contacto!.modificado) {
-                      Dialogs.showMorph(
-                          title: "Cambios detectados",
-                          description:
-                              "¿Desea sincronizar los cambios?\nSe van a descargar los cambios del servidor y se van a sobreescribir los cambios locales",
-                          loadingTitle: "Sincronizando",
-                          onAcceptPressed: (context) async {
-                            await ContactoController.update(contact);
-                            provider.contacto = contact;
-                            showToast("Contacto sincronizado");
-                          });
+                  if (provider.internet) {
+                    var contact =
+                        await ContactoFire.getItem(id: provider.contacto!.id);
+                    if (contact != null) {
+                      if (provider.contacto?.pendiente == 1) {
+                        Dialogs.showMorph(
+                            title: "Cambios detectados",
+                            description:
+                                "¿Desea sincronizar los cambios?\nSe van a descargar los cambios del servidor y se van a sobreescribir los cambios locales",
+                            loadingTitle: "Sincronizando",
+                            onAcceptPressed: (context) async {
+                              var temp = contact.copyWith(pendiente: 0);
+                              await ContactoController.update(temp);
+                              provider.contacto = temp;
+                              showToast("Contacto sincronizado");
+                            });
+                      } else {
+                        showToast("Contacto sincronizado");
+                      }
                     } else {
-                      showToast("Contacto sincronizado");
+                      showToast("Contacto no encontrado en el servidor");
                     }
                   } else {
-                    showToast("Contacto no encontrado en el servidor");
+                    showToast("Sin internet\nintente mas tarde");
                   }
-                  /* } else {
-                    showToast("Sin internet");
-                  } */
                 },
-                icon: Icon(LineIcons.alternateCloudDownload,
-                    color: ThemaMain.darkBlue))
+                icon: Icon(
+                    provider.contacto?.pendiente == 0
+                        ? LineIcons.cloud
+                        : LineIcons.alternateCloudDownload,
+                    color: provider.contacto?.pendiente == 0
+                        ? ThemaMain.green
+                        : ThemaMain.darkBlue))
         ]);
   }
 }

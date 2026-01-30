@@ -77,7 +77,7 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                                       builder: (context) =>
                                           DialogUbicacion(funLat: (lat) async {
                                             var temp = provider.contacto!
-                                                .copyWith(
+                                                .copyWith(pendiente: 1,
                                                     latitud: double.parse(
                                                         lat
                                                                 ?.latitude
