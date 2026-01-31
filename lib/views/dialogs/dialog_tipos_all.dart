@@ -36,7 +36,7 @@ class DialogTiposAll extends StatelessWidget {
         Text("Ultima modificacion: ${Textos.fechaYMDHMS(fecha: fecha!)}",
             style: TextStyle(fontSize: 15.sp, fontStyle: FontStyle.italic)),
       Container(
-          constraints: BoxConstraints(maxHeight: 80.h),
+          constraints: BoxConstraints(maxHeight: 75.h),
           child: FutureBuilder(
               future: TipoController.getItems(),
               builder: (context, snapshot) {

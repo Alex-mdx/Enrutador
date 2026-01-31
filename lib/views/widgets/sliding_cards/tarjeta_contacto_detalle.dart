@@ -3,10 +3,11 @@ import 'package:enrutador/controllers/estado_controller.dart';
 import 'package:enrutador/controllers/referencias_controller.dart';
 import 'package:enrutador/utilities/main_provider.dart';
 import 'package:enrutador/utilities/pluscode_fun.dart';
+import 'package:enrutador/utilities/services/navigation_services.dart';
 import 'package:enrutador/views/dialogs/dialog_send.dart';
 import 'package:enrutador/views/dialogs/dialogs_estado_funcion.dart';
 import 'package:enrutador/views/widgets/chip_referencia.dart';
-import 'package:enrutador/views/widgets/sliding_cards/tarjeta_contacto_call.dart';
+import 'package:enrutador/views/widgets/extras/tarjeta_contacto_call.dart';
 import 'package:enrutador/views/widgets/sliding_cards/tarjeta_contacto_foto.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -468,62 +469,39 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                               []))
                                 ]),
                           if (!widget.compartir)
-                            TextButton(
-                                style: ButtonStyle(
-                                    padding: WidgetStatePropertyAll(
-                                        EdgeInsets.symmetric(
-                                            vertical: 0, horizontal: 1.w))),
-                                onPressed: () => showDialog(
-                                    barrierDismissible: false,
-                                    context: context,
-                                    builder: (context) => DialogSend(
-                                        entradaTexto: widget.contacto?.nota,
-                                        fun: (p0) async {
-                                          var newModel = widget.contacto
-                                              ?.copyWith(
-                                                  pendiente: 1,
-                                                  nota: p0,
-                                                  empleadoId: provider
-                                                      .usuario?.empleadoId);
-                                          await ContactoController.update(
-                                              newModel!);
-                                          provider.contacto = newModel;
-                                        },
-                                        tipoTeclado: TextInputType.multiline,
-                                        fecha: null,
-                                        input: TextInputAction.newline,
-                                        cabeza: "Ingresar notas del contacto")),
-                                child: AutoSizeText(
-                                    "Notas\n${widget.contacto?.nota ?? "Sin notas"}",
-                                    style: TextStyle(fontSize: 16.sp),
-                                    minFontSize: 13,
-                                    maxLines: 5,
-                                    overflow: TextOverflow.ellipsis))
-                          else
-                            AutoSizeText(
-                                "Notas\n${widget.contacto?.nota ?? "Sin notas"}",
-                                style: TextStyle(
-                                    fontSize: 15.sp,
-                                    fontWeight: FontWeight.bold,
-                                    fontStyle: FontStyle.italic),
-                                minFontSize: 10,
-                                maxLines: 5,
-                                overflow: TextOverflow.ellipsis),
-                          if (!widget.compartir)
-                            ElevatedButton.icon(
-                                style: ButtonStyle(
-                                    padding: WidgetStatePropertyAll(
-                                        EdgeInsets.symmetric(
-                                            vertical: 0, horizontal: 1.w))),
-                                onPressed: () => showDialog(
-                                    barrierDismissible: false,
-                                    context: context,
-                                    builder: (context) => DialogArchivo(
-                                        contacto: widget.contacto!)),
-                                icon: Icon(LineIcons.alternateFileAlt,
-                                    size: 20.sp, color: ThemaMain.pink),
-                                label: Text("Archivos",
-                                    style: TextStyle(fontSize: 16.sp)))
+                            Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: [
+                                  ElevatedButton.icon(
+                                      icon: Icon(LineIcons.stickyNote,
+                                          size: 20.sp, color: ThemaMain.yellow),
+                                      style: ButtonStyle(
+                                          padding: WidgetStatePropertyAll(
+                                              EdgeInsets.symmetric(
+                                                  vertical: 0,
+                                                  horizontal: 1.w))),
+                                      onPressed: () async =>
+                                          await Navigation.pushNamed(
+                                              route: "notasBuilder"),
+                                      label: Text("Notas",
+                                          style: TextStyle(fontSize: 16.sp))),
+                                  ElevatedButton.icon(
+                                      style: ButtonStyle(
+                                          padding: WidgetStatePropertyAll(
+                                              EdgeInsets.symmetric(
+                                                  vertical: 0,
+                                                  horizontal: 1.w))),
+                                      onPressed: () => showDialog(
+                                          barrierDismissible: false,
+                                          context: context,
+                                          builder: (context) => DialogArchivo(
+                                              contacto: widget.contacto!)),
+                                      icon: Icon(LineIcons.alternateFileAlt,
+                                          size: 20.sp, color: ThemaMain.pink),
+                                      label: Text("Archivos",
+                                          style: TextStyle(fontSize: 16.sp)))
+                                ])
                         ])
                   ])))
             ])));
