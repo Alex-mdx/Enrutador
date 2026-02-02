@@ -46,7 +46,7 @@ class NotasController {
   static Future<List<NotaModel>> getContactoId(int contactoId) async {
     final db = await database();
     final query = await db
-        .query(nombreDB, where: "contacto_id = ?", whereArgs: [contactoId]);
+        .query(nombreDB, where: "contacto_id = ?", whereArgs: [contactoId],limit: 50);
     List<NotaModel> notas = query.map((e) => NotaModel.fromJson(e)).toList();
     return notas;
   }

@@ -6,7 +6,7 @@ import 'package:enrutador/utilities/pluscode_fun.dart';
 import 'package:enrutador/utilities/services/navigation_services.dart';
 import 'package:enrutador/views/dialogs/dialog_send.dart';
 import 'package:enrutador/views/dialogs/dialogs_estado_funcion.dart';
-import 'package:enrutador/views/widgets/chip_referencia.dart';
+import 'package:enrutador/views/widgets/extras/chip_referencia.dart';
 import 'package:enrutador/views/widgets/extras/tarjeta_contacto_call.dart';
 import 'package:enrutador/views/widgets/sliding_cards/tarjeta_contacto_foto.dart';
 import 'package:flutter/material.dart';
@@ -483,7 +483,8 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                                   horizontal: 1.w))),
                                       onPressed: () async =>
                                           await Navigation.pushNamed(
-                                              route: "notasBuilder"),
+                                              route: "notasBuilder",
+                                              arguments: widget.contacto?.id),
                                       label: Text("Notas",
                                           style: TextStyle(fontSize: 16.sp))),
                                   ElevatedButton.icon(

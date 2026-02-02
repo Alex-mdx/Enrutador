@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:developer';
+import 'package:enrutador/controllers/nota_controller.dart';
 import 'package:enrutador/utilities/main_provider.dart';
 import 'package:enrutador/utilities/permisos.dart';
 import 'package:enrutador/utilities/services/dialog_services.dart';
@@ -22,6 +24,7 @@ import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 import 'package:app_links/app_links.dart';
 import '../controllers/contacto_controller.dart';
+import '../models/nota_model.dart';
 import '../utilities/uri_fun.dart';
 import 'widgets/map_widget/map_alternative.dart';
 import 'package:badges/badges.dart' as bd;
@@ -223,6 +226,29 @@ class _HomeViewState extends State<HomeView> {
                     toolbarHeight: 6.h,
                     title: Text("Enrutador", style: TextStyle(fontSize: 18.sp)),
                     actions: [
+                      if (kDebugMode)
+                        IconButton(
+                            onPressed: () async {
+                              var notado =
+                                  await ContactoController.getPersonalizado(
+                                      query: "nota IS NOT NULL AND nota != ''",
+                                      columns: [
+                                    "id",
+                                    "nota",
+                                    "latitud",
+                                    "longitud"
+                                  ]);
+                              for (var i = 0; i < notado.length; i++) {
+                                NotaModel nota = NotaModel(
+                                    contactoId: notado[i].id!,
+                                    descripcion: notado[i].nota!,
+                                    empleadoId: provider.usuario!.empleadoId!,
+                                    pendiente: 1,
+                                    creado: DateTime.now());
+                                await NotasController.insert(nota);
+                              }
+                            },
+                            icon: Icon(Icons.add, color: ThemaMain.darkBlue)),
                       FutureBuilder(
                           future: ContactoController.getCountPendiente(),
                           builder: (context, snapshot) => bd.Badge(
@@ -241,7 +267,10 @@ class _HomeViewState extends State<HomeView> {
                                       await Navigation.pushNamed(
                                           route: "pendientes"),
                                   icon: Icon(LineIcons.alternateCloudUpload,
-                                      color:snapshot.hasData || snapshot.data == 1?  ThemaMain.red : ThemaMain.primary))))
+                                      color:
+                                          snapshot.hasData || snapshot.data == 1
+                                              ? ThemaMain.red
+                                              : ThemaMain.primary))))
                     ]),
                 body: IgnorePointer(
                     ignoring:
