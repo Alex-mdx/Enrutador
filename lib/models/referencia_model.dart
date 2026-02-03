@@ -11,7 +11,7 @@ class ReferenciaModelo {
   double? contactoIdRLng;
   int buscar;
   int? tipoCliente;
-  int? estatus;
+  int estatus;
   DateTime? fecha;
 
   ReferenciaModelo(
@@ -69,7 +69,7 @@ class ReferenciaModelo {
           contactoIdRLng: double.tryParse(json["contacto_id_r_lng"].toString()),
           buscar: Parser.toInt(json["buscar"]) ?? -1,
           tipoCliente: Parser.toInt(json["tipo_cliente"]),
-          estatus: Parser.toInt(json["estatus"]),
+          estatus: Parser.toInt(json["estatus"]) ?? 1,
           fecha: DateTime.tryParse(json["fecha"]));
 
   Map<String, dynamic> toJson() => {

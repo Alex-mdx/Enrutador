@@ -32,7 +32,8 @@ class ReferenciasController {
   static Future<void> insert(ReferenciaModelo data) async {
     final db = await database();
     var existencia = await getId(data);
-    await SqlGenerator.existColumna(add: "rol_id", database: db, nombreDB: nombreDB);
+    await SqlGenerator.existColumna(
+        add: "rol_id", database: db, nombreDB: nombreDB);
     if (existencia == null) {
       await db.insert(nombreDB, data.toJson(),
           conflictAlgorithm: sql.ConflictAlgorithm.replace);
@@ -45,16 +46,19 @@ class ReferenciasController {
 
   static Future<void> update(ReferenciaModelo data) async {
     final db = await database();
-    await SqlGenerator.existColumna(add: "rol_id", database: db, nombreDB: nombreDB);
+    await SqlGenerator.existColumna(
+        add: "rol_id", database: db, nombreDB: nombreDB);
     await db.update(nombreDB, data.toJson(),
         where: "id = ? OR (id_foranea = ? AND id_r_forenea = ?)",
         whereArgs: [data.id, data.idForanea, data.idRForenea],
         conflictAlgorithm: sql.ConflictAlgorithm.replace);
   }
 
-  static Future<List<ReferenciaModelo>> getItems({int? long}) async {
+  
+
+  static Future<List<ReferenciaModelo>> getItems({int? long, int? estatus}) async {
     final db = await database();
-    final query = await db.query(nombreDB,limit: long);
+    final query = await db.query(nombreDB, limit: long, where: estatus != null ? "estatus = ?" : "", whereArgs: [estatus]);
     List<ReferenciaModelo> modelo = [];
     for (var element in query) {
       modelo.add(ReferenciaModelo.fromJson(element));
@@ -75,12 +79,13 @@ class ReferenciasController {
   static Future<List<ReferenciaModelo>> getIdPrin(
       {required int? idContacto,
       required double? lat,
-      required double? lng}) async {
+      required double? lng,
+      int? status}) async {
     final db = await database();
     final query = await db.query(nombreDB,
         where:
-            "id_foranea = ? OR (contacto_id_lat = ? AND contacto_id_lng = ?)",
-        whereArgs: [idContacto, lat, lng]);
+            "id_foranea = ? OR (contacto_id_lat = ? AND contacto_id_lng = ?) ${status != null ? "AND estatus = ?" : ""}",
+        whereArgs: [idContacto, lat, lng, status]);
     List<ReferenciaModelo> modelo = [];
     for (var element in query) {
       modelo.add(ReferenciaModelo.fromJson(element));
@@ -91,12 +96,13 @@ class ReferenciasController {
   static Future<List<ReferenciaModelo>> getIdR(
       {required int? idRContacto,
       required double? lat,
-      required double? lng}) async {
+      required double? lng,
+      int? status}) async {
     final db = await database();
     final query = await db.query(nombreDB,
         where:
-            "id_r_forenea = ? OR (contacto_id_r_lat = ? AND contacto_id_r_lng = ?)",
-        whereArgs: [idRContacto, lat, lng]);
+            "id_r_forenea = ? OR (contacto_id_r_lat = ? AND contacto_id_r_lng = ?) ${status != null ? "AND estatus = ?" : ""}",
+        whereArgs: [idRContacto, lat, lng, status]);
     List<ReferenciaModelo> modelo = [];
     for (var element in query) {
       modelo.add(ReferenciaModelo.fromJson(element));
