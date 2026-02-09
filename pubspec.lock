@@ -249,6 +249,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "8.5.0"
+  circle_nav_bar:
+    dependency: "direct main"
+    description:
+      name: circle_nav_bar
+      sha256: "322b35143fedec52f744e6ce6eea5468c9995ece75a50df7516c7324871226eb"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.2.0"
   cli_config:
     dependency: transitive
     description:
@@ -1585,10 +1593,10 @@ packages:
     dependency: "direct main"
     description:
       name: pro_image_editor
-      sha256: "6565d5403d246fe0b65fd6d5e96adb7ce800b101a2c90b0dc3f9d3698035c088"
+      sha256: f4e4ffb0c280317ba23a484272e23179676b714a195e437a80beafc5b5a30149
       url: "https://pub.dev"
     source: hosted
-    version: "11.18.3"
+    version: "11.20.1"
   proj4dart:
     dependency: transitive
     description:
@@ -1629,6 +1637,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.6.0"
+  readmore:
+    dependency: "direct main"
+    description:
+      name: readmore
+      sha256: e8fca2bd397b86342483b409e2ec26f06560a5963aceaa39b27f30722b506187
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.0"
   rive:
     dependency: transitive
     description:

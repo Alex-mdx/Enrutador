@@ -40,15 +40,12 @@ class _NotasBuilderState extends State<NotasBuilder> {
     setState(() => loading = true);
     notas = await NotasController.getContactoId(contactoId!);
     setState(() => loading = false);
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (itemScrollController.isAttached) {
-        itemScrollController.scrollTo(
-            index: notas.length - 1,
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeInOut);
-      }
-    });
+    if (itemScrollController.isAttached) {
+      await itemScrollController.scrollTo(
+          index: notas.length - 1,
+          duration: const Duration(seconds: 1),
+          curve: Curves.easeInOut);
+    }
   }
 
   @override
@@ -85,41 +82,44 @@ class _NotasBuilderState extends State<NotasBuilder> {
         body: SafeArea(
             child: Column(children: [
           if (loading && notas.isEmpty)
-            Center(
-                child: LoadingAnimationWidget.stretchedDots(
-                    color: ThemaMain.darkBlue, size: 30.sp))
+            Expanded(
+                child: Center(
+                    child: LoadingAnimationWidget.stretchedDots(
+                        color: ThemaMain.darkBlue, size: 30.sp)))
           else if (notas.isNotEmpty)
             Expanded(
                 child: Scrollbar(
-              thickness: 2.w,
-              child: StickyGroupedListView(
-                  itemScrollController: itemScrollController,
-                  elements: notas,
-                  floatingHeader: true,
-                  groupBy: (NotaModel e) => Textos.fechaYMD(fecha: e.creado),
-                  groupSeparatorBuilder: (element) => Card(
-                      elevation: 0,
-                      color: ThemaMain.darkBlue,
-                      child: Padding(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 1.w, vertical: 0),
-                        child: Text(Textos.fechaYMD(fecha: element.creado),
-                            style: TextStyle(
-                                fontSize: 14.sp,
-                                fontWeight: FontWeight.bold,
-                                color: ThemaMain.background)),
-                      )),
-                  itemBuilder: (context, element) =>
-                      CardNota(element: element)),
-            ))
+                    child: StickyGroupedListView(
+                        itemScrollController: itemScrollController,
+                        elements: notas,
+                        floatingHeader: true,
+                        groupBy: (NotaModel e) =>
+                            Textos.fechaYMD(fecha: e.creado),
+                        groupSeparatorBuilder: (element) => Card(
+                            elevation: 0,
+                            color: ThemaMain.darkBlue,
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 1.w, vertical: 0),
+                              child: Text(
+                                  Textos.fechaYMD(fecha: element.creado),
+                                  style: TextStyle(
+                                      fontSize: 14.sp,
+                                      fontWeight: FontWeight.bold,
+                                      color: ThemaMain.background)),
+                            )),
+                        itemBuilder: (context, element) =>
+                            CardNota(element: element))))
           else
-            Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
+            Expanded(
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
                   Icon(Icons.note_alt, size: 30.sp, color: ThemaMain.darkGrey),
                   Text("No hay notas", style: TextStyle(fontSize: 16.sp))
-                ]),
+                ])),
           Padding(
               padding: EdgeInsets.all(10.sp),
               child: TextSend(fun: (p0) async {
@@ -131,14 +131,10 @@ class _NotasBuilderState extends State<NotasBuilder> {
                     creado: DateTime.now());
                 await NotasController.insert(tempNota);
                 setState(() => notas.add(tempNota));
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  if (itemScrollController.isAttached) {
-                    itemScrollController.scrollTo(
-                        index: notas.length - 1,
-                        duration: const Duration(milliseconds: 300),
-                        curve: Curves.easeInOut);
-                  }
-                });
+                await itemScrollController.scrollTo(
+                    index: notas.length - 1,
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeInOut);
               }))
         ])));
   }

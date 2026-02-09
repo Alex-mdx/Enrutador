@@ -14,7 +14,8 @@ class NumberFun {
     return "$lada${country.firstOrNull?.formatNsn() ?? "0"}";
   }
 
-  static String formatNumberWithLadaAndParentheses(String number) {
+  static String formatNumberWithLadaAndParentheses(String? number) {
+    if (number == null) return "Ø";
     Iterable<PhoneNumber> country;
     country = PhoneNumber.findPotentialPhoneNumbers(number);
     String? lada = country.firstOrNull?.countryCode;

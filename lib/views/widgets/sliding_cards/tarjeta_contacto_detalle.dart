@@ -279,6 +279,12 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                             return Text(
                                                 "Estado: ${data.data?.nombre ?? "Ø"}",
                                                 style: TextStyle(
+                                                    shadows: [
+                                                      Shadow(
+                                                          color: Colors.black,
+                                                          offset: Offset(1, 1),
+                                                          blurRadius: 1)
+                                                    ],
                                                     color: data.data?.color,
                                                     fontSize: 15.sp,
                                                     fontWeight:
@@ -435,7 +441,6 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                                 children: snapshot.data
                                                         ?.map((e) => ChipReferencia(
                                                             ref: e,
-                                                            provider: provider,
                                                             latlng: LatLng(
                                                                 e.contactoIdRLat ??
                                                                     0,
@@ -460,7 +465,6 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                           children: snapshot.data
                                                   ?.map((e) => ChipReferencia(
                                                       ref: e,
-                                                      provider: provider,
                                                       latlng: LatLng(
                                                           e.contactoIdLat,
                                                           e.contactoIdLng),

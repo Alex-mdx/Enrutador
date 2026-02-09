@@ -15,6 +15,7 @@ import 'package:substring_highlight/substring_highlight.dart';
 import '../../controllers/tipo_controller.dart';
 import 'package:badges/badges.dart' as bd;
 
+import '../../utilities/number_fun.dart';
 import '../../utilities/pluscode_fun.dart';
 
 class CardContactoWidget extends StatelessWidget {
@@ -49,7 +50,7 @@ class CardContactoWidget extends StatelessWidget {
                     .firstWhereOrNull(
                         (element) => element.id == contacto.estado)
                     ?.color,
-                size: 16.sp)),
+                size: 15.sp)),
         child: GestureDetector(
             onTap: () => funContact(contacto),
             child: Card(
@@ -138,7 +139,7 @@ class CardContactoWidget extends StatelessWidget {
                                           children: [
                                             SubstringHighlight(
                                                 text:
-                                                    "Tel: ${contacto.numero ?? "Ø"}",
+                                                    "Tel: ${NumberFun.formatNumberWithLadaAndParentheses(contacto.numero?.toString())}",
                                                 term: entrada,
                                                 maxLines: 2,
                                                 overflow: TextOverflow.ellipsis,
@@ -152,7 +153,7 @@ class CardContactoWidget extends StatelessWidget {
                                                         FontWeight.bold)),
                                             SubstringHighlight(
                                                 text:
-                                                    "Otro: ${contacto.otroNumero ?? "Ø"}",
+                                                    "Otro: ${NumberFun.formatNumberWithLadaAndParentheses(contacto.otroNumero?.toString())}",
                                                 term: entrada,
                                                 maxLines: 2,
                                                 overflow: TextOverflow.ellipsis,

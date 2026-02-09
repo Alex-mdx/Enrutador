@@ -93,7 +93,7 @@ class _ViajeMapPageState extends State<MapMain>
                                 Icons.circle,
                                 color: Colors.white)),
                         markerDirection: MarkerDirection.heading)),
-                if (provider.descargarZona)
+                if (!provider.descargarZona)
                   if (provider.contacto != null && !provider.descargarZona)
                     FutureBuilder(
                         future: ReferenciasController.getIdR(

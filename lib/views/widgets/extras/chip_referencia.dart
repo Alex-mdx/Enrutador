@@ -6,6 +6,7 @@ import 'package:enrutador/utilities/theme/theme_color.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_utils/src/extensions/export.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 import 'package:enrutador/views/dialogs/dialog_referencia.dart';
 
@@ -14,16 +15,17 @@ class ChipReferencia extends StatelessWidget {
       {super.key,
       required this.ref,
       required this.latlng,
-      required this.provider,
-      required this.origen});
+      required this.origen,this.extended = false, this.tap = true});
 
   final ReferenciaModelo ref;
-  final MainProvider provider;
   final bool origen;
   final LatLng latlng;
+  final bool? tap;
+  final bool extended;
 
   @override
   Widget build(BuildContext context) {
+    final provider = Provider.of<MainProvider>(context); 
     return Container(
         decoration: BoxDecoration(
             color: Colors.white,
@@ -31,22 +33,27 @@ class ChipReferencia extends StatelessWidget {
             border: Border.all(color: ThemaMain.darkGrey, width: 1.sp)),
         child: GestureDetector(
             onTap: () async {
-              MapFun.sendInitUri(
+              if(tap == true){
+MapFun.sendInitUri(
                   provider: provider,
                   lat: latlng.latitude,
                   lng: latlng.longitude);
               await provider.slide.close();
+              }
+              
             },
             onLongPress: () async {
+              if(tap == true){
               showDialog(
                   barrierDismissible: false,
                   context: context,
                   builder: (context) =>
                       DialogReferencia(referencia: ref, origen: origen));
+              }
             },
             child: Row(mainAxisSize: MainAxisSize.min, children: [
               Container(
-                  constraints: BoxConstraints(maxWidth: 17.w),
+                  constraints: BoxConstraints(maxWidth: extended ? 25.w : 17.w),
                   child: AutoSizeText(
                       provider.roles
                               .firstWhereOrNull(
@@ -57,11 +64,14 @@ class ChipReferencia extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       minFontSize: 8,
                       style: TextStyle(
-                          fontSize: 15.sp, fontWeight: FontWeight.bold))),
+                          fontSize: extended ? 18.sp : 15.sp, fontWeight: FontWeight.bold))),
               SizedBox(width: .5.w),
               Icon(Icons.assistant_direction,
-                  size: 22.sp,
-                  color: origen ? ThemaMain.green : ThemaMain.primary)
+                  size: extended ? 25.sp : 22.sp,
+                  color: origen ? provider.roles
+                              .firstWhereOrNull(
+                                  (element) => element.id == ref.rolId)
+                              ?.color ?? ThemaMain.green : ThemaMain.primary)
             ])));
   }
 }

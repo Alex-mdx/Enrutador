@@ -49,7 +49,7 @@ ThemeData light = ThemeData(
             fontWeight: FontWeight.bold,fontFamily: 'Roboto')),
     scrollbarTheme: const ScrollbarThemeData(
         radius: Radius.circular(24),
-        thumbColor: WidgetStatePropertyAll(LightTheme.second)),
+        thumbColor: WidgetStatePropertyAll(LightTheme.darkBlue)),
     elevatedButtonTheme: ElevatedButtonThemeData(
         style: ButtonStyle(
             backgroundColor: const WidgetStatePropertyAll(LightTheme.second),
@@ -125,7 +125,7 @@ ThemeData dark = ThemeData(
             fontWeight: FontWeight.bold,fontFamily: 'Roboto')),
     scrollbarTheme: const ScrollbarThemeData(
         radius: Radius.circular(24),
-        thumbColor: WidgetStatePropertyAll(DarkTheme.grey)),
+        thumbColor: WidgetStatePropertyAll(DarkTheme.darkBlue)),
     elevatedButtonTheme: ElevatedButtonThemeData(
         style: ButtonStyle(
             backgroundColor: const WidgetStatePropertyAll(DarkTheme.darkBlue),

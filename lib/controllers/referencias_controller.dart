@@ -54,11 +54,13 @@ class ReferenciasController {
         conflictAlgorithm: sql.ConflictAlgorithm.replace);
   }
 
-  
-
-  static Future<List<ReferenciaModelo>> getItems({int? long, int? estatus}) async {
+  static Future<List<ReferenciaModelo>> getItems(
+      {int? long, int? estatus, String? order}) async {
     final db = await database();
-    final query = await db.query(nombreDB, limit: long, where: estatus != null ? "estatus = ?" : "", whereArgs: [estatus]);
+    final query = await db.query(nombreDB,
+        limit: long,
+        where: estatus != null ? "estatus = ?" : "",
+        whereArgs: estatus == null ? null : [estatus], orderBy: order ?? "id DESC");
     List<ReferenciaModelo> modelo = [];
     for (var element in query) {
       modelo.add(ReferenciaModelo.fromJson(element));
@@ -85,7 +87,9 @@ class ReferenciasController {
     final query = await db.query(nombreDB,
         where:
             "id_foranea = ? OR (contacto_id_lat = ? AND contacto_id_lng = ?) ${status != null ? "AND estatus = ?" : ""}",
-        whereArgs: [idContacto, lat, lng, status]);
+        whereArgs: status == null
+            ? [idContacto, lat, lng]
+            : [idContacto, lat, lng, status]);
     List<ReferenciaModelo> modelo = [];
     for (var element in query) {
       modelo.add(ReferenciaModelo.fromJson(element));
@@ -102,7 +106,9 @@ class ReferenciasController {
     final query = await db.query(nombreDB,
         where:
             "id_r_forenea = ? OR (contacto_id_r_lat = ? AND contacto_id_r_lng = ?) ${status != null ? "AND estatus = ?" : ""}",
-        whereArgs: [idRContacto, lat, lng, status]);
+        whereArgs: status == null
+            ? [idRContacto, lat, lng]
+            : [idRContacto, lat, lng, status]);
     List<ReferenciaModelo> modelo = [];
     for (var element in query) {
       modelo.add(ReferenciaModelo.fromJson(element));
