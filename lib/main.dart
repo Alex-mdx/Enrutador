@@ -34,10 +34,6 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   HttpOverrides.global = MyHttpOverrides();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  // final analitic = FirebaseAnalytics.instance;
-  // await analitic.logEvent(
-  //     name: "abierto_bitch",
-  //     parameters: {"version": "1.0.0", "platform": "android"});
   try {
     await FMTCObjectBoxBackend().initialise(); // The default/built-in backend
   } catch (error) {

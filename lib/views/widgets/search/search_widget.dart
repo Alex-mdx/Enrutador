@@ -48,14 +48,13 @@ class _SearchWidgetState extends State<SearchWidget> {
     geoNamesSuggest.clear();
 
     try {
-      var coordenadas = await PlusCodeFun.convert(provider.buscar.text,toShortFormat: false);
+      var coordenadas =
+          await PlusCodeFun.convert(provider.buscar.text, toShortFormat: false);
       var ps = PlusCodeFun.truncPlusCode(coordenadas);
       log("${ps.toJson()}");
-        await MapFun.sendInitUri(
-            provider: provider,
-            lat: ps.latitude,
-            lng: ps.longitude);
-        return;
+      await MapFun.sendInitUri(
+          provider: provider, lat: ps.latitude, lng: ps.longitude);
+      return;
     } catch (e) {
       debugPrint("error: $e");
     }
@@ -129,9 +128,6 @@ class _SearchWidgetState extends State<SearchWidget> {
                         await send(provider).whenComplete(() => setState(() {
                               buscar = false;
                             })),
-                    onChanged: (value) => setState(() {
-                          provider.buscar.text = value;
-                        }),
                     decoration: InputDecoration(
                         fillColor: ThemaMain.second,
                         suffixIcon: provider
@@ -174,7 +170,7 @@ class _SearchWidgetState extends State<SearchWidget> {
                                 provider.buscar.text.removeAllWhitespace.isNotEmpty
                                     ? CrossFadeState.showFirst
                                     : CrossFadeState.showSecond,
-                            duration: Durations.medium2),
+                            duration: Durations.medium1),
                         contentPadding:
                             EdgeInsets.symmetric(horizontal: 2.w, vertical: 1.h)),
                     hintTextStyle: TextStyle(fontSize: 15.sp, fontStyle: FontStyle.italic),

@@ -2,20 +2,17 @@ import 'package:circle_nav_bar/circle_nav_bar.dart';
 import 'package:enrutador/controllers/referencias_controller.dart';
 import 'package:enrutador/models/nota_model.dart';
 import 'package:enrutador/models/referencia_model.dart';
-import 'package:enrutador/utilities/main_provider.dart';
 import 'package:enrutador/utilities/theme/theme_app.dart';
 import 'package:enrutador/utilities/theme/theme_color.dart';
 import 'package:enrutador/views/page/contactos_page.dart';
+import 'package:enrutador/views/page/notas_page.dart';
 import 'package:enrutador/views/page/referencias_page.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
-import 'package:sticky_grouped_list/sticky_grouped_list.dart';
 
 import '../controllers/contacto_controller.dart';
 import '../controllers/nota_controller.dart';
 import '../models/contacto_model.dart';
-import 'widgets/extras/list_referencia_agrupada.dart';
 
 class PendientesHome extends StatefulWidget {
   const PendientesHome({super.key});
@@ -66,7 +63,6 @@ class _PendientesHomeState extends State<PendientesHome> {
 
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<MainProvider>(context);
     return Scaffold(
         appBar: AppBar(
             title: Text("Mis Pendientes", style: TextStyle(fontSize: 18.sp)),
@@ -108,15 +104,35 @@ class _PendientesHomeState extends State<PendientesHome> {
             circleShadowColor: ThemaMain.primary,
             elevation: 5),
         body: PageView(
+            hitTestBehavior: HitTestBehavior.deferToChild,
             controller: pageController,
-            onPageChanged: (v) {
-              tabIndex = v;
-            },
+            onPageChanged: (v) => setState(() {
+                  tabIndex = v;
+                }),
             children: [
               ReferenciasPage(
-                  referencias: referencias, carga: carga, send: send),
-              ContactosPage(contactos: contactos, carga: carga, send: send),
-              Placeholder()
+                  referencias: referencias,
+                  carga: carga,
+                  send: () async {
+                    var data = await ReferenciasController.getItems(
+                        estatus: -1, long: 50, order: "fecha DESC");
+                    setState(() => referencias = data);
+                  }),
+              ContactosPage(
+                  contactos: contactos,
+                  carga: carga,
+                  send: () async {
+                    var data = await ContactoController.getPendientes();
+                    setState(() => contactos = data);
+                  }),
+              NotasPage(
+                  notas: notas,
+                  carga: carga,
+                  send: () async {
+                    var data = await NotasController.getAll(
+                        pendiente: 1, long: 100, order: "creado DESC");
+                    setState(() => notas = data);
+                  })
             ]));
   }
 }

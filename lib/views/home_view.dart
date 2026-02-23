@@ -25,6 +25,7 @@ import 'package:app_links/app_links.dart';
 import '../controllers/contacto_controller.dart';
 import '../models/nota_model.dart';
 import '../utilities/uri_fun.dart';
+import 'widgets/extras/side_buttons.dart';
 import 'widgets/map_widget/map_alternative.dart';
 import 'package:badges/badges.dart' as bd;
 
@@ -44,176 +45,9 @@ class _HomeViewState extends State<HomeView> {
             key: provider.sliderDrawerKey,
             animationDuration: 300,
             appBar: Placeholder(),
-            sliderOpenSize: 34.w,
+            sliderOpenSize: 35.w,
             isDraggable: false,
-            slider: Container(
-                color: ThemaMain.appbar,
-                child: Column(children: [
-                  SizedBox(height: 10.h),
-                  GestureDetector(
-                      onTap: () async =>
-                          await Navigation.pushNamed(route: "contactos"),
-                      child: Card(
-                          child: Padding(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 1.w, vertical: 1.h),
-                              child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text("Contactos",
-                                        style: TextStyle(
-                                            fontSize: 16.sp,
-                                            fontWeight: FontWeight.bold)),
-                                    Icon(Icons.connect_without_contact,
-                                        size: 22.sp, color: ThemaMain.darkGrey)
-                                  ])))),
-                  if (kDebugMode)
-                    GestureDetector(
-                        onTap: () async {},
-                        child: Card(
-                            child: Padding(
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 1.w, vertical: 1.h),
-                                child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text("Listas",
-                                          style: TextStyle(
-                                              fontSize: 16.sp,
-                                              fontWeight: FontWeight.bold)),
-                                      Icon(LineIcons.mapMarked,
-                                          size: 22.sp, color: ThemaMain.red)
-                                    ])))),
-                  GestureDetector(
-                      onTap: () async =>
-                          await Navigation.pushNamed(route: "tipos"),
-                      child: Card(
-                          child: Padding(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 1.w, vertical: 1.h),
-                              child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text("Tipos",
-                                        style: TextStyle(
-                                            fontSize: 16.sp,
-                                            fontWeight: FontWeight.bold)),
-                                    Icon(Icons.type_specimen,
-                                        size: 22.sp, color: ThemaMain.primary)
-                                  ])))),
-                  GestureDetector(
-                      onTap: () async =>
-                          await Navigation.pushNamed(route: "estatus"),
-                      child: Card(
-                          child: Padding(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 1.w, vertical: 1.h),
-                              child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text("Estatus",
-                                        style: TextStyle(
-                                            fontSize: 16.sp,
-                                            fontWeight: FontWeight.bold)),
-                                    Icon(Icons.contact_emergency,
-                                        size: 22.sp, color: ThemaMain.darkBlue)
-                                  ])))),
-                  GestureDetector(
-                      onTap: () async =>
-                          await Navigation.pushNamed(route: "navegar"),
-                      child: Card(
-                          child: Padding(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 1.w, vertical: 1.h),
-                              child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text("Navegar",
-                                        style: TextStyle(
-                                            fontSize: 16.sp,
-                                            fontWeight: FontWeight.bold)),
-                                    Icon(LineIcons.globe,
-                                        size: 22.sp, color: ThemaMain.green)
-                                  ])))),
-                  GestureDetector(
-                      onTap: () async =>
-                          await Navigation.pushNamed(route: "roles"),
-                      child: Card(
-                          child: Padding(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 1.w, vertical: 1.h),
-                              child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text("Roles",
-                                        style: TextStyle(
-                                            fontSize: 16.sp,
-                                            fontWeight: FontWeight.bold)),
-                                    Icon(LineIcons.userTag,
-                                        size: 22.sp, color: ThemaMain.darkBlue)
-                                  ])))),
-                  GestureDetector(
-                      onTap: () async =>
-                          await Navigation.pushNamed(route: "lada"),
-                      child: Card(
-                          child: Padding(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 1.w, vertical: 1.h),
-                              child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text("Lada",
-                                        style: TextStyle(
-                                            fontSize: 16.sp,
-                                            fontWeight: FontWeight.bold)),
-                                    Icon(Icons.perm_phone_msg,
-                                        size: 20.sp, color: ThemaMain.pink)
-                                  ])))),
-                  GestureDetector(
-                      onTap: () async =>
-                          await Navigation.pushNamed(route: "regionesMapa"),
-                      child: Card(
-                          child: Padding(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 1.w, vertical: 1.h),
-                              child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text("Regionar",
-                                        style: TextStyle(
-                                            fontSize: 16.sp,
-                                            fontWeight: FontWeight.bold)),
-                                    Icon(LineIcons.layerGroup,
-                                        size: 20.sp, color: ThemaMain.primary)
-                                  ])))),
-                  GestureDetector(
-                      onTap: () async => showDialog(
-                          context: context,
-                          builder: (context) => Dialog(child: CardAccout())),
-                      child: Card(
-                          child: Padding(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 1.w, vertical: 1.h),
-                              child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text("Perfil",
-                                        style: TextStyle(
-                                            fontSize: 16.sp,
-                                            fontWeight: FontWeight.bold)),
-                                    Icon(Icons.person,
-                                        size: 20.sp, color: ThemaMain.green)
-                                  ]))))
-                ])),
+            slider: SideButtons(),
             child: Scaffold(
                 appBar: AppBar(
                     leading: IconButton(
@@ -243,6 +77,7 @@ class _HomeViewState extends State<HomeView> {
                                     descripcion: notado[i].nota!,
                                     empleadoId: provider.usuario!.empleadoId!,
                                     pendiente: 1,
+                                    fijado: 0,
                                     creado: DateTime.now());
                                 await NotasController.insert(nota);
                               }

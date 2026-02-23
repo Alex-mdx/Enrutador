@@ -4,6 +4,7 @@ class NotaModel {
   String descripcion;
   String empleadoId;
   int pendiente;
+  int fijado;
   DateTime creado;
 
   NotaModel(
@@ -12,6 +13,7 @@ class NotaModel {
       required this.descripcion,
       required this.empleadoId,
       required this.pendiente,
+      required this.fijado,
       required this.creado});
 
   NotaModel copyWith(
@@ -20,6 +22,7 @@ class NotaModel {
           String? descripcion,
           String? empleadoId,
           int? pendiente,
+          int? fijado,
           DateTime? creado}) =>
       NotaModel(
           id: id ?? this.id,
@@ -27,6 +30,7 @@ class NotaModel {
           descripcion: descripcion ?? this.descripcion,
           empleadoId: empleadoId ?? this.empleadoId,
           pendiente: pendiente ?? this.pendiente,
+          fijado: fijado ?? this.fijado,
           creado: creado ?? this.creado);
 
   factory NotaModel.fromJson(Map<String, dynamic> json) => NotaModel(
@@ -35,6 +39,7 @@ class NotaModel {
       descripcion: json["descripcion"],
       empleadoId: json["empleado_id"],
       pendiente: json["pendiente"],
+      fijado: json["fijado"],
       creado: DateTime.parse(json["creado"]));
 
   Map<String, dynamic> toJson() => {
@@ -43,6 +48,7 @@ class NotaModel {
         "descripcion": descripcion,
         "empleado_id": empleadoId,
         "pendiente": pendiente,
+        "fijado": fijado,
         "creado": creado.toIso8601String()
       };
 }

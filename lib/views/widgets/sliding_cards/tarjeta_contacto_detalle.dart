@@ -172,14 +172,14 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                           widget.contacto?.domicilio ??
                                               "Domicilio: Sin Domicilio",
                                           style: TextStyle(fontSize: 16.sp),
-                                          minFontSize: 14,
+                                          minFontSize: 15,
                                           maxLines: 2,
                                           overflow: TextOverflow.ellipsis))
                                 else
                                   AutoSizeText(
                                       widget.contacto?.domicilio ??
                                           "Domicilio: Sin Domicilio",
-                                      style: TextStyle(fontSize: 15.sp),
+                                      style: TextStyle(fontSize: 14.sp),
                                       minFontSize: 12,
                                       maxLines: 3,
                                       overflow: TextOverflow.ellipsis)
@@ -223,7 +223,16 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                             return Text(
                                                 "Tipo: ${data.data?.nombre ?? "Ø"}",
                                                 style: TextStyle(
-                                                    shadows: [Shadow()],
+                                                    shadows: data.data != null
+                                                        ? [
+                                                            Shadow(
+                                                                color: Colors
+                                                                    .black,
+                                                                offset: Offset(
+                                                                    1, 1),
+                                                                blurRadius: 2)
+                                                          ]
+                                                        : [],
                                                     color: data.data?.color,
                                                     fontSize: 15.sp,
                                                     fontWeight:
@@ -236,6 +245,14 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                       builder: (context, data) => Text(
                                           data.data?.nombre ?? "Sin tipo",
                                           style: TextStyle(
+                                              shadows: data.data != null
+                                                  ? [
+                                                      Shadow(
+                                                          color: Colors.black,
+                                                          offset: Offset(1, 1),
+                                                          blurRadius: 2)
+                                                    ]
+                                                  : [],
                                               color: data.data?.color,
                                               fontSize: 14.sp,
                                               fontStyle: FontStyle.italic,
@@ -279,12 +296,16 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                             return Text(
                                                 "Estado: ${data.data?.nombre ?? "Ø"}",
                                                 style: TextStyle(
-                                                    shadows: [
-                                                      Shadow(
-                                                          color: Colors.black,
-                                                          offset: Offset(1, 1),
-                                                          blurRadius: 1)
-                                                    ],
+                                                    shadows: data.data != null
+                                                        ? [
+                                                            Shadow(
+                                                                color: Colors
+                                                                    .black,
+                                                                offset: Offset(
+                                                                    1, 1),
+                                                                blurRadius: 2)
+                                                          ]
+                                                        : [],
                                                     color: data.data?.color,
                                                     fontSize: 15.sp,
                                                     fontWeight:
@@ -297,6 +318,14 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                       builder: (context, data) => Text(
                                           data.data?.nombre ?? "Sin estado",
                                           style: TextStyle(
+                                              shadows: data.data != null
+                                                  ? [
+                                                      Shadow(
+                                                          color: Colors.black,
+                                                          offset: Offset(1, 1),
+                                                          blurRadius: 2)
+                                                    ]
+                                                  : [],
                                               color: data.data?.color,
                                               fontSize: 14.sp,
                                               fontStyle: FontStyle.italic,

@@ -188,7 +188,7 @@ class _RolesViewState extends State<RolesView> {
                           itemCount: roles.length,
                           gridDelegate:
                               const SliverGridDelegateWithFixedCrossAxisCount(
-                                  childAspectRatio: 1.3, crossAxisCount: 2),
+                                  childAspectRatio: 1.4, crossAxisCount: 2),
                           itemBuilder: (context, index) {
                             return ListRolesWidget(
                                 estado: roles[index],
@@ -208,8 +208,7 @@ class _RolesViewState extends State<RolesView> {
                                   });
                                 },
                                 dense: false);
-                          }),
-                    ),
+                          })),
           floatingActionButton: FloatingActionButton(
               onPressed: () async {
                 await showDialog(

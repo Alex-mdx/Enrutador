@@ -15,7 +15,9 @@ class ChipReferencia extends StatelessWidget {
       {super.key,
       required this.ref,
       required this.latlng,
-      required this.origen,this.extended = false, this.tap = true});
+      required this.origen,
+      this.extended = false,
+      this.tap = true});
 
   final ReferenciaModelo ref;
   final bool origen;
@@ -25,7 +27,7 @@ class ChipReferencia extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<MainProvider>(context); 
+    final provider = Provider.of<MainProvider>(context);
     return Container(
         decoration: BoxDecoration(
             color: Colors.white,
@@ -33,45 +35,49 @@ class ChipReferencia extends StatelessWidget {
             border: Border.all(color: ThemaMain.darkGrey, width: 1.sp)),
         child: GestureDetector(
             onTap: () async {
-              if(tap == true){
-MapFun.sendInitUri(
-                  provider: provider,
-                  lat: latlng.latitude,
-                  lng: latlng.longitude);
-              await provider.slide.close();
+              if (tap == true) {
+                MapFun.sendInitUri(
+                    provider: provider,
+                    lat: latlng.latitude,
+                    lng: latlng.longitude);
+                await provider.slide.close();
               }
-              
             },
             onLongPress: () async {
-              if(tap == true){
-              showDialog(
-                  barrierDismissible: false,
-                  context: context,
-                  builder: (context) =>
-                      DialogReferencia(referencia: ref, origen: origen));
+              if (tap == true) {
+                showDialog(
+                    barrierDismissible: false,
+                    context: context,
+                    builder: (context) =>
+                        DialogReferencia(referencia: ref, origen: origen));
               }
             },
             child: Row(mainAxisSize: MainAxisSize.min, children: [
               Container(
-                  constraints: BoxConstraints(maxWidth: extended ? 25.w : 17.w),
+                  constraints: BoxConstraints(maxWidth: extended ? 25.w : 18.w),
                   child: AutoSizeText(
-                      provider.roles
-                              .firstWhereOrNull(
-                                  (element) => element.id == ref.rolId)
-                              ?.nombre ??
-                          "Ref. ?",
+                      (provider.roles
+                                  .firstWhereOrNull(
+                                      (element) => element.id == ref.rolId)
+                                  ?.nombre ??
+                              "Desconocido")
+                          .replaceAll("Ref. ", ""),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       minFontSize: 8,
                       style: TextStyle(
-                          fontSize: extended ? 18.sp : 15.sp, fontWeight: FontWeight.bold))),
+                          fontSize: extended ? 18.sp : 15.sp,
+                          fontWeight: FontWeight.bold))),
               SizedBox(width: .5.w),
               Icon(Icons.assistant_direction,
-                  size: extended ? 25.sp : 22.sp,
-                  color: origen ? provider.roles
+                  size: extended ? 26.sp : 21.sp,
+                  color: origen
+                      ? provider.roles
                               .firstWhereOrNull(
                                   (element) => element.id == ref.rolId)
-                              ?.color ?? ThemaMain.green : ThemaMain.primary)
+                              ?.color ??
+                          ThemaMain.green
+                      : ThemaMain.primary)
             ])));
   }
 }

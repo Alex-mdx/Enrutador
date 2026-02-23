@@ -71,11 +71,10 @@ class TarjetaContactoCall extends StatelessWidget {
               ? GestureDetector(
                   onTap: () => showDialog(
                       context: context,
-                      builder: (context) =>
-                          DialogsComunicar(number: number!)),
+                      builder: (context) => DialogsComunicar(number: number!)),
                   child: Stack(alignment: Alignment.center, children: [
                     Icon(Icons.circle, size: 25.sp, color: ThemaMain.green),
-                    Icon(LineIcons.tty, size: 23.sp, color: ThemaMain.second)
+                    Icon(LineIcons.tty, size: 22.sp, color: ThemaMain.second)
                   ]))
               : null);
     } else {

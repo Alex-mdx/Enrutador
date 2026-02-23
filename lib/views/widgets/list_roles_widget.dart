@@ -32,7 +32,7 @@ class ListRolesWidget extends StatelessWidget {
         child: Card(
             color: estado.color,
             child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 1.h),
+                padding: EdgeInsets.symmetric(horizontal: 1.w, vertical: 1.h),
                 child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -49,6 +49,8 @@ class ListRolesWidget extends StatelessWidget {
                                 Icon(estado.icon,
                                     color: ThemaMain.white, size: 25.sp),
                                 Text(estado.nombre,
+                                    maxLines: 3,
+                                    overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
                                         backgroundColor: ThemaMain.white,
                                         fontSize: 16.sp,

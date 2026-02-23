@@ -130,47 +130,46 @@ class _TarjetaRsideWidgetState extends State<TarjetaRsideWidget> {
                 icon: provider.contacto?.agendar == null
                     ? Icon(LineIcons.calendarWithDayFocus, size: 20.sp)
                     : null),
-          FutureBuilder(
-              future: ContactoFire.getItem(id: provider.contacto?.id),
-              builder: (context, snapshot) => IconButton.filledTonal(
-                  iconSize: provider.contacto?.id == null ? 22.sp : 18.sp,
-                  onPressed: () async {
-                    if (!snapshot.hasData) {
-                      if (provider.contacto?.id == null) {
-                        await ContactoController.insert(provider.contacto!);
-                        provider.marker = null;
-                        provider.contacto = await ContactoController.getItem(
-                            lat: provider.contacto!.latitud,
-                            lng: provider.contacto!.longitud);
-                      } else {
-                        await Dialogs.showMorph(
-                            title: "Eliminar Punteo",
-                            description:
-                                "¿Desea eliminar este punteo?\nEste punteo solo existe localmente, si se elimina se perdera para siempre",
-                            loadingTitle: "Eliminando",
-                            onAcceptPressed: (context) async {
-                              await ContactoController.deleteItem(
-                                  provider.contacto!.id!);
-                              var model = ContactoModelo.fromJson({
-                                "id": provider.contacto!.id,
-                                "latitud": provider.contacto!.latitud,
-                                "longitud": provider.contacto!.longitud
-                              });
-                              provider.contacto = model;
-                              await MapFun.touch(
-                                  provider: provider,
-                                  lat: model.latitud,
-                                  lng: model.longitud);
-                              var datas =
-                                  await EnrutarController.getItemContacto(
-                                      contactoId: provider.contacto!.id ?? -1);
-                              if (datas != null) {
-                                await EnrutarController.deleteItem(datas.id!);
-                              }
-                              showToast("Marcador limpiado");
-                            });
-                      }
-                    } else {
+          IconButton.filledTonal(
+              iconSize: provider.contacto?.id == null ? 22.sp : 18.sp,
+              onPressed: () async {
+                if (provider.contacto?.id == null) {
+                  await ContactoController.insert(provider.contacto!);
+                  provider.marker = null;
+                  provider.contacto = await ContactoController.getItem(
+                      lat: provider.contacto!.latitud,
+                      lng: provider.contacto!.longitud);
+                } else {
+                  if (provider.contacto?.pendiente == 1) {
+                    await Dialogs.showMorph(
+                        title: "Eliminar Punteo",
+                        description:
+                            "¿Desea eliminar este punteo?\nEste punteo solo existe localmente, si se elimina se perdera para siempre",
+                        loadingTitle: "Eliminando",
+                        onAcceptPressed: (context) async {
+                          await ContactoController.deleteItem(
+                              provider.contacto!.id!);
+                          var model = ContactoModelo.fromJson({
+                            "id": provider.contacto!.id,
+                            "latitud": provider.contacto!.latitud,
+                            "longitud": provider.contacto!.longitud
+                          });
+                          provider.contacto = model;
+                          await MapFun.touch(
+                              provider: provider,
+                              lat: model.latitud,
+                              lng: model.longitud);
+                          var datas = await EnrutarController.getItemContacto(
+                              contactoId: provider.contacto!.id ?? -1);
+                          if (datas != null) {
+                            await EnrutarController.deleteItem(datas.id!);
+                          }
+                          showToast("Marcador limpiado");
+                        });
+                  } else {
+                    var contact =
+                        await ContactoFire.getItem(id: provider.contacto!.id);
+                    if (contact != null) {
                       await Dialogs.showMorph(
                           title: "Inhabilitar Punteo",
                           description:
@@ -197,15 +196,19 @@ class _TarjetaRsideWidgetState extends State<TarjetaRsideWidget> {
                             }
                             showToast("Marcador inhabilitado");
                           });
+                    } else {
+                      showToast("Este contacto sigue como pendiente");
                     }
-                  },
-                  icon: esperar
-                      ? CircularProgressIndicator()
-                      : !snapshot.hasData
-                          ? provider.contacto?.id == null
-                              ? Icon(Icons.save, color: ThemaMain.green)
-                              : Icon(Icons.delete, color: ThemaMain.red)
-                          : Icon(LineIcons.userSlash, color: ThemaMain.pink))),
+                  }
+                }
+              },
+              icon: esperar
+                  ? CircularProgressIndicator()
+                  : provider.contacto?.pendiente == 1
+                      ? provider.contacto?.id == null
+                          ? Icon(Icons.save, color: ThemaMain.green)
+                          : Icon(Icons.delete, color: ThemaMain.red)
+                      : Icon(LineIcons.userSlash, color: ThemaMain.pink)),
           if (provider.contacto?.id != null)
             IconButton.filledTonal(
                 iconSize: 18.sp,
@@ -230,7 +233,12 @@ class _TarjetaRsideWidgetState extends State<TarjetaRsideWidget> {
                         showToast("Contacto sincronizado");
                       }
                     } else {
-                      showToast("Contacto no encontrado en el servidor");
+                      if (provider.contacto?.pendiente == 1) {
+                        showToast("Contacto no encontrado en el servidor");
+                      } else {
+                        showToast(
+                            "Puede que este contacto esta pendiente a aceptar o no exista en el servidor");
+                      }
                     }
                   } else {
                     showToast("Sin internet\nintente mas tarde");

@@ -1,3 +1,4 @@
+import 'package:enrutador/models/pendiente_model.dart';
 import 'package:enrutador/utilities/main_provider.dart';
 import 'package:enrutador/views/widgets/sliding_cards/slide_general.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +11,9 @@ import 'package:sticky_grouped_list/sticky_grouped_list.dart';
 import '../../controllers/contacto_controller.dart';
 import '../../controllers/contacto_fire.dart';
 import '../../controllers/nota_controller.dart';
+import '../../controllers/nota_fire.dart';
+import '../../controllers/pendiente_fire.dart';
+import '../../controllers/referencia_fire.dart';
 import '../../controllers/referencias_controller.dart';
 import '../../models/contacto_model.dart';
 import '../../utilities/services/dialog_services.dart';
@@ -22,7 +26,11 @@ class ContactosPage extends StatefulWidget {
   final List<ContactoModelo> contactos;
   final bool carga;
   final Function() send;
-  const ContactosPage({super.key, required this.contactos, required this.carga, required this.send});
+  const ContactosPage(
+      {super.key,
+      required this.contactos,
+      required this.carga,
+      required this.send});
 
   @override
   State<ContactosPage> createState() => _ContactosPageState();
@@ -86,23 +94,79 @@ class _ContactosPageState extends State<ContactosPage> {
                                         idContacto: contacto.id!,
                                         lat: contacto.latitud,
                                         lng: contacto.longitud,
-                                        status: 1);
+                                        status: 0);
 
                                 var notas = await NotasController.getContactoId(
                                     contacto.id!,
-                                    pendiente: 1);
+                                    pendiente: 0);
                                 await Dialogs.showMorph(
                                     title: "Pendiente",
                                     description:
                                         "¿Desea enviar este contacto para que sea revisado?\nEstas enviando ${referencia.length} referencias y ${notas.length} notas ligadas a este contacto",
                                     loadingTitle: "Enviando",
-                                    onAcceptPressed: (contexto) {});
+                                    onAcceptPressed: (contexto) async {
+                                      var data = contacto.copyWith(
+                                          pendiente: 0,
+                                          aceptadoEmpleado: provider
+                                              .usuario?.empleadoId
+                                              ?.toString());
+                                      for (var i = 0;
+                                          i < referencia.length;
+                                          i++) {
+                                        var newItem =
+                                            referencia[i].copyWith(estatus: 0);
+                                        referencia[i] = newItem;
+                                      }
+                                      for (var i = 0; i < notas.length; i++) {
+                                        var newItem =
+                                            notas[i].copyWith(pendiente: 0);
+                                        notas[i] = newItem;
+                                      }
+                                      PendienteModel pendiente = PendienteModel(
+                                          id: Textos.randomWord(30),
+                                          contactoId: data.id ?? -1,
+                                          empleadoId:
+                                              provider.usuario!.empleadoId!,
+                                          fechaPendiente: DateTime.now(),
+                                          sincronizado: 0,
+                                          aceptadoEmpleadoId: null,
+                                          fechaSincronizado: null,
+                                          contactos: [data],
+                                          referencias: referencia,
+                                          notas: notas);
+                                      var result = await PendienteFire.sendItem(
+                                          data: pendiente, query: pendiente.id);
+                                      if (result) {
+                                        await ContactoController.update(data);
+                                        for (var item in referencia) {
+                                          await ReferenciasController.update(
+                                              item);
+                                        }
+
+                                        for (var item in notas) {
+                                          await NotasController.update(item);
+                                        }
+                                        await widget.send();
+                                      }
+                                    });
                               },
-                              directo: () {
+                              ifDirecto:
+                                  (provider.usuario?.adminTipo ?? 1) >= 2,
+                              directo: () async {
+                                var referencia =
+                                    await ReferenciasController.getIdPrin(
+                                        idContacto: contacto.id!,
+                                        lat: contacto.latitud,
+                                        lng: contacto.longitud,
+                                        status: 1);
+
+                                var notas = await NotasController.getContactoId(
+                                    contacto.id!,
+                                    pendiente: 1);
                                 Dialogs.showMorph(
                                     title: "Sincronizar",
                                     description:
-                                        "¿Desea guardar este contacto con sus cambios de manera directa? ",
+                                        "¿Desea guardar este contacto con sus cambios de manera directa?\nEstas enviando ${referencia.length} referencia(s) y ${notas.length} nota(s) ligada(s) a este contacto",
                                     loadingTitle: "Guardando",
                                     onAcceptPressed: (contexto) async {
                                       var data = contacto.copyWith(
@@ -114,6 +178,27 @@ class _ContactosPageState extends State<ContactosPage> {
                                           contacto: data);
                                       if (result) {
                                         await ContactoController.update(data);
+                                        for (var item in referencia) {
+                                          var newItem =
+                                              item.copyWith(estatus: 0);
+                                          var result =
+                                              await ReferenciaFire.send(
+                                                  referencia: newItem);
+                                          if (result) {
+                                            await ReferenciasController.update(
+                                                newItem);
+                                          }
+                                        }
+                                        for (var item in notas) {
+                                          var newItem =
+                                              item.copyWith(pendiente: 0);
+                                          var result = await NotaFire.send(
+                                              nota: newItem);
+                                          if (result) {
+                                            await NotasController.update(
+                                                newItem);
+                                          }
+                                        }
                                         await widget.send();
                                         showToast("Contacto enviado");
                                       } else {
@@ -127,7 +212,7 @@ class _ContactosPageState extends State<ContactosPage> {
                                   funContact: (p0) {},
                                   selectedVisible: false,
                                   onSelected: (p0) {},
-                                  contacto: contacto)),
+                                  contacto: contacto))
                         ])));
   }
 }

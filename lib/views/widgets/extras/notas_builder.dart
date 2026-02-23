@@ -108,8 +108,10 @@ class _NotasBuilderState extends State<NotasBuilder> {
                                       fontWeight: FontWeight.bold,
                                       color: ThemaMain.background)),
                             )),
-                        itemBuilder: (context, element) =>
-                            CardNota(element: element))))
+                        itemBuilder: (context, element) => CardNota(
+                            element: element,
+                            onDelete: () =>
+                                setState(() => notas.remove(element))))))
           else
             Expanded(
                 child: Column(
@@ -128,6 +130,7 @@ class _NotasBuilderState extends State<NotasBuilder> {
                     descripcion: p0,
                     empleadoId: provider.usuario!.empleadoId!,
                     pendiente: 1,
+                    fijado: 0,
                     creado: DateTime.now());
                 await NotasController.insert(tempNota);
                 setState(() => notas.add(tempNota));

@@ -92,4 +92,7 @@ class Preferences {
 
   static bool get grid => _preferences?.getBool('grid') ?? true;
   static set grid(bool value) => _preferences?.setBool('grid', value);
+
+  static double get ladaScroll => _preferences?.getDouble('ladaScroll') ?? 0;
+  static set ladaScroll(double value) => _preferences?.setDouble('ladaScroll', value);
 }

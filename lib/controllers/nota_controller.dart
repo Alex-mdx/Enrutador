@@ -12,6 +12,7 @@ class NotasController {
         descripcion TEXT,
         empleado_id TEXT,
         pendiente INTEGER,
+        fijado INTEGER,
         creado TEXT
       )""");
   }
@@ -36,11 +37,14 @@ class NotasController {
     }
   }
 
-  static Future<List<NotaModel>> getAll({int? long, int? pendiente, String? order}) async {
+  static Future<List<NotaModel>> getAll(
+      {int? long, int? pendiente, String? order}) async {
     final db = await database();
     final query = await db.query(nombreDB,
-        orderBy: order ?? "id DESC", limit: long, where: pendiente != null ? "pendiente = ?" : "", whereArgs:pendiente == null ? null: [pendiente]);
-    debugPrint("$query");
+        orderBy: order ?? "id DESC",
+        limit: long,
+        where: pendiente != null ? "pendiente = ?" : "",
+        whereArgs: pendiente == null ? null : [pendiente]);
     return query.map((e) => NotaModel.fromJson(e)).toList();
   }
 
@@ -51,7 +55,8 @@ class NotasController {
         where:
             "contacto_id = ? ${pendiente != null ? "AND pendiente = ?" : ""}",
         whereArgs: pendiente == null ? [contactoId] : [contactoId, pendiente],
-        limit: 50, orderBy: order ?? "id DESC");
+        limit: 50,
+        orderBy: order ?? "id DESC");
     List<NotaModel> notas = query.map((e) => NotaModel.fromJson(e)).toList();
     return notas;
   }
@@ -60,7 +65,6 @@ class NotasController {
     final db = await database();
     final query = (await db.query(nombreDB, where: "id = ?", whereArgs: [id]))
         .firstOrNull;
-    debugPrint("$query");
     return query == null ? null : NotaModel.fromJson(query);
   }
 

@@ -30,13 +30,13 @@ class Permisos {
 
   static Future<bool> determinePosition() async {
     bool serviceEnabled;
-    
+
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
       return Future.error('Location services are disabled.');
     }
 var permission = await location();
-    
+
 
     if (permission == LocationPermission.deniedForever) {
       return Future.error(
@@ -90,6 +90,7 @@ var permission = await location();
     Preferences.contactos = await Permission.phone.isGranted;
     Preferences.camara = await Permission.camera.isGranted;
     var permission = await geolocation();
-    Preferences.ubicacion = permission == LocationPermission.always || permission == LocationPermission.whileInUse;
+    Preferences.ubicacion = permission == LocationPermission.always ||
+        permission == LocationPermission.whileInUse;
   }
 }

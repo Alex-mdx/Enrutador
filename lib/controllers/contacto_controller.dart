@@ -145,10 +145,13 @@ class ContactoController {
   }
 
   static Future<List<ContactoModelo>> getPersonalizado(
-      {required String query, String? orderBy, List<String>? columns}) async {
+      {required String query,
+      String? orderBy,
+      List<String>? columns,
+      int? limit}) async {
     final db = await database();
     final result = await db.rawQuery(
-        "SELECT ${columns?.join(",") ?? "*"} FROM $nombreDB WHERE $query ${orderBy != null ? "ORDER BY $orderBy" : ""}");
+        "SELECT ${columns?.join(",") ?? "*"} FROM $nombreDB WHERE $query ${orderBy != null ? "ORDER BY $orderBy" : ""} ${limit != null ? "LIMIT $limit" : ""}");
     List<ContactoModelo> model = [];
     for (var element in result) {
       model.add(ContactoModelo.fromJson(element));

@@ -86,7 +86,7 @@ class UsuarioFire {
     var user = doc.docs.firstOrNull == null
         ? null
         : UsuarioModel.fromJson(doc.docs.firstOrNull!.data());
-    if (user == null) return false;
+    if (user == null){ return false;}
     await db.collection("users").doc(doc.docs.first.id).update(user.copyWith(status: 0).toJson());
     return true;
   }

@@ -1,3 +1,5 @@
+import 'package:enrutador/controllers/contacto_controller.dart';
+import 'package:enrutador/controllers/referencia_fire.dart';
 import 'package:enrutador/models/referencia_model.dart';
 import 'package:enrutador/views/widgets/extras/chip_referencia.dart';
 import 'package:enrutador/views/widgets/sliding_cards/slide_general.dart';
@@ -11,7 +13,7 @@ import '../../utilities/services/dialog_services.dart';
 import '../../utilities/theme/theme_app.dart';
 import '../../utilities/theme/theme_color.dart';
 
-class ReferenciasPage extends StatefulWidget {
+class ReferenciasPage extends StatelessWidget {
   final List<ReferenciaModelo> referencias;
   final bool carga;
   final Function() send;
@@ -22,17 +24,12 @@ class ReferenciasPage extends StatefulWidget {
       required this.send});
 
   @override
-  State<ReferenciasPage> createState() => _ReferenciasPageState();
-}
-
-class _ReferenciasPageState extends State<ReferenciasPage> {
-  @override
   Widget build(BuildContext context) {
-    return !widget.carga
+    return !carga
         ? Center(
             child: LoadingAnimationWidget.twoRotatingArc(
                 color: ThemaMain.primary, size: 24.sp))
-        : widget.referencias.isEmpty
+        : referencias.isEmpty
             ? Center(
                 child: Text("No se encontraron referencias pendientes a enviar",
                     style: TextStyle(
@@ -40,7 +37,7 @@ class _ReferenciasPageState extends State<ReferenciasPage> {
             : Scrollbar(
                 child: StickyGroupedListView<ReferenciaModelo, int?>(
                     floatingHeader: true,
-                    elements: widget.referencias,
+                    elements: referencias,
                     itemComparator: (a, b) => a.id!.compareTo(b.id!),
                     groupBy: (element) => element.idForanea,
                     groupSeparatorBuilder: (element) => Container(
@@ -49,29 +46,81 @@ class _ReferenciasPageState extends State<ReferenciasPage> {
                         decoration: BoxDecoration(
                             color: ThemaMain.darkBlue,
                             borderRadius: BorderRadius.circular(borderRadius)),
-                        child: Text(element.idForanea.toString(),
-                            style: TextStyle(
-                                fontSize: 16.sp,
-                                color: ThemaMain.second,
-                                fontWeight: FontWeight.bold))),
+                        child: Row(mainAxisSize: MainAxisSize.min, children: [
+                          Text(element.idForanea.toString(),
+                              style: TextStyle(
+                                  fontSize: 16.sp,
+                                  color: ThemaMain.second,
+                                  fontWeight: FontWeight.bold)),
+                          IconButton.filled(
+                              iconSize: 20.sp,
+                              onPressed: () {},
+                              icon: Icon(Icons.youtube_searched_for,
+                                  color: ThemaMain.primary)),
+                          IconButton.filled(
+                              iconSize: 20.sp,
+                              onPressed: () async {
+                                 var contacto =
+                                    await ContactoController.getPersonalizado(
+                                        query: "id=${element.idForanea}",
+                                        columns: [
+                                          "id",
+                                          "nombre_completo",
+                                          "latitud",
+                                          "longitud",
+                                        ],
+                                        limit: 1);
+                                var referencias = await ReferenciasController.getIdPrin(idContacto: element.idForanea, lat: element.contactoIdRLat, lng: element.contactoIdRLng, status: -1);
+                                await Dialogs.showMorph(
+                                    title: "Enviar notas",
+                                    description:
+                                        "¿Desea enviar las referencias de ${contacto.firstOrNull?.nombreCompleto} de manera directa?",
+                                    loadingTitle: "Enviando",
+                                    onAcceptPressed: (context) async {
+                                      for (var refencia in referencias) {
+                                        var data = refencia.copyWith(estatus: 0);
+                                        var result =
+                                            await ReferenciaFire.send(referencia: data);
+                                        if (result) {
+                                          await ReferenciasController.update(data);
+                                        }
+                                      }
+                                      await send();
+                                    });
+                              },
+                              icon: Icon(Icons.cloud_done,
+                                  color: ThemaMain.green))
+                        ])),
                     itemBuilder: (context, refencias) =>
                         Column(mainAxisSize: MainAxisSize.min, children: [
                           SlideGeneral(
-                              id: refencias.id!,
-                              delete: () async {
+                              id: refencias.id!,pendiente: ()async {
                                 await Dialogs.showMorph(
-                                    title: "Eliminar envio",
+                                    title: "Enviar referencias a pendientes",
                                     description:
-                                        "¿Desea quitar este cambio de los pendientes?\nTodos los cambios se mantendran de manera local",
-                                    loadingTitle: "Eliminando",
+                                        "¿Desea enviar las referencias como pendientes a revision?",
+                                    loadingTitle: "Enviando",
                                     onAcceptPressed: (context) async {
-                                      var data = refencias.copyWith(estatus: 1);
+                                      var data = refencias.copyWith(estatus: 0);
                                       await ReferenciasController.update(data);
-                                      await widget.send();
+                                      
+                                      await send();
                                     });
                               },
-                              pendiente: () async {},
-                              directo: () {},
+                              directo: () async {
+                                await Dialogs.showMorph(
+                                    title: "Enviar referencias directas",
+                                    description:
+                                        "¿Desea enviar este cambio de manera directa?",
+                                    loadingTitle: "Enviando",
+                                    onAcceptPressed: (context) async {
+                                      var data = refencias.copyWith(estatus: 0);
+                                      await ReferenciasController.update(data);
+                                      await ReferenciaFire.send(
+                                          referencia: data);
+                                      await send();
+                                    });
+                              },
                               model: ChipReferencia(
                                   latlng: LatLng(refencias.contactoIdLat,
                                       refencias.contactoIdLng),

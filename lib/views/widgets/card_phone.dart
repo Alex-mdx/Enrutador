@@ -1,5 +1,6 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:avatar_glow/avatar_glow.dart';
+import 'package:enrutador/utilities/number_fun.dart';
 import 'package:enrutador/utilities/theme/theme_color.dart';
 import 'package:flutter/material.dart';
 import 'package:phone_state/phone_state.dart';
@@ -24,10 +25,10 @@ class PhoneStateWidget extends StatelessWidget {
                     padding: EdgeInsets.symmetric(horizontal: 1.w, vertical: 0),
                     child: Row(mainAxisSize: MainAxisSize.min, children: [
                       AvatarGlow(
-                          glowCount: 2,
+                          glowCount: 3,
                           glowColor: ThemaMain.primary,
                           duration: Duration(seconds: 5),
-                          glowRadiusFactor: .5.w,
+                          glowRadiusFactor: .15.w,
                           startDelay: Duration(seconds: 2),
                           child: RiveAnimatedIcon(
                               riveIcon: RiveIcon.call,
@@ -39,7 +40,8 @@ class PhoneStateWidget extends StatelessWidget {
                             width: 30.w,
                             child: FutureBuilder(
                                 future: ContactoController.buscar(
-                                    (snapshot.data?.number ?? "-1")
+                                    (NumberFun.formatNumber(
+                                            snapshot.data?.number ?? "-1"))
                                         .replaceAll(" ", ""),
                                     2),
                                 builder: (context, contacto) => AutoSizeText(
