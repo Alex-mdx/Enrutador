@@ -6,7 +6,6 @@ import 'package:enrutador/models/referencia_model.dart';
 
 class PendienteModel {
   String id;
-  int contactoId;
   String? aceptadoEmpleadoId;
   String empleadoId;
   List<ContactoModelo> contactos;
@@ -18,7 +17,6 @@ class PendienteModel {
 
   PendienteModel(
       {required this.id,
-      required this.contactoId,
       required this.aceptadoEmpleadoId,
       required this.empleadoId,
       required this.contactos,
@@ -30,7 +28,6 @@ class PendienteModel {
 
   PendienteModel copyWith(
           {String? id,
-          int? contactoId,
           String? aceptadoEmpleadoId,
           String? empleadoId,
           List<ContactoModelo>? contactos,
@@ -41,7 +38,6 @@ class PendienteModel {
           DateTime? fechaSincronizado}) =>
       PendienteModel(
           id: id ?? this.id,
-          contactoId: contactoId ?? this.contactoId,
           aceptadoEmpleadoId: aceptadoEmpleadoId ?? this.aceptadoEmpleadoId,
           empleadoId: empleadoId ?? this.empleadoId,
           contactos: contactos ?? this.contactos,
@@ -53,7 +49,6 @@ class PendienteModel {
 
   factory PendienteModel.fromJson(Map<String, dynamic> json) => PendienteModel(
       id: json["id"],
-      contactoId: json["contacto_id"],
       aceptadoEmpleadoId: json["aceptado_empleado_id"],
       empleadoId: json["empleado_id"],
       contactos:generarContactos(json["contactos"].toString()),
@@ -61,11 +56,10 @@ class PendienteModel {
       notas:generarNotas(json["notas"].toString()),
       sincronizado: json["sincronizado"],
       fechaPendiente: DateTime.parse(json["fecha_pendiente"]),
-      fechaSincronizado: DateTime.parse(json["fecha_sincronizado"]));
+      fechaSincronizado: json["fecha_sincronizado"] == null ? null : DateTime.parse(json["fecha_sincronizado"]));
 
   Map<String, dynamic> toJson() => {
         "id": id,
-        "contacto_id": contactoId,
         "empleado_id": empleadoId,
         "contactos":  jsonEncode(contactos.map((r) => r.toJson()).toList()),
         "referencias":  jsonEncode(referencias.map((r) => r.toJson()).toList()),

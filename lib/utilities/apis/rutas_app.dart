@@ -5,6 +5,7 @@ import 'package:enrutador/views/lada_view.dart';
 import 'package:enrutador/views/login_view.dart';
 import 'package:enrutador/views/navegar_view.dart';
 import 'package:enrutador/views/pendientes_home.dart';
+import 'package:enrutador/views/pendientes_view.dart';
 import 'package:enrutador/views/regiones_mapa.dart';
 import 'package:enrutador/views/tipos_view.dart';
 import 'package:enrutador/views/widgets/extras/notas_builder.dart';
@@ -37,7 +38,8 @@ class AppRoutes {
     account: (_) => const AccountView(),
     regionesMapa: (_) => const RegionesMapa(),
     pendientes: (_) => const PendientesHome(),
-    notasBuilder: (_) => const NotasBuilder()
+    notasBuilder: (_) => const NotasBuilder(),
+    pendientesView: (_) => const PendientesView()
   };
   static Map<String, Widget Function(BuildContext)> get routes => _routes;
   static String get home => 'home';
@@ -52,4 +54,5 @@ class AppRoutes {
   static String get regionesMapa => 'regionesMapa';
   static String get pendientes => 'pendientes';
   static String get notasBuilder => 'notasBuilder';
+  static String get pendientesView => 'pendientesView';
 }

@@ -1,8 +1,10 @@
+import 'package:enrutador/utilities/main_provider.dart';
 import 'package:enrutador/utilities/services/navigation_services.dart';
 import 'package:enrutador/utilities/theme/theme_color.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
+import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 
 import '../card_accout.dart';
@@ -12,6 +14,7 @@ class SideButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final provider = Provider.of<MainProvider>(context);
     return Container(
         color: ThemaMain.appbar,
         child: Column(children: [
@@ -127,7 +130,7 @@ class SideButtons extends StatelessWidget {
                                     fontSize: 16.sp,
                                     fontWeight: FontWeight.bold)),
                             Icon(Icons.perm_phone_msg,
-                                size: 20.sp, color: ThemaMain.pink)
+                                size: 22.sp, color: ThemaMain.pink)
                           ])))),
           GestureDetector(
               onTap: () async =>
@@ -144,7 +147,7 @@ class SideButtons extends StatelessWidget {
                                     fontSize: 16.sp,
                                     fontWeight: FontWeight.bold)),
                             Icon(LineIcons.layerGroup,
-                                size: 20.sp, color: ThemaMain.primary)
+                                size: 22.sp, color: ThemaMain.primary)
                           ])))),
           GestureDetector(
               onTap: () async => showDialog(
@@ -162,12 +165,10 @@ class SideButtons extends StatelessWidget {
                                     fontSize: 16.sp,
                                     fontWeight: FontWeight.bold)),
                             Icon(Icons.person,
-                                size: 20.sp, color: ThemaMain.green)
+                                size: 22.sp, color: ThemaMain.green)
                           ])))),
           GestureDetector(
-              onTap: () async => showDialog(
-                  context: context,
-                  builder: (context) => Dialog(child: CardAccout())),
+              onTap: () async => Navigation.pushNamed(route: "pendientesView",arguments: provider.usuario),
               child: Card(
                   child: Padding(
                       padding:
@@ -180,7 +181,25 @@ class SideButtons extends StatelessWidget {
                                     fontSize: 16.sp,
                                     fontWeight: FontWeight.bold)),
                             Icon(Icons.youtube_searched_for,
-                                size: 20.sp, color: ThemaMain.primary)
+                                size: 22.sp, color: ThemaMain.primary)
+                          ])))),
+          GestureDetector(
+              onTap: () async => showDialog(
+                  context: context,
+                  builder: (context) => Dialog(child: CardAccout())),
+              child: Card(
+                  child: Padding(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 1.w, vertical: 1.h),
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text("Usuarios",
+                                style: TextStyle(
+                                    fontSize: 16.sp,
+                                    fontWeight: FontWeight.bold)),
+                            Icon(LineIcons.users,
+                                size: 22.sp, color: ThemaMain.darkBlue)
                           ]))))
         ]));
   }

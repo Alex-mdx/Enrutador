@@ -6,6 +6,7 @@ import 'package:enrutador/utilities/share_fun.dart';
 import 'package:enrutador/utilities/theme/theme_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:provider/provider.dart';
 import 'package:rive_animated_icon/rive_animated_icon.dart';
@@ -125,7 +126,8 @@ class _TiposViewState extends State<TiposView> {
                           style: TextStyle(fontSize: 14.sp)))
               ]),
           body: !carga
-              ? Center(child: CircularProgressIndicator())
+              ? Center(child: LoadingAnimationWidget.twoRotatingArc(
+                      color: ThemaMain.primary, size: 36.sp))
               : contactos.isEmpty
                   ? Center(
                       child: TextButton.icon(

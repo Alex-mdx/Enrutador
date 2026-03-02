@@ -65,7 +65,7 @@ dependencies:
   open_route_service: ^1.2.7
   overflow_text_animated: ^0.0.6
   package_info_plus: ^9.0.0
-  pasteboard: ^0.4.0
+  pasteboard: ^0.5.0
   path: ^1.9.1
   path_provider: ^2.1.5
   pdf: ^3.11.3

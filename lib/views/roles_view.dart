@@ -129,7 +129,7 @@ class _RolesViewState extends State<RolesView> {
           body: !carga
               ? Center(
                   child: LoadingAnimationWidget.twoRotatingArc(
-                      color: ThemaMain.primary, size: 24.sp))
+                      color: ThemaMain.primary, size: 36.sp))
               : roles.isEmpty
                   ? Center(
                       child: Column(

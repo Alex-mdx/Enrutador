@@ -38,10 +38,10 @@ class PendienteFire {
   static Future<List<PendienteModel>> getItems(
       {required String table,
       required String query,
-      bool itsNumber = false}) async {
+      bool itsNumber = false,int limit = 100}) async {
     var data = await db
         .collection(name)
-        .where(table, isEqualTo: itsNumber ? int.tryParse(query) : query)
+        .where(table, isEqualTo: itsNumber ? int.tryParse(query) : query).limit(limit)
         .get();
     List<PendienteModel> list = [];
     for (var item in data.docs) {

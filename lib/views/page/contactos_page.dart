@@ -123,8 +123,7 @@ class _ContactosPageState extends State<ContactosPage> {
                                         notas[i] = newItem;
                                       }
                                       PendienteModel pendiente = PendienteModel(
-                                          id: Textos.randomWord(30),
-                                          contactoId: data.id ?? -1,
+                                          id: Textos.randomWord(6),
                                           empleadoId:
                                               provider.usuario!.empleadoId!,
                                           fechaPendiente: DateTime.now(),

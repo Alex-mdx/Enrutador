@@ -129,7 +129,7 @@ class _TiposViewState extends State<EstadoView> {
             body: !carga
                 ? Center(
                     child: LoadingAnimationWidget.twoRotatingArc(
-                        color: ThemaMain.primary, size: 24.sp))
+                        color: ThemaMain.primary, size: 36.sp))
                 : estados.isEmpty
                     ? Center(
                         child: TextButton.icon(
