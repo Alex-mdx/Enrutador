@@ -24,6 +24,7 @@ class TiposView extends StatefulWidget {
 }
 
 class _TiposViewState extends State<TiposView> {
+  final ScrollController itemScrollController = ScrollController();
   List<bool> selects = [];
   bool carga = false;
   List<TiposModelo> contactos = [];
@@ -126,7 +127,8 @@ class _TiposViewState extends State<TiposView> {
                           style: TextStyle(fontSize: 14.sp)))
               ]),
           body: !carga
-              ? Center(child: LoadingAnimationWidget.twoRotatingArc(
+              ? Center(
+                  child: LoadingAnimationWidget.twoRotatingArc(
                       color: ThemaMain.primary, size: 36.sp))
               : contactos.isEmpty
                   ? Center(
@@ -176,27 +178,32 @@ class _TiposViewState extends State<TiposView> {
                           await send();
                         }
                       },
-                      child: ListView.builder(
-                          shrinkWrap: true,
-                          itemCount: contactos.length,
-                          itemBuilder: (context, index) {
-                            TiposModelo tipo = contactos[index];
-                            return ListTipoWidget(
-                                share: true,
-                                tipo: tipo,
-                                selected: selects[index],
-                                selectedVisible: true,
-                                onSelected: (p0) => setState(() {
-                                      selects[index] = !selects[index];
-                                    }),
-                                fun: () async {
-                                  await showDialog(
-                                      context: context,
-                                      builder: (context) =>
-                                          DialogsTipos(tipo: tipo));
-                                  await send();
-                                });
-                          }),
+                      child: Scrollbar(
+                        interactive: true,
+                        controller: itemScrollController,
+                        child: ListView.builder(
+                            controller: itemScrollController,
+                            shrinkWrap: true,
+                            itemCount: contactos.length,
+                            itemBuilder: (context, index) {
+                              TiposModelo tipo = contactos[index];
+                              return ListTipoWidget(
+                                  share: true,
+                                  tipo: tipo,
+                                  selected: selects[index],
+                                  selectedVisible: true,
+                                  onSelected: (p0) => setState(() {
+                                        selects[index] = !selects[index];
+                                      }),
+                                  fun: () async {
+                                    await showDialog(
+                                        context: context,
+                                        builder: (context) =>
+                                            DialogsTipos(tipo: tipo));
+                                    await send();
+                                  });
+                            }),
+                      ),
                     ),
           floatingActionButton: FloatingActionButton(
               onPressed: () async {

@@ -2,13 +2,11 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:enrutador/utilities/preferences.dart';
-import 'package:enrutador/utilities/textos.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:sizer/sizer.dart';
 
-import '../models/usuario_model.dart';
 import '../utilities/services/navigation_services.dart';
 import '../utilities/theme/theme_color.dart';
 import 'widgets/card_accout.dart';

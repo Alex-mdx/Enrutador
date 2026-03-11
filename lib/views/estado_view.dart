@@ -24,6 +24,7 @@ class EstadoView extends StatefulWidget {
 }
 
 class _TiposViewState extends State<EstadoView> {
+  final ScrollController itemScrollController = ScrollController();
   List<bool> selects = [];
   bool carga = false;
   List<EstadoModel> estados = [];
@@ -178,36 +179,43 @@ class _TiposViewState extends State<EstadoView> {
                             await send();
                           }
                         },
-                        child: Timeline.builder(
-                            theme: TimelineThemeData.vertical(),
-                            itemBuilder: (context, index) => Column(children: [
-                                  SizedBox(
-                                      height: 1.h,
-                                      child: DashedLineConnector()),
-                                  ListEstadoWidget(
-                                      share: true,
-                                      estado: estados[index],
-                                      selected: selects[index],
-                                      selectedVisible: true,
-                                      onSelected: (p0) => setState(() {
-                                            selects[index] = !selects[index];
-                                          }),
-                                      fun: () async {
-                                        await showDialog(
-                                            context: context,
-                                            builder: (context) =>
-                                                DialogsEstados(
-                                                    estado: estados[index]));
-                                        await send();
-                                      },
-                                      dense: false),
-                                  SizedBox(
-                                      height: 1.h,
-                                      child: DashedLineConnector()),
-                                  if (estados.length - 1 == index)
-                                    DotIndicator()
-                                ]),
-                            itemCount: estados.length)),
+                        child: Scrollbar(
+                            interactive: true,
+                            controller: itemScrollController,
+                            child: Timeline.builder(
+                                controller: itemScrollController,
+                                theme: TimelineThemeData.vertical(),
+                                itemBuilder: (context, index) =>
+                                    Column(children: [
+                                      SizedBox(
+                                          height: 1.h,
+                                          child: DashedLineConnector()),
+                                      ListEstadoWidget(
+                                          share: true,
+                                          estado: estados[index],
+                                          selected: selects[index],
+                                          selectedVisible: true,
+                                          onSelected: (p0) => setState(() {
+                                                selects[index] =
+                                                    !selects[index];
+                                              }),
+                                          fun: () async {
+                                            await showDialog(
+                                                context: context,
+                                                builder: (context) =>
+                                                    DialogsEstados(
+                                                        estado:
+                                                            estados[index]));
+                                            await send();
+                                          },
+                                          dense: false),
+                                      SizedBox(
+                                          height: 1.h,
+                                          child: DashedLineConnector()),
+                                      if (estados.length - 1 == index)
+                                        DotIndicator()
+                                    ]),
+                                itemCount: estados.length))),
             floatingActionButton: FloatingActionButton(
                 onPressed: () async {
                   await showDialog(

@@ -63,7 +63,7 @@ class Main extends StatelessWidget {
   Widget build(BuildContext context) => Sizer(
       builder: (context, orientation, deviceType) => OKToast(
           dismissOtherOnShow: true,
-          position: ToastPosition.bottom,
+        position: ToastPosition.bottom,
           duration: const Duration(seconds: 4),
           backgroundColor: Preferences.thema ? Colors.black : Colors.white,
           textStyle: TextStyle(

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:enrutador/utilities/textos.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 
 import '../models/contacto_model.dart';
 
@@ -24,21 +25,34 @@ class ContactoFire {
     return ContactoModelo.fromJson(querySnapshot.docs.first.data());
   }
 
-  static Future<bool> send({required ContactoModelo contacto, String? empleadoId}) async {
-    var data = await getItem(id: contacto.id);
-    if (data == null) {
-      var rdm = Textos.randomWord(30);
-      await db.collection(name).doc(rdm).set(contacto
-          .copyWith(empleadoId: empleadoId, status: 1)
-          .toJson());
+  static Future<bool> sendItem(
+      {required ContactoModelo data,
+      String? table,
+      String? query,
+      bool itsNumber = false}) async {
+    try {
+      var doc = await db
+          .collection(name)
+          .where(table ?? "uuid",
+              isEqualTo: itsNumber
+                  ? int.tryParse(
+                      query ?? FirebaseAuth.instance.currentUser?.uid ?? "")
+                  : query ?? FirebaseAuth.instance.currentUser?.uid)
+          .limit(1)
+          .get();
+      var user = doc.docs.firstOrNull == null
+          ? null
+          : ContactoModelo.fromJson(doc.docs.firstOrNull!.data());
+      debugPrint("${user?.toJson() ?? "nada"} - ${doc.docs.firstOrNull?.id}");
+      if (user == null) {
+        var docId = Textos.randomWord(30);
+        await db.collection(name).doc(docId).set(data.toJson());
+      } else {
+        await db.collection(name).doc(doc.docs.first.id).update(data.toJson());
+      }
       return true;
-    } else {
-      var docId = await getDocId(id: contacto.id);
-      if (docId == null) return false;
-      await db.collection(name).doc(docId).update(contacto
-          .copyWith(empleadoId: empleadoId ?? FirebaseAuth.instance.currentUser!.uid, status: 1)
-          .toJson());
-      return true;
+    } catch (e) {
+      return false;
     }
   }
 }

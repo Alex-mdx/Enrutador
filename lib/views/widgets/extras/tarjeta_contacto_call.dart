@@ -79,7 +79,7 @@ class TarjetaContactoCall extends StatelessWidget {
               : null);
     } else {
       return Text("$mensaje\n${NumberFun.formatNumber(number ?? "0")}",
-          style: TextStyle(fontSize: 14.sp));
+          style: TextStyle(fontSize: 15.sp));
     }
   }
 }

@@ -95,4 +95,7 @@ class Preferences {
 
   static double get ladaScroll => _preferences?.getDouble('ladaScroll') ?? 0;
   static set ladaScroll(double value) => _preferences?.setDouble('ladaScroll', value);
+
+  static bool get propiosPendientes => _preferences?.getBool('propiosPendientes') ?? true;
+  static set propiosPendientes(bool value) => _preferences?.setBool('propiosPendientes', value);
 }

@@ -94,11 +94,11 @@ class _ContactosPageState extends State<ContactosPage> {
                                         idContacto: contacto.id!,
                                         lat: contacto.latitud,
                                         lng: contacto.longitud,
-                                        status: 0);
+                                        status: -1);
 
                                 var notas = await NotasController.getContactoId(
                                     contacto.id!,
-                                    pendiente: 0);
+                                    pendiente: 1);
                                 await Dialogs.showMorph(
                                     title: "Pendiente",
                                     description:
@@ -114,12 +114,12 @@ class _ContactosPageState extends State<ContactosPage> {
                                           i < referencia.length;
                                           i++) {
                                         var newItem =
-                                            referencia[i].copyWith(estatus: 0);
+                                            referencia[i].copyWith(estatus: 1);
                                         referencia[i] = newItem;
                                       }
                                       for (var i = 0; i < notas.length; i++) {
                                         var newItem =
-                                            notas[i].copyWith(pendiente: 0);
+                                            notas[i].copyWith(pendiente: 1);
                                         notas[i] = newItem;
                                       }
                                       PendienteModel pendiente = PendienteModel(
@@ -157,7 +157,7 @@ class _ContactosPageState extends State<ContactosPage> {
                                         idContacto: contacto.id!,
                                         lat: contacto.latitud,
                                         lng: contacto.longitud,
-                                        status: 1);
+                                        status: -1);
 
                                 var notas = await NotasController.getContactoId(
                                     contacto.id!,
@@ -173,8 +173,11 @@ class _ContactosPageState extends State<ContactosPage> {
                                           aceptadoEmpleado: provider
                                               .usuario?.empleadoId
                                               ?.toString());
-                                      var result = await ContactoFire.send(
-                                          contacto: data);
+                                      var result = await ContactoFire.sendItem(
+                                          data: data,
+                                          table: "id",
+                                          query: contacto.id.toString(),
+                                          itsNumber: true);
                                       if (result) {
                                         await ContactoController.update(data);
                                         for (var item in referencia) {

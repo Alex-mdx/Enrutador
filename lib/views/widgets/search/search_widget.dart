@@ -179,9 +179,9 @@ class _SearchWidgetState extends State<SearchWidget> {
                       'Telefono ej: 99X XXX XXXX',
                       'PlusCode ej: Codigo+Codigo',
                       'PlusCode Simple ej: Codigo, Ciudad, Estado, Pais',
-                      'What3Words ej: palabra.palabra.palabra',
+                      'What3Words ej: Palabra.Palabra.Palabra',
                       'Coordenadas ej: 21.377300, -90.059438',
-                      'Coordenadas ej: 21° 22\' 38.28", 90° 3\' 33.98"',
+                      'Coordenadas Exa. ej: 21° 22\' 38.28", 90° 3\' 33.98"',
                       'Codigo Postal ej: 12345',
                       'Ciudad ej: Ciudad, Estado, Pais'
                     ]),

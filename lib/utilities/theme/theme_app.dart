@@ -114,6 +114,7 @@ ThemeData dark = ThemeData(
     radioTheme: RadioThemeData(
         fillColor: WidgetStateProperty.all<Color>(DarkTheme.primary)),
     primaryIconTheme: const IconThemeData(color: DarkTheme.primary),
+    
     appBarTheme: AppBarTheme(
         elevation: 0,
         actionsIconTheme: const IconThemeData(color: DarkTheme.second),

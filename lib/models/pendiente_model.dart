@@ -61,6 +61,7 @@ class PendienteModel {
   Map<String, dynamic> toJson() => {
         "id": id,
         "empleado_id": empleadoId,
+        "aceptado_empleado_id": aceptadoEmpleadoId, 
         "contactos":  jsonEncode(contactos.map((r) => r.toJson()).toList()),
         "referencias":  jsonEncode(referencias.map((r) => r.toJson()).toList()),
         "notas":  jsonEncode(notas.map((r) => r.toJson()).toList()),

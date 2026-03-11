@@ -1,9 +1,12 @@
 import 'package:enrutador/controllers/pendiente_fire.dart';
 import 'package:enrutador/models/pendiente_model.dart';
 import 'package:enrutador/models/usuario_model.dart';
+import 'package:enrutador/utilities/main_provider.dart';
+import 'package:enrutador/utilities/preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 
 import '../utilities/theme/theme_color.dart';
@@ -17,10 +20,11 @@ class PendientesView extends StatefulWidget {
 }
 
 class _PendientesViewState extends State<PendientesView> {
-  bool propios = true;
   bool cargando = false;
   List<PendienteModel> pendientes = [];
   late UsuarioModel arguments;
+
+  final ScrollController itemScrollController = ScrollController();
 
   @override
   void initState() {
@@ -34,13 +38,18 @@ class _PendientesViewState extends State<PendientesView> {
   Future<void> _cargarPendientes() async {
     setState(() => cargando = true);
 
-    pendientes = await PendienteFire.getItems(
-        table: "empleado_id", query: "${arguments.empleadoId}", limit: 50);
+    if (Preferences.propiosPendientes) {
+      pendientes = await PendienteFire.getItems(
+          table: "empleado_id", query: "${arguments.empleadoId}", limit: 50);
+    } else {
+      pendientes = await PendienteFire.getAllItems(limit: 50);
+    }
     setState(() => cargando = false);
   }
 
   @override
   Widget build(BuildContext context) {
+    final provider = Provider.of<MainProvider>(context);
     return Scaffold(
         appBar: AppBar(
             title: Text("Pendientes",
@@ -55,20 +64,34 @@ class _PendientesViewState extends State<PendientesView> {
                         Text("Todos",
                             style: TextStyle(
                                 fontSize: 14.sp, fontWeight: FontWeight.bold)),
-                        Switch.adaptive(
-                            applyCupertinoTheme: true,
-                            padding: EdgeInsets.zero,
-                            thumbIcon: WidgetStatePropertyAll(Icon(
-                                propios ? LineIcons.user : LineIcons.users,
-                                color: ThemaMain.background,
-                                size: 16.sp)),
-                            inactiveThumbColor: ThemaMain.darkBlue,
-                            activeThumbColor: ThemaMain.primary,
-                            value: propios,
-                            onChanged: (value) {
-                              setState(() => propios = !propios);
-                              debugPrint("Enviar directo: ${propios}");
-                            }),
+                        if ((provider.usuario?.adminTipo ?? 0) >= 3)
+                          Switch.adaptive(
+                              applyCupertinoTheme: true,
+                              padding: EdgeInsets.zero,
+                              thumbIcon: WidgetStatePropertyAll(Icon(
+                                  Preferences.propiosPendientes
+                                      ? LineIcons.user
+                                      : LineIcons.users,
+                                  color: ThemaMain.background,
+                                  size: 16.sp)),
+                              inactiveThumbColor: ThemaMain.darkBlue,
+                              activeThumbColor: ThemaMain.primary,
+                              value: Preferences.propiosPendientes,
+                              onChanged: (value) async {
+                                setState(() => Preferences.propiosPendientes =
+                                    !Preferences.propiosPendientes);
+                                if (Preferences.propiosPendientes) {
+                                  var nuevos = await PendienteFire.getItems(
+                                      table: "empleado_id",
+                                      query: "${arguments.empleadoId}",
+                                      limit: 50);
+                                  setState(() => pendientes = nuevos);
+                                } else {
+                                  var nuevos = await PendienteFire.getAllItems(
+                                      limit: 50);
+                                  setState(() => pendientes = nuevos);
+                                }
+                              }),
                         Text("Mios",
                             style: TextStyle(
                                 fontSize: 14.sp, fontWeight: FontWeight.bold))
@@ -78,11 +101,16 @@ class _PendientesViewState extends State<PendientesView> {
             ? Center(
                 child: LoadingAnimationWidget.hexagonDots(
                     color: ThemaMain.primary, size: 32.sp))
-            : ListView.builder(
-                itemCount: pendientes.length,
-                itemBuilder: (context, index) {
-                  return CardPendientes(
-                      pendientes: pendientes[index]);
-                }));
+            : Scrollbar(
+                interactive: true,
+                controller: itemScrollController,
+                child: ListView.builder(
+                    controller: itemScrollController,
+                    itemCount: pendientes.length,
+                    itemBuilder: (context, index) {
+                      return CardPendientes(
+                          pendientes: pendientes[index],
+                          fun: () => _cargarPendientes());
+                })));
   }
 }

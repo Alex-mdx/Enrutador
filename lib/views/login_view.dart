@@ -87,10 +87,14 @@ class _LoginViewState extends State<LoginView> {
                                 label: Text("Aceptar politicas de uso",
                                     style: TextStyle(fontSize: 15.sp)),
                                 icon: Icon(
-                                    Preferences.camara && Preferences.ubicacion && Preferences.contactos
+                                    Preferences.camara &&
+                                            Preferences.ubicacion &&
+                                            Preferences.contactos
                                         ? Icons.check_circle
                                         : Icons.check_box_outline_blank,
-                                    color: Preferences.camara && Preferences.ubicacion && Preferences.contactos
+                                    color: Preferences.camara &&
+                                            Preferences.ubicacion &&
+                                            Preferences.contactos
                                         ? ThemaMain.green
                                         : ThemaMain.red,
                                     size: 18.sp)),
@@ -98,7 +102,9 @@ class _LoginViewState extends State<LoginView> {
                                 builder: (context, provider, child) =>
                                     ElevatedButton.icon(
                                         onPressed: () async {
-                                          if (Preferences.camara && Preferences.ubicacion && Preferences.contactos) {
+                                          if (Preferences.camara &&
+                                              Preferences.ubicacion &&
+                                              Preferences.contactos) {
                                             if (email.text.isNotEmpty &&
                                                 password.text.isNotEmpty) {
                                               setState(() => carga = true);
@@ -140,7 +146,9 @@ class _LoginViewState extends State<LoginView> {
               Consumer<MainProvider>(
                   builder: (context, provider, child) => ElevatedButton.icon(
                       onPressed: () async {
-                        if (Preferences.camara && Preferences.ubicacion && Preferences.contactos) {
+                        if (Preferences.camara &&
+                            Preferences.ubicacion &&
+                            Preferences.contactos) {
                           if (email.text.isNotEmpty &&
                               password.text.isNotEmpty) {
                             setState(() => carga = true);
@@ -223,7 +231,9 @@ class _LoginViewState extends State<LoginView> {
                           onPressed: () async {
                         try {
                           setState(() => carga = true);
-                          if (Preferences.camara && Preferences.ubicacion && Preferences.contactos) {
+                          if (Preferences.camara &&
+                              Preferences.ubicacion &&
+                              Preferences.contactos) {
                             if (GoogleSignIn.instance.supportsAuthenticate()) {
                               var auth =
                                   await GoogleSignIn.instance.authenticate();
@@ -263,7 +273,7 @@ class _LoginViewState extends State<LoginView> {
         await UsuarioController.insert(uservalid);
         provider.usuario = uservalid;
       }
-      if (user.user!.emailVerified) {
+      if (user.user!.emailVerified && uservalid?.empleadoId != null) {
         await Navigation.pushNamed(route: "home");
       } else {
         await Navigation.pushNamed(route: "account");

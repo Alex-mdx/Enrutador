@@ -128,10 +128,9 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                               fontWeight: FontWeight.bold)))
                                 else
                                   Text(
-                                      widget.contacto?.nombreCompleto ??
-                                          "Nombre: Sin nombre",
+                                      "${widget.contacto?.id}.- ${widget.contacto?.nombreCompleto ?? "Nombre: Sin nombre"}",
                                       style: TextStyle(
-                                          fontSize: 15.sp,
+                                          fontSize: 16.sp,
                                           fontWeight: FontWeight.bold)),
                                 if (!widget.compartir)
                                   TextButton.icon(
@@ -179,8 +178,8 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                   AutoSizeText(
                                       widget.contacto?.domicilio ??
                                           "Domicilio: Sin Domicilio",
-                                      style: TextStyle(fontSize: 14.sp),
-                                      minFontSize: 12,
+                                      style: TextStyle(fontSize: 16.sp),
+                                      minFontSize: 13,
                                       maxLines: 3,
                                       overflow: TextOverflow.ellipsis)
                               ]),
@@ -239,24 +238,30 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                                         FontWeight.bold));
                                           }))
                                 else
-                                  FutureBuilder(
-                                      future: TipoController.getItem(
-                                          data: widget.contacto?.tipo ?? -1),
-                                      builder: (context, data) => Text(
-                                          data.data?.nombre ?? "Sin tipo",
-                                          style: TextStyle(
-                                              shadows: data.data != null
-                                                  ? [
-                                                      Shadow(
-                                                          color: Colors.black,
-                                                          offset: Offset(1, 1),
-                                                          blurRadius: 2)
-                                                    ]
-                                                  : [],
-                                              color: data.data?.color,
-                                              fontSize: 14.sp,
-                                              fontStyle: FontStyle.italic,
-                                              fontWeight: FontWeight.bold))),
+                                  Expanded(
+                                      child: FutureBuilder(
+                                          future: TipoController.getItem(
+                                              data:
+                                                  widget.contacto?.tipo ?? -1),
+                                          builder: (context, data) => Text(
+                                              data.data?.nombre ?? "Sin tipo",
+                                              textAlign: TextAlign.start,
+                                              style: TextStyle(
+                                                  shadows: data.data != null
+                                                      ? [
+                                                          Shadow(
+                                                              color:
+                                                                  Colors.black,
+                                                              offset:
+                                                                  Offset(1, 1),
+                                                              blurRadius: 2)
+                                                        ]
+                                                      : [],
+                                                  color: data.data?.color,
+                                                  fontSize: 15.sp,
+                                                  fontStyle: FontStyle.italic,
+                                                  fontWeight:
+                                                      FontWeight.bold)))),
                                 if (!widget.compartir)
                                   TextButton.icon(
                                       style: ButtonStyle(
@@ -312,36 +317,41 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                                         FontWeight.bold));
                                           }))
                                 else
-                                  FutureBuilder(
-                                      future: EstadoController.getItem(
-                                          data: widget.contacto?.estado ?? -1),
-                                      builder: (context, data) => Text(
-                                          data.data?.nombre ?? "Sin estado",
-                                          style: TextStyle(
-                                              shadows: data.data != null
-                                                  ? [
-                                                      Shadow(
-                                                          color: Colors.black,
-                                                          offset: Offset(1, 1),
-                                                          blurRadius: 2)
-                                                    ]
-                                                  : [],
-                                              color: data.data?.color,
-                                              fontSize: 14.sp,
-                                              fontStyle: FontStyle.italic,
-                                              fontWeight: FontWeight.bold)))
+                                  Expanded(
+                                    child: FutureBuilder(
+                                        future: EstadoController.getItem(
+                                            data:
+                                                widget.contacto?.estado ?? -1),
+                                        builder: (context, data) => Text(
+                                            data.data?.nombre ?? "Sin estado",
+                                            textAlign: TextAlign.end,
+                                            style: TextStyle(
+                                                shadows: data.data != null
+                                                    ? [
+                                                        Shadow(
+                                                            color: Colors.black,
+                                                            offset:
+                                                                Offset(1, 1),
+                                                            blurRadius: 2)
+                                                      ]
+                                                    : [],
+                                                color: data.data?.color,
+                                                fontSize: 15.sp,
+                                                fontStyle: FontStyle.italic,
+                                                fontWeight: FontWeight.bold))),
+                                  )
                               ]),
                           if (widget.compartir)
                             Text(
                                 "PlusCode: ${PlusCodeFun.psCODE(widget.contacto?.latitud ?? 0, widget.contacto?.longitud ?? 0)}",
                                 style: TextStyle(
-                                    fontSize: 14.sp,
+                                    fontSize: 15.sp,
                                     fontWeight: FontWeight.bold)),
                           if (widget.compartir)
                             Text(
                                 "W3W: ${widget.contacto?.what3Words ?? "[No Encontrado]"} ",
                                 style: TextStyle(
-                                    fontSize: 14.sp,
+                                    fontSize: 14.5.sp,
                                     fontWeight: FontWeight.bold)),
                           Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,

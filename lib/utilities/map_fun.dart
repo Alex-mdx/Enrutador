@@ -261,7 +261,7 @@ class MapFun {
                                           (element) => element.id == e.tipo)
                                       ?.icon ??
                                   Icons.person,
-                              size: tocable ? 21.sp : 16.5.sp,
+                              size: tocable ? 20.5.sp : 16.sp,
                               color: provider.tipos
                                       .firstWhereOrNull(
                                           (element) => element.id == e.tipo)

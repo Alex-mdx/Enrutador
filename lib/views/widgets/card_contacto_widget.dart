@@ -21,6 +21,7 @@ import '../../utilities/pluscode_fun.dart';
 class CardContactoWidget extends StatelessWidget {
   final ContactoModelo contacto;
   final Function(ContactoModelo) funContact;
+  final bool naviPc;
   final bool compartir;
   final bool selectedVisible;
   final bool? selected;
@@ -34,7 +35,8 @@ class CardContactoWidget extends StatelessWidget {
       required this.selectedVisible,
       this.selected,
       required this.onSelected,
-      this.entrada});
+      this.entrada,
+      this.naviPc = true});
 
   @override
   Widget build(BuildContext context) {
@@ -118,13 +120,16 @@ class CardContactoWidget extends StatelessWidget {
                                             overflow: TextOverflow.ellipsis,
                                             style: TextStyle(fontSize: 15.sp)),
                                       InkWell(
+                                          enableFeedback: naviPc,
                                           onLongPress: () async {
-                                            await Clipboard.setData(
-                                                ClipboardData(
-                                                    text: PlusCodeFun.psCODE(
-                                                        contacto.latitud,
-                                                        contacto.longitud)));
-                                            showToast("Plus Code copiado");
+                                            if (naviPc) {
+                                              await Clipboard.setData(
+                                                  ClipboardData(
+                                                      text: PlusCodeFun.psCODE(
+                                                          contacto.latitud,
+                                                          contacto.longitud)));
+                                              showToast("Plus Code copiado");
+                                            }
                                           },
                                           child: Text(
                                               "Plus Code: ${PlusCodeFun.psCODE(contacto.latitud, contacto.longitud)}",

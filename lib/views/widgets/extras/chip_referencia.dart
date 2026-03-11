@@ -16,6 +16,7 @@ class ChipReferencia extends StatelessWidget {
       required this.ref,
       required this.latlng,
       required this.origen,
+      this.onTap,
       this.extended = false,
       this.tap = true});
 
@@ -24,6 +25,7 @@ class ChipReferencia extends StatelessWidget {
   final LatLng latlng;
   final bool? tap;
   final bool extended;
+  final Function()? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -35,12 +37,16 @@ class ChipReferencia extends StatelessWidget {
             border: Border.all(color: ThemaMain.darkGrey, width: 1.sp)),
         child: GestureDetector(
             onTap: () async {
-              if (tap == true) {
-                MapFun.sendInitUri(
-                    provider: provider,
-                    lat: latlng.latitude,
-                    lng: latlng.longitude);
-                await provider.slide.close();
+              if (onTap != null) {
+                await onTap!();
+              } else {
+                if (tap == true) {
+                  MapFun.sendInitUri(
+                      provider: provider,
+                      lat: latlng.latitude,
+                      lng: latlng.longitude);
+                  await provider.slide.close();
+                }
               }
             },
             onLongPress: () async {

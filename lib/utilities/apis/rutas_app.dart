@@ -8,6 +8,7 @@ import 'package:enrutador/views/pendientes_home.dart';
 import 'package:enrutador/views/pendientes_view.dart';
 import 'package:enrutador/views/regiones_mapa.dart';
 import 'package:enrutador/views/tipos_view.dart';
+import 'package:enrutador/views/users_view.dart';
 import 'package:enrutador/views/widgets/extras/notas_builder.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -39,7 +40,8 @@ class AppRoutes {
     regionesMapa: (_) => const RegionesMapa(),
     pendientes: (_) => const PendientesHome(),
     notasBuilder: (_) => const NotasBuilder(),
-    pendientesView: (_) => const PendientesView()
+    pendientesView: (_) => const PendientesView(),
+    users: (_) => const UsersView()
   };
   static Map<String, Widget Function(BuildContext)> get routes => _routes;
   static String get home => 'home';
@@ -55,4 +57,5 @@ class AppRoutes {
   static String get pendientes => 'pendientes';
   static String get notasBuilder => 'notasBuilder';
   static String get pendientesView => 'pendientesView';
+  static String get users => 'users';
 }
