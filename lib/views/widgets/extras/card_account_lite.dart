@@ -15,7 +15,10 @@ import '../../../utilities/theme/theme_color.dart';
 
 class CardAccountLite extends StatefulWidget {
   final UsuarioModel user;
-  const CardAccountLite({super.key, required this.user});
+  final bool pop;
+  final Function()? fun;
+  const CardAccountLite(
+      {super.key, required this.user, this.pop = true, this.fun});
 
   @override
   State<CardAccountLite> createState() => _CardAccountLiteState();
@@ -78,7 +81,12 @@ class _CardAccountLiteState extends State<CardAccountLite> {
                                             if (result) {
                                               showToast(
                                                   "Se cambio el nombre de manera exitosa");
-                                              Navigation.pop();
+                                              if (widget.fun != null) {
+                                                await widget.fun!();
+                                              }
+                                              if (widget.pop) {
+                                                Navigation.pop();
+                                              }
                                             } else {
                                               showToast(
                                                   "No se pudo ejecutar el cambio intente mas tarde");
@@ -98,13 +106,21 @@ class _CardAccountLiteState extends State<CardAccountLite> {
                                       fontSize: 16.sp,
                                       fontWeight: FontWeight.bold)))),
                       Expanded(
-                          flex: 1,
-                          child: IconButton(
-                              icon: Icon(Icons.account_circle,
-                                  size: 22.sp,
-                                  color: widget.user.status == 1
-                                      ? ThemaMain.green
-                                      : ThemaMain.red),
+                          flex: 2,
+                          child: TextButton.icon(
+                              iconAlignment: IconAlignment.end,
+                              style: TextButton.styleFrom(
+                                  padding: EdgeInsets.all(0),
+                                  backgroundColor: widget.user.status == 0
+                                      ? ThemaMain.red
+                                      : ThemaMain.green),
+                              label: Text(
+                                  widget.user.status == 0
+                                      ? "Inactivo"
+                                      : "Activo",
+                                  style: TextStyle(
+                                      fontSize: 15.sp,
+                                      fontWeight: FontWeight.bold)),
                               onPressed: () {
                                 if (provider.usuario?.adminTipo == 5) {
                                   Dialogs.showMorph(
@@ -128,7 +144,12 @@ class _CardAccountLiteState extends State<CardAccountLite> {
                                         if (result) {
                                           showToast(
                                               "Se cambio el estatus del contacto de manera exitosa");
-                                          Navigation.pop();
+                                          if (widget.fun != null) {
+                                            await widget.fun!();
+                                          }
+                                          if (widget.pop) {
+                                            Navigation.pop();
+                                          }
                                         } else {
                                           showToast(
                                               "No se pudo ejecutar el cambio intente mas tarde");
@@ -138,7 +159,9 @@ class _CardAccountLiteState extends State<CardAccountLite> {
                                   showToast(
                                       "No tienes el nivel de administrador permitido para modificar este contacto");
                                 }
-                              }))
+                              },
+                              icon: Icon(Icons.account_circle,
+                                  size: 20.sp, color: ThemaMain.background)))
                     ]),
                 Wrap(
                     crossAxisAlignment: WrapCrossAlignment.center,
@@ -189,7 +212,12 @@ class _CardAccountLiteState extends State<CardAccountLite> {
                                         if (result) {
                                           showToast(
                                               "Se cambio el estatus del contacto de manera exitosa");
-                                          Navigation.pop();
+                                          if (widget.fun != null) {
+                                            await widget.fun!();
+                                          }
+                                          if (widget.pop) {
+                                            Navigation.pop();
+                                          }
                                         } else {
                                           showToast(
                                               "No se pudo ejecutar el cambio intente mas tarde");
@@ -226,7 +254,12 @@ class _CardAccountLiteState extends State<CardAccountLite> {
                                           if (result) {
                                             showToast(
                                                 "Se cambio el nombre de manera exitosa");
-                                            Navigation.pop();
+                                            if (widget.fun != null) {
+                                              await widget.fun!();
+                                            }
+                                            if (widget.pop) {
+                                              Navigation.pop();
+                                            }
                                           } else {
                                             showToast(
                                                 "No se pudo ejecutar el cambio intente mas tarde");

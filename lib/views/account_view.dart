@@ -29,8 +29,6 @@ class _AccountViewState extends State<AccountView> {
               IconButton(
                   onPressed: () async {
                     try {
-                    
-
                       showToast("Usuario guardado correctamente");
                     } catch (e) {
                       showToast("Error al guardar usuario: $e");

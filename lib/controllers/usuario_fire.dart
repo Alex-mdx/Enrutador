@@ -49,14 +49,41 @@ class UsuarioFire {
     return list;
   }
 
-  static Future<List<UsuarioModel>> getAllItems({int limit = 50}) async {
-    var data = await db.collection(collection).limit(limit).get();
-    List<UsuarioModel> list = [];
-    for (var item in data.docs) {
-      list.add(UsuarioModel.fromJson(item.data()));
+  static Future<List<UsuarioModel>> getAllItems(
+      {int limit = 50, int index = 0}) async {
+    final baseRef = db.collection(collection);
+
+    Query<Map<String, dynamic>> pageRef;
+
+    if (index <= 0) {
+      // Primera página: sin cursor usando solo el limite establecido
+      pageRef = baseRef.limit(limit);
+    } else {
+      // Páginas siguientes: obtenemos el ultimo doc de la página previa
+      final cursorSnap = await baseRef.limit(limit * index).get();
+
+      if (cursorSnap.docs.isEmpty) {
+        // El índice sale del rango, se devuelve vacío
+        return [];
+      }
+
+      // Empezamos DESPUÉS del último documento del bloque anterior
+      pageRef = baseRef.startAfterDocument(cursorSnap.docs.last).limit(limit);
     }
+
+    final data = await pageRef.get();
+    final list =
+        data.docs.map((doc) => UsuarioModel.fromJson(doc.data())).toList();
     return list;
   }
+
+  /// Retorna el número total de documentos en [collection].
+  /// Usa la API de agregación de Firestore (no descarga los docs, es eficiente).
+  static Future<int> countAll() async {
+    final snapshot = await db.collection(collection).count().get();
+    return snapshot.count ?? 0;
+  }
+
 
   static Future<bool> updateItem(
       {required UsuarioModel data,

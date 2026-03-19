@@ -2,12 +2,12 @@ import 'package:enrutador/utilities/main_provider.dart';
 import 'package:enrutador/utilities/services/dialog_services.dart';
 import 'package:enrutador/utilities/textos.dart';
 import 'package:enrutador/views/dialogs/dialog_filtro_contacto.dart';
+import 'package:enrutador/views/widgets/extras/paginador_widget.dart';
 import 'package:enrutador/views/widgets/search/row_filtro.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
-import 'package:oktoast/oktoast.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:enrutador/controllers/contacto_controller.dart';
@@ -168,105 +168,11 @@ class _ContactosViewState extends State<ContactosView> {
                                   fontSize: 16.sp,
                                   fontWeight: FontWeight.bold)))
                       : Scrollbar(child: stick(provider))),
-          FutureBuilder(
+          PaginadorGroupedWidget(
               future: ContactoController.getTotalRegistros(),
-              builder: (context, snapshot) {
-                var max = (((contactos.length >= 100
-                                    ? (snapshot.data ?? 1)
-                                    : contactos.length) ==
-                                0
-                            ? 1
-                            : (contactos.length >= 100
-                                ? (snapshot.data ?? 1)
-                                : index * 100)) /
-                        100)
-                    .ceil();
-                return Column(children: [
-                  Row(
-                      mainAxisSize: MainAxisSize.max,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        IconButton.filledTonal(
-                            iconSize: 19.sp,
-                            onPressed: () async =>
-                                await itemScrollController.scrollTo(
-                                    index: 0, duration: Duration(seconds: 1)),
-                            icon: Icon(LineIcons.arrowCircleUp,
-                                color: ThemaMain.primary)),
-                        IconButton.filledTonal(
-                            iconSize: 19.sp,
-                            onPressed: () async {
-                              if (index != 1) {
-                                index = 1;
-                                debugPrint("$index");
-                                await send();
-                              } else {
-                                showToast("Este es el inicio de la pagina");
-                              }
-                            },
-                            icon: Icon(LineIcons.angleDoubleLeft,
-                                color: ThemaMain.green)),
-                        IconButton.filledTonal(
-                            iconSize: 19.sp,
-                            onPressed: () async {
-                              if (index != 1) {
-                                if (index > 1) {
-                                  index--;
-                                }
-                                debugPrint("$index");
-                                await send();
-                              } else {
-                                showToast("Este es el inicio de la pagina");
-                              }
-                            },
-                            icon: Icon(LineIcons.angleLeft,
-                                color: ThemaMain.green)),
-                        Text("$index - $max",
-                            style: TextStyle(
-                                fontSize: 18.sp, fontWeight: FontWeight.bold)),
-                        IconButton.filledTonal(
-                            iconSize: 19.sp,
-                            onPressed: () async {
-                              if (index != max) {
-                                if (index < max) {
-                                  index++;
-                                }
-                                debugPrint("$index");
-                                await send();
-                              } else {
-                                showToast("Esta es la ultima pagina");
-                              }
-                            },
-                            icon: Icon(LineIcons.angleRight,
-                                color: ThemaMain.green)),
-                        IconButton.filledTonal(
-                            iconSize: 19.sp,
-                            onPressed: () async {
-                              if (index != max) {
-                                index = max;
-                                debugPrint("$index");
-                                await send();
-                              } else {
-                                showToast("Esta es la ultima pagina");
-                              }
-                            },
-                            icon: Icon(LineIcons.angleDoubleRight,
-                                color: ThemaMain.green)),
-                        IconButton.filledTonal(
-                            iconSize: 19.sp,
-                            onPressed: () async =>
-                                await itemScrollController.scrollTo(
-                                    index: 100, duration: Duration(seconds: 1)),
-                            icon: Icon(LineIcons.arrowCircleDown,
-                                color: ThemaMain.primary)),
-                      ]),
-                  LinearProgressIndicator(
-                      color: ThemaMain.primary,
-                      value: (index == 0 ? 1 : index / max),
-                      minHeight: .7.h)
-                ]);
-              })
+              length: contactos.length,
+              send: () async => await send(),
+              itemScrollController: itemScrollController)
         ]));
   }
 

@@ -162,7 +162,7 @@ class ContactoController {
   static Future<List<ContactoModelo>> getItems() async {
     final db = await database();
     final modelo = (await db.query(nombreDB,
-        columns: ["id", "latitud", "longitud", "tipo", "estado"]));
+        columns: ["id", "latitud", "longitud", "tipo", "estado"],));
     List<ContactoModelo> model = [];
     for (var element in modelo) {
       model.add(ContactoModelo.fromJson(element));

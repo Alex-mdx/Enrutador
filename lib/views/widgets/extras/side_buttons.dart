@@ -168,7 +168,8 @@ class SideButtons extends StatelessWidget {
                                 size: 22.sp, color: ThemaMain.green)
                           ])))),
           GestureDetector(
-              onTap: () async => Navigation.pushNamed(route: "pendientesView",arguments: provider.usuario),
+              onTap: () async => Navigation.pushNamed(
+                  route: "pendientesView", arguments: provider.usuario),
               child: Card(
                   child: Padding(
                       padding:
@@ -184,9 +185,7 @@ class SideButtons extends StatelessWidget {
                                 size: 22.sp, color: ThemaMain.primary)
                           ])))),
           GestureDetector(
-              onTap: () async => showDialog(
-                  context: context,
-                  builder: (context) => Dialog(child: CardAccout())),
+              onTap: () async => Navigation.pushNamed(route: "users"),
               child: Card(
                   child: Padding(
                       padding:
