@@ -4,13 +4,18 @@
 
 ## 1. Introducción
 
-En Enrutador, tu privacidad es nuestra prioridad. Esta política de privacidad tiene como objetivo informarte sobre cómo tratamos la información que ingresas manualmente para gestionar tus finanzas. Al utilizar nuestra aplicación, aceptas las prácticas descritas en este documento.
+Esta política de privacidad tiene como objetivo visualizar la localización, modificación y personalización de las tarjetas de contacto mostrados mediante un mapa que el usuario personal podrá crear de manera local y compartirla en la nube. Al utilizar nuestra aplicación, aceptas las prácticas descritas en este documento.
 
-Nuestra app te permite registrar gastos de forma sencilla, incluyendo montos, categorías, fechas y evidencia fotográfica. Esta información se utiliza exclusivamente para generar reportes estadísticos y permitir la sincronización opcional con tu cuenta personal de Dropbox, asegurando que mantengas el control total sobre tus datos sin que nosotros recopilemos información personal adicional.
+Nuestra app te permite crear puntos geológicas con las que podrías ingresar nombre, dirección, número telefónico y número telefónico alterno, así mismo generar tipos de contactos, estados de contacto, ingresarlos notas y poder visualizarlos por orden de lejanía, así mismo enlazar contactos mediante un rol intermediario. Esta información se sincroniza en la nube en medida de el tipo de permiso de administrador que posea el usuario recopilando información del usuario mediante un login sencillo.
 
 ## 2. Información que recopilamos
 
-Enrutador no recopila ningún dato personal tuyo ni de tu dispositivo.
+Enrutador recopila los siguientes datos.
+- Nombre Completó.
+- Geolocalización del usuario.
+- Fotos de cámara y galería.
+- Número telefónico.
+- Correo electrónico.
 
 ## 3. Información que procesamos
 
