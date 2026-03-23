@@ -74,7 +74,7 @@ class PendienteFire {
         .limit(1)
         .get();
     var uuid = doc.docs.firstOrNull?.id ?? Textos.randomWord(30);
-    await db.collection(name).doc(uuid).set(data.toJson());
+    await db.collection(name).doc(uuid).set(data.toFirestore());
     return true;
   }
 

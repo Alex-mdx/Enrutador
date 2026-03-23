@@ -7,14 +7,16 @@ import 'package:sticky_grouped_list/sticky_grouped_list.dart';
 import '../../../utilities/theme/theme_color.dart';
 
 class PaginadorGroupedWidget extends StatefulWidget {
-  final Future<int> future;
+  final int max;
   final int length;
-  final Function send;
-  final GroupedItemScrollController itemScrollController;
+  final int maxLenght;
+  final Function(int) send;
+  final GroupedItemScrollController? itemScrollController;
   const PaginadorGroupedWidget(
       {super.key,
-      required this.future,
+      required this.max,
       required this.length,
+      this.maxLenght = 100,
       required this.send,
       required this.itemScrollController});
 
@@ -26,18 +28,15 @@ class _PaginadorGroupedWidgetState extends State<PaginadorGroupedWidget> {
   int index = 1;
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-        future: widget.future,
-        builder: (context, snapshot) {
-          var max = (((widget.length >= 100
-                              ? (snapshot.data ?? 1)
+    var max = (((widget.length >= widget.maxLenght
+                              ? (widget.max)
                               : widget.length) ==
                           0
                       ? 1
-                      : (widget.length >= 100
-                          ? (snapshot.data ?? 1)
-                          : index * 100)) /
-                  100)
+                      : (widget.length >= widget.maxLenght
+                          ? (widget.max)
+                          : index * widget.maxLenght)) /
+                  widget.maxLenght)
               .ceil();
           return Column(children: [
             Row(
@@ -45,22 +44,23 @@ class _PaginadorGroupedWidgetState extends State<PaginadorGroupedWidget> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  IconButton.filledTonal(
-                      iconSize: 19.sp,
-                      onPressed: () async => await widget.itemScrollController
-                          .scrollTo(
-                              index: 0,
-                              duration: Duration(seconds: 1),
-                              curve: Curves.easeInOut),
-                      icon: Icon(LineIcons.arrowCircleUp,
-                          color: ThemaMain.primary)),
+                  if (widget.itemScrollController != null)
+                    IconButton.filledTonal(
+                        iconSize: 19.sp,
+                        onPressed: () async =>
+                            await widget.itemScrollController!.scrollTo(
+                                index: 0,
+                                duration: Duration(seconds: 1),
+                                curve: Curves.easeInOut),
+                        icon: Icon(LineIcons.arrowCircleUp,
+                            color: ThemaMain.primary)),
                   IconButton.filledTonal(
                       iconSize: 19.sp,
                       onPressed: () async {
                         if (index != 1) {
                           index = 1;
                           debugPrint("$index");
-                          await widget.send();
+                          await widget.send(index);
                         } else {
                           showToast("Este es el inicio de la pagina");
                         }
@@ -75,7 +75,7 @@ class _PaginadorGroupedWidgetState extends State<PaginadorGroupedWidget> {
                             index--;
                           }
                           debugPrint("$index");
-                          await widget.send();
+                          await widget.send(index);
                         } else {
                           showToast("Este es el inicio de la pagina");
                         }
@@ -92,7 +92,7 @@ class _PaginadorGroupedWidgetState extends State<PaginadorGroupedWidget> {
                             index++;
                           }
                           debugPrint("$index");
-                          await widget.send();
+                          await widget.send(index);
                         } else {
                           showToast("Esta es la ultima pagina");
                         }
@@ -104,28 +104,28 @@ class _PaginadorGroupedWidgetState extends State<PaginadorGroupedWidget> {
                         if (index != max) {
                           index = max;
                           debugPrint("$index");
-                          await widget.send();
+                          await widget.send(index);
                         } else {
                           showToast("Esta es la ultima pagina");
                         }
                       },
                       icon: Icon(LineIcons.angleDoubleRight,
                           color: ThemaMain.green)),
-                  IconButton.filledTonal(
-                      iconSize: 19.sp,
-                      onPressed: () async => await widget.itemScrollController
-                          .scrollTo(
-                              index: widget.length - 1,
-                              duration: Duration(seconds: 1),
-                              curve: Curves.easeInOut),
-                      icon: Icon(LineIcons.arrowCircleDown,
-                          color: ThemaMain.primary))
+                  if (widget.itemScrollController != null)
+                    IconButton.filledTonal(
+                        iconSize: 19.sp,
+                        onPressed: () async =>
+                            await widget.itemScrollController!.scrollTo(
+                                index: widget.length - 1,
+                                duration: Duration(seconds: 1),
+                                curve: Curves.easeInOut),
+                        icon: Icon(LineIcons.arrowCircleDown,
+                            color: ThemaMain.primary))
                 ]),
             LinearProgressIndicator(
                 color: ThemaMain.primary,
                 value: (index == 0 ? 1 : index / max),
                 minHeight: .7.h)
           ]);
-        });
   }
 }

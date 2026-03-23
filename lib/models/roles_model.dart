@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:enrutador/utilities/textos.dart';
 import 'package:flutter/material.dart';
 
 import '../utilities/funcion_parser.dart';
@@ -45,8 +47,18 @@ class RolesModel {
       color: Color(int.tryParse(json["color"].toString()) ??
           ThemaMain.primary.toARGB32()),
       tipo: json["tipo"],
-      creacion: DateTime.parse(json["creacion"]),
-      actualizacion: DateTime.parse(json["actualizacion"]));
+      creacion: json["creacion"] == null? null : Textos.parseoDateFire(json["creacion"]),
+      actualizacion: Textos.parseoDateFire(json["actualizacion"]));
+
+  Map<String, dynamic> toFirestore() => {
+        "id": id,
+        "nombre": nombre,
+        "icon": '${icon?.codePoint}_${icon?.fontFamily}',
+        "color": color?.toARGB32().toString(),
+        "tipo": tipo,
+        "creacion": Timestamp.fromDate(creacion!),
+        "actualizacion": Timestamp.fromDate(actualizacion!)
+      };
 
   Map<String, dynamic> toJson() => {
         "id": id,

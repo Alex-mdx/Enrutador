@@ -37,12 +37,12 @@ class NotaFire {
     var data = await getItem(id: nota.id);
     if (data == null) {
       var rdm = Textos.randomWord(30);
-      await db.collection(name).doc(rdm).set(nota.toJson());
+      await db.collection(name).doc(rdm).set(nota.toFirestore());
       return true;
     } else {
       var docId = await getDocId(id: nota.id);
       if (docId == null) return false;
-      await db.collection(name).doc(docId).update(nota.toJson());
+      await db.collection(name).doc(docId).update(nota.toFirestore());
       return true;
     }
   }

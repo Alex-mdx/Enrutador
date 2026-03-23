@@ -1,7 +1,6 @@
-import 'dart:convert';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:enrutador/utilities/funcion_parser.dart';
 import 'package:enrutador/utilities/textos.dart';
-import 'referencia_model.dart';
 
 class ContactoModelo {
     int? id;
@@ -155,23 +154,23 @@ ContactoModelo(
     longitud: double.parse(
         double.parse(json["longitud"].toString()).toStringAsFixed(6)),
     domicilio: json["domicilio"],
-    fechaDomicilio: DateTime.tryParse(json["fecha_domicilio"].toString()),
+    fechaDomicilio: Textos.parseoDateFire(json["fecha_domicilio"]),
     numero: Parser.toInt(json["numero"]),
-    numeroFecha: DateTime.tryParse(json["numero_fecha"].toString()),
+    numeroFecha: Textos.parseoDateFire(json["numero_fecha"]),
     otroNumero: Parser.toInt(json["otro_numero"]),
-    otroNumeroFecha: DateTime.tryParse(json["otro_numero_fecha"].toString()),
-    agendar: DateTime.tryParse(json["agendar"].toString()),
+    otroNumeroFecha: Textos.parseoDateFire(json["otro_numero_fecha"]),
+    agendar: Textos.parseoDateFire(json["agendar"]),
     tipo: json["tipo"],
-    tipoFecha: DateTime.tryParse(json["tipo_fecha"].toString()),
+    tipoFecha: Textos.parseoDateFire(json["tipo_fecha"]),
     estado: json["estado"],
-    estadoFecha: DateTime.tryParse(json["estado_fecha"].toString()),
+    estadoFecha: Textos.parseoDateFire(json["estado_fecha"]),
     foto: json["foto"],
     empleadoFoto: json["empleado_foto"]?.toString(),
-    fotoFecha: DateTime.tryParse(json["foto_fecha"].toString()),
+    fotoFecha: Textos.parseoDateFire(json["foto_fecha"]),
     fotoReferencia: json["foto_referencia"],
     empleadoFotoReferencia: json["empleado_foto_referencia"]?.toString(),
     fotoReferenciaFecha:
-        DateTime.tryParse(json["foto_referencia_fecha"].toString()),
+        Textos.parseoDateFire(json["foto_referencia_fecha"]),
     empleadoDomicilio: json["empleado_domicilio"]?.toString(),
     empleadoNumero: json["empleado_numero"]?.toString(),
     empleadoOtroNumero: json["empleado_otro_num"]?.toString(),
@@ -183,8 +182,57 @@ ContactoModelo(
     aceptadoEmpleado: json["aceptado_empleado"]?.toString(),
     empleadoId: json["empleado_id"]?.toString(),
     status: Parser.toInt(json["status"]) ?? 1,
-    creado: DateTime.tryParse(json["creado"].toString()),
-    modificado: DateTime.now());
+    creado: Textos.parseoDateFire(json["creado"]),
+    modificado: Textos.parseoDateFire(json["modificado"] ?? DateTime.now()));
+
+    Map<String, dynamic> toFirestore() => {
+    "id": id,
+    "nombre_completo": nombreCompleto,
+    "latitud": latitud,
+    "longitud": longitud,
+    "domicilio": domicilio,
+    "fecha_domicilio": fechaDomicilio == null
+        ? null
+        : Timestamp.fromDate(fechaDomicilio!),
+    "numero": numero,
+    "numero_fecha": numeroFecha == null
+        ? null
+        : Timestamp.fromDate(numeroFecha!),
+    "otro_numero": otroNumero,
+    "otro_numero_fecha": otroNumeroFecha == null
+        ? null
+        : Timestamp.fromDate(otroNumeroFecha!),
+    "agendar": agendar == null ? null : Timestamp.fromDate(agendar!),
+    "tipo": tipo,
+    "tipo_fecha":
+        tipoFecha == null ? null : Timestamp.fromDate(tipoFecha!),
+    "estado": estado,
+    "estado_fecha": estadoFecha == null
+        ? null
+        : Timestamp.fromDate(estadoFecha!),
+    "foto": foto,
+    "foto_fecha":
+        fotoFecha == null ? null : Timestamp.fromDate(fotoFecha!),
+    "foto_referencia": fotoReferencia,
+    "foto_referencia_fecha": fotoReferenciaFecha == null
+        ? null
+        : Timestamp.fromDate(fotoReferenciaFecha!),
+    "empleado_foto": empleadoFoto,
+    "empleado_foto_referencia": empleadoFotoReferencia,
+    "empleado_domicilio": empleadoDomicilio,
+    "empleado_numero": empleadoNumero,
+    "empleado_otro_num": empleadoOtroNumero,
+    "empleado_tipo": empleadoTipo,
+    "empleado_estado": empleadoEstado,
+    "what_3_words": what3Words,
+    "nota": nota,
+    "empleado_id": empleadoId,
+    "status": status ?? 1,
+    "pendiente": pendiente ?? 1,
+    "aceptado_empleado": aceptadoEmpleado,
+    "creado": creado == null ? null :   Timestamp.fromDate(creado!),
+    "modificado": modificado == null ? null : Timestamp.fromDate(modificado!)
+    };
 
   Map<String, dynamic> toJson() => {
     "id": id,
@@ -234,16 +282,4 @@ ContactoModelo(
     "creado": creado?.toIso8601String(),
     "modificado": modificado?.toIso8601String()
     };
-    static List<ReferenciaModelo> generar1(String texto) {
-        try {
-        final mapa = jsonDecode(texto);
-        List<ReferenciaModelo> detalleTemp = [];
-        for (var element in mapa) {
-            detalleTemp.add(ReferenciaModelo.fromJson(element));
-        }
-        return detalleTemp;
-        } catch (e) {
-        return [];
-        }
-    }
 }

@@ -67,7 +67,7 @@ class Main extends StatelessWidget {
           duration: const Duration(seconds: 4),
           backgroundColor: Preferences.thema ? Colors.black : Colors.white,
           textStyle: TextStyle(
-              fontSize: 15.sp,
+              fontSize: 15.sp, 
               color: Preferences.thema ? Colors.white : Colors.black),
           child: MaterialApp(
               localizationsDelegates: const [

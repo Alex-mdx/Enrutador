@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import 'dart:math' as math;
 
@@ -133,5 +134,13 @@ class Textos {
       cadenaAleatoria += caracteres[indice];
     }
     return cadenaAleatoria;
+  }
+
+  static DateTime? parseoDateFire(dynamic value) {
+    if (value == null) return null;
+    if (value is Timestamp) return value.toDate();         // Firestore Timestamp
+    if (value is DateTime) return value;                   // Ya es DateTime
+    if (value is String) return DateTime.tryParse(value);  // ISO String (legacy)
+    return null;
   }
 }

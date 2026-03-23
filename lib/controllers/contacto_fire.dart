@@ -46,9 +46,9 @@ class ContactoFire {
       debugPrint("${user?.toJson() ?? "nada"} - ${doc.docs.firstOrNull?.id}");
       if (user == null) {
         var docId = Textos.randomWord(30);
-        await db.collection(name).doc(docId).set(data.toJson());
+        await db.collection(name).doc(docId).set(data.toFirestore());
       } else {
-        await db.collection(name).doc(doc.docs.first.id).update(data.toJson());
+        await db.collection(name).doc(doc.docs.first.id).update(data.toFirestore());
       }
       return true;
     } catch (e) {

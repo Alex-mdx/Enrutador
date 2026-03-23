@@ -2,7 +2,7 @@
 
 ## Descripción
 El proyecto personal del enrutador tiene como función poder marcar en un mapa se tipo OSM ([Open Street Map](http://openstreetmap.org/)) registros de contactos, y dentro de este poder colocar sus datos.
-- Nombre ccompleto
+- Nombre completo
 - Dirección Física
 - Numero teléfono
 - Número Alternativo

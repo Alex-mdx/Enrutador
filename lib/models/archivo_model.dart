@@ -1,3 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:enrutador/utilities/textos.dart';
+
 class ArchivoModel {
   int? id;
   int? contactoId;
@@ -29,7 +32,15 @@ class ArchivoModel {
       contactoId: json["contacto_id"],
       nombre: json["nombre"],
       archivo: json["archivo"],
-      actualizacion: DateTime.tryParse(json["actualizacion"]));
+      actualizacion: Textos.parseoDateFire(json["actualizacion"]));
+
+      Map<String, dynamic> toFirestore() => {
+        "id": id,
+        "nombre": nombre,
+        "contacto_id": contactoId,
+        "archivo": archivo,
+        "actualizacion": actualizacion != null ? Timestamp.fromDate(actualizacion!) : null,
+      };
 
   Map<String, dynamic> toJson() => {
         "id": id,

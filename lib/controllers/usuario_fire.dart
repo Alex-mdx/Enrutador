@@ -37,10 +37,15 @@ class UsuarioFire {
   static Future<List<UsuarioModel>> getItems(
       {required String table,
       required String query,
-      bool itsNumber = false}) async {
+      bool itsNumber = false,
+      String? orden,
+      bool decender = true,
+      int limit = 50}) async {
     var data = await db
         .collection(collection)
         .where(table, isEqualTo: itsNumber ? int.tryParse(query) : query)
+        .orderBy(orden ?? "id", descending: decender)
+        .limit(limit)
         .get();
     List<UsuarioModel> list = [];
     for (var item in data.docs) {
@@ -50,17 +55,24 @@ class UsuarioFire {
   }
 
   static Future<List<UsuarioModel>> getAllItems(
-      {int limit = 50, int index = 0}) async {
+      {int limit = 50,
+      int index = 0,
+      String? orden,
+      bool decender = true}) async {
     final baseRef = db.collection(collection);
 
     Query<Map<String, dynamic>> pageRef;
 
     if (index <= 0) {
       // Primera página: sin cursor usando solo el limite establecido
-      pageRef = baseRef.limit(limit);
+      pageRef =
+          baseRef.orderBy(orden ?? "id", descending: decender).limit(limit);
     } else {
       // Páginas siguientes: obtenemos el ultimo doc de la página previa
-      final cursorSnap = await baseRef.limit(limit * index).get();
+      final cursorSnap = await baseRef
+          .orderBy(orden ?? "id", descending: decender)
+          .limit(limit * index)
+          .get();
 
       if (cursorSnap.docs.isEmpty) {
         // El índice sale del rango, se devuelve vacío
@@ -68,7 +80,10 @@ class UsuarioFire {
       }
 
       // Empezamos DESPUÉS del último documento del bloque anterior
-      pageRef = baseRef.startAfterDocument(cursorSnap.docs.last).limit(limit);
+      pageRef = baseRef
+          .orderBy(orden ?? "id", descending: decender)
+          .startAfterDocument(cursorSnap.docs.last)
+          .limit(limit);
     }
 
     final data = await pageRef.get();
@@ -81,9 +96,9 @@ class UsuarioFire {
   /// Usa la API de agregación de Firestore (no descarga los docs, es eficiente).
   static Future<int> countAll() async {
     final snapshot = await db.collection(collection).count().get();
+    debugPrint("Count: ${snapshot.count}");
     return snapshot.count ?? 0;
   }
-
 
   static Future<bool> updateItem(
       {required UsuarioModel data,
@@ -107,7 +122,7 @@ class UsuarioFire {
     await db
         .collection(collection)
         .doc(doc.docs.first.id)
-        .update(data.toJson());
+        .update(data.toFirestore());
     return true;
   }
 
@@ -129,31 +144,10 @@ class UsuarioFire {
         ? null
         : UsuarioModel.fromJson(doc.docs.firstOrNull!.data());
     if (user == null) return false;
-    await db.collection(collection).doc(doc.docs.first.id).set(data.toJson());
-    return true;
-  }
-
-  static Future<bool> itemStatus(
-      {String? table, String? query, bool itsNumber = false}) async {
-    var doc = await db
-        .collection(collection)
-        .where(table ?? "uuid",
-            isEqualTo: itsNumber
-                ? int.tryParse(
-                    query ?? FirebaseAuth.instance.currentUser?.uid ?? "")
-                : query ?? FirebaseAuth.instance.currentUser?.uid)
-        .limit(1)
-        .get();
-    var user = doc.docs.firstOrNull == null
-        ? null
-        : UsuarioModel.fromJson(doc.docs.firstOrNull!.data());
-    if (user == null) {
-      return false;
-    }
     await db
         .collection(collection)
         .doc(doc.docs.first.id)
-        .update(user.copyWith(status: 0).toJson());
+        .set(data.toFirestore());
     return true;
   }
 

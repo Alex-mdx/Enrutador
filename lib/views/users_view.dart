@@ -20,20 +20,23 @@ class UsersView extends StatefulWidget {
 
 class _UsersViewState extends State<UsersView> {
   bool carga = false;
+  int index = 1;
+  int max = 1;
   List<UsuarioModel> users = [];
-  var index = 1;
   final GroupedItemScrollController itemScrollController =
       GroupedItemScrollController();
   @override
   void initState() {
     super.initState();
-    send();
+    send(1);
   }
 
-  Future<void> send() async {
+  Future<void> send(int idx) async {
+    max = await UsuarioFire.countAll();
     setState(() {
       carga = false;
     });
+    index = idx;
     users = await UsuarioFire.getAllItems(limit: 50, index: index - 1);
     setState(() {
       carga = true;
@@ -61,9 +64,9 @@ class _UsersViewState extends State<UsersView> {
                                   fontWeight: FontWeight.bold)))
                       : Scrollbar(child: stick(provider))),
           PaginadorGroupedWidget(
-              future: UsuarioFire.countAll(),
+              max: max,
               length: users.length,
-              send: () async => await send(),
+              send: (index) async => await send(index),
               itemScrollController: itemScrollController)
         ]));
   }

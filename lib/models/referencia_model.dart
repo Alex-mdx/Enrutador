@@ -1,4 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:enrutador/utilities/funcion_parser.dart';
+import 'package:enrutador/utilities/textos.dart';
 
 class ReferenciaModelo {
   int? id;
@@ -70,7 +72,22 @@ class ReferenciaModelo {
           buscar: Parser.toInt(json["buscar"]) ?? -1,
           tipoCliente: Parser.toInt(json["tipo_cliente"]),
           estatus: Parser.toInt(json["estatus"]) ?? 1,
-          fecha: DateTime.tryParse(json["fecha"]));
+          fecha: Textos.parseoDateFire(json["fecha"]));
+
+  Map<String, dynamic> toFirestore() => {
+        "id": id,
+        "id_foranea": idForanea,
+        "id_r_forenea": idRForenea,
+        "rol_id": rolId,
+        "contacto_id_lat": contactoIdLat,
+        "contacto_id_lng": contactoIdLng,
+        "contacto_id_r_lat": contactoIdRLat,
+        "contacto_id_r_lng": contactoIdRLng,
+        "buscar": buscar,
+        "tipo_cliente": tipoCliente,
+        "estatus": estatus,
+        "fecha": fecha == null ? null : Timestamp.fromDate(fecha!)
+      };
 
   Map<String, dynamic> toJson() => {
         "id": id,

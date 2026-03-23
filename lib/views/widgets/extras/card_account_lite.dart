@@ -4,9 +4,11 @@ import 'package:enrutador/utilities/main_provider.dart';
 import 'package:enrutador/utilities/services/dialog_services.dart';
 import 'package:enrutador/utilities/services/navigation_services.dart';
 import 'package:enrutador/utilities/textos.dart';
+import 'package:enrutador/views/dialogs/dialog_hijos.dart';
 import 'package:enrutador/views/dialogs/dialog_send.dart';
 import 'package:flutter/material.dart';
 import 'package:input_quantity/input_quantity.dart';
+import 'package:line_icons/line_icons.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
@@ -287,6 +289,20 @@ class _CardAccountLiteState extends State<CardAccountLite> {
                                   fontSize: 15.sp,
                                   fontWeight: FontWeight.bold)))
                     ]),
+                Align(
+                    alignment: Alignment.centerLeft,
+                    child: ElevatedButton.icon(
+                        icon: Icon(LineIcons.helpingHands,
+                            color: ThemaMain.green, size: 20.sp),
+                        onPressed: () => showDialog(
+                            context: context,
+                            builder: (context) =>
+                                DialogHijos(hijos: widget.user.children)),
+                        label: Text("Hijos: ${widget.user.children.length}",
+                            style: TextStyle(
+                                color: ThemaMain.darkBlue,
+                                fontSize: 15.sp,
+                                fontWeight: FontWeight.bold)))),
                 Row(children: [
                   Expanded(
                       child: Text(

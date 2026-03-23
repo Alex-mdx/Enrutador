@@ -1,3 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:enrutador/utilities/textos.dart';
+
 class NotaModel {
   int? id;
   int contactoId;
@@ -40,7 +43,17 @@ class NotaModel {
       empleadoId: json["empleado_id"],
       pendiente: json["pendiente"],
       fijado: json["fijado"],
-      creado: DateTime.parse(json["creado"]));
+      creado: Textos.parseoDateFire(json["creado"])!);
+
+      Map<String, dynamic> toFirestore() => {
+        "id": id,
+        "contacto_id": contactoId,
+        "descripcion": descripcion,
+        "empleado_id": empleadoId,
+        "pendiente": pendiente,
+        "fijado": fijado,
+        "creado": Timestamp.fromDate(creado)
+      };
 
   Map<String, dynamic> toJson() => {
         "id": id,

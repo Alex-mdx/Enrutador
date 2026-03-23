@@ -36,16 +36,19 @@ class _ContactosViewState extends State<ContactosView> {
   bool carga = false;
   List<ContactoModelo> contactos = [];
   var index = 1;
+  int max = 1;
   @override
   void initState() {
     super.initState();
-    send();
+    send(1);
   }
 
-  Future<void> send() async {
+  Future<void> send(int idx) async {
+    max = await ContactoController.getTotalRegistros();
     setState(() {
       carga = false;
     });
+    index = idx;
     contactos = await ContactoController.getItemsAll(
         nombre: buscador.text, limit: 100, page: index);
     setState(() {
@@ -125,7 +128,7 @@ class _ContactosViewState extends State<ContactosView> {
                       context: context,
                       builder: (context) => DialogFiltroContacto(fun: () async {
                             index = 1;
-                            await send();
+                            await send(index);
                           })),
                   icon: Icon(LineIcons.filter))
             ]),
@@ -135,7 +138,7 @@ class _ContactosViewState extends State<ContactosView> {
               child: TextFormField(
                   controller: buscador,
                   enabled: carga,
-                  onEditingComplete: () async => await send(),
+                  onEditingComplete: () async => await send(index),
                   style: TextStyle(fontSize: 18.sp),
                   decoration: InputDecoration(
                       fillColor: ThemaMain.second,
@@ -149,12 +152,12 @@ class _ContactosViewState extends State<ContactosView> {
                               color: ThemaMain.darkGrey)),
                       suffixIcon: IconButton.filledTonal(
                           iconSize: 22.sp,
-                          onPressed: () async => await send(),
+                          onPressed: () async => await send(index),
                           icon: Icon(Icons.youtube_searched_for,
                               color: ThemaMain.green)),
                       contentPadding: EdgeInsets.symmetric(
                           horizontal: 2.w, vertical: 1.h)))),
-          RowFiltro(press: () => send()),
+          RowFiltro(press: () => send(index)),
           Expanded(
               flex: 10,
               child: !carga
@@ -169,9 +172,9 @@ class _ContactosViewState extends State<ContactosView> {
                                   fontWeight: FontWeight.bold)))
                       : Scrollbar(child: stick(provider))),
           PaginadorGroupedWidget(
-              future: ContactoController.getTotalRegistros(),
+              max: max,
               length: contactos.length,
-              send: () async => await send(),
+              send: (index) async => await send(index),
               itemScrollController: itemScrollController)
         ]));
   }

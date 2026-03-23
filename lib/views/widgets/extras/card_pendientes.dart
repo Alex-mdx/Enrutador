@@ -267,21 +267,27 @@ class _CardPendientesState extends State<CardPendientes> {
                                         element: widget.pendientes.notas[index],
                                         maxLine: 2,
                                         onDelete: () async {
-                                          List<NotaModel> newNota = [];
-                                          newNota.add(widget.pendientes.notas
-                                              .removeAt(index));
-                                          var newPendiente = widget.pendientes
-                                              .copyWith(notas: newNota);
-                                          await PendienteFire.sendItem(
-                                              table: "id",
-                                              query: widget.pendientes.id,
-                                              data: newPendiente);
-                                          if (widget.fun != null) {
-                                            await widget.fun!();
+                                          if (widget.pendientes.sincronizado ==
+                                              0) {
+                                            List<NotaModel> newNota = [];
+                                            newNota.add(widget.pendientes.notas
+                                                .removeAt(index));
+                                            var newPendiente = widget.pendientes
+                                                .copyWith(notas: newNota);
+                                            await PendienteFire.sendItem(
+                                                table: "id",
+                                                query: widget.pendientes.id,
+                                                data: newPendiente);
+                                            if (widget.fun != null) {
+                                              await widget.fun!();
+                                            }
+                                            showToast(
+                                                "Nota eliminada del pendiente");
+                                            Navigation.pop();
+                                          } else {
+                                            showToast(
+                                                "No se puede eliminar la nota porque el pendiente ya fue sincronizado");
                                           }
-                                          showToast(
-                                              "Nota eliminada del pendiente");
-                                          Navigation.pop();
                                         }))));
                       } else {
                         showToast("No hay notas ingresadas en este pendiente");

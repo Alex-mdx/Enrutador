@@ -33,12 +33,12 @@ class RolesFire {
     var data = await getItem(id: rol.id);
     if (data == null) {
       var rdm = Textos.randomWord(30);
-      await db.collection(name).doc(rdm).set(rol.toJson());
+      await db.collection(name).doc(rdm).set(rol.toFirestore());
       return true;
     } else {
       var docId = await getDocId(id: rol.id);
       if (docId == null) return false;
-      await db.collection(name).doc(docId).update(rol.toJson());
+      await db.collection(name).doc(docId).update(rol.toFirestore());
       return true;
     }
   }

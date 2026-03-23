@@ -1,8 +1,11 @@
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:enrutador/models/contacto_model.dart';
 import 'package:enrutador/models/nota_model.dart';
 import 'package:enrutador/models/referencia_model.dart';
+
+import '../utilities/textos.dart';
 
 class PendienteModel {
   String id;
@@ -51,20 +54,36 @@ class PendienteModel {
       id: json["id"],
       aceptadoEmpleadoId: json["aceptado_empleado_id"],
       empleadoId: json["empleado_id"],
-      contactos:generarContactos(json["contactos"].toString()),
-      referencias:generarReferencias(json["referencias"].toString()),
-      notas:generarNotas(json["notas"].toString()),
+      contactos: generarContactos(json["contactos"].toString()),
+      referencias: generarReferencias(json["referencias"].toString()),
+      notas: generarNotas(json["notas"].toString()),
       sincronizado: json["sincronizado"],
-      fechaPendiente: DateTime.parse(json["fecha_pendiente"]),
-      fechaSincronizado: json["fecha_sincronizado"] == null ? null : DateTime.parse(json["fecha_sincronizado"]));
+      fechaPendiente: Textos.parseoDateFire(json["fecha_pendiente"])!,
+      fechaSincronizado: json["fecha_sincronizado"] == null
+          ? null
+          : Textos.parseoDateFire(json["fecha_sincronizado"])!);
+
+  Map<String, dynamic> toFirestore() => {
+        "id": id,
+        "empleado_id": empleadoId,
+        "aceptado_empleado_id": aceptadoEmpleadoId,
+        "contactos": jsonEncode(contactos.map((r) => r.toJson()).toList()),
+        "referencias": jsonEncode(referencias.map((r) => r.toJson()).toList()),
+        "notas": jsonEncode(notas.map((r) => r.toJson()).toList()),
+        "sincronizado": sincronizado,
+        "fecha_pendiente": Timestamp.fromDate(fechaPendiente),
+        "fecha_sincronizado": fechaSincronizado == null
+            ? null
+            : Timestamp.fromDate(fechaSincronizado!)
+      };
 
   Map<String, dynamic> toJson() => {
         "id": id,
         "empleado_id": empleadoId,
-        "aceptado_empleado_id": aceptadoEmpleadoId, 
-        "contactos":  jsonEncode(contactos.map((r) => r.toJson()).toList()),
-        "referencias":  jsonEncode(referencias.map((r) => r.toJson()).toList()),
-        "notas":  jsonEncode(notas.map((r) => r.toJson()).toList()),
+        "aceptado_empleado_id": aceptadoEmpleadoId,
+        "contactos": jsonEncode(contactos.map((r) => r.toJson()).toList()),
+        "referencias": jsonEncode(referencias.map((r) => r.toJson()).toList()),
+        "notas": jsonEncode(notas.map((r) => r.toJson()).toList()),
         "sincronizado": sincronizado,
         "fecha_pendiente": fechaPendiente.toIso8601String(),
         "fecha_sincronizado": fechaSincronizado?.toIso8601String()
