@@ -296,8 +296,30 @@ class _CardAccountLiteState extends State<CardAccountLite> {
                             color: ThemaMain.green, size: 20.sp),
                         onPressed: () => showDialog(
                             context: context,
-                            builder: (context) =>
-                                DialogHijos(hijos: widget.user.children)),
+                            builder: (context) => DialogHijos(
+                                hijos: widget.user.children,
+                                user: widget.user,
+                                onSave: (p0) async {
+                                  var temp = widget.user.copyWith(
+                                      children: p0,
+                                      actualizacion: DateTime.now());
+                                  var result = await UsuarioFire.updateItem(
+                                      table: "id",
+                                      query: "${widget.user.id}",
+                                      itsNumber: true,
+                                      data: temp);
+                                  if (result) {
+                                    Navigation.pop();
+                                    showToast(
+                                        "Actualizo la lista de hijos de manera exitosa");
+                                    if (widget.fun != null) {
+                                      await widget.fun!();
+                                    }
+                                  } else {
+                                    showToast(
+                                        "No se pudo ejecutar el cambio intente mas tarde");
+                                  }
+                                })),
                         label: Text("Hijos: ${widget.user.children.length}",
                             style: TextStyle(
                                 color: ThemaMain.darkBlue,

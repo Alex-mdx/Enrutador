@@ -47,8 +47,14 @@ class _UsersViewState extends State<UsersView> {
   Widget build(BuildContext context) {
     final provider = Provider.of<MainProvider>(context);
     return Scaffold(
-        appBar:
-            AppBar(title: Text('Usuarios', style: TextStyle(fontSize: 18.sp))),
+        appBar: AppBar(
+            title: Text('Usuarios', style: TextStyle(fontSize: 18.sp)),
+            actions: [
+              IconButton(
+                  onPressed: () {},
+                  icon: Icon(Icons.person_add,
+                      size: 22.sp, color: ThemaMain.background))
+            ]),
         body: Column(children: [
           Expanded(
               flex: 10,
