@@ -2,6 +2,7 @@
 
 ## Descripción
 El proyecto de *Enrutador* tiene como función poder marcar en un mapa se tipo OSM ([Open Street Map](http://openstreetmap.org/)) registros de contactos, en zonas geográficamente personalizadas y dentro de este poder colocar sus datos.
+
 1.- Internos de la tarjeta de contacto.
 - Nombre completo.
 - Dirección Física.
