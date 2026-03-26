@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:enrutador/controllers/usuario_fire.dart';
 import 'package:enrutador/models/usuario_model.dart';
+import 'package:enrutador/utilities/camara_fun.dart';
 import 'package:enrutador/utilities/main_provider.dart';
 import 'package:enrutador/utilities/services/dialog_services.dart';
 import 'package:enrutador/utilities/services/navigation_services.dart';
@@ -13,14 +16,20 @@ import 'package:oktoast/oktoast.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 
+import '../../../utilities/funcion_parser.dart';
 import '../../../utilities/theme/theme_color.dart';
 
 class CardAccountLite extends StatefulWidget {
   final UsuarioModel user;
   final bool pop;
-  final Function()? fun;
+  final Function(UsuarioModel?)? fun;
+  final bool local;
   const CardAccountLite(
-      {super.key, required this.user, this.pop = true, this.fun});
+      {super.key,
+      required this.user,
+      this.pop = true,
+      this.fun,
+      this.local = false});
 
   @override
   State<CardAccountLite> createState() => _CardAccountLiteState();
@@ -28,10 +37,12 @@ class CardAccountLite extends StatefulWidget {
 
 class _CardAccountLiteState extends State<CardAccountLite> {
   int pass = 0;
+  late UsuarioModel user;
 
   @override
   void initState() {
     super.initState();
+    user = widget.user;
     setState(() {
       pass = widget.user.adminTipo ?? 0;
     });
@@ -40,6 +51,22 @@ class _CardAccountLiteState extends State<CardAccountLite> {
   @override
   void dispose() {
     super.dispose();
+  }
+
+  Future<void> change(UsuarioModel user, {bool? pop}) async {
+    var result = await UsuarioFire.updateItem(
+        table: "id", query: "${user.id}", itsNumber: true, data: user);
+    if (result) {
+      showToast("Se ejecuto el cambio de manera exitosa");
+      if (widget.fun != null) {
+        await widget.fun!(null);
+      }
+      if (pop ?? widget.pop) {
+        Navigation.pop();
+      }
+    } else {
+      showToast("No se pudo ejecutar el cambio intente mas tarde");
+    }
   }
 
   @override
@@ -51,110 +78,127 @@ class _CardAccountLiteState extends State<CardAccountLite> {
             child: Column(mainAxisSize: MainAxisSize.min, children: [
               Column(children: [
                 Align(
-                    alignment: Alignment.topLeft,
+                    alignment: Alignment.centerLeft,
                     child: Text(
-                        "${widget.user.id}.- ${widget.user.uuid ?? "Sin identificador"}",
+                        "${user.id}. ${user.uuid ?? "Sin identificador"}",
                         style: TextStyle(
                             fontSize: 15.sp, color: ThemaMain.darkGrey))),
                 Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Expanded(
-                          flex: 5,
-                          child: GestureDetector(
-                              onTap: () {
-                                if (provider.usuario?.adminTipo == 5 ||
-                                    provider.usuario?.uuid ==
-                                        widget.user.uuid) {
-                                  showDialog(
-                                      context: context,
-                                      builder: (context) => DialogSend(
-                                          cabeza: "Modificar nombre",
-                                          fun: (p0) async {
-                                            var temp = widget.user.copyWith(
-                                                nombre: p0,
-                                                actualizacion: DateTime.now());
-                                            var result =
-                                                await UsuarioFire.updateItem(
-                                                    table: "id",
-                                                    query: "${widget.user.id}",
-                                                    itsNumber: true,
-                                                    data: temp);
-                                            if (result) {
-                                              showToast(
-                                                  "Se cambio el nombre de manera exitosa");
-                                              if (widget.fun != null) {
-                                                await widget.fun!();
-                                              }
-                                              if (widget.pop) {
-                                                Navigation.pop();
-                                              }
-                                            } else {
-                                              showToast(
-                                                  "No se pudo ejecutar el cambio intente mas tarde");
-                                            }
-                                          },
-                                          tipoTeclado: TextInputType.name,
-                                          fecha: null,
-                                          entradaTexto: widget.user.nombre));
+                          flex: 2,
+                          child: InkWell(
+                              onTap: () async {
+                                if ((provider.usuario?.adminTipo ?? 0) >= 3) {
+                                  try {
+                                    var foto = (await CamaraFun.getGalleria(
+                                            context,
+                                            "Seleccione su foto de perfil"))
+                                        .firstOrNull;
+                                    if (foto != null) {
+                                      var base = await foto.readAsBytes();
+                                      var reducir =
+                                          await Parser.reducirUint8List(
+                                              imgBytes: base);
+                                      var temp = user.copyWith(
+                                          foto: base64Encode(reducir!),
+                                          actualizacion: DateTime.now());
+                                      if (!widget.local) {
+                                        await change(temp);
+                                      } else {
+                                        setState(() {
+                                          user = temp;
+                                        });
+                                        await widget.fun!(user);
+                                      }
+                                    }
+                                  } catch (e) {
+                                    showToast(
+                                        "Hubo un error inesperado intente mas tarde");
+                                  }
                                 } else {
                                   showToast(
                                       "No tienes el nivel de administrador permitido para modificar este contacto");
                                 }
                               },
-                              child: Text(
-                                  widget.user.nombre ?? "Sin nombre ingresado",
+                              child: user.foto != null
+                                  ? Image.memory(base64Decode(user.foto!),
+                                      filterQuality: FilterQuality.low,
+                                      fit: BoxFit.cover)
+                                  : Icon(Icons.photo_camera_front_rounded,
+                                      size: 22.sp))),
+                      Expanded(
+                          flex: 10,
+                          child: GestureDetector(
+                              onTap: () {
+                                if (provider.usuario?.adminTipo == 5 ||
+                                    provider.usuario?.uuid == user.uuid) {
+                                  showDialog(
+                                      context: context,
+                                      builder: (context) => DialogSend(
+                                          cabeza: "Modificar nombre",
+                                          fun: (p0) async {
+                                            var temp = user.copyWith(
+                                                nombre: p0,
+                                                actualizacion: DateTime.now());
+
+                                            if (!widget.local) {
+                                              await change(temp);
+                                            } else {
+                                              setState(() {
+                                                user = temp;
+                                              });
+                                              await widget.fun!(user);
+                                            }
+                                          },
+                                          tipoTeclado: TextInputType.name,
+                                          fecha: null,
+                                          entradaTexto: user.nombre));
+                                } else {
+                                  showToast(
+                                      "No tienes el nivel de administrador permitido para modificar este contacto");
+                                }
+                              },
+                              child: Text(user.nombre ?? "Sin nombre ingresado",
                                   style: TextStyle(
                                       fontSize: 16.sp,
                                       fontWeight: FontWeight.bold)))),
                       Expanded(
-                          flex: 2,
+                          flex: 4,
                           child: TextButton.icon(
                               iconAlignment: IconAlignment.end,
                               style: TextButton.styleFrom(
-                                  padding: EdgeInsets.all(0),
-                                  backgroundColor: widget.user.status == 0
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 1.w, vertical: 0),
+                                  backgroundColor: user.status == 0
                                       ? ThemaMain.red
                                       : ThemaMain.green),
                               label: Text(
-                                  widget.user.status == 0
-                                      ? "Inactivo"
-                                      : "Activo",
+                                  user.status == 0 ? "Inactivo" : "Activo",
                                   style: TextStyle(
                                       fontSize: 15.sp,
                                       fontWeight: FontWeight.bold)),
                               onPressed: () {
                                 if (provider.usuario?.adminTipo == 5) {
                                   Dialogs.showMorph(
-                                      title: widget.user.status == 1
+                                      title: user.status == 1
                                           ? "Inhabilitar"
                                           : "Habilitar",
                                       description:
-                                          "¿Desea ${widget.user.status == 1 ? "Inhabilitar" : "habilitar"} este contacto?\n${widget.user.status == 1 ? "Este contacto dejara de tener acceso a la aplicacion" : "Este contacto tendra acceso a las funciones de esta aplicacion"}",
+                                          "¿Desea ${user.status == 1 ? "Inhabilitar" : "habilitar"} este contacto?\n${user.status == 1 ? "Este contacto dejara de tener acceso a la aplicacion" : "Este contacto tendra acceso a las funciones de esta aplicacion"}",
                                       loadingTitle: "procesando",
                                       onAcceptPressed: (context) async {
-                                        var temp = widget.user.copyWith(
-                                            status:
-                                                widget.user.status == 1 ? 0 : 1,
+                                        var temp = user.copyWith(
+                                            status: user.status == 1 ? 0 : 1,
                                             actualizacion: DateTime.now());
-                                        var result =
-                                            await UsuarioFire.updateItem(
-                                                table: "id",
-                                                query: "${widget.user.id}",
-                                                itsNumber: true,
-                                                data: temp);
-                                        if (result) {
-                                          showToast(
-                                              "Se cambio el estatus del contacto de manera exitosa");
-                                          if (widget.fun != null) {
-                                            await widget.fun!();
-                                          }
-                                          if (widget.pop) {
-                                            Navigation.pop();
-                                          }
+                                        if (!widget.local) {
+                                          await change(temp);
                                         } else {
-                                          showToast(
-                                              "No se pudo ejecutar el cambio intente mas tarde");
+                                          setState(() {
+                                            user = temp;
+                                          });
+                                          await widget.fun!(user);
                                         }
                                       });
                                 } else {
@@ -181,13 +225,13 @@ class _CardAccountLiteState extends State<CardAccountLite> {
                                 borderShape: BorderShapeBtn.circle,
                                 isBordered: true),
                             maxVal: 5,
-                            initVal: widget.user.adminTipo ?? 0,
+                            initVal: user.adminTipo ?? 0,
                             minVal: 0,
                             steps: 1,
                             onQtyChanged: (value) => setState(() {
                                   pass = value;
                                 })),
-                        if (pass != widget.user.adminTipo)
+                        if (pass != user.adminTipo)
                           ElevatedButton(
                               style: ButtonStyle(
                                   backgroundColor: WidgetStatePropertyAll(
@@ -195,34 +239,23 @@ class _CardAccountLiteState extends State<CardAccountLite> {
                                   padding:
                                       WidgetStatePropertyAll(EdgeInsets.zero)),
                               onPressed: () {
-                                if (pass != widget.user.adminTipo) {
+                                if (pass != user.adminTipo) {
                                   Dialogs.showMorph(
                                       title: "Cambiar nivel",
                                       description:
                                           "¿Desea cambiar el nivel de administrador de este contacto por el sugerido?\nEste cambio agregara/quitara ventajas y accesos privilegiados",
                                       loadingTitle: "Cambiando",
-                                      onAcceptPressed: () async {
-                                        var temp = widget.user.copyWith(
+                                      onAcceptPressed: (context) async {
+                                        var temp = user.copyWith(
                                             adminTipo: pass,
                                             actualizacion: DateTime.now());
-                                        var result =
-                                            await UsuarioFire.updateItem(
-                                                table: "id",
-                                                query: "${widget.user.id}",
-                                                itsNumber: true,
-                                                data: temp);
-                                        if (result) {
-                                          showToast(
-                                              "Se cambio el estatus del contacto de manera exitosa");
-                                          if (widget.fun != null) {
-                                            await widget.fun!();
-                                          }
-                                          if (widget.pop) {
-                                            Navigation.pop();
-                                          }
+                                        if (!widget.local) {
+                                          await change(temp);
                                         } else {
-                                          showToast(
-                                              "No se pudo ejecutar el cambio intente mas tarde");
+                                          setState(() {
+                                            user = temp;
+                                          });
+                                          await widget.fun!(user);
                                         }
                                       });
                                 }
@@ -235,7 +268,7 @@ class _CardAccountLiteState extends State<CardAccountLite> {
                       ElevatedButton.icon(
                           onPressed: () {
                             if ((provider.usuario?.adminTipo ?? 0) >= 3 ||
-                                provider.usuario?.uuid == widget.user.uuid) {
+                                provider.usuario?.uuid == user.uuid) {
                               showDialog(
                                   context: context,
                                   builder: (context) => DialogSend(
@@ -244,27 +277,16 @@ class _CardAccountLiteState extends State<CardAccountLite> {
                                         if ((provider.usuario?.adminTipo ??
                                                 0) >=
                                             3) {
-                                          var temp = widget.user.copyWith(
+                                          var temp = user.copyWith(
                                               empleadoId: p0,
                                               actualizacion: DateTime.now());
-                                          var result =
-                                              await UsuarioFire.updateItem(
-                                                  table: "id",
-                                                  query: "${widget.user.id}",
-                                                  itsNumber: true,
-                                                  data: temp);
-                                          if (result) {
-                                            showToast(
-                                                "Se cambio el nombre de manera exitosa");
-                                            if (widget.fun != null) {
-                                              await widget.fun!();
-                                            }
-                                            if (widget.pop) {
-                                              Navigation.pop();
-                                            }
+                                          if (!widget.local) {
+                                            await change(temp);
                                           } else {
-                                            showToast(
-                                                "No se pudo ejecutar el cambio intente mas tarde");
+                                            setState(() {
+                                              user = temp;
+                                            });
+                                            await widget.fun!(user);
                                           }
                                         } else {
                                           showToast(
@@ -273,7 +295,7 @@ class _CardAccountLiteState extends State<CardAccountLite> {
                                       },
                                       tipoTeclado: TextInputType.text,
                                       fecha: null,
-                                      entradaTexto: widget.user.empleadoId));
+                                      entradaTexto: user.empleadoId));
                             } else {
                               showToast(
                                   "No tienes el nivel de administrador permitido para modificar este contacto");
@@ -282,8 +304,7 @@ class _CardAccountLiteState extends State<CardAccountLite> {
                           icon: Icon(Icons.link,
                               color: ThemaMain.green, size: 20.sp),
                           label: Text(
-                              widget.user.empleadoId ??
-                                  "Sin N. Empleado ingresado",
+                              user.empleadoId ?? "Sin N. Empleado ingresado",
                               style: TextStyle(
                                   color: ThemaMain.darkBlue,
                                   fontSize: 15.sp,
@@ -297,30 +318,23 @@ class _CardAccountLiteState extends State<CardAccountLite> {
                         onPressed: () => showDialog(
                             context: context,
                             builder: (context) => DialogHijos(
-                                hijos: widget.user.children,
-                                user: widget.user,
+                                hijos: user.children,
+                                user: user,
                                 onSave: (p0) async {
-                                  var temp = widget.user.copyWith(
+                                  var temp = user.copyWith(
                                       children: p0,
                                       actualizacion: DateTime.now());
-                                  var result = await UsuarioFire.updateItem(
-                                      table: "id",
-                                      query: "${widget.user.id}",
-                                      itsNumber: true,
-                                      data: temp);
-                                  if (result) {
-                                    Navigation.pop();
-                                    showToast(
-                                        "Actualizo la lista de hijos de manera exitosa");
-                                    if (widget.fun != null) {
-                                      await widget.fun!();
-                                    }
+                                  if (!widget.local) {
+                                    await change(temp, pop: true);
                                   } else {
-                                    showToast(
-                                        "No se pudo ejecutar el cambio intente mas tarde");
+                                    setState(() {
+                                      user = temp;
+                                    });
+                                    await widget.fun!(user);
+                                    Navigation.pop();
                                   }
                                 })),
-                        label: Text("Hijos: ${widget.user.children.length}",
+                        label: Text("Hijos: ${user.children.length}",
                             style: TextStyle(
                                 color: ThemaMain.darkBlue,
                                 fontSize: 15.sp,
@@ -328,12 +342,12 @@ class _CardAccountLiteState extends State<CardAccountLite> {
                 Row(children: [
                   Expanded(
                       child: Text(
-                          "Creado:\n${widget.user.creacion == null ? "Sin fecha" : Textos.fechaYMDHMS(fecha: widget.user.creacion!)}",
+                          "Creado:\n${user.creacion == null ? "Sin fecha" : Textos.fechaYMDHMS(fecha: user.creacion!)}",
                           textAlign: TextAlign.start,
                           style: TextStyle(fontSize: 15.sp))),
                   Expanded(
                       child: Text(
-                          "Actualizado:\n${widget.user.actualizacion == null ? "Sin fecha" : Textos.fechaYMDHMS(fecha: widget.user.actualizacion!)}",
+                          "Actualizado:\n${user.actualizacion == null ? "Sin fecha" : Textos.fechaYMDHMS(fecha: user.actualizacion!)}",
                           textAlign: TextAlign.end,
                           style: TextStyle(fontSize: 15.sp)))
                 ])

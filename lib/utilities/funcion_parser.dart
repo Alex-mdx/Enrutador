@@ -1,7 +1,7 @@
 import 'dart:developer';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'package:image/image.dart' as img;
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:line_icons/line_icons.dart';
 
 class Parser {
@@ -34,24 +34,14 @@ class Parser {
     }
   }
 
-  static Uint8List? reducirUint8List(
-      {required Uint8List imgBytes, int? relacion, int? calidad}) {
+  static Future<Uint8List?> reducirUint8List(
+      {required Uint8List imgBytes, int? minHeight, int? minWidth, int calidad = 70}) async {
     try {
-      final img.Image image = img.decodeImage(imgBytes)!;
-
-      final img.Image resizedImage = img.copyResize(image,
-          width: relacion == null
-              ? image.width
-              : (image.width * (relacion / 100)).toInt(),
-          height: relacion == null
-              ? image.height
-              : (image.height * (relacion / 100)).toInt());
-
-      // Codificar la imagen redimensionada a un nuevo array de bytes
-      final Uint8List newImgBytes =
-          img.encodeJpg(resizedImage, quality: calidad ?? 100);
-
-      // Guardar o utilizar los nuevos bytes de la imagen
+      var newImgBytes = await FlutterImageCompress.compressWithList(
+                                      imgBytes,
+                                      minHeight: minHeight ?? 540,
+                                      minWidth: minWidth ?? 960,
+                                      quality: calidad);
       return newImgBytes;
     } catch (e) {
       log('error: $e');

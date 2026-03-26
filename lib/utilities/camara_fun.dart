@@ -19,10 +19,9 @@ class CamaraFun {
         style: PickerStyle(
             crossAxisCount: 4,
             backgroundColor: ThemaMain.second,
-            titleWidget: Text(
-              nombre ?? "Seleccionar imagen",
-              style: TextStyle(fontSize: 16.sp)
-            )),
+            titleWidget: Text(nombre ?? "Seleccionar imagen",
+                style:
+                    TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold))),
         cameraStyle: CameraStyle(),
         allowedTypes: PickerAssetType.image,
         maxVideoDuration: 60,

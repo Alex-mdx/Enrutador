@@ -1,9 +1,9 @@
 import 'dart:convert';
 
+import 'package:advanced_media_picker/advanced_media_picker.dart';
 import 'package:enrutador/utilities/main_provider.dart';
 import 'package:enrutador/utilities/textos.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:provider/provider.dart';
 import 'package:badges/badges.dart' as bd;
@@ -12,6 +12,7 @@ import 'package:sizer/sizer.dart';
 import '../../../controllers/contacto_controller.dart';
 import '../../../models/contacto_model.dart';
 import '../../../utilities/camara_fun.dart';
+import '../../../utilities/funcion_parser.dart';
 import '../../../utilities/services/dialog_services.dart';
 import '../../../utilities/theme/theme_app.dart';
 import '../../../utilities/theme/theme_color.dart';
@@ -67,14 +68,9 @@ class _TarjetaContactoFotoState extends State<TarjetaContactoFoto> {
                           if (photo != null) {
                             final data = await photo.readAsBytes();
                             try {
-                              var reducir =
-                                  await FlutterImageCompress.compressWithList(
-                                      data,
-                                      minHeight: 540,
-                                      minWidth: 960,
-                                      quality: 70);
+                              var reducir = await Parser.reducirUint8List(imgBytes: data);
                               var newModel = widget.contacto?.copyWith(
-                                  foto: base64Encode(reducir),
+                                  foto: base64Encode(reducir!),
                                   fotoFecha: DateTime.now());
                               await ContactoController.update(newModel!);
                               provider.contacto = newModel;
@@ -107,14 +103,9 @@ class _TarjetaContactoFotoState extends State<TarjetaContactoFoto> {
                           if (photo != null) {
                             final data = await photo.readAsBytes();
                             try {
-                              var reducir =
-                                  await FlutterImageCompress.compressWithList(
-                                      data,
-                                      minHeight: 540,
-                                      minWidth: 960,
-                                      quality: 70);
+                              var reducir = await Parser.reducirUint8List(imgBytes: data);
                               var newModel = widget.contacto?.copyWith(
-                                  foto: base64Encode(reducir),
+                                  foto: base64Encode(reducir!),
                                   fotoFecha: DateTime.now());
                               await ContactoController.update(newModel!);
                               provider.contacto = newModel;
@@ -160,14 +151,9 @@ class _TarjetaContactoFotoState extends State<TarjetaContactoFoto> {
                           if (photo != null) {
                             final data = await photo.readAsBytes();
                             try {
-                              var reducir =
-                                  await FlutterImageCompress.compressWithList(
-                                      data,
-                                      minHeight: 540,
-                                      minWidth: 960,
-                                      quality: 70);
+                              var reducir = await Parser.reducirUint8List(imgBytes: data);
                               var newModel = widget.contacto?.copyWith(
-                                  fotoReferencia: base64Encode(reducir),
+                                  fotoReferencia: base64Encode(reducir!),
                                   fotoReferenciaFecha: DateTime.now());
                               await ContactoController.update(newModel!);
                               provider.contacto = newModel;
@@ -200,14 +186,9 @@ class _TarjetaContactoFotoState extends State<TarjetaContactoFoto> {
                           if (photo != null) {
                             final data = await photo.readAsBytes();
                             try {
-                              var reducir =
-                                  await FlutterImageCompress.compressWithList(
-                                      data,
-                                      minHeight: 540,
-                                      minWidth: 960,
-                                      quality: 70);
+                              var reducir = await Parser.reducirUint8List(imgBytes: data);
                               var newModel = widget.contacto?.copyWith(
-                                  fotoReferencia: base64Encode(reducir),
+                                  fotoReferencia: base64Encode(reducir!),
                                   fotoReferenciaFecha: DateTime.now());
                               await ContactoController.update(newModel!);
                               provider.contacto = newModel;

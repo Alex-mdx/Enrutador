@@ -10,6 +10,7 @@ class UsuarioModel {
   String? empleadoId;
   int? adminTipo;
   int? status;
+  String? foto;
   List<int> children;
   DateTime? creacion;
   DateTime? actualizacion;
@@ -22,6 +23,7 @@ class UsuarioModel {
       required this.empleadoId,
       required this.adminTipo,
       required this.status,
+      required this.foto,
       required this.children,
       required this.creacion,
       this.actualizacion});
@@ -34,6 +36,7 @@ class UsuarioModel {
           String? empleadoId,
           int? adminTipo,
           int? status,
+          String? foto,
           List<int>? children,
           DateTime? creacion,
           DateTime? actualizacion}) =>
@@ -45,6 +48,7 @@ class UsuarioModel {
           empleadoId: empleadoId ?? this.empleadoId,
           adminTipo: adminTipo ?? this.adminTipo,
           status: status ?? this.status,
+          foto: foto ?? this.foto,
           children: children ?? this.children,
           creacion: creacion ?? this.creacion,
           actualizacion: actualizacion ?? this.actualizacion);
@@ -57,6 +61,7 @@ class UsuarioModel {
       empleadoId: json["empleado_id"].toString(),
       adminTipo: json["admin_tipo"],
       status: Parser.toInt(json["status"]),
+      foto: json["foto"],
       children: json["children"] == null
           ? []
           : List<int>.from(json["children"]),
@@ -71,6 +76,7 @@ class UsuarioModel {
         "empleado_id": empleadoId,
         "admin_tipo": adminTipo,
         "status": status,
+        "foto": foto,
         "children": children.map((e) => e).toList(),
         "creacion": creacion == null ? null : Timestamp.fromDate(creacion!),
         "actualizacion":
@@ -85,6 +91,7 @@ class UsuarioModel {
         "empleado_id": empleadoId,
         "admin_tipo": adminTipo,
         "status": status,
+        "foto": foto,
         "children": children.map((e) => e).toList(),
         "creacion": creacion?.toIso8601String(),
         "actualizacion": actualizacion?.toIso8601String()
