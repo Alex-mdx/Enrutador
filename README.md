@@ -18,9 +18,27 @@ El proyecto de *Enrutador* tiene como función poder marcar en un mapa se tipo O
 - Compartir
 - Enrutador.
 - Agendar.
-- Estado de sincronización
-- Compartir
+- Estado de sincronización.
+- Compartir.
+- Estado de contacto
 La función principal de esta aplicación ubicar al contacto en un mapa de manera más eficiente, todo manejado desde la nube como respaldo usando la plataforma de firebase de Google mediante un sistema de pendientes manejado por un sistema interno de administrador.
+
+3.- Funciones avanzadas
+- Tipos.
+- Estados.
+- Navegadores.
+- Enrutamiento.
+- Usuarios.
+- Cuenta y sesion
+
+4.- Inició de sesión
+- Inicio de sesión por correo personal.
+- Inicio de sesión por correo de Google.
+
+### Internos de la tarjeta de contacto
+La tarjeta interna de contacto muestra información detallada y consistente del contacto.
+
+
 
 ### Nombre completo
 
