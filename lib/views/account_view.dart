@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -19,6 +20,21 @@ class AccountView extends StatefulWidget {
 }
 
 class _AccountViewState extends State<AccountView> {
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(const Duration(seconds: 2), (_) {
+      if (mounted) setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -67,9 +83,9 @@ class _AccountViewState extends State<AccountView> {
                             await Navigation.pushNamed(route: "home");
                           }
                         },
-                        icon: Icon(Icons.navigate_next,
-                            size: 20.sp,
-                            color: FirebaseAuth.instance.currentUser!.emailVerified == true &&
+                        icon: Icon(Icons.navigate_next_rounded,
+                            size: 24.sp,
+                            color: FirebaseAuth.instance.currentUser?.emailVerified == true &&
                                     snapshot.data?.docs.firstOrNull?.data()["empleado_id"] !=
                                         null
                                 ? ThemaMain.darkBlue
@@ -88,7 +104,7 @@ class _AccountViewState extends State<AccountView> {
                                         ? "Enlace a su Cuenta a un numero de empleado"
                                         : "",
                             style: TextStyle(
-                                fontSize: 16.sp,
+                                fontSize: 18.sp,
                                 fontWeight: FirebaseAuth.instance.currentUser!.emailVerified == true &&
                                         snapshot.data?.docs.firstOrNull?.data()["empleado_id"] != null
                                     ? FontWeight.bold

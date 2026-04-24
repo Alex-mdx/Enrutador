@@ -36,17 +36,36 @@ class UsuarioFire {
 
   static Future<List<UsuarioModel>> getItems(
       {required String table,
-      required String query,
+      required dynamic query,
       bool itsNumber = false,
       String? orden,
       bool decender = true,
       int limit = 50}) async {
-    var data = await db
-        .collection(collection)
-        .where(table, isEqualTo: itsNumber ? int.tryParse(query) : query)
-        .orderBy(orden ?? "id", descending: decender)
-        .limit(limit)
-        .get();
+    Query<Map<String, dynamic>> ref;
+
+    if (query is List) {
+      // Si query es un arreglo, usa whereIn para buscar coincidencias con cualquier valor
+      if (query.isNotEmpty) {
+        final parsedList = itsNumber
+            ? query.map((e) => int.tryParse(e.toString())).toList()
+            : query.map((e) => e.toString()).toList();
+        ref = db
+            .collection(collection)
+            .where(table, whereIn: parsedList)
+            .limit(limit);
+      } else {
+        ref = db.collection(collection).limit(1);
+      }
+    } else {
+      // Comportamiento original con un valor único
+      ref = db
+          .collection(collection)
+          .where(table, isEqualTo: itsNumber ? int.tryParse(query) : query)
+          .orderBy(orden ?? "id", descending: decender)
+          .limit(limit);
+    }
+
+    var data = await ref.get();
     List<UsuarioModel> list = [];
     for (var item in data.docs) {
       list.add(UsuarioModel.fromJson(item.data()));
@@ -100,57 +119,39 @@ class UsuarioFire {
     return snapshot.count ?? 0;
   }
 
-  static Future<bool> updateItem(
-      {required UsuarioModel data,
-      String? table,
-      String? query,
-      bool itsNumber = false}) async {
-    var doc = await db
-        .collection(collection)
-        .where(table ?? "uuid",
-            isEqualTo: itsNumber
-                ? int.tryParse(
-                    query ?? FirebaseAuth.instance.currentUser?.uid ?? "")
-                : query ?? FirebaseAuth.instance.currentUser?.uid)
-        .limit(1)
-        .get();
-    var user = doc.docs.firstOrNull == null
-        ? null
-        : UsuarioModel.fromJson(doc.docs.firstOrNull!.data());
-    debugPrint("${user?.toJson() ?? "nada"} - ${doc.docs.firstOrNull?.id}");
-    if (user == null) return false;
-    await db
-        .collection(collection)
-        .doc(doc.docs.first.id)
-        .update(data.toFirestore());
-    return true;
-  }
-
-
-
   static Future<bool> sendItem(
       {required UsuarioModel data,
       String? table,
       String? query,
       bool itsNumber = false}) async {
-    var doc = await db
-        .collection(collection)
-        .where(table ?? "uuid",
-            isEqualTo: itsNumber
-                ? int.tryParse(
-                    query ?? FirebaseAuth.instance.currentUser?.uid ?? "")
-                : query ?? FirebaseAuth.instance.currentUser?.uid)
-        .limit(1)
-        .get();
-    var user = doc.docs.firstOrNull == null
-        ? null
-        : UsuarioModel.fromJson(doc.docs.firstOrNull!.data());
-    if (user == null) return false;
-    await db
-        .collection(collection)
-        .doc(doc.docs.first.id)
-        .set(data.toFirestore());
-    return true;
+    try {
+      var doc = await db
+          .collection(collection)
+          .where(table ?? "uuid",
+              isEqualTo: itsNumber
+                  ? int.tryParse(
+                      query ?? FirebaseAuth.instance.currentUser?.uid ?? "")
+                  : query ?? FirebaseAuth.instance.currentUser?.uid)
+          .limit(1)
+          .get();
+      var user = doc.docs.firstOrNull == null
+          ? null
+          : UsuarioModel.fromJson(doc.docs.firstOrNull!.data());
+      debugPrint("${user?.toJson() ?? "nada"} - ${doc.docs.firstOrNull?.id}");
+      if (user != null) {
+        await db
+            .collection(collection)
+            .doc(doc.docs.first.id)
+            .update(data.toFirestore());
+        return false;
+      } else {
+        await db.collection(collection).add(data.toFirestore());
+        return true;
+      }
+    } catch (e) {
+      debugPrint("Error al enviar el usuario: $e");
+      return false;
+    }
   }
 
   static Future<bool> deleteItem(

@@ -34,7 +34,7 @@ class _CardAccoutState extends State<CardAccout> {
     if (doc == null) return;
     var model = doc.copyWith(nombre: nombre, actualizacion: DateTime.now());
 
-    var actualizado = await UsuarioFire.updateItem(data: model);
+    var actualizado = await UsuarioFire.sendItem(data: model);
     if (actualizado) {
       await UsuarioController.insert(model);
     }
@@ -178,8 +178,7 @@ class _CardAccoutState extends State<CardAccout> {
                                               showToast("Buscando..");
                                               user = await UsuarioFire.getItem(
                                                   table: "empleado_id",
-                                                  query: valor ?? "0",
-                                                  itsNumber: true);
+                                                  query: valor ?? "0");
                                             },
                                             tipoTeclado: TextInputType.number,
                                             fecha: null,
@@ -200,31 +199,25 @@ class _CardAccoutState extends State<CardAccout> {
                                                 actualizacion: DateTime.now(),
                                                 uuid: FirebaseAuth
                                                     .instance.currentUser?.uid);
-                                            var doc = await UsuarioFire.getItem(
+
+                                            await UsuarioFire.sendItem(
+                                                data: model,
                                                 table: "id",
-                                                query: user!.id.toString(),
+                                                query: user?.id.toString(),
                                                 itsNumber: true);
-                                            if (doc != null &&
-                                                doc.empleadoId != null) {
-                                              await UsuarioFire.sendItem(
-                                                  data: model,
-                                                  table: "id",
-                                                  query: doc.id.toString(),
-                                                  itsNumber: true);
-                                              await UsuarioController.insert(
-                                                  model);
-                                              await FirebaseAuth
-                                                  .instance.currentUser
-                                                  ?.updateDisplayName(
-                                                      user!.nombre);
-                                              await FirebaseAuth
-                                                  .instance.currentUser
-                                                  ?.reload();
-                                              setState(() {
-                                                showToast(
-                                                    "Vinculado a ${user!.nombre}");
-                                              });
-                                            }
+                                            await UsuarioController.insert(
+                                                model);
+                                            await FirebaseAuth
+                                                .instance.currentUser
+                                                ?.updateDisplayName(
+                                                    user!.nombre);
+                                            await FirebaseAuth
+                                                .instance.currentUser
+                                                ?.reload();
+                                            setState(() {
+                                              showToast(
+                                                  "Vinculado a ${user!.nombre}");
+                                            });
                                           });
                                     } else {
                                       if (user?.uuid != null) {
@@ -245,7 +238,8 @@ class _CardAccoutState extends State<CardAccout> {
                                           ? ThemaMain.green
                                           : ThemaMain.darkBlue),
                                   label: Text(
-                                      "${snapshot.data?.empleadoId ?? "N. Empleado"}",
+                                      snapshot.data?.empleadoId ??
+                                          "N. Empleado",
                                       style: TextStyle(
                                           fontSize: 16.sp,
                                           fontWeight: snapshot.hasData
@@ -297,44 +291,85 @@ class _CardAccoutState extends State<CardAccout> {
                             label: Text("Cerrar sesión",
                                 style: TextStyle(
                                     fontSize: 16.sp, color: ThemaMain.red))),
-                        Divider(),
                         Center(
                             child: ElevatedButton.icon(
-                                onPressed: () async => Dialogs.showMorph(
-                                    title: "Eliminar Cuenta",
-                                    description: "¿Desea eliminar su cuenta?",
-                                    loadingTitle: "Eliminando cuenta",
-                                    onAcceptPressed: (context) async {
-                                      var db = FirebaseFirestore.instance;
-                                      await UsuarioController.deleteAll();
-                                      var data = await db
-                                          .collection("users")
-                                          .where("uuid",
-                                              isEqualTo: FirebaseAuth
-                                                  .instance.currentUser?.uid)
-                                          .get();
-                                      if (data.docs.firstOrNull != null) {
-                                        var user = (UsuarioModel.fromJson(
-                                            data.docs.first.data()));
-                                        await db
-                                            .collection("users")
-                                            .doc(data.docs.first.id)
-                                            .update(
-                                                user.toJson()..["uuid"] = null);
-                                        await FirebaseAuth.instance.currentUser
-                                            ?.reload();
-                                        setState(() {
-                                          showToast("Enlace eliminado");
-                                        });
-                                      }
-                                      await FirebaseAuth.instance.currentUser
-                                          ?.delete();
+                                onPressed: () async {
+                                  final user =
+                                      FirebaseAuth.instance.currentUser;
+                                  if (user == null) return;
+                                  UserCredential? temp;
+                                  await showDialog(
+                                      context: context,
+                                      builder: (context) => DialogSend(
+                                          cabeza:
+                                              "Eliminar Cuenta\nEsta accion es irreversible. Ingresa tu contrasena para confirmar.",
+                                          fun: (p0) async {
+                                            // Re-autenticar antes de eliminar
+                                            final credential =
+                                                EmailAuthProvider.credential(
+                                                    email: user.email!,
+                                                    password: p0 ?? "");
 
-                                      Preferences.login = false;
-                                      showToast("Cuenta eliminada");
-                                      await Navigation.pushReplacementNamed(
-                                          routeName: "loginState");
-                                    }),
+                                            temp = await user
+                                                .reauthenticateWithCredential(
+                                                    credential);
+                                          },
+                                          tipoTeclado:
+                                              TextInputType.visiblePassword,
+                                          fecha: null,
+                                          entradaTexto: null));
+
+                                  if (temp?.user == null) return;
+
+                                  await Dialogs.showMorph(
+                                      title: "Eliminando cuenta",
+                                      description:
+                                          "Procesando la eliminacion de su cuenta...",
+                                      loadingTitle: "Eliminando cuenta",
+                                      onAcceptPressed: (context) async {
+                                        try {
+                                          if (temp?.user != null) {
+                                            var db = FirebaseFirestore.instance;
+                                            await UsuarioController.deleteAll();
+                                            var data = await db
+                                                .collection("users")
+                                                .where("uuid",
+                                                    isEqualTo: user.uid)
+                                                .get();
+
+                                            if (data.docs.firstOrNull != null) {
+                                              var userModel =
+                                                  UsuarioModel.fromJson(
+                                                      data.docs.first.data());
+                                              await db
+                                                  .collection("users")
+                                                  .doc(data.docs.first.id)
+                                                  .update(userModel.toJson()
+                                                    ..["uuid"] = null);
+                                            }
+
+                                            await user.delete();
+                                            Preferences.login = false;
+                                            showToast("Cuenta eliminada");
+                                            await Navigation
+                                                .pushReplacementNamed(
+                                                    routeName: "loginState");
+                                          }
+                                        } on FirebaseAuthException catch (e) {
+                                          if (e.code == 'wrong-password') {
+                                            showToast(
+                                                "Contrasena incorrecta. Intenta de nuevo.");
+                                          } else {
+                                            showToast(
+                                                "Error al eliminar cuenta: ${e.message}");
+                                          }
+                                          log("FirebaseAuthException al eliminar cuenta: $e");
+                                        } catch (e) {
+                                          showToast("Error inesperado: $e");
+                                          log("Error al eliminar cuenta: $e");
+                                        }
+                                      });
+                                },
                                 icon: Icon(LineIcons.userSlash,
                                     size: 24.sp, color: ThemaMain.pink),
                                 label: Text("Eliminar Cuenta",

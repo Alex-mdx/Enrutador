@@ -1,4 +1,5 @@
 import 'package:enrutador/utilities/main_provider.dart';
+import 'package:enrutador/utilities/map_fun.dart';
 import 'package:enrutador/utilities/services/dialog_services.dart';
 import 'package:enrutador/utilities/services/navigation_services.dart';
 import 'package:enrutador/utilities/theme/theme_color.dart';
@@ -120,7 +121,7 @@ class _MapNavigationState extends State<MapNavigation> {
                             // Iniciar descarga con parámetros personalizables
                             _iniciarDescargaRegion(context, provider,
                                 minZoom: 8,
-                                maxZoom: 18,
+                                maxZoom: 19,
                                 urlTemplate:
                                     'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                                 storeName: 'OSM');
@@ -140,7 +141,7 @@ class _MapNavigationState extends State<MapNavigation> {
                       container = !container;
                       if (container) {
                         CameraFit camara = CameraFit.bounds(
-                            maxZoom: 19,
+                            maxZoom: 20,
                             padding: EdgeInsets.symmetric(
                                 horizontal: 20.w, vertical: 10.h),
                             bounds: LatLngBounds(
@@ -163,6 +164,16 @@ class _MapNavigationState extends State<MapNavigation> {
                             : Icons.border_inner_rounded,
                         color: ThemaMain.white)),
               IconButton.filled(
+                  iconSize: 24.sp,
+                  style: ButtonStyle(
+                      backgroundColor:
+                          WidgetStatePropertyAll(ThemaMain.primary)),
+                  onPressed: () => MapFun.touch(
+                      provider: provider,
+                      lat: provider.local!.latitude,
+                      lng: provider.local!.longitude),
+                  icon: Icon(Icons.location_history, color: ThemaMain.white)),
+              IconButton.filled(
                   iconSize: 26.sp,
                   onPressed: () async {
                     if (provider.mapSeguir) {
@@ -178,7 +189,7 @@ class _MapNavigationState extends State<MapNavigation> {
                       }
                     } else {
                       followFix = false;
-                      
+
                       provider.animaMap.animatedRotateReset();
                       await provider.animaMap.centerOnPoint(LatLng(
                           provider.local!.latitude, provider.local!.longitude));

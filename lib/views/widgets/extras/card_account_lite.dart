@@ -54,7 +54,7 @@ class _CardAccountLiteState extends State<CardAccountLite> {
   }
 
   Future<void> change(UsuarioModel user, {bool? pop}) async {
-    var result = await UsuarioFire.updateItem(
+    var result = await UsuarioFire.sendItem(
         table: "id", query: "${user.id}", itsNumber: true, data: user);
     if (result) {
       showToast("Se ejecuto el cambio de manera exitosa");
@@ -132,8 +132,9 @@ class _CardAccountLiteState extends State<CardAccountLite> {
                           flex: 10,
                           child: GestureDetector(
                               onTap: () {
-                                if (provider.usuario?.adminTipo == 5 ||
-                                    provider.usuario?.uuid == user.uuid) {
+                                if (((provider.usuario?.adminTipo ?? 0) >= 3 ||
+                                        provider.usuario?.uuid == user.uuid) &&
+                                    user.adminTipo != -1) {
                                   showDialog(
                                       context: context,
                                       builder: (context) => DialogSend(
@@ -180,7 +181,8 @@ class _CardAccountLiteState extends State<CardAccountLite> {
                                       fontSize: 15.sp,
                                       fontWeight: FontWeight.bold)),
                               onPressed: () {
-                                if (provider.usuario?.adminTipo == 5) {
+                                if ((provider.usuario?.adminTipo ?? 0) == 5 &&
+                                    user.adminTipo != -1) {
                                   Dialogs.showMorph(
                                       title: user.status == 1
                                           ? "Inhabilitar"
@@ -217,7 +219,9 @@ class _CardAccountLiteState extends State<CardAccountLite> {
                         InputQty.int(
                             qtyFormProps: QtyFormProps(
                                 enableTyping: false,
-                                enabled: provider.usuario?.adminTipo == 5),
+                                enabled:
+                                    (provider.usuario?.adminTipo ?? 0) == 5 &&
+                                        user.adminTipo != -1),
                             decoration: QtyDecorationProps(
                                 isDense: true,
                                 leadingWidget: Icon(Icons.admin_panel_settings,
@@ -267,7 +271,8 @@ class _CardAccountLiteState extends State<CardAccountLite> {
                       ]),
                       ElevatedButton.icon(
                           onPressed: () {
-                            if ((provider.usuario?.adminTipo ?? 0) >= 3 ||
+                            if (((provider.usuario?.adminTipo ?? 0) >= 3 &&
+                                    (provider.usuario?.adminTipo ?? 0) != -1) ||
                                 provider.usuario?.uuid == user.uuid) {
                               showDialog(
                                   context: context,
@@ -315,25 +320,34 @@ class _CardAccountLiteState extends State<CardAccountLite> {
                     child: ElevatedButton.icon(
                         icon: Icon(LineIcons.helpingHands,
                             color: ThemaMain.green, size: 20.sp),
-                        onPressed: () => showDialog(
-                            context: context,
-                            builder: (context) => DialogHijos(
-                                hijos: user.children,
-                                user: user,
-                                onSave: (p0) async {
-                                  var temp = user.copyWith(
-                                      children: p0,
-                                      actualizacion: DateTime.now());
-                                  if (!widget.local) {
-                                    await change(temp, pop: true);
-                                  } else {
-                                    setState(() {
-                                      user = temp;
-                                    });
-                                    await widget.fun!(user);
-                                    Navigation.pop();
-                                  }
-                                })),
+                        onPressed: () {
+                          if (((provider.usuario?.adminTipo ?? 0) >= 3 &&
+                                  (provider.usuario?.adminTipo ?? 0) != -1) ||
+                              provider.usuario?.uuid == user.uuid) {
+                            showDialog(
+                                context: context,
+                                builder: (context) => DialogHijos(
+                                    hijos: user.children,
+                                    user: user,
+                                    onSave: (p0) async {
+                                      var temp = user.copyWith(
+                                          children: p0,
+                                          actualizacion: DateTime.now());
+                                      if (!widget.local) {
+                                        await change(temp, pop: true);
+                                      } else {
+                                        setState(() {
+                                          user = temp;
+                                        });
+                                        await widget.fun!(user);
+                                        Navigation.pop();
+                                      }
+                                    }));
+                          } else {
+                            showToast(
+                                "No tienes el nivel de administrador permitido para modificar este contacto");
+                          }
+                        },
                         label: Text("Hijos: ${user.children.length}",
                             style: TextStyle(
                                 color: ThemaMain.darkBlue,

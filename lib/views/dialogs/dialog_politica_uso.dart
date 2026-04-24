@@ -21,6 +21,7 @@ class _DialogPoliticaUsoState extends State<DialogPoliticaUso> {
   void initState() {
     super.initState();
     Permisos.permisosPoliticas();
+    setState(() {});
   }
 
   @override

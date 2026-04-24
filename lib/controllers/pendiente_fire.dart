@@ -3,6 +3,15 @@ import 'package:enrutador/models/pendiente_model.dart';
 import 'package:enrutador/utilities/textos.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+/// Operadores de comparación disponibles para [PendienteFire.getCompareItems].
+enum QueryOperator {
+  equalTo,
+  greaterThan,
+  greaterThanOrEqualTo,
+  lessThan,
+  lessThanOrEqualTo,
+}
+
 class PendienteFire {
   static var db = FirebaseFirestore.instance;
 
@@ -35,14 +44,76 @@ class PendienteFire {
     return user;
   }
 
+  static Future<List<PendienteModel>> getCompareItems(
+      {required String table,
+      required dynamic query,
+      bool itsNumber = false,
+      QueryOperator operator = QueryOperator.equalTo,
+      int limit = 50}) async {
+    // Parsea el valor si es número
+    final value = itsNumber ? int.tryParse(query.toString()) : query;
+
+    // Aplica el operador de comparación correspondiente
+    Query<Map<String, dynamic>> ref;
+    switch (operator) {
+      case QueryOperator.greaterThan:
+        ref = db.collection(name).where(table, isGreaterThan: value);
+        break;
+      case QueryOperator.greaterThanOrEqualTo:
+        ref = db.collection(name).where(table, isGreaterThanOrEqualTo: value);
+        break;
+      case QueryOperator.lessThan:
+        ref = db.collection(name).where(table, isLessThan: value);
+        break;
+      case QueryOperator.lessThanOrEqualTo:
+        ref = db.collection(name).where(table, isLessThanOrEqualTo: value);
+        break;
+      case QueryOperator.equalTo:
+        ref = db.collection(name).where(table, isEqualTo: value);
+        break;
+    }
+
+    ref = ref.limit(limit);
+
+    var data = await ref.get();
+    List<PendienteModel> list = [];
+    for (var item in data.docs) {
+      list.add(PendienteModel.fromJson(item.data()));
+    }
+    return list;
+  }
+
   static Future<List<PendienteModel>> getItems(
       {required String table,
-      required String query,
-      bool itsNumber = false,int limit = 100}) async {
-    var data = await db
-        .collection(name)
-        .where(table, isEqualTo: itsNumber ? int.tryParse(query) : query).limit(limit)
-        .get();
+      required dynamic query,
+      bool itsNumber = false,
+      String? orden,
+      bool decender = true,
+      int limit = 50}) async {
+    Query<Map<String, dynamic>> ref;
+
+    if (query is List) {
+      // whereIn no puede combinarse con orderBy sin índice compuesto,
+      // se omite el orderBy y el ordenamiento se hace en memoria en la vista.
+      if(query.isNotEmpty){
+        final parsedList = itsNumber
+          ? query.map((e) => int.tryParse(e.toString())).toList()
+          : query.map((e) => e.toString()).toList();
+
+      ref = db.collection(name).where(table, whereIn: parsedList).limit(limit);
+      }else{
+        ref = db.collection(name).limit(1);
+      }
+    } else {
+      // Comportamiento original con un valor único
+      ref = db
+          .collection(name)
+          .where(table, isEqualTo: itsNumber ? int.tryParse(query) : query)
+          .orderBy(orden ?? "id", descending: decender)
+          .limit(limit);
+    }
+
+    var data = await ref.get();
     List<PendienteModel> list = [];
     for (var item in data.docs) {
       list.add(PendienteModel.fromJson(item.data()));
@@ -58,6 +129,7 @@ class PendienteFire {
     }
     return list;
   }
+
 
   static Future<bool> sendItem(
       {required PendienteModel data,

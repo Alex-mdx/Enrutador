@@ -26,7 +26,7 @@ class Textos {
         if (diferencia.isNegative) {
           tipo = "Dentro de ${diferencia.abs()} dias";
         } else {
-          tipo = "Hace $diferencia dias";
+          tipo = "$diferencia d";
         }
         break;
     }
@@ -122,7 +122,6 @@ class Textos {
     final regex = RegExp(r'[a-zA-Z]');
     return !regex.hasMatch(texto);
   }
-  
 
   static String randomWord(int? number) {
     final random = math.Random();
@@ -138,9 +137,9 @@ class Textos {
 
   static DateTime? parseoDateFire(dynamic value) {
     if (value == null) return null;
-    if (value is Timestamp) return value.toDate();         // Firestore Timestamp
-    if (value is DateTime) return value;                   // Ya es DateTime
-    if (value is String) return DateTime.tryParse(value);  // ISO String (legacy)
+    if (value is Timestamp) return value.toDate(); // Firestore Timestamp
+    if (value is DateTime) return value; // Ya es DateTime
+    if (value is String) return DateTime.tryParse(value); // ISO String (legacy)
     return null;
   }
 }

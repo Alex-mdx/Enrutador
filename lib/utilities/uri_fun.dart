@@ -92,9 +92,9 @@ class UriFun {
                 } else {
                   var newPlus = model.copyWith(
                       latitud:
-                          double.parse(newlocation.latitude.toStringAsFixed(6)),
+                          double.parse(newlocation.latitude.toStringAsFixed(7)),
                       longitud: double.parse(
-                          newlocation.longitude.toStringAsFixed(6)));
+                          newlocation.longitude.toStringAsFixed(7)));
                   debugPrint("nuevo");
                   await ContactoController.insert(newPlus);
                 }
@@ -151,7 +151,7 @@ class UriFun {
 
                 provider.cargaProgress++;
               }
-              provider.estados = await EstadoController.getItems();
+              provider.roles = await RolesController.getAll();
               showToast("Roles guardados");
               break;
             default:

@@ -21,7 +21,9 @@ class AppRoutes {
       (FirebaseAuth.instance.currentUser?.emailVerified == false &&
                   !Preferences.login) ||
               (FirebaseAuth.instance.currentUser?.emailVerified == true &&
-                  !Preferences.login)
+                  !Preferences.login) ||
+              (FirebaseAuth.instance.currentUser?.emailVerified == false &&
+                  Preferences.login)
           ? 'account'
           : FirebaseAuth.instance.currentUser == null
               ? 'loginState'

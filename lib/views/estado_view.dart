@@ -56,7 +56,9 @@ class _TiposViewState extends State<EstadoView> {
             appBar: AppBar(
                 title: Text("Estados", style: TextStyle(fontSize: 18.sp)),
                 actions: [
-                  if (estados.isNotEmpty)
+                  if (estados.isNotEmpty &&
+                          (provider.usuario?.adminTipo ?? 0) == 5 ||
+                      (provider.usuario?.adminTipo ?? 0) == -1)
                     ElevatedButton.icon(
                         onPressed: () => Dialogs.showMorph(
                             title: "Estados",
@@ -210,19 +212,22 @@ class _TiposViewState extends State<EstadoView> {
                                           },
                                           dense: false),
                                       SizedBox(
-                                          height: 1.h,
+                                          height: .75.h,
                                           child: DashedLineConnector()),
                                       if (estados.length - 1 == index)
                                         DotIndicator()
                                     ]),
                                 itemCount: estados.length))),
-            floatingActionButton: FloatingActionButton(
-                onPressed: () async {
-                  await showDialog(
-                      context: context,
-                      builder: (context) => DialogsEstados(estado: null));
-                  await send();
-                },
-                child: Icon(Icons.add_comment, size: 24.sp))));
+            floatingActionButton: (provider.usuario?.adminTipo ?? 0) == 5 ||
+                    (provider.usuario?.adminTipo ?? 0) == -1
+                ? FloatingActionButton(
+                    onPressed: () async {
+                      await showDialog(
+                          context: context,
+                          builder: (context) => DialogsEstados(estado: null));
+                      await send();
+                    },
+                    child: Icon(Icons.add_comment, size: 24.sp))
+                : null));
   }
 }

@@ -7,6 +7,7 @@ import 'package:line_icons/line_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 
+import '../../dialogs/dialog_setting.dart';
 import '../card_accout.dart';
 
 class SideButtons extends StatelessWidget {
@@ -184,8 +185,27 @@ class SideButtons extends StatelessWidget {
                             Icon(Icons.youtube_searched_for,
                                 size: 22.sp, color: ThemaMain.primary)
                           ])))),
+          if ((provider.usuario?.adminTipo ?? 0) >= 4 ||
+              (provider.usuario?.adminTipo ?? 0) <= -1)
+            GestureDetector(
+                onTap: () async => Navigation.pushNamed(route: "users"),
+                child: Card(
+                    child: Padding(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 1.w, vertical: 1.h),
+                        child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text("Usuarios",
+                                  style: TextStyle(
+                                      fontSize: 16.sp,
+                                      fontWeight: FontWeight.bold)),
+                              Icon(LineIcons.users,
+                                  size: 22.sp, color: ThemaMain.darkBlue)
+                            ])))),
           GestureDetector(
-              onTap: () async => Navigation.pushNamed(route: "users"),
+              onTap: () async => showDialog(
+                  context: context, builder: (context) => DialogSetting()),
               child: Card(
                   child: Padding(
                       padding:
@@ -193,12 +213,12 @@ class SideButtons extends StatelessWidget {
                       child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text("Usuarios",
+                            Text("Configuración",
                                 style: TextStyle(
-                                    fontSize: 16.sp,
+                                    fontSize: 15.sp,
                                     fontWeight: FontWeight.bold)),
-                            Icon(LineIcons.users,
-                                size: 22.sp, color: ThemaMain.darkBlue)
+                            Icon(Icons.settings,
+                                size: 22.sp, color: ThemaMain.darkGrey)
                           ]))))
         ]));
   }

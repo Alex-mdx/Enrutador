@@ -111,33 +111,60 @@ class CardContactoWidget extends StatelessWidget {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      if (compartir)
-                                        AutoSizeText(
-                                            contacto.domicilio ??
-                                                "Sin domicilio",
-                                            maxLines: 2,
-                                            minFontSize: 12,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: TextStyle(fontSize: 15.sp)),
-                                      InkWell(
-                                          enableFeedback: naviPc,
-                                          onLongPress: () async {
-                                            if (naviPc) {
-                                              await Clipboard.setData(
-                                                  ClipboardData(
-                                                      text: PlusCodeFun.psCODE(
-                                                          contacto.latitud,
-                                                          contacto.longitud)));
-                                              showToast("Plus Code copiado");
-                                            }
-                                          },
-                                          child: Text(
-                                              "Plus Code: ${PlusCodeFun.psCODE(contacto.latitud, contacto.longitud)}",
-                                              style: TextStyle(
-                                                  fontSize: 15.sp,
-                                                  fontWeight: FontWeight.bold,
-                                                  fontStyle:
-                                                      FontStyle.italic))),
+                                      Row(children: [
+                                        Expanded(
+                                            flex: 2,
+                                            child: InkWell(
+                                                enableFeedback: naviPc,
+                                                onTap: () =>
+                                                    funContact(contacto),
+                                                onLongPress: () async {
+                                                  if (naviPc) {
+                                                    await Clipboard.setData(
+                                                        ClipboardData(
+                                                            text: PlusCodeFun.psCODE(
+                                                                contacto
+                                                                    .latitud,
+                                                                contacto
+                                                                    .longitud)));
+                                                    showToast(
+                                                        "Plus Code copiado");
+                                                  }
+                                                },
+                                                child: AutoSizeText(
+                                                    PlusCodeFun.psCODE(
+                                                        contacto.latitud,
+                                                        contacto.longitud),
+                                                    style: TextStyle(
+                                                        fontSize: 15.sp,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        fontStyle:
+                                                            FontStyle.italic),
+                                                    maxLines: 1,
+                                                    minFontSize: 13,
+                                                    textAlign: TextAlign.end,
+                                                    overflow: TextOverflow
+                                                        .ellipsis))),
+                                        Expanded(
+                                            flex: 3,
+                                            child: AutoSizeText(
+                                                contacto.domicilio
+                                                        ?.replaceRange(
+                                                            0,
+                                                            contacto.domicilio
+                                                                ?.toLowerCase()
+                                                                .indexOf(
+                                                                    "colonia"),
+                                                            "") ??
+                                                    "Sin domicilio",
+                                                maxLines: 1,
+                                                minFontSize: 12,
+                                                textAlign: TextAlign.end,
+                                                overflow: TextOverflow.ellipsis,
+                                                style:
+                                                    TextStyle(fontSize: 15.sp)))
+                                      ]),
                                       Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.spaceBetween,

@@ -14,7 +14,6 @@ import '../../../utilities/main_provider.dart';
 import '../../../utilities/map_fun.dart';
 import '../../../utilities/services/dialog_services.dart';
 import '../../../utilities/services/navigation_services.dart';
-import '../../../utilities/textos.dart';
 import '../../../utilities/theme/theme_color.dart';
 import '../../dialogs/dialog_compartir.dart';
 import '../map_widget/lauch_main_icon.dart';
@@ -42,7 +41,7 @@ class _TarjetaRsideWidgetState extends State<TarjetaRsideWidget> {
   Widget build(BuildContext context) {
     final provider = Provider.of<MainProvider>(context);
     return Row(
-        spacing: .25.w,
+        spacing: .1.w,
         mainAxisAlignment: MainAxisAlignment.end,
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -88,48 +87,43 @@ class _TarjetaRsideWidgetState extends State<TarjetaRsideWidget> {
                               color: ThemaMain.green));
                 }),
           if (provider.contacto?.id != null)
-            ElevatedButton.icon(
-                style: ButtonStyle(
-                    padding: WidgetStatePropertyAll(
-                        EdgeInsets.symmetric(horizontal: .5.w, vertical: 0))),
+            IconButton.filledTonal(
+                iconSize: 22.sp,
                 onPressed: () => showDialog(
                     context: context,
                     builder: (context) => Dialog(
-                        child: CalendarDatePicker(
-                            initialCalendarMode: DatePickerMode.day,
-                            initialDate:
-                                provider.contacto?.agendar ?? DateTime.now(),
-                            firstDate: DateTime.now(),
-                            lastDate:
-                                DateTime.now().add(Duration(days: 365 * 6)),
-                            onDateChanged: (time) => Dialogs.showMorph(
-                                title: "Seleccionar fecha",
-                                description:
-                                    "¿Esta seguro de seleccionar dicha fecha para visitar?",
-                                loadingTitle: "Guardando",
-                                onAcceptPressed: (context) async {
-                                  var newModel = provider.contacto
-                                      ?.copyWith(agendar: time, pendiente: 1);
-                                  await ContactoController.update(newModel!);
-                                  funcion(contacto: newModel);
-                                  provider.contacto = newModel;
-                                  Navigation.pop();
-                                })))),
-                label: Text(
-                    provider.contacto?.agendar == null
-                        ? "Agendar"
-                        : "Visita ${Textos.conversionDiaNombre(provider.contacto!.agendar!, DateTime.now())}",
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        fontSize: 15.sp,
-                        fontWeight: provider.contacto?.agendar == null
-                            ? FontWeight.normal
-                            : FontWeight.bold)),
-                icon: provider.contacto?.agendar == null
-                    ? Icon(LineIcons.calendarWithDayFocus, size: 20.sp)
-                    : null),
+                            child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                              Text("Agendar visita",
+                                  style: TextStyle(
+                                      fontSize: 16.sp,
+                                      fontWeight: FontWeight.bold)),
+                              CalendarDatePicker(
+                                  initialCalendarMode: DatePickerMode.day,
+                                  initialDate: provider.contacto?.agendar ??
+                                      DateTime.now(),
+                                  firstDate: DateTime.now(),
+                                  lastDate: DateTime.now()
+                                      .add(Duration(days: 365 * 6)),
+                                  onDateChanged: (time) => Dialogs.showMorph(
+                                      title: "Seleccionar fecha",
+                                      description:
+                                          "¿Esta seguro de seleccionar dicha fecha para visitar?",
+                                      loadingTitle: "Guardando",
+                                      onAcceptPressed: (context) async {
+                                        var newModel = provider.contacto
+                                            ?.copyWith(
+                                                agendar: time, pendiente: 1);
+                                        await ContactoController.update(
+                                            newModel!);
+                                        funcion(contacto: newModel);
+                                        provider.contacto = newModel;
+                                        Navigation.pop();
+                                      }))
+                            ]))),
+                icon: Icon(LineIcons.calendarWithDayFocus,
+                    color: ThemaMain.darkBlue)),
           IconButton.filledTonal(
               iconSize: provider.contacto?.id == null ? 22.sp : 18.sp,
               onPressed: () async {

@@ -9,6 +9,7 @@ import 'package:enrutador/views/dialogs/dialogs_estado_funcion.dart';
 import 'package:enrutador/views/widgets/extras/chip_referencia.dart';
 import 'package:enrutador/views/widgets/extras/tarjeta_contacto_call.dart';
 import 'package:enrutador/views/widgets/sliding_cards/tarjeta_contacto_foto.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:latlong2/latlong.dart';
@@ -16,6 +17,7 @@ import 'package:line_icons/line_icons.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
+import 'package:badges/badges.dart' as bd;
 import '../../../controllers/contacto_controller.dart';
 import '../../../controllers/enrutar_controller.dart';
 import '../../../controllers/tipo_controller.dart';
@@ -52,502 +54,527 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<MainProvider>(context);
-    return Card(
-        color: ThemaMain.dialogbackground,
-        child: AnimatedContainer(
-            duration: Durations.medium1,
-            height: widget.contacto?.id == null
-                ? 0.h
-                : widget.compartir
-                    ? 29.h
-                    : 27.h,
-            child: Row(children: [
-              Expanded(
-                  flex: widget.compartir ? 10 : 5,
-                  child: TarjetaContactoFoto(
-                      contacto: widget.contacto, compartir: widget.compartir)),
-              VerticalDivider(
-                  width: widget.compartir ? 1.w : 2.sp,
-                  indent: 1.h,
-                  endIndent: 1.h),
-              Expanded(
-                  flex: 16,
-                  child: Scrollbar(
-                      child: ListView(children: [
-                    Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Column(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                if (!widget.compartir)
-                                  TextButton.icon(
-                                      onLongPress: () async {
-                                        await Clipboard.setData(ClipboardData(
-                                            text: widget
-                                                    .contacto?.nombreCompleto ??
-                                                "Nombre: Sin nombre"));
-                                        showToast("Nombre copiado");
-                                      },
-                                      style: ButtonStyle(
-                                          padding: WidgetStatePropertyAll(
-                                              EdgeInsets.symmetric(
-                                                  horizontal: 1.w,
-                                                  vertical: 0))),
-                                      onPressed: () => showDialog(
-                                          barrierDismissible: false,
-                                          context: context,
-                                          builder: (context) => DialogSend(
-                                              entradaTexto: widget
-                                                  .contacto?.nombreCompleto,
-                                              fun: (p0) async {
-                                                var newModel = widget.contacto
-                                                    ?.copyWith(
-                                                        pendiente: 1,
-                                                        empleadoId: provider
-                                                            .usuario
-                                                            ?.empleadoId,
-                                                        nombreCompleto:
-                                                            Textos.normalizar(
-                                                                p0 ?? ""));
-                                                await ContactoController.update(
-                                                    newModel!);
-                                                funcion(contacto: newModel);
-                                                provider.contacto = newModel;
-                                              },
-                                              tipoTeclado: TextInputType.name,
-                                              fecha: null,
-                                              cabeza:
-                                                  "Ingresar nombre del contacto")),
-                                      label: Text(
-                                          widget.contacto?.nombreCompleto ??
-                                              "Nombre: Sin nombre",
-                                          style: TextStyle(
-                                              fontSize: 16.sp,
-                                              fontWeight: FontWeight.bold)))
-                                else
-                                  Text(
-                                      "${widget.contacto?.id}.- ${widget.contacto?.nombreCompleto ?? "Nombre: Sin nombre"}",
-                                      style: TextStyle(
-                                          fontSize: 16.sp,
-                                          fontWeight: FontWeight.bold)),
-                                if (!widget.compartir)
-                                  TextButton.icon(
-                                      onLongPress: () async {
-                                        await Clipboard.setData(ClipboardData(
-                                            text: widget.contacto?.domicilio ??
-                                                "Domicilio: Sin Domicilio"));
-                                        showToast("Domicilio copiado");
-                                      },
-                                      style: ButtonStyle(
-                                          padding: WidgetStatePropertyAll(
-                                              EdgeInsets.symmetric(
-                                                  horizontal: 1.w,
-                                                  vertical: 0))),
-                                      onPressed: () => showDialog(
-                                          barrierDismissible: false,
-                                          context: context,
-                                          builder: (context) => DialogDireccion(
-                                              word: widget.contacto?.domicilio,
-                                              fun: (p0) async {
-                                                var newModel = widget.contacto
-                                                    ?.copyWith(
-                                                        pendiente: 1,
-                                                        domicilio: p0,
-                                                        empleadoDomicilio:
-                                                            provider.usuario
-                                                                ?.empleadoId,
-                                                        fechaDomicilio:
-                                                            DateTime.now());
-                                                await ContactoController.update(
-                                                    newModel!);
-                                                funcion(contacto: newModel);
-                                                provider.contacto = newModel;
-                                              },
-                                              fecha: widget
-                                                  .contacto?.fechaDomicilio)),
-                                      label: AutoSizeText(
-                                          widget.contacto?.domicilio ??
-                                              "Domicilio: Sin Domicilio",
-                                          style: TextStyle(fontSize: 16.sp),
-                                          minFontSize: 15,
-                                          maxLines: 2,
-                                          overflow: TextOverflow.ellipsis))
-                                else
-                                  AutoSizeText(
-                                      widget.contacto?.domicilio ??
-                                          "Domicilio: Sin Domicilio",
-                                      style: TextStyle(fontSize: 16.sp),
-                                      minFontSize: 13,
-                                      maxLines: 3,
-                                      overflow: TextOverflow.ellipsis)
-                              ]),
-                          Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                if (!widget.compartir)
-                                  TextButton.icon(
-                                      style: ButtonStyle(
-                                          padding: WidgetStatePropertyAll(
-                                              EdgeInsets.symmetric(
-                                                  horizontal: 1.w,
-                                                  vertical: 0))),
-                                      onPressed: () => showDialog(
-                                          context: context,
-                                          builder: (context) => DialogTiposAll(
-                                              fecha: widget.contacto?.tipoFecha,
-                                              selected: (p0) async {
-                                                var newModel = widget.contacto
-                                                    ?.copyWith(
-                                                        pendiente: 1,
-                                                        tipo: p0.id,
-                                                        empleadoTipo: provider
-                                                            .usuario
-                                                            ?.empleadoId,
-                                                        tipoFecha:
-                                                            DateTime.now());
-                                                debugPrint(
-                                                    "${newModel?.tipo ?? "Sin tipo"}");
-                                                await ContactoController.update(
-                                                    newModel!);
-                                                funcion(contacto: newModel);
-                                                provider.contacto = newModel;
-                                              })),
-                                      label: FutureBuilder(
-                                          future: TipoController.getItem(
-                                              data:
-                                                  widget.contacto?.tipo ?? -1),
-                                          builder: (context, data) {
-                                            return Text(
-                                                "Tipo: ${data.data?.nombre ?? "Ø"}",
-                                                style: TextStyle(
-                                                    shadows: data.data != null
-                                                        ? [
-                                                            Shadow(
-                                                                color: Colors
-                                                                    .black,
-                                                                offset: Offset(
-                                                                    1, 1),
-                                                                blurRadius: 2)
-                                                          ]
-                                                        : [],
-                                                    color: data.data?.color,
-                                                    fontSize: 15.sp,
-                                                    fontWeight:
-                                                        FontWeight.bold));
-                                          }))
-                                else
-                                  Expanded(
-                                      child: FutureBuilder(
-                                          future: TipoController.getItem(
-                                              data:
-                                                  widget.contacto?.tipo ?? -1),
-                                          builder: (context, data) => Text(
-                                              data.data?.nombre ?? "Sin tipo",
-                                              textAlign: TextAlign.start,
-                                              style: TextStyle(
-                                                  shadows: data.data != null
-                                                      ? [
-                                                          Shadow(
-                                                              color:
-                                                                  Colors.black,
-                                                              offset:
-                                                                  Offset(1, 1),
-                                                              blurRadius: 2)
-                                                        ]
-                                                      : [],
-                                                  color: data.data?.color,
-                                                  fontSize: 15.sp,
-                                                  fontStyle: FontStyle.italic,
-                                                  fontWeight:
-                                                      FontWeight.bold)))),
-                                if (!widget.compartir)
-                                  TextButton.icon(
-                                      style: ButtonStyle(
-                                          padding: WidgetStatePropertyAll(
-                                              EdgeInsets.symmetric(
-                                                  horizontal: 1.w,
-                                                  vertical: 0))),
-                                      onPressed: () => showDialog(
-                                          context: context,
-                                          builder: (context) =>
-                                              DialogsEstadoFuncion(
-                                                  fecha: widget
-                                                      .contacto?.estadoFecha,
-                                                  contacto: provider.contacto!,
-                                                  estatus: (p0) async {
-                                                    var newModel = widget
-                                                        .contacto
-                                                        ?.copyWith(
-                                                            pendiente: 1,
-                                                            estado: p0,
-                                                            estadoFecha:
-                                                                DateTime.now(),
-                                                            empleadoEstado:
-                                                                provider.usuario
-                                                                    ?.empleadoId);
-                                                    await ContactoController
-                                                        .update(newModel!);
-                                                    funcion(contacto: newModel);
-                                                    provider.contacto =
-                                                        newModel;
-                                                  })),
-                                      label: FutureBuilder(
-                                          future: EstadoController.getItem(
-                                              data: widget.contacto?.estado ??
-                                                  -1),
-                                          builder: (context, data) {
-                                            return Text(
-                                                "Estado: ${data.data?.nombre ?? "Ø"}",
-                                                style: TextStyle(
-                                                    shadows: data.data != null
-                                                        ? [
-                                                            Shadow(
-                                                                color: Colors
-                                                                    .black,
-                                                                offset: Offset(
-                                                                    1, 1),
-                                                                blurRadius: 2)
-                                                          ]
-                                                        : [],
-                                                    color: data.data?.color,
-                                                    fontSize: 15.sp,
-                                                    fontWeight:
-                                                        FontWeight.bold));
-                                          }))
-                                else
-                                  Expanded(
-                                    child: FutureBuilder(
-                                        future: EstadoController.getItem(
-                                            data:
-                                                widget.contacto?.estado ?? -1),
-                                        builder: (context, data) => Text(
-                                            data.data?.nombre ?? "Sin estado",
-                                            textAlign: TextAlign.end,
-                                            style: TextStyle(
-                                                shadows: data.data != null
-                                                    ? [
-                                                        Shadow(
-                                                            color: Colors.black,
-                                                            offset:
-                                                                Offset(1, 1),
-                                                            blurRadius: 2)
-                                                      ]
-                                                    : [],
-                                                color: data.data?.color,
-                                                fontSize: 15.sp,
-                                                fontStyle: FontStyle.italic,
-                                                fontWeight: FontWeight.bold))),
-                                  )
-                              ]),
-                          if (widget.compartir)
-                            Text(
-                                "PlusCode: ${PlusCodeFun.psCODE(widget.contacto?.latitud ?? 0, widget.contacto?.longitud ?? 0)}",
-                                style: TextStyle(
-                                    fontSize: 15.sp,
-                                    fontWeight: FontWeight.bold)),
-                          if (widget.compartir)
-                            Text(
-                                "W3W: ${widget.contacto?.what3Words ?? "[No Encontrado]"} ",
-                                style: TextStyle(
-                                    fontSize: 14.5.sp,
-                                    fontWeight: FontWeight.bold)),
-                          Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                TarjetaContactoCall(
-                                    number: widget.contacto?.numero?.toString(),
-                                    fechaNum: widget.contacto?.numeroFecha,
-                                    compartir: widget.compartir,
-                                    mensaje: "Telefono",
-                                    entradaTexto:
-                                        "Ingresar Telefono del contacto",
-                                    fun: (p0) async {
-                                      if (int.tryParse(p0.toString()) != null) {
-                                        var newModel = provider.contacto
-                                            ?.copyWith(
-                                                pendiente: 1,
-                                                numero:
-                                                    int.parse(p0.toString()),
-                                                numeroFecha: DateTime.now(),
-                                                empleadoNumero: provider
-                                                    .usuario?.empleadoId);
-                                        await ContactoController.update(
-                                            newModel!);
-                                        provider.contacto = newModel;
-                                      } else {
-                                        showToast("Telefono no valido");
-                                      }
-                                    }),
-                                TarjetaContactoCall(
-                                    number:
-                                        widget.contacto?.otroNumero?.toString(),
-                                    fechaNum: widget.contacto?.otroNumeroFecha,
-                                    compartir: widget.compartir,
-                                    mensaje: "Otro Num",
-                                    iconAlignment: IconAlignment.start,
-                                    entradaTexto:
-                                        "Ingresar otro numero del contacto",
-                                    fun: (p0) async {
-                                      if (int.tryParse(p0.toString()) != null) {
-                                        var newModel = provider.contacto
-                                            ?.copyWith(
-                                                pendiente: 1,
-                                                otroNumero:
-                                                    int.parse(p0.toString()),
-                                                otroNumeroFecha: DateTime.now(),
-                                                empleadoOtroNumero: provider
-                                                    .usuario?.empleadoId);
-                                        await ContactoController.update(
-                                            newModel!);
-                                        provider.contacto = newModel;
-                                      } else {
-                                        showToast("Telefono no valido");
-                                      }
-                                    })
-                              ]),
-                          if (!widget.compartir)
-                            Wrap(
-                                alignment: WrapAlignment.spaceBetween,
-                                crossAxisAlignment: WrapCrossAlignment.center,
-                                spacing: .5.w,
+    return bd.Badge(
+      badgeAnimation: bd.BadgeAnimation.fade(),
+      onTap: () => showToast("Este contacto fue un tip"),
+      badgeStyle: bd.BadgeStyle(badgeColor: ThemaMain.second, elevation: 2),
+      position: bd.BadgePosition.topEnd(end: 0),
+      showBadge: kDebugMode,
+      badgeContent:
+          Icon(LineIcons.handHoldingHeart, color: ThemaMain.pink, size: 18.sp),
+      child: Card(
+          color: ThemaMain.dialogbackground,
+          child: AnimatedContainer(
+              duration: Durations.medium1,
+              height: widget.contacto?.id == null
+                  ? 0.h
+                  : widget.compartir
+                      ? 29.h
+                      : 27.h,
+              child: Row(children: [
+                Expanded(
+                    flex: widget.compartir ? 10 : 5,
+                    child: TarjetaContactoFoto(
+                        contacto: widget.contacto,
+                        compartir: widget.compartir)),
+                VerticalDivider(
+                    width: widget.compartir ? 1.w : 2.sp,
+                    indent: 1.h,
+                    endIndent: 1.h),
+                Expanded(
+                    flex: 16,
+                    child: Scrollbar(
+                        child: ListView(children: [
+                      Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  InkWell(
-                                      onTap: () => (provider.selectRefencia ==
-                                              null)
-                                          ? Dialogs.showMorph(
-                                              title: "Ingresar referencia",
-                                              description:
-                                                  "Seleccione otro contacto para que sea referencia de este mismo",
-                                              loadingTitle: "cargando",
-                                              onAcceptPressed: (context) async {
-                                                provider.selectRefencia =
-                                                    ReferenciaModelo(
-                                                        id: null,
-                                                        idForanea:
-                                                            widget.contacto!.id,
-                                                        rolId: null,
-                                                        contactoIdLat: widget
-                                                                .contacto
-                                                                ?.latitud ??
-                                                            0,
-                                                        idRForenea: null,
-                                                        contactoIdLng: widget
-                                                                .contacto
-                                                                ?.longitud ??
-                                                            0,
-                                                        contactoIdRLat: null,
-                                                        contactoIdRLng: null,
-                                                        buscar: -1,
-                                                        tipoCliente: -1,
-                                                        estatus: -1,
-                                                        fecha: DateTime.now());
-                                              })
-                                          : null,
-                                      child: Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Icon(Icons.person_add,
-                                                color: ThemaMain.green,
-                                                size: 6.w),
-                                            Text("Ref(s):",
-                                                style: TextStyle(
-                                                    fontSize: 15.sp,
-                                                    fontWeight:
-                                                        FontWeight.bold))
-                                          ])),
-                                  Wrap(
-                                      runAlignment: WrapAlignment.spaceBetween,
-                                      alignment: WrapAlignment.center,
-                                      crossAxisAlignment:
-                                          WrapCrossAlignment.center,
-                                      spacing: .5.w,
-                                      runSpacing: 0,
-                                      children: [
-                                        FutureBuilder(
-                                            future:
-                                                ReferenciasController.getIdPrin(
-                                                    idContacto:
-                                                        widget.contacto?.id,
-                                                    lat: widget
-                                                        .contacto?.latitud,
-                                                    lng: widget
-                                                        .contacto?.longitud),
-                                            builder: (context, snapshot) => Wrap(
-                                                runSpacing: 0,
-                                                spacing: .5.w,
-                                                children: snapshot.data
-                                                        ?.map((e) => ChipReferencia(
-                                                            ref: e,
-                                                            latlng: LatLng(
-                                                                e.contactoIdRLat ??
-                                                                    0,
-                                                                e.contactoIdRLng ??
-                                                                    0),
-                                                            origen: true))
-                                                        .toList() ??
-                                                    [])),
-                                        SizedBox(
-                                            height: 3.5.h,
-                                            width: .5.w,
-                                            child: VerticalDivider())
-                                      ]),
-                                  FutureBuilder(
-                                      future: ReferenciasController.getIdR(
-                                          idRContacto: widget.contacto?.id,
-                                          lat: widget.contacto?.latitud,
-                                          lng: widget.contacto?.longitud),
-                                      builder: (context, snapshot) => Wrap(
-                                          runSpacing: 0,
-                                          spacing: .5.w,
-                                          children: snapshot.data
-                                                  ?.map((e) => ChipReferencia(
-                                                      ref: e,
-                                                      latlng: LatLng(
-                                                          e.contactoIdLat,
-                                                          e.contactoIdLng),
-                                                      origen: false))
-                                                  .toList() ??
-                                              []))
+                                  if (!widget.compartir)
+                                    TextButton.icon(
+                                        onLongPress: () async {
+                                          await Clipboard.setData(ClipboardData(
+                                              text: widget.contacto
+                                                      ?.nombreCompleto ??
+                                                  "Nombre: Sin nombre"));
+                                          showToast("Nombre copiado");
+                                        },
+                                        style: ButtonStyle(
+                                            padding: WidgetStatePropertyAll(
+                                                EdgeInsets.symmetric(
+                                                    horizontal: 1.w,
+                                                    vertical: 0))),
+                                        onPressed: () => showDialog(
+                                            barrierDismissible: false,
+                                            context: context,
+                                            builder: (context) => DialogSend(
+                                                entradaTexto: widget
+                                                    .contacto?.nombreCompleto,
+                                                fun: (p0) async {
+                                                  var newModel = widget.contacto
+                                                      ?.copyWith(
+                                                          pendiente: 1,
+                                                          empleadoId: provider
+                                                              .usuario
+                                                              ?.empleadoId,
+                                                          nombreCompleto:
+                                                              Textos.normalizar(
+                                                                  p0 ?? ""));
+                                                  await ContactoController
+                                                      .update(newModel!);
+                                                  funcion(contacto: newModel);
+                                                  provider.contacto = newModel;
+                                                },
+                                                tipoTeclado: TextInputType.name,
+                                                fecha: null,
+                                                cabeza:
+                                                    "Ingresar nombre del contacto")),
+                                        label: Text(
+                                            widget.contacto?.nombreCompleto ??
+                                                "Nombre: Sin nombre",
+                                            style: TextStyle(
+                                                fontSize: 16.sp,
+                                                fontWeight: FontWeight.bold)))
+                                  else
+                                    Text(
+                                        "${widget.contacto?.id}.- ${widget.contacto?.nombreCompleto ?? "Nombre: Sin nombre"}",
+                                        style: TextStyle(
+                                            fontSize: 16.sp,
+                                            fontWeight: FontWeight.bold)),
+                                  if (!widget.compartir)
+                                    TextButton.icon(
+                                        onLongPress: () async {
+                                          await Clipboard.setData(ClipboardData(
+                                              text: widget
+                                                      .contacto?.domicilio ??
+                                                  "Domicilio: Sin Domicilio"));
+                                          showToast("Domicilio copiado");
+                                        },
+                                        style: ButtonStyle(
+                                            padding: WidgetStatePropertyAll(
+                                                EdgeInsets.symmetric(
+                                                    horizontal: 1.w,
+                                                    vertical: 0))),
+                                        onPressed: () => showDialog(
+                                            barrierDismissible: false,
+                                            context: context,
+                                            builder: (context) =>
+                                                DialogDireccion(
+                                                    word: widget
+                                                        .contacto?.domicilio,
+                                                    fun: (p0) async {
+                                                      var newModel = widget
+                                                          .contacto
+                                                          ?.copyWith(
+                                                              pendiente: 1,
+                                                              domicilio: p0,
+                                                              empleadoDomicilio:
+                                                                  provider
+                                                                      .usuario
+                                                                      ?.empleadoId,
+                                                              fechaDomicilio:
+                                                                  DateTime
+                                                                      .now());
+                                                      await ContactoController
+                                                          .update(newModel!);
+                                                      funcion(
+                                                          contacto: newModel);
+                                                      provider.contacto =
+                                                          newModel;
+                                                    },
+                                                    fecha: widget.contacto
+                                                        ?.fechaDomicilio)),
+                                        label: AutoSizeText(
+                                            widget.contacto?.domicilio ??
+                                                "Domicilio: Sin Domicilio",
+                                            style: TextStyle(fontSize: 16.sp),
+                                            minFontSize: 15,
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis))
+                                  else
+                                    AutoSizeText(
+                                        widget.contacto?.domicilio ??
+                                            "Domicilio: Sin Domicilio",
+                                        style: TextStyle(fontSize: 16.sp),
+                                        minFontSize: 13,
+                                        maxLines: 3,
+                                        overflow: TextOverflow.ellipsis)
                                 ]),
-                          if (!widget.compartir)
                             Row(
                                 mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
-                                  ElevatedButton.icon(
-                                      icon: Icon(LineIcons.stickyNote,
-                                          size: 20.sp, color: ThemaMain.yellow),
-                                      style: ButtonStyle(
-                                          padding: WidgetStatePropertyAll(
-                                              EdgeInsets.symmetric(
-                                                  vertical: 0,
-                                                  horizontal: 1.w))),
-                                      onPressed: () async =>
-                                          await Navigation.pushNamed(
-                                              route: "notasBuilder",
-                                              arguments: widget.contacto?.id),
-                                      label: Text("Notas",
-                                          style: TextStyle(fontSize: 16.sp))),
-                                  ElevatedButton.icon(
-                                      style: ButtonStyle(
-                                          padding: WidgetStatePropertyAll(
-                                              EdgeInsets.symmetric(
-                                                  vertical: 0,
-                                                  horizontal: 1.w))),
-                                      onPressed: () => showDialog(
-                                          barrierDismissible: false,
-                                          context: context,
-                                          builder: (context) => DialogArchivo(
-                                              contacto: widget.contacto!)),
-                                      icon: Icon(LineIcons.alternateFileAlt,
-                                          size: 20.sp, color: ThemaMain.pink),
-                                      label: Text("Archivos",
-                                          style: TextStyle(fontSize: 16.sp)))
-                                ])
-                        ])
-                  ])))
-            ])));
+                                  Expanded(
+                                      child: (!widget.compartir)
+                                          ? TextButton.icon(
+                                              style: ButtonStyle(
+                                                  padding: WidgetStatePropertyAll(
+                                                      EdgeInsets.symmetric(
+                                                          horizontal: 1.w,
+                                                          vertical: 0))),
+                                              onPressed: () => showDialog(
+                                                  context: context,
+                                                  builder: (context) =>
+                                                      DialogTiposAll(
+                                                          fecha: widget.contacto
+                                                              ?.tipoFecha,
+                                                          selected: (p0) async {
+                                                            var newModel = widget
+                                                                .contacto
+                                                                ?.copyWith(
+                                                                    pendiente:
+                                                                        1,
+                                                                    tipo: p0.id,
+                                                                    empleadoTipo:
+                                                                        provider
+                                                                            .usuario
+                                                                            ?.empleadoId,
+                                                                    tipoFecha:
+                                                                        DateTime
+                                                                            .now());
+                                                            debugPrint(
+                                                                "${newModel?.tipo ?? "Sin tipo"}");
+                                                            await ContactoController
+                                                                .update(
+                                                                    newModel!);
+                                                            funcion(
+                                                                contacto:
+                                                                    newModel);
+                                                            provider.contacto =
+                                                                newModel;
+                                                          })),
+                                              label: FutureBuilder(
+                                                  future: TipoController.getItem(
+                                                      data: widget.contacto?.tipo ??
+                                                          -1),
+                                                  builder: (context, data) {
+                                                    return Text(
+                                                        "Tipo: ${data.data?.nombre ?? "Ø"}",
+                                                        style: TextStyle(
+                                                            shadows:
+                                                                data.data !=
+                                                                        null
+                                                                    ? [
+                                                                        Shadow(
+                                                                            color: Colors
+                                                                                .black,
+                                                                            offset: Offset(1,
+                                                                                1),
+                                                                            blurRadius:
+                                                                                2)
+                                                                      ]
+                                                                    : [],
+                                                            color: data
+                                                                .data?.color,
+                                                            fontSize: 15.sp,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .bold));
+                                                  }))
+                                          : FutureBuilder(
+                                              future: TipoController.getItem(
+                                                  data: widget.contacto?.tipo ??
+                                                      -1),
+                                              builder: (context, data) => Text(
+                                                  data.data?.nombre ?? "Sin tipo",
+                                                  textAlign: TextAlign.start,
+                                                  style: TextStyle(shadows: data.data != null ? [Shadow(color: Colors.black, offset: Offset(1, 1), blurRadius: 2)] : [], color: data.data?.color, fontSize: 15.sp, fontStyle: FontStyle.italic, fontWeight: FontWeight.bold)))),
+                                  Expanded(
+                                      child: !widget.compartir
+                                          ? TextButton.icon(
+                                              style: ButtonStyle(
+                                                  padding: WidgetStatePropertyAll(EdgeInsets.symmetric(
+                                                      horizontal: 1.w,
+                                                      vertical: 0))),
+                                              onPressed: () => showDialog(
+                                                  context: context,
+                                                  builder: (context) =>
+                                                      DialogsEstadoFuncion(
+                                                          fecha: widget.contacto
+                                                              ?.estadoFecha,
+                                                          contacto: provider
+                                                              .contacto!,
+                                                          estatus: (p0) async {
+                                                            var newModel = widget
+                                                                .contacto
+                                                                ?.copyWith(
+                                                                    pendiente:
+                                                                        1,
+                                                                    estado: p0,
+                                                                    estadoFecha:
+                                                                        DateTime
+                                                                            .now(),
+                                                                    empleadoEstado:
+                                                                        provider
+                                                                            .usuario
+                                                                            ?.empleadoId);
+                                                            await ContactoController
+                                                                .update(
+                                                                    newModel!);
+                                                            funcion(
+                                                                contacto:
+                                                                    newModel);
+                                                            provider.contacto =
+                                                                newModel;
+                                                          })),
+                                              label: FutureBuilder(
+                                                  future: EstadoController.getItem(
+                                                      data: widget.contacto?.estado ??
+                                                          -1),
+                                                  builder: (context, data) {
+                                                    return Text(
+                                                        "Estado: ${data.data?.nombre ?? "Ø"}",
+                                                        textAlign:
+                                                            TextAlign.end,
+                                                        style: TextStyle(
+                                                            shadows:
+                                                                data.data !=
+                                                                        null
+                                                                    ? [
+                                                                        Shadow(
+                                                                            color: Colors
+                                                                                .black,
+                                                                            offset: Offset(1,
+                                                                                1),
+                                                                            blurRadius:
+                                                                                2)
+                                                                      ]
+                                                                    : [],
+                                                            color: data
+                                                                .data?.color,
+                                                            fontSize: 15.sp,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .bold));
+                                                  }))
+                                          : FutureBuilder(
+                                              future: EstadoController.getItem(
+                                                  data: widget.contacto?.estado ??
+                                                      -1),
+                                              builder: (context, data) => Text(data.data?.nombre ?? "Sin estado",
+                                                  textAlign: TextAlign.end,
+                                                  style: TextStyle(shadows: data.data != null ? [Shadow(color: Colors.black, offset: Offset(1, 1), blurRadius: 2)] : [], color: data.data?.color, fontSize: 15.sp, fontStyle: FontStyle.italic, fontWeight: FontWeight.bold))))
+                                ]),
+                            if (widget.compartir)
+                              Text(
+                                  "PlusCode: ${PlusCodeFun.psCODE(widget.contacto?.latitud ?? 0, widget.contacto?.longitud ?? 0)}",
+                                  style: TextStyle(
+                                      fontSize: 15.sp,
+                                      fontWeight: FontWeight.bold)),
+                            if (widget.compartir)
+                              Text(
+                                  "W3W: ${widget.contacto?.what3Words ?? "[No Encontrado]"} ",
+                                  style: TextStyle(
+                                      fontSize: 14.5.sp,
+                                      fontWeight: FontWeight.bold)),
+                            Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  TarjetaContactoCall(
+                                      number:
+                                          widget.contacto?.numero?.toString(),
+                                      fechaNum: widget.contacto?.numeroFecha,
+                                      compartir: widget.compartir,
+                                      mensaje: "Telefono",
+                                      entradaTexto:
+                                          "Ingresar Telefono del contacto",
+                                      fun: (p0) async {
+                                        if (int.tryParse(p0.toString()) !=
+                                            null) {
+                                          var newModel = provider.contacto
+                                              ?.copyWith(
+                                                  pendiente: 1,
+                                                  numero:
+                                                      int.parse(p0.toString()),
+                                                  numeroFecha: DateTime.now(),
+                                                  empleadoNumero: provider
+                                                      .usuario?.empleadoId);
+                                          await ContactoController.update(
+                                              newModel!);
+                                          provider.contacto = newModel;
+                                        } else {
+                                          showToast("Telefono no valido");
+                                        }
+                                      }),
+                                  TarjetaContactoCall(
+                                      number: widget.contacto?.otroNumero
+                                          ?.toString(),
+                                      fechaNum:
+                                          widget.contacto?.otroNumeroFecha,
+                                      compartir: widget.compartir,
+                                      mensaje: "Otro Num",
+                                      iconAlignment: IconAlignment.start,
+                                      entradaTexto:
+                                          "Ingresar otro numero del contacto",
+                                      fun: (p0) async {
+                                        if (int.tryParse(p0.toString()) !=
+                                            null) {
+                                          var newModel = provider.contacto
+                                              ?.copyWith(
+                                                  pendiente: 1,
+                                                  otroNumero:
+                                                      int.parse(p0.toString()),
+                                                  otroNumeroFecha:
+                                                      DateTime.now(),
+                                                  empleadoOtroNumero: provider
+                                                      .usuario?.empleadoId);
+                                          await ContactoController.update(
+                                              newModel!);
+                                          provider.contacto = newModel;
+                                        } else {
+                                          showToast("Telefono no valido");
+                                        }
+                                      })
+                                ]),
+                            if (!widget.compartir)
+                              Wrap(
+                                  alignment: WrapAlignment.spaceBetween,
+                                  crossAxisAlignment: WrapCrossAlignment.center,
+                                  spacing: .5.w,
+                                  children: [
+                                    InkWell(
+                                        onTap: () => (provider.selectRefencia ==
+                                                null)
+                                            ? Dialogs.showMorph(
+                                                title: "Ingresar referencia",
+                                                description:
+                                                    "Seleccione otro contacto para que sea referencia de este mismo",
+                                                loadingTitle: "cargando",
+                                                onAcceptPressed:
+                                                    (context) async {
+                                                  provider.selectRefencia =
+                                                      ReferenciaModelo(
+                                                          id: null,
+                                                          idForanea: widget
+                                                              .contacto!.id,
+                                                          rolId: null,
+                                                          contactoIdLat: widget
+                                                                  .contacto
+                                                                  ?.latitud ??
+                                                              0,
+                                                          idRForenea: null,
+                                                          contactoIdLng: widget
+                                                                  .contacto
+                                                                  ?.longitud ??
+                                                              0,
+                                                          contactoIdRLat: null,
+                                                          contactoIdRLng: null,
+                                                          buscar: -1,
+                                                          tipoCliente: -1,
+                                                          estatus: -1,
+                                                          fecha:
+                                                              DateTime.now());
+                                                })
+                                            : null,
+                                        child: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Icon(Icons.person_add,
+                                                  color: ThemaMain.green,
+                                                  size: 6.w),
+                                              Text("Ref(s):",
+                                                  style: TextStyle(
+                                                      fontSize: 15.sp,
+                                                      fontWeight:
+                                                          FontWeight.bold))
+                                            ])),
+                                    Wrap(
+                                        runAlignment:
+                                            WrapAlignment.spaceBetween,
+                                        alignment: WrapAlignment.center,
+                                        crossAxisAlignment:
+                                            WrapCrossAlignment.center,
+                                        spacing: .5.w,
+                                        runSpacing: 0,
+                                        children: [
+                                          FutureBuilder(
+                                              future: ReferenciasController
+                                                  .getIdPrin(
+                                                      idContacto:
+                                                          widget.contacto?.id,
+                                                      lat: widget
+                                                          .contacto?.latitud,
+                                                      lng: widget
+                                                          .contacto?.longitud),
+                                              builder: (context, snapshot) => Wrap(
+                                                  runSpacing: 0,
+                                                  spacing: .5.w,
+                                                  children: snapshot.data
+                                                          ?.map((e) => ChipReferencia(
+                                                              ref: e,
+                                                              latlng: LatLng(
+                                                                  e.contactoIdRLat ??
+                                                                      0,
+                                                                  e.contactoIdRLng ??
+                                                                      0),
+                                                              origen: true))
+                                                          .toList() ??
+                                                      [])),
+                                          SizedBox(
+                                              height: 3.5.h,
+                                              width: .5.w,
+                                              child: VerticalDivider())
+                                        ]),
+                                    FutureBuilder(
+                                        future: ReferenciasController.getIdR(
+                                            idRContacto: widget.contacto?.id,
+                                            lat: widget.contacto?.latitud,
+                                            lng: widget.contacto?.longitud),
+                                        builder: (context, snapshot) => Wrap(
+                                            runSpacing: 0,
+                                            spacing: .5.w,
+                                            children: snapshot.data
+                                                    ?.map((e) => ChipReferencia(
+                                                        ref: e,
+                                                        latlng: LatLng(
+                                                            e.contactoIdLat,
+                                                            e.contactoIdLng),
+                                                        origen: false))
+                                                    .toList() ??
+                                                []))
+                                  ]),
+                            if (!widget.compartir)
+                              Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
+                                  children: [
+                                    ElevatedButton.icon(
+                                        icon: Icon(LineIcons.stickyNote,
+                                            size: 20.sp,
+                                            color: ThemaMain.yellow),
+                                        style: ButtonStyle(
+                                            padding: WidgetStatePropertyAll(
+                                                EdgeInsets.symmetric(
+                                                    vertical: 0,
+                                                    horizontal: 1.w))),
+                                        onPressed: () async =>
+                                            await Navigation.pushNamed(
+                                                route: "notasBuilder",
+                                                arguments: widget.contacto?.id),
+                                        label: Text("Notas",
+                                            style: TextStyle(fontSize: 16.sp))),
+                                    ElevatedButton.icon(
+                                        style: ButtonStyle(
+                                            padding: WidgetStatePropertyAll(
+                                                EdgeInsets.symmetric(
+                                                    vertical: 0,
+                                                    horizontal: 1.w))),
+                                        onPressed: () => showDialog(
+                                            barrierDismissible: false,
+                                            context: context,
+                                            builder: (context) => DialogArchivo(
+                                                contacto: widget.contacto!)),
+                                        icon: Icon(LineIcons.alternateFileAlt,
+                                            size: 20.sp, color: ThemaMain.pink),
+                                        label: Text("Archivos",
+                                            style: TextStyle(fontSize: 16.sp)))
+                                  ])
+                          ])
+                    ])))
+              ]))),
+    );
   }
 }

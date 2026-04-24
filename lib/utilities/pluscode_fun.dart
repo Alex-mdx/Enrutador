@@ -146,10 +146,6 @@ class PlusCodeFun {
       parts.add(placemark.administrativeArea!);
     }
 
-    if (placemark.country?.isNotEmpty == true) {
-      parts.add(placemark.country!);
-    }
-
     return parts.join(', ');
   }
 
@@ -240,8 +236,8 @@ class PlusCodeFun {
   static LatLng truncPlusCode(String code) {
     var decode = PlusCode(code).decode();
     var coordenadas = LatLng(
-        double.parse(decode.southWest.latitude.toStringAsFixed(6)),
-        double.parse(decode.southWest.longitude.toStringAsFixed(6)));
+        double.parse(decode.southWest.latitude.toStringAsFixed(7)),
+        double.parse(decode.southWest.longitude.toStringAsFixed(7)));
     return coordenadas;
   }
 

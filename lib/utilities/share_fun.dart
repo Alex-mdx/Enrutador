@@ -18,6 +18,7 @@ class ShareFun {
     var share = await SharePlus.instance.share(params);
     return share.status.index;
   }
+  
 
   static Future<List<File>> shareDatas(
       {required String nombre, required List<dynamic> datas}) async {

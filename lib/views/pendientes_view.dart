@@ -4,11 +4,13 @@ import 'package:enrutador/models/usuario_model.dart';
 import 'package:enrutador/utilities/main_provider.dart';
 import 'package:enrutador/utilities/preferences.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 
+import '../controllers/usuario_fire.dart';
 import '../utilities/theme/theme_color.dart';
 import 'widgets/extras/card_pendientes.dart';
 
@@ -39,10 +41,40 @@ class _PendientesViewState extends State<PendientesView> {
     setState(() => cargando = true);
 
     if (Preferences.propiosPendientes) {
-      pendientes = await PendienteFire.getItems(
-          table: "empleado_id", query: "${arguments.empleadoId}", limit: 50);
+      List<UsuarioModel> usuarios = [];
+      var temp = await UsuarioFire.getItems(
+          table: "id", query: arguments.children, itsNumber: true);
+      usuarios = temp;
+      var nuevos = await PendienteFire.getItems(
+          table: "empleado_id",
+          query: [arguments.empleadoId, ...usuarios.map((e) => e.empleadoId)],
+          limit: 20);
+      nuevos
+          .sort((a, b) => b.fechaPendiente.isBefore(a.fechaPendiente) ? 1 : -1);
+      setState(() => pendientes = nuevos);
     } else {
-      pendientes = await PendienteFire.getAllItems(limit: 50);
+      var nuevosRaw = await PendienteFire.getAllItems(limit: 50);
+      if (arguments.adminTipo != 5 && arguments.adminTipo != -1) {
+        final Map<String, PendienteModel> sinRepetidos = {};
+        for (var e in nuevosRaw) {
+          sinRepetidos.putIfAbsent(e.empleadoId, () => e);
+        }
+        var nuevos = sinRepetidos.values.toList();
+        List<String> empleados = [];
+        for (var e in nuevos) {
+          var user = await UsuarioFire.getItem(
+              query: "empleado_id", table: e.empleadoId);
+          if (user != null &&
+              ((user.adminTipo ?? 0) <= (arguments.adminTipo ?? 0))) {
+            empleados.addNonNull(user.empleadoId!);
+          }
+        }
+        nuevosRaw.where((e) => empleados.contains(e.empleadoId));
+      }
+
+      nuevosRaw
+          .sort((a, b) => b.fechaPendiente.isBefore(a.fechaPendiente) ? 1 : -1);
+      setState(() => pendientes = nuevosRaw);
     }
     setState(() => cargando = false);
   }
@@ -61,10 +93,15 @@ class _PendientesViewState extends State<PendientesView> {
                       padding:
                           EdgeInsets.symmetric(horizontal: 1.w, vertical: 0),
                       child: Row(spacing: 1.w, children: [
-                        Text("Todos",
-                            style: TextStyle(
-                                fontSize: 14.sp, fontWeight: FontWeight.bold)),
-                        if ((provider.usuario?.adminTipo ?? 0) >= 3)
+                        Tooltip(
+                            message:
+                                "Todos los pendientes de usuarios que tengas por debajo de tu jerarquia",
+                            child: Text("Todos",
+                                style: TextStyle(
+                                    fontSize: 14.sp,
+                                    fontWeight: FontWeight.bold))),
+                        if ((provider.usuario?.adminTipo ?? 0) >= 3 ||
+                            (provider.usuario?.adminTipo ?? 0) == -1)
                           Switch.adaptive(
                               applyCupertinoTheme: true,
                               padding: EdgeInsets.zero,
@@ -80,37 +117,35 @@ class _PendientesViewState extends State<PendientesView> {
                               onChanged: (value) async {
                                 setState(() => Preferences.propiosPendientes =
                                     !Preferences.propiosPendientes);
-                                if (Preferences.propiosPendientes) {
-                                  var nuevos = await PendienteFire.getItems(
-                                      table: "empleado_id",
-                                      query: "${arguments.empleadoId}",
-                                      limit: 50);
-                                  setState(() => pendientes = nuevos);
-                                } else {
-                                  var nuevos = await PendienteFire.getAllItems(
-                                      limit: 50);
-                                  setState(() => pendientes = nuevos);
-                                }
+                                await _cargarPendientes();
                               }),
-                        Text("Mios",
-                            style: TextStyle(
-                                fontSize: 14.sp, fontWeight: FontWeight.bold))
+                        Tooltip(
+                            message:
+                                "Solo los pendientes asignados a ti, adjunto a los hijos que tengas",
+                            child: Text("Mios",
+                                style: TextStyle(
+                                    fontSize: 14.sp,
+                                    fontWeight: FontWeight.bold)))
                       ])))
             ]),
         body: cargando
             ? Center(
                 child: LoadingAnimationWidget.hexagonDots(
                     color: ThemaMain.primary, size: 32.sp))
-            : Scrollbar(
-                interactive: true,
-                controller: itemScrollController,
-                child: ListView.builder(
+            : pendientes.isEmpty
+                ? Center(
+                    child: Text(
+                        "No hay pendientes ${Preferences.propiosPendientes ? "propios" : "generales"}",
+                        style: TextStyle(
+                            fontSize: 16.sp, fontWeight: FontWeight.bold)))
+                : Scrollbar(
+                    interactive: true,
                     controller: itemScrollController,
-                    itemCount: pendientes.length,
-                    itemBuilder: (context, index) {
-                      return CardPendientes(
-                          pendientes: pendientes[index],
-                          fun: () => _cargarPendientes());
-                })));
+                    child: ListView.builder(
+                        controller: itemScrollController,
+                        itemCount: pendientes.length,
+                        itemBuilder: (context, index) => CardPendientes(
+                            pendientes: pendientes[index],
+                            fun: () => _cargarPendientes()))));
   }
 }

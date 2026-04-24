@@ -6,7 +6,6 @@ import 'package:enrutador/utilities/services/dialog_services.dart';
 import 'package:enrutador/utilities/services/navigation_services.dart';
 import 'package:enrutador/utilities/theme/theme_color.dart';
 import 'package:enrutador/views/map_main.dart';
-import 'package:enrutador/views/widgets/card_accout.dart';
 import 'package:enrutador/views/widgets/map_widget/map_navigation.dart';
 import 'package:enrutador/views/widgets/map_widget/map_sliding.dart';
 import 'package:enrutador/views/widgets/search/search_widget.dart';
@@ -18,6 +17,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:line_icons/line_icons.dart';
+import 'package:oktoast/oktoast.dart';
 import 'package:open_location_code/open_location_code.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
@@ -62,6 +62,26 @@ class _HomeViewState extends State<HomeView> {
                       if (kDebugMode)
                         IconButton(
                             onPressed: () async {
+                              /* var user = UsuarioModel(
+                                  id: 12,
+                                  uuid: "JP7H8Pqi9YUFeXJtajaC0mhYsuC3",
+                                  nombre: "Alexis Armando de Castro Sanchez",
+                                  contactoId: null,
+                                  empleadoId: "10022990",
+                                  adminTipo: -1,
+                                  status: 1,
+                                  foto: null,
+                                  children: [],
+                                  creacion:
+                                      DateTime.parse("2026-01-02T01:45:58.000"),
+                                  actualizacion: DateTime.parse(
+                                      "2026-03-01T08:42:11.000"));
+                              var result = await UsuarioFire.sendItem(
+                                  data: user,
+                                  table: "id",
+                                  query: user.id.toString(),
+                                  itsNumber: true);
+                              debugPrint("Result: $result"); */
                               var notado =
                                   await ContactoController.getPersonalizado(
                                       query: "nota IS NOT NULL AND nota != ''",
@@ -81,6 +101,7 @@ class _HomeViewState extends State<HomeView> {
                                     creado: DateTime.now());
                                 await NotasController.insert(nota);
                               }
+                              showToast("listo");
                             },
                             icon: Icon(Icons.add, color: ThemaMain.darkBlue)),
                       FutureBuilder(
@@ -146,9 +167,6 @@ class PaginadoState extends State<Paginado> {
   @override
   void initState() {
     super.initState();
-    widget.provider.logeo();
-    Permisos.determinePosition();
-    Permisos.phone();
     InternetConnection().onStatusChange.listen((InternetStatus status) {
       switch (status) {
         case InternetStatus.connected:
@@ -159,6 +177,9 @@ class PaginadoState extends State<Paginado> {
           break;
       }
     });
+    widget.provider.logeo();
+    Permisos.determinePosition();
+    Permisos.phone();
 
     Geolocator.getPositionStream(locationSettings: locationSettings)
         .listen((Position? position) {

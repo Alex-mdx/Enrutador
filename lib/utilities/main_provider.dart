@@ -2,9 +2,9 @@ import 'dart:developer';
 
 import 'package:enrutador/controllers/estado_controller.dart';
 import 'package:enrutador/controllers/roles_controller.dart';
-import 'package:enrutador/controllers/sql_generator.dart';
 import 'package:enrutador/controllers/tipo_controller.dart';
 import 'package:enrutador/controllers/usuario_controller.dart';
+import 'package:enrutador/controllers/usuario_fire.dart';
 import 'package:enrutador/models/contacto_model.dart';
 import 'package:enrutador/models/estado_model.dart';
 import 'package:enrutador/models/roles_model.dart';
@@ -19,7 +19,6 @@ import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
-import '../controllers/contacto_controller.dart';
 import '../models/referencia_model.dart';
 
 class MainProvider with ChangeNotifier implements TickerProvider {
@@ -188,45 +187,19 @@ class MainProvider with ChangeNotifier implements TickerProvider {
   //?Funciones
 
   Future<void> logeo() async {
-    var db = await ContactoController.database();
-    await SqlGenerator.existColumna(
-        add: "aceptado_empleado", database: db, nombreDB: "contacto");
-    await SqlGenerator.existColumna(
-        add: "pendiente", database: db, nombreDB: "contacto");
-    await SqlGenerator.existColumna(
-        add: "empleado_id", database: db, nombreDB: "contacto");
-    await SqlGenerator.existColumna(
-        add: "status", database: db, nombreDB: "contacto");
-    await SqlGenerator.existColumna(
-        add: "creado", database: db, nombreDB: "contacto");
-    await SqlGenerator.existColumna(
-        add: "modificado", database: db, nombreDB: "contacto");
-    await SqlGenerator.existColumna(
-        add: "empleado_foto", database: db, nombreDB: "contacto");
-    await SqlGenerator.existColumna(
-        add: "empleado_foto_referencia", database: db, nombreDB: "contacto");
-    await SqlGenerator.existColumna(
-        add: "empleado_domicilio", database: db, nombreDB: "contacto");
-    await SqlGenerator.existColumna(
-        add: "empleado_numero", database: db, nombreDB: "contacto");
-    await SqlGenerator.existColumna(
-        add: "empleado_otro_num", database: db, nombreDB: "contacto");
-    await SqlGenerator.existColumna(
-        add: "empleado_tipo", database: db, nombreDB: "contacto");
-    await SqlGenerator.existColumna(
-        add: "empleado_estado", database: db, nombreDB: "contacto");
-    await SqlGenerator.existColumna(
-        add: "sincronizado", database: db, nombreDB: "contacto");
-    var db2 = await UsuarioController.database();
-    await SqlGenerator.existColumna(
-        add: "children", database: db2, nombreDB: "usuario");
-    await SqlGenerator.existColumna(
-        add: "foto", database: db2, nombreDB: "usuario");
+   
     tipos = await TipoController.getItems();
     estados = await EstadoController.getItems();
     roles = await RolesController.getAll();
-    usuario = await UsuarioController.getItemUuid(
-        FirebaseAuth.instance.currentUser?.uid ?? "");
-    log("USUARIO: ${usuario?.toJson()}");
+    if (internet) {
+      var temp = await UsuarioFire.getItem(
+          table: "uuid", query: FirebaseAuth.instance.currentUser?.uid ?? "");
+      usuario = temp;
+      log("USUARIO: ${usuario?.toJson()}");
+    } else {
+      usuario = await UsuarioController.getItemUuid(
+          FirebaseAuth.instance.currentUser?.uid ?? "");
+      log("USUARIO: ${usuario?.toJson()}");
+    }
   }
 }

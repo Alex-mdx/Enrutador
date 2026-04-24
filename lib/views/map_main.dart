@@ -65,9 +65,9 @@ class _ViajeMapPageState extends State<MapMain>
                               'dev.fleaflet.flutter_map.example')
                       : TileLayer(
                           maxZoom: 20,
-                          maxNativeZoom: 19,
+                          maxNativeZoom: 20,
                           urlTemplate:
-                              'https://tile.openstreetmap.org/{z}/{x}/{y}.png?layers=SN',
+                              'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                           retinaMode: false,
                           userAgentPackageName: 'com.enrutador.app'),
                   if (Preferences.grid)
@@ -184,10 +184,8 @@ class _ViajeMapPageState extends State<MapMain>
                                         provider.zona.removeAt(i);
                                       }
                                     }),
-                                onTap: () async {
-                                  await provider.animaMap
-                                      .centerOnPoint(e, zoom: 18);
-                                },
+                                onTap: () => provider.animaMap
+                                    .centerOnPoint(e, zoom: 18),
                                 child: Container(
                                     width: 6.w,
                                     height: 6.w,

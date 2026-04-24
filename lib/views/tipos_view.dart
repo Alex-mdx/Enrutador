@@ -56,7 +56,9 @@ class _TiposViewState extends State<TiposView> {
           appBar: AppBar(
               title: Text("Tipos", style: TextStyle(fontSize: 18.sp)),
               actions: [
-                if (contactos.isNotEmpty)
+                if (contactos.isNotEmpty &&
+                        (provider.usuario?.adminTipo ?? 0) == 5 ||
+                    (provider.usuario?.adminTipo ?? 0) == -1)
                   ElevatedButton.icon(
                       onPressed: () => Dialogs.showMorph(
                           title: "Tipos",
@@ -179,40 +181,41 @@ class _TiposViewState extends State<TiposView> {
                         }
                       },
                       child: Scrollbar(
-                        interactive: true,
-                        controller: itemScrollController,
-                        child: ListView.builder(
-                            controller: itemScrollController,
-                            shrinkWrap: true,
-                            itemCount: contactos.length,
-                            itemBuilder: (context, index) {
-                              TiposModelo tipo = contactos[index];
-                              return ListTipoWidget(
-                                  share: true,
-                                  tipo: tipo,
-                                  selected: selects[index],
-                                  selectedVisible: true,
-                                  onSelected: (p0) => setState(() {
-                                        selects[index] = !selects[index];
-                                      }),
-                                  fun: () async {
-                                    await showDialog(
-                                        context: context,
-                                        builder: (context) =>
-                                            DialogsTipos(tipo: tipo));
-                                    await send();
-                                  });
-                            }),
-                      ),
-                    ),
-          floatingActionButton: FloatingActionButton(
-              onPressed: () async {
-                await showDialog(
-                    context: context,
-                    builder: (context) => DialogsTipos(tipo: null));
-                await send();
-              },
-              child: Icon(Icons.add_comment, size: 24.sp))),
+                          interactive: true,
+                          controller: itemScrollController,
+                          child: ListView.builder(
+                              controller: itemScrollController,
+                              shrinkWrap: true,
+                              itemCount: contactos.length,
+                              itemBuilder: (context, index) {
+                                TiposModelo tipo = contactos[index];
+                                return ListTipoWidget(
+                                    share: true,
+                                    tipo: tipo,
+                                    selected: selects[index],
+                                    selectedVisible: true,
+                                    onSelected: (p0) => setState(() {
+                                          selects[index] = !selects[index];
+                                        }),
+                                    fun: () async {
+                                      await showDialog(
+                                          context: context,
+                                          builder: (context) =>
+                                              DialogsTipos(tipo: tipo));
+                                      await send();
+                                    });
+                              }))),
+          floatingActionButton: (provider.usuario?.adminTipo ?? 0) == 5 ||
+                  (provider.usuario?.adminTipo ?? 0) == -1
+              ? FloatingActionButton(
+                  onPressed: () async {
+                    await showDialog(
+                        context: context,
+                        builder: (context) => DialogsTipos(tipo: null));
+                    await send();
+                  },
+                  child: Icon(Icons.add_comment, size: 24.sp))
+              : null),
     );
   }
 }

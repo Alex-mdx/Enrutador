@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:enrutador/models/contacto_model.dart';
 import 'package:enrutador/utilities/camara_fun.dart';
 import 'package:enrutador/utilities/services/navigation_services.dart';
@@ -30,9 +32,17 @@ class DialogCompartir extends StatelessWidget {
                 child: Column(children: [
               IconButton(
                   onPressed: () async => await ShareFun.share(
-                      titulo: "Comparte este contacto",
-                      mensaje:
-                          "${ShareFun.copiar}\n*Plus Code*: ${PlusCodeFun.psCODE(contacto.latitud, contacto.longitud)}${contacto.nombreCompleto != null ? "\n*Nombre*: ${contacto.nombreCompleto}" : ""}${contacto.domicilio != null ? "\n*Domicilio*: ${contacto.domicilio}" : ""}${contacto.numero != null ? "\nTelefono: ${contacto.numero}" : ""}${contacto.otroNumero != null ? "\nTelefono alt: ${contacto.otroNumero}" : ""}${contacto.nota != null ? "\n*Notas*: ${contacto.nota}" : ""}"),
+                          titulo: "Comparte este contacto",
+                          mensaje: contacto.nombreCompleto != null
+                              ? "\n*Nombre*: ${contacto.nombreCompleto}"
+                              : "",
+                          files: [
+                            if (contacto.fotoReferencia != null)
+                              XFile.fromData(
+                                  base64Decode(contacto.fotoReferencia!),
+                                  name: "${contacto.nombreCompleto}.png",
+                                  mimeType: "image/png")
+                          ]),
                   icon: Icon(Icons.text_snippet,
                       size: 32.sp, color: ThemaMain.primary)),
               Text("Texto",

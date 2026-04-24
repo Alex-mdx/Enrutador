@@ -25,8 +25,8 @@ class MapFun {
     var newlocation = PlusCode(pc).decode().southWest;
     await sendInitUri(
         provider: provider,
-        lat: double.parse(newlocation.latitude.toStringAsFixed(6)),
-        lng: double.parse(newlocation.longitude.toStringAsFixed(6)));
+        lat: double.parse(newlocation.latitude.toStringAsFixed(7)),
+        lng: double.parse(newlocation.longitude.toStringAsFixed(7)));
   }
 
   static Future<void> sendInitUri(
@@ -124,14 +124,14 @@ class MapFun {
       {required MainProvider provider,
       required double lat,
       required double lng}) async {
-    var pc = PlusCodeFun.psCODE(double.parse(lat.toStringAsFixed(6)),
-        double.parse(lng.toStringAsFixed(6)));
+    var pc = PlusCodeFun.psCODE(double.parse(lat.toStringAsFixed(7)),
+        double.parse(lng.toStringAsFixed(7)));
     var newlocation = PlusCodeFun.truncPlusCode(pc);
     provider.contacto = ContactoModelo(
         id: null,
         nombreCompleto: null,
-        latitud: double.parse(newlocation.latitude.toStringAsFixed(6)),
-        longitud: double.parse(newlocation.longitude.toStringAsFixed(6)),
+        latitud: double.parse(newlocation.latitude.toStringAsFixed(7)),
+        longitud: double.parse(newlocation.longitude.toStringAsFixed(7)),
         domicilio: null,
         fechaDomicilio: null,
         numero: null,
@@ -153,22 +153,22 @@ class MapFun {
         width: 21.sp,
         height: 21.sp,
         rotate: true,
-        point: LatLng(double.parse(newlocation.latitude.toStringAsFixed(6)),
-            double.parse(newlocation.longitude.toStringAsFixed(6))),
+        point: LatLng(double.parse(newlocation.latitude.toStringAsFixed(7)),
+            double.parse(newlocation.longitude.toStringAsFixed(7))),
         builder: (context, animation) => InkWell(
             onTap: () async {
               provider.animaMap.centerOnPoint(
-                  LatLng(double.parse(newlocation.latitude.toStringAsFixed(6)),
-                      double.parse(newlocation.longitude.toStringAsFixed(6))),
+                  LatLng(double.parse(newlocation.latitude.toStringAsFixed(7)),
+                      double.parse(newlocation.longitude.toStringAsFixed(7))),
                   zoom: 18);
               if (!provider.descargarZona) {
                 provider.contacto = ContactoModelo(
                     id: null,
                     nombreCompleto: null,
                     latitud:
-                        double.parse(newlocation.latitude.toStringAsFixed(6)),
+                        double.parse(newlocation.latitude.toStringAsFixed(7)),
                     longitud:
-                        double.parse(newlocation.longitude.toStringAsFixed(6)),
+                        double.parse(newlocation.longitude.toStringAsFixed(7)),
                     pendiente: 1,
                     status: 1,
                     domicilio: null,
@@ -208,8 +208,8 @@ class MapFun {
     var tocable = (provider.contacto?.latitud == e.latitud &&
         provider.contacto?.longitud == e.longitud);
     return AnimatedMarker(
-        width: tocable ? 23.sp : 18.sp,
-        height: tocable ? 23.sp : 18.sp,
+        width: tocable ? 23.sp : 19.sp,
+        height: tocable ? 23.sp : 19.sp,
         rotate: true,
         point: LatLng(e.latitud, e.longitud),
         builder: (context, animation) => InkWell(
@@ -228,7 +228,7 @@ class MapFun {
                 provider.animaMap
                     .centerOnPoint(LatLng(e.latitud, e.longitud), zoom: 18);
                 provider.contacto = await ContactoController.getItem(
-                    lat: e.latitud, lng: e.longitud);
+                    lat: e.latitud, lng: e.longitud, id: e.id);
               } catch (err) {
                 debugPrint("$err");
                 showToast("No se pudo obtener sus fotos, intente de nuevo");
@@ -261,7 +261,7 @@ class MapFun {
                                           (element) => element.id == e.tipo)
                                       ?.icon ??
                                   Icons.person,
-                              size: tocable ? 20.5.sp : 16.sp,
+                              size: tocable ? 20.sp : 16.5.sp,
                               color: provider.tipos
                                       .firstWhereOrNull(
                                           (element) => element.id == e.tipo)

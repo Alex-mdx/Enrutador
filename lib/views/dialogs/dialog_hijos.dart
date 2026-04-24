@@ -6,10 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:oktoast/oktoast.dart';
-
 import 'package:sizer/sizer.dart';
-
-import '../../utilities/theme/theme_app.dart';
+import '../widgets/extras/card_children.dart';
 import '../widgets/extras/paginador_widget.dart';
 
 class DialogHijos extends StatefulWidget {
@@ -37,6 +35,7 @@ class _DialogHijosState extends State<DialogHijos> {
   int index = 1;
   int max = 0;
   bool press = false;
+  bool search = false;
 
   @override
   void initState() {
@@ -64,6 +63,9 @@ class _DialogHijosState extends State<DialogHijos> {
   }
 
   Future<void> send(int idx) async {
+    setState(() {
+      search = true;
+    });
     if (!mounted) return;
     max = await UsuarioFire.countAll();
     setState(() {
@@ -76,6 +78,7 @@ class _DialogHijosState extends State<DialogHijos> {
     if (!mounted) return;
     setState(() {
       actuales = list;
+      search = false;
     });
   }
 
@@ -108,15 +111,15 @@ class _DialogHijosState extends State<DialogHijos> {
                               alignment: WrapAlignment.spaceAround,
                               spacing: .2.w,
                               children: hijosG
-                                  .map((e) => childrenCard(
-                                      e,
-                                      40.w,
-                                      () => setState(() {
+                                  .map((e) => CardChildren(
+                                      e: e,
+                                      width: 40.w,
+                                      onTap: () => setState(() {
                                             hijosG.remove(e);
                                           }),
-                                      14.sp,
-                                      ThemaMain.background,
-                                      2))
+                                      fontSize: 14.sp,
+                                      card: ThemaMain.background,
+                                      elevation: 2))
                                   .toList()),
                       Divider(),
                       Text("Asignacion", style: TextStyle(fontSize: 16.sp)),
@@ -134,16 +137,16 @@ class _DialogHijosState extends State<DialogHijos> {
                                       alignment: WrapAlignment.spaceAround,
                                       spacing: .1.w,
                                       children: hijosSeleccionados
-                                          .map((e) => childrenCard(
-                                              e,
-                                              25.w,
-                                              () => setState(() {
+                                          .map((e) => CardChildren(
+                                              e: e,
+                                              width: 25.w,
+                                              onTap: () => setState(() {
                                                     hijosSeleccionados
                                                         .remove(e);
                                                   }),
-                                              13.sp,
-                                              ThemaMain.background,
-                                              0))
+                                              fontSize: 13.sp,
+                                              card: ThemaMain.background,
+                                              elevation: 0))
                                           .toList()))),
                       Padding(
                           padding: EdgeInsets.symmetric(
@@ -152,11 +155,21 @@ class _DialogHijosState extends State<DialogHijos> {
                               color: ThemaMain.background,
                               elevation: 0,
                               child: Column(children: [
-                                Wrap(
+                                 search
+                            ? Center(
+                                child: LoadingAnimationWidget.threeArchedCircle(
+                                    color: ThemaMain.primary, size: 22.sp))
+                            : actuales.isEmpty
+                                ? Text("No se han encontrado usuarios",
+                                    style: TextStyle(fontSize: 14.sp))
+                                : Wrap(
                                     alignment: WrapAlignment.spaceAround,
                                     spacing: .2.w,
                                     children: actuales
-                                        .map((e) => childrenCard(e, 25.w, () {
+                                        .map((e) => CardChildren(
+                                            e: e,
+                                            width: 25.w,
+                                            onTap: () {
                                               if (hijosG.firstWhereOrNull(
                                                           (element) =>
                                                               element.id ==
@@ -188,11 +201,9 @@ class _DialogHijosState extends State<DialogHijos> {
                                                 if ((hijosSeleccionados.length +
                                                         hijosG.length) <
                                                     6) {
-                                                  if (e.adminTipo == -1 ||
-                                                      (e.adminTipo ?? 0) >
-                                                          (widget.user
-                                                                  .adminTipo ??
-                                                              0)) {
+                                                  if ((e.adminTipo ?? 1) >
+                                                      (widget.user.adminTipo ??
+                                                          0)) {
                                                     showToast(
                                                         "No se puede agregar un administrador como hijo / No se puede agregar un usuario con mas permisos que el tuyo");
                                                     return;
@@ -211,25 +222,24 @@ class _DialogHijosState extends State<DialogHijos> {
                                                 }
                                               }
                                             },
-                                                12.sp,
-                                                hijosG.firstWhereOrNull(
+                                            fontSize: 12.sp,
+                                            card: hijosG.firstWhereOrNull(
+                                                            (element) =>
+                                                                element.id ==
+                                                                e.id) !=
+                                                        null ||
+                                                    hijosSeleccionados
+                                                            .firstWhereOrNull(
                                                                 (element) =>
                                                                     element
                                                                         .id ==
                                                                     e.id) !=
-                                                            null ||
-                                                        hijosSeleccionados
-                                                                .firstWhereOrNull(
-                                                                    (element) =>
-                                                                        element
-                                                                            .id ==
-                                                                        e.id) !=
-                                                            null
-                                                    ? ThemaMain.green
-                                                    : e.id == widget.user.id
-                                                        ? ThemaMain.darkGrey
-                                                        : null,
-                                                2))
+                                                        null
+                                                ? ThemaMain.green
+                                                : e.id == widget.user.id
+                                                    ? ThemaMain.darkGrey
+                                                    : null,
+                                            elevation: 2))
                                         .toList()),
                                 PaginadorGroupedWidget(
                                     max: max,
@@ -270,25 +280,5 @@ class _DialogHijosState extends State<DialogHijos> {
                                   press ? ThemaMain.darkGrey : ThemaMain.green))
                     ])
                   ])));
-  }
-
-  SizedBox childrenCard(UsuarioModel e, double width, Function() onTap,
-      double fontSize, Color? card, double elevation) {
-    return SizedBox(
-        width: width,
-        child: Tooltip(
-            message: e.nombre ?? '',
-            child: InkWell(
-                onTap: () => onTap(),
-                borderRadius: BorderRadius.circular(borderRadius),
-                child: Card(
-                    elevation: elevation,
-                    color: card,
-                    child: Padding(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: .5.w, vertical: .2.h),
-                        child: Text(e.nombre!,
-                            style: TextStyle(fontSize: fontSize),
-                            overflow: TextOverflow.ellipsis))))));
   }
 }

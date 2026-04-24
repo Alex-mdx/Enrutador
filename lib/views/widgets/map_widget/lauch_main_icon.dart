@@ -17,7 +17,7 @@ class LauchMainIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return IconButton.filled(
-        iconSize: 22.sp,
+        iconSize: 21.sp,
         style: ButtonStyle(
             backgroundColor: WidgetStatePropertyAll(ThemaMain.green)),
         color: ThemaMain.green,

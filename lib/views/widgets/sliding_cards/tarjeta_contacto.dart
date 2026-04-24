@@ -48,7 +48,7 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
         child: Column(children: [
           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
             SizedBox(
-                width: 54.w,
+                width: 46.w,
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -57,7 +57,8 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                               PlusCodeFun.psCODE(
                                   provider.contacto?.latitud ?? 0,
                                   provider.contacto?.longitud ?? 0),
-                              toShortFormat: Preferences.psCodeExt),
+                              toShortFormat:
+                                  Preferences.psCodeExt && provider.internet),
                           builder: (context, snapshot) => TextButton(
                               onLongPress: () async {
                                 await Clipboard.setData(
@@ -77,17 +78,18 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                                       builder: (context) =>
                                           DialogUbicacion(funLat: (lat) async {
                                             var temp = provider.contacto!
-                                                .copyWith(pendiente: 1,
+                                                .copyWith(
+                                                    pendiente: 1,
                                                     latitud: double.parse(
                                                         lat
                                                                 ?.latitude
                                                                 .toStringAsFixed(
-                                                                    6) ??
+                                                                    7) ??
                                                             "0"),
                                                     longitud: double.parse(lat
                                                             ?.longitude
                                                             .toStringAsFixed(
-                                                                6) ??
+                                                                7) ??
                                                         "0"));
                                             funcion(contacto: temp);
                                             Navigation.pop();
@@ -120,11 +122,11 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                           onLongPress: () async {
                             await Clipboard.setData(ClipboardData(
                                 text:
-                                    "${PlusCodeFun.truncPlusCode(PlusCodeFun.psCODE(provider.contacto?.latitud ?? 0, provider.contacto?.longitud ?? 0)).latitude} ${PlusCodeFun.truncPlusCode(PlusCodeFun.psCODE(provider.contacto?.latitud ?? 0, provider.contacto?.longitud ?? 0)).longitude}"));
+                                    "${provider.contacto?.latitud}, ${provider.contacto?.longitud}"));
                             showToast("Coordenadas copiadas");
                           },
                           child: Text(
-                              "${kDebugMode ? "|${provider.contacto?.id}| " : ""}${PlusCodeFun.truncPlusCode(PlusCodeFun.psCODE(provider.contacto?.latitud ?? 0, provider.contacto?.longitud ?? 0)).latitude} ${PlusCodeFun.truncPlusCode(PlusCodeFun.psCODE(provider.contacto?.latitud ?? 0, provider.contacto?.longitud ?? 0)).longitude}",
+                              "${kDebugMode ? "|${provider.contacto?.id}| " : ""}${provider.contacto?.latitud}, ${provider.contacto?.longitud}",
                               style: TextStyle(
                                   fontSize: 15.sp,
                                   fontStyle: FontStyle.italic)))

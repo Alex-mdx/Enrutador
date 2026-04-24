@@ -298,58 +298,112 @@ class _CardPendientesState extends State<CardPendientes> {
                             fontSize: 16.sp, fontWeight: FontWeight.bold)))
               ]),
               Divider(height: .5.h),
-              Column(children: [
-                Row(children: [
-                  Icon(Icons.timelapse, size: 18.sp, color: ThemaMain.primary),
-                  Text(
-                      "Fecha Enviado: ${Textos.fechaYMDHMS(fecha: widget.pendientes.fechaPendiente)} (${Textos.conversionDiaNombre(widget.pendientes.fechaPendiente, DateTime.now())})",
-                      style: TextStyle(fontSize: 15.sp))
-                ]),
-                Row(children: [
-                  Icon(Icons.checklist, size: 18.sp, color: ThemaMain.green),
-                  Text(
-                      "Fecha Revisado: ${widget.pendientes.fechaSincronizado == null ? "Sin fecha" : "${Textos.fechaYMDHMS(fecha: widget.pendientes.fechaSincronizado!)} (${Textos.conversionDiaNombre(widget.pendientes.fechaSincronizado!, DateTime.now())})"}",
-                      style: TextStyle(fontSize: 15.sp))
-                ])
+              Row(children: [
+                if (widget.pendientes.sincronizado == 1 &&
+                    ((provider.usuario?.adminTipo ?? 0) >= 3 ||
+                        (provider.usuario?.adminTipo ?? 0) == -1))
+                  Expanded(
+                      flex: 1,
+                      child: IconButton.filled(
+                          style: ButtonStyle(
+                              backgroundColor:
+                                  WidgetStatePropertyAll(ThemaMain.pink)),
+                          onPressed: () => Dialogs.showMorph(
+                              title: "Eliminar",
+                              description:
+                                  "¿Desea eliminar este pendiente?\nLos cambios no se subiran a la nube y se eliminar de la ventana de pendientes",
+                              loadingTitle: "Eliminando",
+                              onAcceptPressed: (context) async {
+                                await PendienteFire.deleteItem(
+                                    table: "id", query: widget.pendientes.id);
+                                if (widget.fun != null) {
+                                  await widget.fun!();
+                                }
+                                showToast("Pendiente eliminado");
+                              }),
+                          icon: Icon(LineIcons.alternateTrashAlt,
+                              size: 18.sp, color: ThemaMain.background))),
+                Expanded(
+                    flex: 10,
+                    child: Column(children: [
+                      Row(children: [
+                        Icon(Icons.timelapse,
+                            size: 18.sp, color: ThemaMain.primary),
+                        Text(
+                            "Fecha Enviado: ${Textos.fechaYMDHMS(fecha: widget.pendientes.fechaPendiente)} (${Textos.conversionDiaNombre(widget.pendientes.fechaPendiente, DateTime.now())})",
+                            style: TextStyle(fontSize: 15.sp))
+                      ]),
+                      Row(children: [
+                        Icon(Icons.checklist,
+                            size: 18.sp, color: ThemaMain.green),
+                        Text(
+                            "Fecha Revisado: ${widget.pendientes.fechaSincronizado == null ? "Sin fecha" : "${Textos.fechaYMDHMS(fecha: widget.pendientes.fechaSincronizado!)} (${Textos.conversionDiaNombre(widget.pendientes.fechaSincronizado!, DateTime.now())})"}",
+                            style: TextStyle(fontSize: 15.sp))
+                      ])
+                    ]))
               ]),
               if (widget.pendientes.sincronizado == 0 &&
-                  (provider.usuario?.adminTipo ?? 0) > 1)
+                  ((provider.usuario?.adminTipo ?? 0) >= 3 ||
+                      (provider.usuario?.adminTipo ?? 0) == -1))
                 Column(children: [
                   Divider(height: .5.h),
                   Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        ElevatedButton.icon(
-                            style: ButtonStyle(
-                                backgroundColor:
-                                    WidgetStatePropertyAll(ThemaMain.red)),
-                            icon: Icon(LineIcons.thumbsDown,
-                                size: 20.sp, color: ThemaMain.background),
-                            onPressed: () => Dialogs.showMorph(
-                                title: "Rechazar",
-                                description:
-                                    "¿Desea rechazar este pendiente?\nLos cambios no se subiran a la nube",
-                                loadingTitle: "Rechazando",
-                                onAcceptPressed: (context) async {
-                                  var newPendiente = widget.pendientes.copyWith(
-                                      sincronizado: -1,
-                                      fechaSincronizado: DateTime.now(),
-                                      aceptadoEmpleadoId:
-                                          provider.usuario?.empleadoId);
-                                  await PendienteFire.sendItem(
-                                      table: "id",
-                                      query: widget.pendientes.id,
-                                      data: newPendiente);
-                                  if (widget.fun != null) {
-                                    await widget.fun!();
-                                  }
-                                  showToast("Pendiente aceptado");
-                                }),
-                            label: Text("Rechazar",
-                                style: TextStyle(
-                                    fontSize: 15.sp,
-                                    color: ThemaMain.background,
-                                    fontWeight: FontWeight.bold))),
+                        Row(children: [
+                          IconButton.filled(
+                              style: ButtonStyle(
+                                  backgroundColor:
+                                      WidgetStatePropertyAll(ThemaMain.pink)),
+                              onPressed: () => Dialogs.showMorph(
+                                  title: "Eliminar",
+                                  description:
+                                      "¿Desea eliminar este pendiente?\nLos cambios no se subiran a la nube y se eliminar de la ventana de pendientes",
+                                  loadingTitle: "Eliminando",
+                                  onAcceptPressed: (context) async {
+                                    await PendienteFire.deleteItem(
+                                        table: "id",
+                                        query: widget.pendientes.id);
+                                    if (widget.fun != null) {
+                                      await widget.fun!();
+                                    }
+                                    showToast("Pendiente eliminado");
+                                  }),
+                              icon: Icon(LineIcons.alternateTrashAlt,
+                                  size: 20.sp, color: ThemaMain.background)),
+                          ElevatedButton.icon(
+                              style: ButtonStyle(
+                                  backgroundColor:
+                                      WidgetStatePropertyAll(ThemaMain.red)),
+                              icon: Icon(LineIcons.thumbsDown,
+                                  size: 20.sp, color: ThemaMain.background),
+                              onPressed: () => Dialogs.showMorph(
+                                  title: "Rechazar",
+                                  description:
+                                      "¿Desea rechazar este pendiente?\nLos cambios no se subiran a la nube",
+                                  loadingTitle: "Rechazando",
+                                  onAcceptPressed: (context) async {
+                                    var newPendiente = widget.pendientes
+                                        .copyWith(
+                                            sincronizado: -1,
+                                            fechaSincronizado: DateTime.now(),
+                                            aceptadoEmpleadoId:
+                                                provider.usuario?.empleadoId);
+                                    await PendienteFire.sendItem(
+                                        table: "id",
+                                        query: widget.pendientes.id,
+                                        data: newPendiente);
+                                    if (widget.fun != null) {
+                                      await widget.fun!();
+                                    }
+                                    showToast("Pendiente aceptado");
+                                  }),
+                              label: Text("Rechazar",
+                                  style: TextStyle(
+                                      fontSize: 15.sp,
+                                      color: ThemaMain.background,
+                                      fontWeight: FontWeight.bold)))
+                        ]),
                         ElevatedButton.icon(
                             style: ButtonStyle(
                                 backgroundColor:

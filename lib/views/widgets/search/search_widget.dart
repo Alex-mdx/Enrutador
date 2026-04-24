@@ -100,7 +100,7 @@ class _SearchWidgetState extends State<SearchWidget> {
     final provider = Provider.of<MainProvider>(context);
 
     return Padding(
-        padding: EdgeInsets.only(top: 1.h),
+        padding: EdgeInsets.only(top: .5.h),
         child: Column(spacing: 0, children: [
           Container(
               decoration: BoxDecoration(
@@ -115,7 +115,7 @@ class _SearchWidgetState extends State<SearchWidget> {
               child: Column(children: [
                 AnimatedTextField(
                     animationType: Animationtype.slideReversed,
-                    animationDuration: Duration(seconds: 3),
+                    animationDuration: Duration(seconds: 4),
                     style: TextStyle(fontSize: 16.sp),
                     focusNode: foc,
                     onTapOutside: (event) {
@@ -241,7 +241,8 @@ class _SearchWidgetState extends State<SearchWidget> {
                                   provider.contacto =
                                       await ContactoController.getItem(
                                           lat: contacto.latitud,
-                                          lng: contacto.longitud);
+                                          lng: contacto.longitud,
+                                          id: contacto.id);
                                   provider.buscar.clear();
                                   await provider.slide.open();
                                 },
@@ -253,7 +254,7 @@ class _SearchWidgetState extends State<SearchWidget> {
             } else if (snapshot.hasError) {
               return Text("${snapshot.error}");
             } else {
-              return LinearProgressIndicator();
+              return LinearProgressIndicator(color: ThemaMain.primary);
             }
           })
     ]);

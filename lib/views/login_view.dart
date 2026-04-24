@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'package:dynamic_background/dynamic_background.dart';
+import 'package:enrutador/controllers/sql_generator.dart';
 import 'package:enrutador/controllers/usuario_controller.dart';
 import 'package:enrutador/controllers/usuario_fire.dart';
 import 'package:enrutador/utilities/main_provider.dart';
@@ -15,7 +16,6 @@ import 'package:line_icons/line_icons.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:provider/provider.dart';
 import 'package:rive_animated_icon/rive_animated_icon.dart';
-import 'package:sign_in_button/sign_in_button.dart';
 import 'package:sizer/sizer.dart';
 
 import 'dialogs/dialog_politica_uso.dart';
@@ -33,6 +33,13 @@ class _LoginViewState extends State<LoginView> {
   bool show = true;
 
   bool carga = false;
+
+  @override
+  void initState() {
+    super.initState();
+    SqlGenerator.aads();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -158,12 +165,13 @@ class _LoginViewState extends State<LoginView> {
                                         "Se intento acceder con un usuario y contraseña inexistente\n¿Deseas crear una cuenta y acceder a la aplicacion con estos datos?",
                                     loadingTitle: "Creando",
                                     onAcceptPressed: (context) async {
-                                      var result = await FirebaseAuth.instance
-                                          .createUserWithEmailAndPassword(
-                                              email: email.text,
-                                              password: password.text);
-                                      log(result.toString());
                                       try {
+                                        var result = await FirebaseAuth.instance
+                                            .createUserWithEmailAndPassword(
+                                                email: email.text,
+                                                password: password.text);
+                                        log(result.toString());
+
                                         if (result.user != null) {
                                           showToast(
                                               "Cuenta creada exitosamente");
@@ -224,11 +232,15 @@ class _LoginViewState extends State<LoginView> {
                   label: Text('Resetear contraseña',
                       style: TextStyle(fontSize: 16.sp))),
               Consumer<MainProvider>(
-                  builder: (context, provider, child) => SignInButton(
-                          Buttons.google,
-                          text: "Entrar con Google",
-                          textStyle: TextStyle(fontSize: 16.sp),
-                          onPressed: () async {
+                  builder: (context, provider, child) => ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: carga ? ThemaMain.darkGrey : null,
+                      ),
+                      label: Text("Entrar con Google",
+                          style: TextStyle(fontSize: 16.sp)),
+                      icon: Icon(LineIcons.googleLogo,
+                          size: 24.sp, color: ThemaMain.green),
+                      onPressed: () async {
                         try {
                           setState(() => carga = true);
                           if (Preferences.camara &&
@@ -246,6 +258,9 @@ class _LoginViewState extends State<LoginView> {
                                     .signInWithCredential(cred);
                                 await inLogin(user, provider);
                               }
+                            } else {
+                              showToast(
+                                  "No se pudo autenticar con Google en este dispositivo");
                             }
                           } else {
                             showToast("Debes aceptar las politicas de uso");

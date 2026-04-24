@@ -1,6 +1,8 @@
 import 'package:enrutador/controllers/estado_controller.dart';
 import 'package:enrutador/models/contacto_model.dart';
 import 'package:enrutador/models/estado_model.dart';
+import 'package:enrutador/models/usuario_model.dart';
+import 'package:enrutador/utilities/main_provider.dart';
 import 'package:enrutador/utilities/services/navigation_services.dart';
 import 'package:enrutador/utilities/theme/theme_app.dart';
 import 'package:enrutador/utilities/theme/theme_color.dart';
@@ -8,10 +10,16 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:line_icons/line_icons.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:oktoast/oktoast.dart';
+import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 import 'package:timelines_plus/timelines_plus.dart';
 
+import '../../controllers/usuario_fire.dart';
 import '../../utilities/textos.dart';
+import '../widgets/extras/card_children.dart';
+import '../widgets/extras/paginador_widget.dart';
 
 class DialogsEstadoFuncion extends StatefulWidget {
   final ContactoModelo contacto;
@@ -32,9 +40,16 @@ class _DialogsEstadoFuncion extends State<DialogsEstadoFuncion> {
   List<EstadoModel> estados = [];
   List<bool> aceptar = [];
   late ContactoModelo contacto;
+
+  bool search = true;
+  List<UsuarioModel> actuales = [];
+  int index = 1;
+  int max = 0;
+  bool press = false;
   @override
   void initState() {
     name();
+    send(1);
     super.initState();
     contacto = widget.contacto;
   }
@@ -47,6 +62,26 @@ class _DialogsEstadoFuncion extends State<DialogsEstadoFuncion> {
     });
   }
 
+  Future<void> send(int idx) async {
+    if (!mounted) return;
+    setState(() {
+      search = true;
+    });
+    max = await UsuarioFire.countAll();
+    setState(() {
+      index = idx;
+    });
+
+    var list = await UsuarioFire.getAllItems(
+        limit: 4, index: idx - 1, orden: "nombre", decender: false);
+
+    if (!mounted) return;
+    setState(() {
+      actuales = list;
+      search = false;
+    });
+  }
+
   @override
   void dispose() {
     super.dispose();
@@ -54,6 +89,7 @@ class _DialogsEstadoFuncion extends State<DialogsEstadoFuncion> {
 
   @override
   Widget build(BuildContext context) {
+    final provider = Provider.of<MainProvider>(context);
     return Dialog(
         child: Column(mainAxisSize: MainAxisSize.min, children: [
       Text("Estado de contacto", style: TextStyle(fontSize: 16.sp)),
@@ -67,17 +103,20 @@ class _DialogsEstadoFuncion extends State<DialogsEstadoFuncion> {
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.bold)),
             Column(children: [
-              ElevatedButton.icon(
-                  onPressed: () {
-                    var newTemp = contacto.copyWith(estado: -1);
-                    setState(() {
-                      contacto = newTemp;
-                    });
-                  },
-                  label: Text("Limpiar los estados",
-                      style: TextStyle(fontSize: 15.sp)),
-                  icon: Icon(Icons.cleaning_services_rounded,
-                      color: ThemaMain.darkBlue, size: 20.sp)),
+              if ((contacto.estado ?? -1) != -1 ||
+                  contacto.aceptadoEmpleado != null)
+                ElevatedButton.icon(
+                    onPressed: () {
+                      var newTemp = contacto.copyWith(estado: -1)
+                        ..aceptadoEmpleado = null;
+                      setState(() {
+                        contacto = newTemp;
+                      });
+                    },
+                    label: Text("Limpiar los estados",
+                        style: TextStyle(fontSize: 15.sp)),
+                    icon: Icon(Icons.cleaning_services_rounded,
+                        color: ThemaMain.darkBlue, size: 20.sp)),
               Text(contacto.nombreCompleto ?? "Sin nombre",
                   style:
                       TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold)),
@@ -90,7 +129,65 @@ class _DialogsEstadoFuncion extends State<DialogsEstadoFuncion> {
             ]),
             Text(
                 "Estado: ${estados.firstWhereOrNull((element) => element.id == contacto.estado)?.nombre ?? "Sin estado"}",
+                textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 15.sp)),
+            SizedBox(
+                width: double.infinity,
+                child: Card(
+                    elevation: 0,
+                    color: ThemaMain.background,
+                    child: Column(children: [
+                      Text("Inyectar usuario autor del estado",
+                          style: TextStyle(fontSize: 15.sp)),
+                      search
+                          ? Center(
+                              child: LoadingAnimationWidget.threeArchedCircle(
+                                  color: ThemaMain.primary, size: 22.sp))
+                          : actuales.isEmpty
+                              ? Text("No se han encontrado usuarios",
+                                  style: TextStyle(fontSize: 14.sp))
+                              : Wrap(
+                                  alignment: WrapAlignment.spaceAround,
+                                  spacing: .1.w,
+                                  children: actuales
+                                      .map((e) => CardChildren(
+                                          e: e,
+                                          width: 18.w,
+                                          onTap: () => setState(() {
+                                                if (e.empleadoId ==
+                                                    provider
+                                                        .usuario?.empleadoId) {
+                                                  showToast(
+                                                      "No puedes tomar tu propio contacto");
+                                                  return;
+                                                }
+                                                if (contacto.aceptadoEmpleado ==
+                                                    e.empleadoId) {
+                                                  contacto = contacto
+                                                    ..aceptadoEmpleado = null;
+                                                } else {
+                                                  contacto = contacto.copyWith(
+                                                      aceptadoEmpleado:
+                                                          e.empleadoId);
+                                                }
+                                                debugPrint(contacto
+                                                    .aceptadoEmpleado
+                                                    ?.toString());
+                                              }),
+                                          fontSize: 12.sp,
+                                          card: contacto.aceptadoEmpleado ==
+                                                  e.empleadoId
+                                              ? ThemaMain.green
+                                              : ThemaMain.primary,
+                                          elevation: 2))
+                                      .toList()),
+                      PaginadorGroupedWidget(
+                          max: max,
+                          length: actuales.length,
+                          maxLenght: 4,
+                          send: (index) async => await send(index),
+                          itemScrollController: null)
+                    ]))),
             Divider(),
             Text("Estados disponibles", style: TextStyle(fontSize: 14.sp)),
             !charge
@@ -99,29 +196,29 @@ class _DialogsEstadoFuncion extends State<DialogsEstadoFuncion> {
                     ? Text("No se han creado estados",
                         style: TextStyle(
                             fontSize: 14.sp, fontStyle: FontStyle.italic))
-                    : Container(
-                        constraints: BoxConstraints(maxHeight: 45.h),
-                        child: GridView.builder(
-                            itemCount: estados.length,
-                            shrinkWrap: true,
-                            scrollDirection: Axis.vertical,
-                            gridDelegate:
-                                SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 3),
-                            itemBuilder: (context, index) => DragTarget(
-                                onLeave: (data) => aceptar[index] = false,
-                                onMove: (details) => aceptar[index] = true,
-                                onAcceptWithDetails: (details) {
-                                  var newTemp = contacto.copyWith(
-                                      estado: estados[index].id);
-                                  setState(() {
-                                    contacto = newTemp;
-                                  });
-                                  debugPrint("aceptar on acep");
-                                  aceptar[index] = false;
-                                },
-                                builder: (context, candidateData, rejectedData) =>
-                                    AnimatedContainer(
+                    : Scrollbar(
+                        child: Container(
+                            constraints: BoxConstraints(maxHeight: 35.h),
+                            child: GridView.builder(
+                                itemCount: estados.length,
+                                shrinkWrap: true,
+                                scrollDirection: Axis.vertical,
+                                gridDelegate:
+                                    SliverGridDelegateWithFixedCrossAxisCount(
+                                        crossAxisCount: 3),
+                                itemBuilder: (context, index) => DragTarget(
+                                    onLeave: (data) => aceptar[index] = false,
+                                    onMove: (details) => aceptar[index] = true,
+                                    onAcceptWithDetails: (details) {
+                                      var newTemp = contacto.copyWith(
+                                          estado: estados[index].id);
+                                      setState(() {
+                                        contacto = newTemp;
+                                      });
+                                      debugPrint("aceptar on acep");
+                                      aceptar[index] = false;
+                                    },
+                                    builder: (context, candidateData, rejectedData) => AnimatedContainer(
                                         duration: kDebugMode
                                             ? Durations.extralong4
                                             : Durations.medium1,
@@ -146,6 +243,7 @@ class _DialogsEstadoFuncion extends State<DialogsEstadoFuncion> {
                                                         fontSize: 15.sp,
                                                         fontWeight: FontWeight.bold)))
                                             : DotIndicator(size: contacto.estado == estados[index].id ? 24.sp : 20.sp, color: estados[index].color ?? ThemaMain.primary, child: contacto.estado == estados[index].id ? Icon(LineIcons.doubleCheck, color: ThemaMain.second, size: 20.sp) : null))))),
+                      ),
             Divider(),
             ElevatedButton.icon(
                 icon: Icon(Icons.contact_emergency,

@@ -63,57 +63,62 @@ class _RowFiltroState extends State<RowFiltro> {
                               Column(mainAxisSize: MainAxisSize.min, children: [
                         Text("Seleccione tipos para filtrar",
                             style: TextStyle(fontSize: 16.sp)),
-                        Container(
-                            constraints: BoxConstraints(maxHeight: 80.h),
-                            child: FutureBuilder(
-                                future: TipoController.getItems(),
-                                builder: (context, snapshot) {
-                                  if (snapshot.hasData) {
-                                    return ListView.builder(
-                                        shrinkWrap: true,
-                                        itemCount: snapshot.data!.length,
-                                        itemBuilder: (context, index) {
-                                          TiposModelo tipo =
-                                              snapshot.data![index];
-                                          return ListTipoWidget(
-                                              tipo: tipo,
-                                              fun: () {},
-                                              share: false,
-                                              selectedVisible: true,
-                                              selected: Preferences.tipos
-                                                  .contains(tipo.id.toString()),
-                                              onSelected: (p0) {
-                                                var temp = Preferences.tipos
-                                                    .map((e) => int.parse(e))
-                                                    .toList();
-                                                if (temp.contains(tipo.id)) {
-                                                  temp.remove(tipo.id);
-                                                } else {
-                                                  temp.add(tipo.id!);
-                                                }
-                                                setState(() {
-                                                  Preferences.tipos = temp
-                                                      .map((e) => e.toString())
+                        Padding(
+                          padding: EdgeInsets.only(bottom: 1.h),
+                          child: Container(
+                              constraints: BoxConstraints(maxHeight: 80.h),
+                              child: FutureBuilder(
+                                  future: TipoController.getItems(),
+                                  builder: (context, snapshot) {
+                                    if (snapshot.hasData) {
+                                      return ListView.builder(
+                                          shrinkWrap: true,
+                                          itemCount: snapshot.data!.length,
+                                          itemBuilder: (context, index) {
+                                            TiposModelo tipo =
+                                                snapshot.data![index];
+                                            return ListTipoWidget(
+                                                tipo: tipo,
+                                                fun: () {},
+                                                share: false,
+                                                selectedVisible: true,
+                                                selected: Preferences.tipos
+                                                    .contains(
+                                                        tipo.id.toString()),
+                                                onSelected: (p0) {
+                                                  var temp = Preferences.tipos
+                                                      .map((e) => int.parse(e))
                                                       .toList();
-                                                  if (widget.press != null) {
-                                                    widget.press!();
+                                                  if (temp.contains(tipo.id)) {
+                                                    temp.remove(tipo.id);
+                                                  } else {
+                                                    temp.add(tipo.id!);
                                                   }
-                                                });
+                                                  setState(() {
+                                                    Preferences.tipos = temp
+                                                        .map(
+                                                            (e) => e.toString())
+                                                        .toList();
+                                                    if (widget.press != null) {
+                                                      widget.press!();
+                                                    }
+                                                  });
 
-                                                Navigation.pop();
-                                              });
-                                        });
-                                  } else if (snapshot.hasError) {
-                                    return Text("Error: ${snapshot.error}",
-                                        style: TextStyle(
-                                            fontSize: 15.sp,
-                                            fontStyle: FontStyle.italic));
-                                  } else {
-                                    return Padding(
-                                        padding: EdgeInsets.all(8.sp),
-                                        child: CircularProgressIndicator());
-                                  }
-                                }))
+                                                  Navigation.pop();
+                                                });
+                                          });
+                                    } else if (snapshot.hasError) {
+                                      return Text("Error: ${snapshot.error}",
+                                          style: TextStyle(
+                                              fontSize: 15.sp,
+                                              fontStyle: FontStyle.italic));
+                                    } else {
+                                      return Padding(
+                                          padding: EdgeInsets.all(8.sp),
+                                          child: CircularProgressIndicator());
+                                    }
+                                  })),
+                        )
                       ]))),
               colorprincipal: ThemaMain.primary,
               condicion: Preferences.tipos.isNotEmpty,
@@ -139,59 +144,66 @@ class _RowFiltroState extends State<RowFiltro> {
                               Column(mainAxisSize: MainAxisSize.min, children: [
                         Text("Seleccione estados para filtrar",
                             style: TextStyle(fontSize: 16.sp)),
-                        Container(
-                            constraints: BoxConstraints(maxHeight: 80.h),
-                            child: FutureBuilder(
-                                future: EstadoController.getItems(),
-                                builder: (context, snapshot) {
-                                  if (snapshot.hasData) {
-                                    return ListView.builder(
-                                        shrinkWrap: true,
-                                        itemCount: snapshot.data!.length,
-                                        itemBuilder: (context, index) {
-                                          EstadoModel estado =
-                                              snapshot.data![index];
-                                          return ListEstadoWidget(
-                                              estado: estado,
-                                              fun: () {},
-                                              share: false,
-                                              selectedVisible: true,
-                                              selected: Preferences.status
-                                                  .contains(
-                                                      estado.id.toString()),
-                                              onSelected: (p0) {
-                                                var temp = Preferences.status
-                                                    .map((e) => int.parse(e))
-                                                    .toList();
-                                                if (temp.contains(estado.id)) {
-                                                  temp.remove(estado.id);
-                                                } else {
-                                                  temp.add(estado.id!);
-                                                }
-                                                setState(() {
-                                                  Preferences.status = temp
-                                                      .map((e) => e.toString())
-                                                      .toList();
-                                                  if (widget.press != null) {
-                                                    widget.press!();
-                                                  }
-                                                });
+                        Padding(
+                            padding: EdgeInsets.only(bottom: 1.h),
+                            child: Container(
+                                constraints: BoxConstraints(maxHeight: 80.h),
+                                child: FutureBuilder(
+                                    future: EstadoController.getItems(),
+                                    builder: (context, snapshot) {
+                                      if (snapshot.hasData) {
+                                        return ListView.builder(
+                                            shrinkWrap: true,
+                                            itemCount: snapshot.data!.length,
+                                            itemBuilder: (context, index) {
+                                              EstadoModel estado =
+                                                  snapshot.data![index];
+                                              return ListEstadoWidget(
+                                                  estado: estado,
+                                                  fun: () {},
+                                                  share: false,
+                                                  selectedVisible: true,
+                                                  selected: Preferences.status
+                                                      .contains(
+                                                          estado.id.toString()),
+                                                  onSelected: (p0) {
+                                                    var temp = Preferences
+                                                        .status
+                                                        .map(
+                                                            (e) => int.parse(e))
+                                                        .toList();
+                                                    if (temp
+                                                        .contains(estado.id)) {
+                                                      temp.remove(estado.id);
+                                                    } else {
+                                                      temp.add(estado.id!);
+                                                    }
+                                                    setState(() {
+                                                      Preferences.status = temp
+                                                          .map((e) =>
+                                                              e.toString())
+                                                          .toList();
+                                                      if (widget.press !=
+                                                          null) {
+                                                        widget.press!();
+                                                      }
+                                                    });
 
-                                                Navigation.pop();
-                                              },
-                                              dense: true);
-                                        });
-                                  } else if (snapshot.hasError) {
-                                    return Text("Error: ${snapshot.error}",
-                                        style: TextStyle(
-                                            fontSize: 15.sp,
-                                            fontStyle: FontStyle.italic));
-                                  } else {
-                                    return Padding(
-                                        padding: EdgeInsets.all(8.sp),
-                                        child: CircularProgressIndicator());
-                                  }
-                                }))
+                                                    Navigation.pop();
+                                                  },
+                                                  dense: true);
+                                            });
+                                      } else if (snapshot.hasError) {
+                                        return Text("Error: ${snapshot.error}",
+                                            style: TextStyle(
+                                                fontSize: 15.sp,
+                                                fontStyle: FontStyle.italic));
+                                      } else {
+                                        return Padding(
+                                            padding: EdgeInsets.all(8.sp),
+                                            child: CircularProgressIndicator());
+                                      }
+                                    })))
                       ]))),
               colorprincipal: ThemaMain.darkBlue,
               condicion: Preferences.status.isNotEmpty,
