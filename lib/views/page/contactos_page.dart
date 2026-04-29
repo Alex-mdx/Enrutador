@@ -50,6 +50,8 @@ class _ContactosPageState extends State<ContactosPage> {
                     style: TextStyle(
                         fontSize: 16.sp, fontWeight: FontWeight.bold)))
             : Scrollbar(
+                child: Padding(
+                padding: EdgeInsets.only(bottom: 6.h),
                 child: StickyGroupedListView<ContactoModelo, String>(
                     floatingHeader: true,
                     elements: widget.contactos,
@@ -150,7 +152,8 @@ class _ContactosPageState extends State<ContactosPage> {
                                     });
                               },
                               ifDirecto:
-                                  (provider.usuario?.adminTipo ?? 1) >= 2,
+                                  ((provider.usuario?.adminTipo ?? 1) >= 2 ||
+                                      (provider.usuario?.adminTipo ?? 1) == -1),
                               directo: () async {
                                 var referencia =
                                     await ReferenciasController.getIdPrin(
@@ -215,6 +218,7 @@ class _ContactosPageState extends State<ContactosPage> {
                                   selectedVisible: false,
                                   onSelected: (p0) {},
                                   contacto: contacto))
-                        ])));
+                        ])),
+              ));
   }
 }

@@ -50,7 +50,7 @@ class _TextSendState extends State<TextSend> {
                 ? Stack(alignment: Alignment.center, children: [
                     LoadingAnimationWidget.inkDrop(
                       color: ThemaMain.green,
-                      size: 22.sp,
+                      size: 22.sp
                     ),
                     Icon(Icons.circle, color: ThemaMain.background, size: 28.sp)
                   ])
@@ -61,7 +61,8 @@ class _TextSendState extends State<TextSend> {
                             ? ThemaMain.green
                             : ThemaMain.darkGrey),
                     onPressed: () async {
-                      setState(() => enviarDirecto = true);
+                      try {
+                        setState(() => enviarDirecto = true);
                       if (widget.fun != null) {
                         await widget.fun!(controller.text);
                       }
@@ -71,6 +72,11 @@ class _TextSendState extends State<TextSend> {
                       if (widget.hideWhenSend) {
                         FocusScope.of(context).unfocus();
                       }
+                      } catch (e) {
+                        setState(() => enviarDirecto = false);
+                      controller.clear();
+                      }
+                      
                     })));
   }
 }

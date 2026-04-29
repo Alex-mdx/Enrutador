@@ -35,7 +35,11 @@ class NotasPage extends StatelessWidget {
                     style: TextStyle(
                         fontSize: 16.sp, fontWeight: FontWeight.bold)))
             : Scrollbar(
-                child: StickyGroupedListView<NotaModel, int?>(
+                child: 
+                Padding(
+                padding: EdgeInsets.only(bottom: 6.h),
+                child: 
+                StickyGroupedListView<NotaModel, int?>(
                     floatingHeader: true,
                     elements: notas,
                     itemComparator: (a, b) =>
@@ -112,6 +116,6 @@ class NotasPage extends StatelessWidget {
                                     });
                               },
                               model: CardNota(element: notas, maxLine: 1))
-                        ])));
+                        ]))));
   }
 }

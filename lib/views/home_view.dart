@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:enrutador/controllers/nota_controller.dart';
 import 'package:enrutador/utilities/main_provider.dart';
 import 'package:enrutador/utilities/permisos.dart';
 import 'package:enrutador/utilities/services/dialog_services.dart';
@@ -9,7 +8,6 @@ import 'package:enrutador/views/map_main.dart';
 import 'package:enrutador/views/widgets/map_widget/map_navigation.dart';
 import 'package:enrutador/views/widgets/map_widget/map_sliding.dart';
 import 'package:enrutador/views/widgets/search/search_widget.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_slider_drawer/flutter_slider_drawer.dart';
@@ -17,13 +15,11 @@ import 'package:geolocator/geolocator.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:line_icons/line_icons.dart';
-import 'package:oktoast/oktoast.dart';
 import 'package:open_location_code/open_location_code.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 import 'package:app_links/app_links.dart';
 import '../controllers/contacto_controller.dart';
-import '../models/nota_model.dart';
 import '../utilities/uri_fun.dart';
 import 'widgets/extras/side_buttons.dart';
 import 'widgets/map_widget/map_alternative.dart';
@@ -59,51 +55,6 @@ class _HomeViewState extends State<HomeView> {
                     toolbarHeight: 6.h,
                     title: Text("Enrutador", style: TextStyle(fontSize: 18.sp)),
                     actions: [
-                      if (kDebugMode)
-                        IconButton(
-                            onPressed: () async {
-                              /* var user = UsuarioModel(
-                                  id: 12,
-                                  uuid: "JP7H8Pqi9YUFeXJtajaC0mhYsuC3",
-                                  nombre: "Alexis Armando de Castro Sanchez",
-                                  contactoId: null,
-                                  empleadoId: "10022990",
-                                  adminTipo: -1,
-                                  status: 1,
-                                  foto: null,
-                                  children: [],
-                                  creacion:
-                                      DateTime.parse("2026-01-02T01:45:58.000"),
-                                  actualizacion: DateTime.parse(
-                                      "2026-03-01T08:42:11.000"));
-                              var result = await UsuarioFire.sendItem(
-                                  data: user,
-                                  table: "id",
-                                  query: user.id.toString(),
-                                  itsNumber: true);
-                              debugPrint("Result: $result"); */
-                              var notado =
-                                  await ContactoController.getPersonalizado(
-                                      query: "nota IS NOT NULL AND nota != ''",
-                                      columns: [
-                                    "id",
-                                    "nota",
-                                    "latitud",
-                                    "longitud"
-                                  ]);
-                              for (var i = 0; i < notado.length; i++) {
-                                NotaModel nota = NotaModel(
-                                    contactoId: notado[i].id!,
-                                    descripcion: notado[i].nota!,
-                                    empleadoId: provider.usuario!.empleadoId!,
-                                    pendiente: 1,
-                                    fijado: 0,
-                                    creado: DateTime.now());
-                                await NotasController.insert(nota);
-                              }
-                              showToast("listo");
-                            },
-                            icon: Icon(Icons.add, color: ThemaMain.darkBlue)),
                       FutureBuilder(
                           future: ContactoController.getCountPendiente(),
                           builder: (context, snapshot) => bd.Badge(

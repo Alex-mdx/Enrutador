@@ -10,8 +10,6 @@ import 'package:oktoast/oktoast.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:sizer/sizer.dart';
 import 'package:widgets_to_image/widgets_to_image.dart';
-
-import '../../utilities/pluscode_fun.dart';
 import '../../utilities/theme/theme_color.dart';
 
 class DialogCompartir extends StatelessWidget {

@@ -32,11 +32,11 @@ class MapFun {
   static Future<void> sendInitUri(
       {required MainProvider provider,
       required double lat,
-      required double lng}) async {
+      required double lng, int? index}) async {
     provider.mapSeguir = false;
 
     debugPrint("$lat - $lng");
-    var dir = await ContactoController.getItem(lat: lat, lng: lng);
+    var dir = await ContactoController.getItem(lat: lat, lng: lng,id: index);
     await provider.animaMap.centerOnPoint(LatLng(lat, lng), zoom: 18);
     if (dir != null) {
       provider.contacto = dir;

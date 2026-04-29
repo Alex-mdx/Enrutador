@@ -301,10 +301,13 @@ class _DialogEnrutamientoState extends State<DialogEnrutamiento> {
           contentPadding: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
           onTap: () async {
             Navigation.pop();
+            debugPrint(
+                "${enrutar.buscar.latitud.toStringAsFixed(7)}, ${enrutar.buscar.longitud.toStringAsFixed(7)}");
             await MapFun.sendInitUri(
                 provider: provider,
-                lat: enrutar.buscar.latitud,
-                lng: enrutar.buscar.longitud);
+                lat: double.parse(enrutar.buscar.latitud.toStringAsFixed(7)),
+                lng: double.parse(enrutar.buscar.longitud.toStringAsFixed(7)),
+                index: enrutar.buscar.id);
           },
           leading: Checkbox(
               semanticLabel: "Visitado",

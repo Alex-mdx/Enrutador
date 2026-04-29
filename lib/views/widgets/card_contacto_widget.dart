@@ -43,7 +43,7 @@ class CardContactoWidget extends StatelessWidget {
     return bd.Badge(
         badgeStyle: bd.BadgeStyle(
             badgeColor: Colors.black, shape: bd.BadgeShape.twitter),
-        showBadge: contacto.estado != null || (contacto.estado ?? -1) > -1,
+        showBadge: contacto.estado != null && (contacto.estado ?? -1) != -1,
         position: bd.BadgePosition.topStart(start: 0, top: 0),
         badgeAnimation: bd.BadgeAnimation.size(),
         badgeContent: Consumer<MainProvider>(

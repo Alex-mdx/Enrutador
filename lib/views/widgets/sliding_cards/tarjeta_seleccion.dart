@@ -51,6 +51,7 @@ class _TarjetaSeleccionState extends State<TarjetaSeleccion> {
                               loadingTitle: "agregando...",
                               onAcceptPressed: (context) async {
                                 var temp = await ContactoController.getItem(
+                                    id: provider.selectRefencia!.idForanea,
                                     lat: provider.selectRefencia!.contactoIdLat,
                                     lng:
                                         provider.selectRefencia!.contactoIdLng);

@@ -48,7 +48,7 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
         child: Column(children: [
           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
             SizedBox(
-                width: 46.w,
+                width: 48.w,
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -122,11 +122,11 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                           onLongPress: () async {
                             await Clipboard.setData(ClipboardData(
                                 text:
-                                    "${provider.contacto?.latitud}, ${provider.contacto?.longitud}"));
+                                    "${provider.contacto?.latitud.toStringAsFixed(7)}, ${provider.contacto?.longitud.toStringAsFixed(7)}"));
                             showToast("Coordenadas copiadas");
                           },
                           child: Text(
-                              "${kDebugMode ? "|${provider.contacto?.id}| " : ""}${provider.contacto?.latitud}, ${provider.contacto?.longitud}",
+                              "${kDebugMode ? "|${provider.contacto?.id}| " : ""}${provider.contacto?.latitud.toStringAsFixed(7)}, ${provider.contacto?.longitud.toStringAsFixed(7)}",
                               style: TextStyle(
                                   fontSize: 15.sp,
                                   fontStyle: FontStyle.italic)))

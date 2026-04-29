@@ -92,6 +92,7 @@ class _NotasBuilderState extends State<NotasBuilder> {
                     child: StickyGroupedListView(
                         itemScrollController: itemScrollController,
                         elements: notas,
+                        itemComparator: (a, b) => a.creado.compareTo(b.creado),
                         floatingHeader: true,
                         groupBy: (NotaModel e) =>
                             Textos.fechaYMD(fecha: e.creado),
@@ -134,10 +135,12 @@ class _NotasBuilderState extends State<NotasBuilder> {
                     creado: DateTime.now());
                 await NotasController.insert(tempNota);
                 setState(() => notas.add(tempNota));
-                await itemScrollController.scrollTo(
-                    index: notas.length - 1,
-                    duration: const Duration(milliseconds: 300),
-                    curve: Curves.easeInOut);
+                if (itemScrollController.isAttached) {
+                  await itemScrollController.scrollTo(
+                      index: notas.length - 1,
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeInOut);
+                }
               }))
         ])));
   }

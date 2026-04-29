@@ -23,13 +23,15 @@ import '../widgets/extras/paginador_widget.dart';
 
 class DialogsEstadoFuncion extends StatefulWidget {
   final ContactoModelo contacto;
-  final Function(int?) estatus;
+  final Function(ContactoModelo?) estatus;
   final DateTime? fecha;
+  final String? empleadoId;
   const DialogsEstadoFuncion(
       {super.key,
       required this.contacto,
       required this.estatus,
-      required this.fecha});
+      required this.fecha,
+      required this.empleadoId});
 
   @override
   State<DialogsEstadoFuncion> createState() => _DialogsEstadoFuncion();
@@ -51,7 +53,7 @@ class _DialogsEstadoFuncion extends State<DialogsEstadoFuncion> {
     name();
     send(1);
     super.initState();
-    contacto = widget.contacto;
+    contacto = widget.contacto.copyWith(empleadoEstado: widget.empleadoId);
   }
 
   Future<void> name() async {
@@ -104,11 +106,11 @@ class _DialogsEstadoFuncion extends State<DialogsEstadoFuncion> {
                 style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.bold)),
             Column(children: [
               if ((contacto.estado ?? -1) != -1 ||
-                  contacto.aceptadoEmpleado != null)
+                  contacto.empleadoEstado != null)
                 ElevatedButton.icon(
                     onPressed: () {
                       var newTemp = contacto.copyWith(estado: -1)
-                        ..aceptadoEmpleado = null;
+                        ..empleadoEstado = null;
                       setState(() {
                         contacto = newTemp;
                       });
@@ -161,21 +163,21 @@ class _DialogsEstadoFuncion extends State<DialogsEstadoFuncion> {
                                                       "No puedes tomar tu propio contacto");
                                                   return;
                                                 }
-                                                if (contacto.aceptadoEmpleado ==
+                                                if (contacto.empleadoEstado ==
                                                     e.empleadoId) {
                                                   contacto = contacto
-                                                    ..aceptadoEmpleado = null;
+                                                    ..empleadoEstado = null;
                                                 } else {
                                                   contacto = contacto.copyWith(
-                                                      aceptadoEmpleado:
+                                                      empleadoEstado:
                                                           e.empleadoId);
                                                 }
                                                 debugPrint(contacto
-                                                    .aceptadoEmpleado
+                                                    .empleadoEstado
                                                     ?.toString());
                                               }),
                                           fontSize: 12.sp,
-                                          card: contacto.aceptadoEmpleado ==
+                                          card: contacto.empleadoEstado ==
                                                   e.empleadoId
                                               ? ThemaMain.green
                                               : ThemaMain.primary,
@@ -249,7 +251,7 @@ class _DialogsEstadoFuncion extends State<DialogsEstadoFuncion> {
                 icon: Icon(Icons.contact_emergency,
                     size: 22.sp, color: ThemaMain.darkBlue),
                 onPressed: () {
-                  widget.estatus(contacto.estado);
+                  widget.estatus(contacto);
                   Navigation.pop();
                 },
                 label: Text("Aceptar",

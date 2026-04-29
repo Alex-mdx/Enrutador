@@ -36,7 +36,7 @@ class _ViajeMapPageState extends State<MapMain>
     return provider.local == null
         ? Center(
             child: LoadingAnimationWidget.staggeredDotsWave(
-                color: ThemaMain.primary, size: 24.sp))
+                color: ThemaMain.primary, size: 30.sp))
         : FlutterMap(
             mapController: provider.animaMap.mapController,
             options: MapOptions(
@@ -65,7 +65,7 @@ class _ViajeMapPageState extends State<MapMain>
                               'dev.fleaflet.flutter_map.example')
                       : TileLayer(
                           maxZoom: 20,
-                          maxNativeZoom: 20,
+                          maxNativeZoom: 19,
                           urlTemplate:
                               'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                           retinaMode: false,

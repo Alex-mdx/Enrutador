@@ -285,9 +285,10 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                       child: !widget.compartir
                                           ? TextButton.icon(
                                               style: ButtonStyle(
-                                                  padding: WidgetStatePropertyAll(EdgeInsets.symmetric(
-                                                      horizontal: 1.w,
-                                                      vertical: 0))),
+                                                  padding: WidgetStatePropertyAll(
+                                                      EdgeInsets.symmetric(
+                                                          horizontal: 1.w,
+                                                          vertical: 0))),
                                               onPressed: () => showDialog(
                                                   context: context,
                                                   builder: (context) =>
@@ -296,20 +297,22 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                                               ?.estadoFecha,
                                                           contacto: provider
                                                               .contacto!,
+                                                          empleadoId: provider
+                                                              .usuario
+                                                              ?.empleadoId,
                                                           estatus: (p0) async {
                                                             var newModel = widget
                                                                 .contacto
                                                                 ?.copyWith(
                                                                     pendiente:
                                                                         1,
-                                                                    estado: p0,
+                                                                    estado: p0
+                                                                        ?.estado,
                                                                     estadoFecha:
                                                                         DateTime
-                                                                            .now(),
-                                                                    empleadoEstado:
-                                                                        provider
-                                                                            .usuario
-                                                                            ?.empleadoId);
+                                                                            .now())
+                                                              ?..empleadoEstado =
+                                                                  p0?.empleadoEstado;
                                                             await ContactoController
                                                                 .update(
                                                                     newModel!);
@@ -321,7 +324,8 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                                           })),
                                               label: FutureBuilder(
                                                   future: EstadoController.getItem(
-                                                      data: widget.contacto?.estado ??
+                                                      data: widget.contacto
+                                                              ?.estado ??
                                                           -1),
                                                   builder: (context, data) {
                                                     return Text(
@@ -351,11 +355,8 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                                   }))
                                           : FutureBuilder(
                                               future: EstadoController.getItem(
-                                                  data: widget.contacto?.estado ??
-                                                      -1),
-                                              builder: (context, data) => Text(data.data?.nombre ?? "Sin estado",
-                                                  textAlign: TextAlign.end,
-                                                  style: TextStyle(shadows: data.data != null ? [Shadow(color: Colors.black, offset: Offset(1, 1), blurRadius: 2)] : [], color: data.data?.color, fontSize: 15.sp, fontStyle: FontStyle.italic, fontWeight: FontWeight.bold))))
+                                                  data: widget.contacto?.estado ?? -1),
+                                              builder: (context, data) => Text(data.data?.nombre ?? "Sin estado", textAlign: TextAlign.end, style: TextStyle(shadows: data.data != null ? [Shadow(color: Colors.black, offset: Offset(1, 1), blurRadius: 2)] : [], color: data.data?.color, fontSize: 15.sp, fontStyle: FontStyle.italic, fontWeight: FontWeight.bold))))
                                 ]),
                             if (widget.compartir)
                               Text(

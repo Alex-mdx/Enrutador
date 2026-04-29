@@ -161,8 +161,10 @@ class ContactoController {
 
   static Future<List<ContactoModelo>> getItems() async {
     final db = await database();
-    final modelo = (await db.query(nombreDB,
-        columns: ["id", "latitud", "longitud", "tipo", "estado"],));
+    final modelo = (await db.query(
+      nombreDB,
+      columns: ["id", "latitud", "longitud", "tipo", "estado"],
+    ));
     List<ContactoModelo> model = [];
     for (var element in modelo) {
       model.add(ContactoModelo.fromJson(element));
@@ -201,6 +203,9 @@ class ContactoController {
         : Preferences.tiposFilt == 1
             ? "tipo IS NOT NULL AND tipo_fecha IS NOT NULL"
             : "estado IS NOT NULL AND estado_fecha IS NOT NULL";
+    vacios =
+        "$vacios${(Preferences.pendientesFilt ? " AND (pendiente IS NULL OR pendiente = 1)" : "")}";
+    print(vacios);
     final db = await database();
     final modelo = (await db.query(nombreDB,
         where: nombre == "" || nombre == null
@@ -219,7 +224,11 @@ class ContactoController {
           "estado",
           "nombre_completo",
           "tipo_fecha",
-          "estado_fecha"
+          "estado_fecha",
+          "domicilio",
+          "numero",
+          "otro_numero",
+          "pendiente"
         ],
         orderBy:
             "${Preferences.agruparFilt == 0 ? "nombre_completo" : Preferences.tiposFilt == 1 ? "tipo_fecha" : "estado_fecha"} ${Preferences.ordenFilt ? "DESC" : "ASC"}",
@@ -258,6 +267,16 @@ class ContactoController {
     List<Map<String, dynamic>> categoria = await db.query(nombreDB,
         where: "nombre_completo LIKE ? OR numero LIKE ? OR otro_numero LIKE ?",
         orderBy: "nombre_completo ASC",
+        columns: [
+          "id",
+          "latitud",
+          "longitud",
+          "tipo",
+          "estado",
+          "nombre_completo",
+          "numero",
+          "otro_numero"
+        ],
         whereArgs: ['%$word%', '%$word%', '%$word%'],
         limit: limit ?? 10);
     for (var element in categoria) {

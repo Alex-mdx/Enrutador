@@ -90,7 +90,8 @@ class _CardAccountLiteState extends State<CardAccountLite> {
                           flex: 2,
                           child: InkWell(
                               onTap: () async {
-                                if ((provider.usuario?.adminTipo ?? 0) >= 3) {
+                                if ((provider.usuario?.adminTipo ?? 0) >= 3 ||
+                                    (provider.usuario?.adminTipo ?? 0) == -1) {
                                   try {
                                     var foto = (await CamaraFun.getGalleria(
                                             context,
@@ -133,7 +134,9 @@ class _CardAccountLiteState extends State<CardAccountLite> {
                           child: GestureDetector(
                               onTap: () {
                                 if (((provider.usuario?.adminTipo ?? 0) >= 3 ||
-                                        provider.usuario?.uuid == user.uuid) &&
+                                        provider.usuario?.uuid == user.uuid ||
+                                        (provider.usuario?.adminTipo ?? 0) ==
+                                            -1) &&
                                     user.adminTipo != -1) {
                                   showDialog(
                                       context: context,
@@ -181,7 +184,9 @@ class _CardAccountLiteState extends State<CardAccountLite> {
                                       fontSize: 15.sp,
                                       fontWeight: FontWeight.bold)),
                               onPressed: () {
-                                if ((provider.usuario?.adminTipo ?? 0) == 5 &&
+                                if (((provider.usuario?.adminTipo ?? 0) == 5 ||
+                                        (provider.usuario?.adminTipo ?? 0) ==
+                                            -1) &&
                                     user.adminTipo != -1) {
                                   Dialogs.showMorph(
                                       title: user.status == 1
@@ -219,9 +224,11 @@ class _CardAccountLiteState extends State<CardAccountLite> {
                         InputQty.int(
                             qtyFormProps: QtyFormProps(
                                 enableTyping: false,
-                                enabled:
-                                    (provider.usuario?.adminTipo ?? 0) == 5 &&
-                                        user.adminTipo != -1),
+                                enabled: ((provider.usuario?.adminTipo ?? 0) ==
+                                            5 ||
+                                        (provider.usuario?.adminTipo ?? 0) ==
+                                            -1) &&
+                                    user.adminTipo != -1),
                             decoration: QtyDecorationProps(
                                 isDense: true,
                                 leadingWidget: Icon(Icons.admin_panel_settings,
@@ -321,7 +328,7 @@ class _CardAccountLiteState extends State<CardAccountLite> {
                         icon: Icon(LineIcons.helpingHands,
                             color: ThemaMain.green, size: 20.sp),
                         onPressed: () {
-                          if (((provider.usuario?.adminTipo ?? 0) >= 3 &&
+                          if (((provider.usuario?.adminTipo ?? 0) >= 3 ||
                                   (provider.usuario?.adminTipo ?? 0) != -1) ||
                               provider.usuario?.uuid == user.uuid) {
                             showDialog(

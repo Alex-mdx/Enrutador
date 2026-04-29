@@ -64,6 +64,10 @@ class Preferences {
   static set vaciosFilt(bool value) =>
       _preferences?.setBool('vaciosFilt', value);
 
+  static bool get pendientesFilt => _preferences?.getBool('pendientesFilt') ?? false;
+  static set pendientesFilt(bool value) =>
+      _preferences?.setBool('pendientesFilt', value);
+
   //*Filtro buscador enrutador
   static bool get enrutados => _preferences?.getBool('enrutados') ?? false;
   static set enrutados(bool value) => _preferences?.setBool('enrutados', value);

@@ -6,7 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
-
+import 'package:badges/badges.dart' as bd;
+import '../../../controllers/contacto_controller.dart';
 import '../../dialogs/dialog_setting.dart';
 import '../card_accout.dart';
 
@@ -22,20 +23,31 @@ class SideButtons extends StatelessWidget {
           SizedBox(height: 10.h),
           GestureDetector(
               onTap: () async => await Navigation.pushNamed(route: "contactos"),
-              child: Card(
-                  child: Padding(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 1.w, vertical: 1.h),
-                      child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text("Contactos",
-                                style: TextStyle(
-                                    fontSize: 16.sp,
-                                    fontWeight: FontWeight.bold)),
-                            Icon(Icons.connect_without_contact,
-                                size: 22.sp, color: ThemaMain.darkGrey)
-                          ])))),
+              child: FutureBuilder(
+                  future: ContactoController.getCountPendiente(),
+                  builder: (context, snapshot) => bd.Badge(
+                      showBadge: snapshot.hasData || snapshot.data == 1,
+                      badgeStyle: bd.BadgeStyle(badgeColor: ThemaMain.red),
+                      badgeAnimation: bd.BadgeAnimation.slide(),
+                      position: bd.BadgePosition.topEnd(top: -10, end: 0),
+                      badgeContent: Text(snapshot.data.toString(),
+                          style: TextStyle(
+                              fontSize: 13.sp, fontWeight: FontWeight.bold)),
+                      child: Card(
+                          child: Padding(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 1.w, vertical: 1.h),
+                              child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text("Contactos",
+                                        style: TextStyle(
+                                            fontSize: 16.sp,
+                                            fontWeight: FontWeight.bold)),
+                                    Icon(Icons.connect_without_contact,
+                                        size: 22.sp, color: ThemaMain.darkGrey)
+                                  ])))))),
           if (kDebugMode)
             GestureDetector(
                 onTap: () async {},

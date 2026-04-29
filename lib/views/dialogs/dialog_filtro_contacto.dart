@@ -1,6 +1,7 @@
 import 'package:enrutador/utilities/preferences.dart';
 import 'package:enrutador/utilities/services/navigation_services.dart';
 import 'package:enrutador/utilities/theme/theme_color.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:oktoast/oktoast.dart';
@@ -19,12 +20,14 @@ class _DialogFiltroContactoState extends State<DialogFiltroContacto> {
   int agrupar = 0;
   bool ordenar = false;
   bool vacios = false;
+  bool pendientes = false;
   @override
   void initState() {
     tipos = Preferences.tiposFilt;
     agrupar = Preferences.agruparFilt;
     ordenar = Preferences.ordenFilt;
     vacios = Preferences.vaciosFilt;
+    pendientes = Preferences.pendientesFilt;
     super.initState();
   }
 
@@ -110,18 +113,37 @@ class _DialogFiltroContactoState extends State<DialogFiltroContacto> {
             Text("Descendente",
                 style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.bold))
           ]),
+      Divider(indent: 5.w, endIndent: 5.w),
+      if (kDebugMode)
+        Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text("Ignorar contactos sin cambios",
+                  style:
+                      TextStyle(fontSize: 15.sp, fontWeight: FontWeight.bold)),
+              Checkbox(
+                  activeColor: ThemaMain.green,
+                  value: vacios,
+                  onChanged: (value) => setState(() {
+                        if (value != null) {
+                          vacios = !vacios;
+                        }
+                      }))
+            ]),
       Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text("Ignorar vacios",
+            Text("Mostrar solo pendientes",
                 style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.bold)),
             Checkbox(
+                checkColor: ThemaMain.purple,
                 activeColor: ThemaMain.green,
-                value: vacios,
+                value: pendientes,
                 onChanged: (value) => setState(() {
                       if (value != null) {
-                        vacios = !vacios;
+                        pendientes = !pendientes;
                       }
                     }))
           ]),
@@ -132,6 +154,7 @@ class _DialogFiltroContactoState extends State<DialogFiltroContacto> {
             Preferences.agruparFilt = agrupar;
             Preferences.ordenFilt = ordenar;
             Preferences.vaciosFilt = vacios;
+            Preferences.pendientesFilt = pendientes;
             widget.fun();
             Navigation.pop();
           },

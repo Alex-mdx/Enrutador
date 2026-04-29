@@ -31,7 +31,7 @@ class _MapAlternativeState extends State<MapAlternative> {
                 : provider.cargaDatos
                     ? 4.h
                     : 2.h),
-        duration: Duration(milliseconds: 500),
+        duration: Duration(milliseconds: 300),
         child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -76,10 +76,10 @@ class _MapAlternativeState extends State<MapAlternative> {
                       color: Colors.black38),
                   child: Row(
                       mainAxisSize: MainAxisSize.min,
-                      spacing: 2.w,
+                      spacing: 1.w,
                       children: [
                         IconButton.filledTonal(
-                            iconSize: 22.sp,
+                            iconSize: 24.sp,
                             onPressed: () async {
                               setState(() {
                                 Preferences.grid = !Preferences.grid;
@@ -99,7 +99,7 @@ class _MapAlternativeState extends State<MapAlternative> {
                                     ? ThemaMain.primary
                                     : ThemaMain.red)),
                         IconButton.filledTonal(
-                            iconSize: 22.sp,
+                            iconSize: 24.sp,
                             onPressed: () async {
                               setState(() {
                                 provider.mapaReal = !provider.mapaReal;
@@ -110,10 +110,11 @@ class _MapAlternativeState extends State<MapAlternative> {
                                 showToast("Mapa Animado");
                               }
                             },
-                            icon: Icon(Icons.map,
-                                color: provider.mapaReal
-                                    ? ThemaMain.red
-                                    : ThemaMain.primary))
+                            icon: Icon(
+                                !provider.mapaReal
+                                    ? Icons.map
+                                    : LineIcons.streetView,
+                                color: ThemaMain.primary))
                       ]))
             ]));
   }
