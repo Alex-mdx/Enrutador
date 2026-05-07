@@ -5,9 +5,11 @@ import 'package:enrutador/utilities/services/dialog_services.dart';
 import 'package:enrutador/utilities/services/navigation_services.dart';
 import 'package:enrutador/utilities/theme/theme_color.dart';
 import 'package:enrutador/views/map_main.dart';
+import 'package:enrutador/views/widgets/map_widget/map_custer.dart';
 import 'package:enrutador/views/widgets/map_widget/map_navigation.dart';
 import 'package:enrutador/views/widgets/map_widget/map_sliding.dart';
 import 'package:enrutador/views/widgets/search/search_widget.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_slider_drawer/flutter_slider_drawer.dart';
@@ -55,7 +57,7 @@ class _HomeViewState extends State<HomeView> {
                     toolbarHeight: 6.h,
                     title: Text("Enrutador", style: TextStyle(fontSize: 18.sp)),
                     actions: [
-                      FutureBuilder(
+                      /* FutureBuilder(
                           future: ContactoController.getCountPendiente(),
                           builder: (context, snapshot) => bd.Badge(
                               showBadge: snapshot.hasData || snapshot.data == 1,
@@ -76,7 +78,7 @@ class _HomeViewState extends State<HomeView> {
                                       color:
                                           snapshot.hasData || snapshot.data == 1
                                               ? ThemaMain.red
-                                              : ThemaMain.primary))))
+                                              : ThemaMain.primary)))) */
                     ]),
                 body: IgnorePointer(
                     ignoring:
@@ -160,7 +162,7 @@ class PaginadoState extends State<Paginado> {
   @override
   Widget build(BuildContext context) {
     return Stack(children: [
-      MapMain(),
+      if (kDebugMode) MapCuster() else MapMain(),
       Align(alignment: Alignment.bottomRight, child: MapNavigation()),
       Align(alignment: Alignment.bottomLeft, child: MapAlternative()),
       if (!widget.provider.descargarZona)

@@ -141,7 +141,7 @@ class _MapNavigationState extends State<MapNavigation> {
                       container = !container;
                       if (container) {
                         CameraFit camara = CameraFit.bounds(
-                            maxZoom: 20,
+                            maxZoom: 18,
                             padding: EdgeInsets.symmetric(
                                 horizontal: 20.w, vertical: 10.h),
                             bounds: LatLngBounds(

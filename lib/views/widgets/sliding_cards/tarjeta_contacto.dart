@@ -48,15 +48,15 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
         child: Column(children: [
           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
             SizedBox(
-                width: 48.w,
+                width: 50.w,
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       FutureBuilder(
                           future: PlusCodeFun.convert(
                               PlusCodeFun.psCODE(
-                                  provider.contacto?.latitud ?? 0,
-                                  provider.contacto?.longitud ?? 0),
+                                  provider.contacto?.latitud.toDouble() ?? 0,
+                                  provider.contacto?.longitud.toDouble() ?? 0),
                               toShortFormat:
                                   Preferences.psCodeExt && provider.internet),
                           builder: (context, snapshot) => TextButton(
@@ -115,7 +115,7 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                               },
                               child: AutoSizeText(snapshot.data ?? "?",
                                   style: TextStyle(fontSize: 16.sp),
-                                  minFontSize: 8,
+                                  minFontSize: 9,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis))),
                       InkWell(

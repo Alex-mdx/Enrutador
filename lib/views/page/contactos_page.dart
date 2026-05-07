@@ -132,6 +132,7 @@ class _ContactosPageState extends State<ContactosPage> {
                                           sincronizado: 0,
                                           aceptadoEmpleadoId: null,
                                           fechaSincronizado: null,
+                                          notasGuia: null,  
                                           contactos: [data],
                                           referencias: referencia,
                                           notas: notas);

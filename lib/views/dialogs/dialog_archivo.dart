@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:enrutador/controllers/archivo_controller.dart';
 import 'package:enrutador/utilities/camara_fun.dart';
@@ -129,7 +128,7 @@ class _DialogArchivoState extends State<DialogArchivo> {
                                           ? BoxDecoration(
                                               borderRadius:
                                                   BorderRadius.circular(
-                                                      borderRadius),
+                                                      borderRadius + 5),
                                               border: Border.all(
                                                   color: ThemaMain.green,
                                                   width: 1.w))
@@ -185,18 +184,25 @@ class _DialogArchivoState extends State<DialogArchivo> {
       if (share.isNotEmpty)
         IconButton.filled(
             onPressed: () async {
-              List<File> imagenBytes = [];
-              for (var element in share) {
-                var value = (await ArchivoController.getId(element))!.archivo;
-                var file = await CamaraFun.imagen(
-                    nombre: "", imagenBytes: base64Decode(value!));
-                imagenBytes.add(file!);
-              }
+              debugPrint("share: ${share.map((e) => e).toList()}");
+              try {
+                List<XFile> files = [];
+                for (var element in share) {
+                  var file = await ArchivoController.getId(element);
+                  var foto = await CamaraFun.imagen(
+                      nombre: "archivo_${Textos.randomWord(3)}.jpg",
+                      imagenBytes: base64Decode(file!.archivo!));
+                  files.add(XFile(foto!.path,
+                      bytes: base64Decode(file.archivo!),
+                      name: "archivo_${Textos.randomWord(3)}.jpg",
+                      mimeType: "image/jpeg"));
+                }
 
-              await ShareFun.share(
-                  titulo: "Archivos",
-                  mensaje: "T",
-                  files: imagenBytes.map((e) => XFile(e.path)).toList());
+                await ShareFun.share(
+                    titulo: "Archivos", mensaje: null, files: files);
+              } catch (e) {
+                showToast("error: $e");
+              }
             },
             icon: Icon(Icons.share, color: ThemaMain.background, size: 24.sp)),
       ElevatedButton.icon(

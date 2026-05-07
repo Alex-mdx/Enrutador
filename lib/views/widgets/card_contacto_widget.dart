@@ -95,7 +95,7 @@ class CardContactoWidget extends StatelessWidget {
                                   children: [
                                 SubstringHighlight(
                                     text:
-                                        "${contacto.nombreCompleto ?? "Sin nombre"}${kDebugMode ? " -${contacto.tipo} - ${contacto.estado}" : ""}",
+                                        "${contacto.nombreCompleto ?? "Sin nombre"}${kDebugMode ? "|${contacto.tipo}|${contacto.estado}" : ""}",
                                     term: entrada,
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
@@ -171,7 +171,7 @@ class CardContactoWidget extends StatelessWidget {
                                           children: [
                                             SubstringHighlight(
                                                 text:
-                                                    "Tel: ${NumberFun.formatNumberWithLadaAndParentheses(contacto.numero?.toString())}",
+                                                    "Tel: ${naviPc ? contacto.numero ?? 0 : NumberFun.formatNumberWithLadaAndParentheses(contacto.numero?.toString())}",
                                                 term: entrada,
                                                 maxLines: 2,
                                                 overflow: TextOverflow.ellipsis,
@@ -185,7 +185,7 @@ class CardContactoWidget extends StatelessWidget {
                                                         FontWeight.bold)),
                                             SubstringHighlight(
                                                 text:
-                                                    "Otro: ${NumberFun.formatNumberWithLadaAndParentheses(contacto.otroNumero?.toString())}",
+                                                    "Otro: ${naviPc ? contacto.otroNumero ?? "0" : NumberFun.formatNumberWithLadaAndParentheses(contacto.otroNumero?.toString())}",
                                                 term: entrada,
                                                 maxLines: 2,
                                                 overflow: TextOverflow.ellipsis,

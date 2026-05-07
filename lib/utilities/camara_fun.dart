@@ -32,8 +32,8 @@ class CamaraFun {
       {required String nombre, required Uint8List imagenBytes}) async {
     try {
       final directory = await getTemporaryDirectory();
-      final nombre = 'nombre.png';
-      final filePath = path.join(directory.path, nombre);
+      final nombreFoto = '$nombre.jpg';
+      final filePath = path.join(directory.path, nombreFoto);
       final file = File(filePath);
 
       await file.writeAsBytes(imagenBytes);

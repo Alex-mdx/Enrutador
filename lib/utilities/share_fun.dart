@@ -11,8 +11,8 @@ class ShareFun {
   static var copiar =
       "//Ingrese este codigo en algun navegador de google para tener la ubicacion exacta";
   static Future<int?> share(
-      {required String titulo,
-      required String mensaje,
+      {required String? titulo,
+      required String? mensaje,
       List<XFile>? files}) async {
     final params = ShareParams(title: titulo, text: mensaje, files: files);
     var share = await SharePlus.instance.share(params);

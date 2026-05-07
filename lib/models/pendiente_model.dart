@@ -15,6 +15,7 @@ class PendienteModel {
   List<ReferenciaModelo> referencias;
   List<NotaModel> notas;
   int sincronizado;
+  String? notasGuia;
   DateTime fechaPendiente;
   DateTime? fechaSincronizado;
 
@@ -26,6 +27,7 @@ class PendienteModel {
       required this.referencias,
       required this.notas,
       required this.sincronizado,
+      required this.notasGuia,
       required this.fechaPendiente,
       required this.fechaSincronizado});
 
@@ -37,6 +39,7 @@ class PendienteModel {
           List<ReferenciaModelo>? referencias,
           List<NotaModel>? notas,
           int? sincronizado,
+          String? notasGuia,
           DateTime? fechaPendiente,
           DateTime? fechaSincronizado}) =>
       PendienteModel(
@@ -47,6 +50,7 @@ class PendienteModel {
           referencias: referencias ?? this.referencias,
           notas: notas ?? this.notas,
           sincronizado: sincronizado ?? this.sincronizado,
+          notasGuia: notasGuia ?? this.notasGuia,
           fechaPendiente: fechaPendiente ?? this.fechaPendiente,
           fechaSincronizado: fechaSincronizado ?? this.fechaSincronizado);
 
@@ -58,6 +62,7 @@ class PendienteModel {
       referencias: generarReferencias(json["referencias"].toString()),
       notas: generarNotas(json["notas"].toString()),
       sincronizado: json["sincronizado"],
+      notasGuia: json["notas_guia"],
       fechaPendiente: Textos.parseoDateFire(json["fecha_pendiente"])!,
       fechaSincronizado: json["fecha_sincronizado"] == null
           ? null
@@ -71,6 +76,7 @@ class PendienteModel {
         "referencias": jsonEncode(referencias.map((r) => r.toJson()).toList()),
         "notas": jsonEncode(notas.map((r) => r.toJson()).toList()),
         "sincronizado": sincronizado,
+        "notas_guia": notasGuia,
         "fecha_pendiente": Timestamp.fromDate(fechaPendiente),
         "fecha_sincronizado": fechaSincronizado == null
             ? null
@@ -85,6 +91,7 @@ class PendienteModel {
         "referencias": jsonEncode(referencias.map((r) => r.toJson()).toList()),
         "notas": jsonEncode(notas.map((r) => r.toJson()).toList()),
         "sincronizado": sincronizado,
+        "notas_guia": notasGuia,
         "fecha_pendiente": fechaPendiente.toIso8601String(),
         "fecha_sincronizado": fechaSincronizado?.toIso8601String()
       };

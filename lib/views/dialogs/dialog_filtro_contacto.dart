@@ -1,7 +1,6 @@
 import 'package:enrutador/utilities/preferences.dart';
 import 'package:enrutador/utilities/services/navigation_services.dart';
 import 'package:enrutador/utilities/theme/theme_color.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:oktoast/oktoast.dart';
@@ -114,23 +113,28 @@ class _DialogFiltroContactoState extends State<DialogFiltroContacto> {
                 style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.bold))
           ]),
       Divider(indent: 5.w, endIndent: 5.w),
-      if (kDebugMode)
-        Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text("Ignorar contactos sin cambios",
-                  style:
-                      TextStyle(fontSize: 15.sp, fontWeight: FontWeight.bold)),
-              Checkbox(
-                  activeColor: ThemaMain.green,
-                  value: vacios,
-                  onChanged: (value) => setState(() {
-                        if (value != null) {
-                          vacios = !vacios;
-                        }
-                      }))
-            ]),
+      Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Expanded(
+                flex: 5,
+                child: Text(
+                    "No mostrar vacios\nSolo contacto con nombre, tipo y estado",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        fontSize: 14.sp, fontWeight: FontWeight.bold))),
+            Expanded(
+                flex: 1,
+                child: Checkbox(
+                    activeColor: ThemaMain.green,
+                    value: vacios,
+                    onChanged: (value) => setState(() {
+                          if (value != null) {
+                            vacios = !vacios;
+                          }
+                        })))
+          ]),
       Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,

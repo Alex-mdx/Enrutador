@@ -230,11 +230,14 @@ class _CardAccountLiteState extends State<CardAccountLite> {
                                             -1) &&
                                     user.adminTipo != -1),
                             decoration: QtyDecorationProps(
+                                contentPadding: EdgeInsets.symmetric(
+                                    vertical: .5.h, horizontal: 1.w),
                                 isDense: true,
                                 leadingWidget: Icon(Icons.admin_panel_settings,
                                     color: ThemaMain.primary, size: 20.sp),
                                 borderShape: BorderShapeBtn.circle,
-                                isBordered: true),
+                                fillColor: ThemaMain.background,
+                                isBordered: false),
                             maxVal: 5,
                             initVal: user.adminTipo ?? 0,
                             minVal: 0,
@@ -278,31 +281,24 @@ class _CardAccountLiteState extends State<CardAccountLite> {
                       ]),
                       ElevatedButton.icon(
                           onPressed: () {
-                            if (((provider.usuario?.adminTipo ?? 0) >= 3 &&
-                                    (provider.usuario?.adminTipo ?? 0) != -1) ||
+                            if (((provider.usuario?.adminTipo ?? 0) >= 3 ||
+                                    (provider.usuario?.adminTipo ?? 0) == -1) ||
                                 provider.usuario?.uuid == user.uuid) {
                               showDialog(
                                   context: context,
                                   builder: (context) => DialogSend(
                                       cabeza: "Vincular con numero de empleado",
                                       fun: (p0) async {
-                                        if ((provider.usuario?.adminTipo ??
-                                                0) >=
-                                            3) {
-                                          var temp = user.copyWith(
-                                              empleadoId: p0,
-                                              actualizacion: DateTime.now());
-                                          if (!widget.local) {
-                                            await change(temp);
-                                          } else {
-                                            setState(() {
-                                              user = temp;
-                                            });
-                                            await widget.fun!(user);
-                                          }
+                                        var temp = user.copyWith(
+                                            empleadoId: p0,
+                                            actualizacion: DateTime.now());
+                                        if (!widget.local) {
+                                          await change(temp);
                                         } else {
-                                          showToast(
-                                              "No tiene el nivel de administrador necesario para ejercer el cambio");
+                                          setState(() {
+                                            user = temp;
+                                          });
+                                          await widget.fun!(user);
                                         }
                                       },
                                       tipoTeclado: TextInputType.text,
@@ -329,7 +325,7 @@ class _CardAccountLiteState extends State<CardAccountLite> {
                             color: ThemaMain.green, size: 20.sp),
                         onPressed: () {
                           if (((provider.usuario?.adminTipo ?? 0) >= 3 ||
-                                  (provider.usuario?.adminTipo ?? 0) != -1) ||
+                                  (provider.usuario?.adminTipo ?? 0) == -1) ||
                               provider.usuario?.uuid == user.uuid) {
                             showDialog(
                                 context: context,

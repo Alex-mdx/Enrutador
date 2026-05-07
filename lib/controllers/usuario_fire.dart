@@ -143,7 +143,7 @@ class UsuarioFire {
             .collection(collection)
             .doc(doc.docs.first.id)
             .update(data.toFirestore());
-        return false;
+        return true;
       } else {
         await db.collection(collection).add(data.toFirestore());
         return true;
@@ -154,7 +154,7 @@ class UsuarioFire {
     }
   }
 
-  static Future<bool> deleteItem(
+  /* static Future<bool> deleteItem(
       {String? table, String? query, bool itsNumber = false}) async {
     var doc = await db
         .collection(collection)
@@ -167,5 +167,5 @@ class UsuarioFire {
     if (doc.docs.firstOrNull == null) return false;
     await db.collection(collection).doc(doc.docs.first.id).delete();
     return true;
-  }
+  } */
 }

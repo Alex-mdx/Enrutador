@@ -1,6 +1,7 @@
 import 'package:enrutador/models/estado_model.dart';
 import 'package:flutter/material.dart';
 import 'package:oktoast/oktoast.dart';
+import 'package:readmore/readmore.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:sizer/sizer.dart';
 
@@ -32,13 +33,13 @@ class ListEstadoWidget extends StatelessWidget {
         child: Card(
             color: estado.color,
             child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 1.h),
+                padding: EdgeInsets.symmetric(horizontal: 1.w, vertical: 1.h),
                 child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Container(
                           constraints:
-                              BoxConstraints(maxWidth: dense ? 18.w : 22.w),
+                              BoxConstraints(maxWidth: dense ? 18.w : 23.w),
                           child: Row(mainAxisSize: MainAxisSize.min, children: [
                             if (selectedVisible)
                               Checkbox.adaptive(
@@ -57,7 +58,7 @@ class ListEstadoWidget extends StatelessWidget {
                           ])),
                       Expanded(
                           child: Padding(
-                              padding: EdgeInsets.only(left: 2.w),
+                              padding: EdgeInsets.only(left: 1.w),
                               child: Column(
                                   mainAxisSize: MainAxisSize.min,
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -67,11 +68,22 @@ class ListEstadoWidget extends StatelessWidget {
                                             backgroundColor: ThemaMain.white,
                                             fontSize: 16.sp,
                                             fontWeight: FontWeight.bold)),
-                                    Text(
+                                    ReadMoreText(
                                         estado.descripcion == "" ||
                                                 estado.descripcion == null
                                             ? "No se incluyo descripcion"
                                             : estado.descripcion!,
+                                        trimCollapsedText: " Leer mas",
+                                        trimExpandedText: " .Leer menos",
+                                        lessStyle: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontStyle: FontStyle.italic,
+                                            color: ThemaMain.darkBlue),
+                                        moreStyle: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: ThemaMain.darkBlue),
+                                        trimMode: TrimMode.Line,
+                                        trimLines: 2,
                                         style: TextStyle(
                                             backgroundColor: ThemaMain.white,
                                             fontStyle: estado.descripcion ==

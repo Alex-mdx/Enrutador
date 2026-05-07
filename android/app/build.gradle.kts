@@ -24,16 +24,16 @@ if (keystorePropertiesFile.exists()) {
 android {
     namespace = "com.example.enrutador"
     compileSdk = 36
-    ndkVersion = flutter.ndkVersion
+    ndkVersion = "29.0.14033849"
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-        isCoreLibraryDesugaringEnabled = true 
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+        isCoreLibraryDesugaringEnabled = true
     }
 
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "17"
     }
 
     defaultConfig {
@@ -41,7 +41,7 @@ android {
         minSdk = 24
         targetSdk = 36
         versionCode = 1
-        versionName = "1.0.1"
+        versionName = "1.0.9"
         multiDexEnabled = true
          manifestPlaceholders.apply {
             put("appAuthRedirectScheme", "com.example.enrutador")
@@ -73,6 +73,11 @@ android {
             )
             signingConfig = signingConfigs.getByName("release")
         }
+    }
+    packagingOptions {
+      jniLibs {
+        useLegacyPackaging = true
+      }
     }
 }
 

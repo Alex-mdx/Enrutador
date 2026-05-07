@@ -45,10 +45,10 @@ class _ViajeMapPageState extends State<MapMain>
                 keepAlive: true,
                 onTap: (tapPosition, point) async => await MapFun.touch(
                     provider: provider,
-                    lat: point.latitude,
-                    lng: point.longitude),
+                    lat: double.parse(point.latitude.toStringAsFixed(7)),
+                    lng: double.parse(point.longitude.toStringAsFixed(7))),
                 initialZoom: 17,
-                minZoom: 8,
+                minZoom: 10,
                 maxZoom: 20,
                 initialCenter: LatLng(
                     provider.local!.latitude, provider.local!.longitude)),
@@ -125,7 +125,9 @@ class _ViajeMapPageState extends State<MapMain>
                               ? SizedBox()
                               : PolylineLayer(polylines: polylines);
                         }),
-                if (provider.contacto != null && !provider.descargarZona)
+                if (provider.contacto != null &&
+                    !provider.descargarZona &&
+                    provider.animaMap.mapController.camera.zoom > 14)
                   FutureBuilder(
                       future: ReferenciasController.getIdPrin(
                           idContacto: provider.contacto!.id,
@@ -155,7 +157,7 @@ class _ViajeMapPageState extends State<MapMain>
                       }),
                 if (!provider.descargarZona)
                   FutureBuilder(
-                      future: ContactoController.getItems(),
+                      future: ContactoController.getItems(null),
                       builder: (context, snapshot) => AnimatedMarkerLayer(
                           alignment: Alignment.center,
                           markers: !snapshot.hasData

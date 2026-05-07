@@ -15,6 +15,7 @@ import 'package:line_icons/line_icons.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:provider/provider.dart';
+import 'package:rive_animated_icon/rive_animated_icon.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:enrutador/controllers/contacto_controller.dart';
 import 'package:enrutador/models/contacto_model.dart';
@@ -72,64 +73,161 @@ class _ContactosViewState extends State<ContactosView> {
         appBar: AppBar(
             title: Text("Contactos", style: TextStyle(fontSize: 18.sp)),
             actions: [
-              OverflowBar(spacing: 2.w, children: [
-                ElevatedButton.icon(
-                    style: ButtonStyle(
-                        padding: WidgetStatePropertyAll(EdgeInsets.symmetric(
-                            horizontal: 3.sp, vertical: 1.h))),
-                    onPressed: () async {
-                      final tamanio =
-                          (await ContactoController.getItems()).length;
-                      Dialogs.showMorph(
-                          title: "Contactos",
-                          description:
-                              "Estas seguro de enviar los $tamanio contacto(s)\nEste proceso puede tardar unos segundos dependiendo de el tamaño de los datos obtenidos",
-                          loadingTitle: "procesando",
-                          onAcceptPressed: (context) async {
-                            final all = await ContactoController.getAll();
-                            var archivo = await ShareFun.shareDatas(
-                                nombre: "contactos", datas: all);
-                            if (archivo.isNotEmpty) {
-                              await ShareFun.share(
-                                  titulo:
-                                      "Este es un contenido compacto de tipos",
-                                  mensaje: "objeto de contactos",
-                                  files: archivo
-                                      .map((e) => XFile(e.path))
-                                      .toList());
-                            }
-                          });
-                    },
-                    label:
-                        Text("Enviar todo", style: TextStyle(fontSize: 13.sp)),
-                    icon: Icon(Icons.done_all,
-                        color: ThemaMain.primary, size: 19.sp)),
-                if (selects.isNotEmpty)
-                  ElevatedButton(
+              OverflowBar(spacing: 1.w, children: [
+                if (kDebugMode)
+                  ElevatedButton.icon(
                       style: ButtonStyle(
                           padding: WidgetStatePropertyAll(EdgeInsets.symmetric(
-                              horizontal: 3.sp, vertical: 1.h))),
+                              horizontal: 3.sp, vertical: 0))),
                       onPressed: () async {
-                        List<ContactoModelo> temps = [];
-                        for (var element in selects) {
-                          var cont = await ContactoController.getItemId(
-                              id: element.id!);
-                          if (cont != null) {
-                            temps.add(cont);
-                          }
-                        }
-                        var archivo = await ShareFun.shareDatas(
-                            nombre: "contactos", datas: temps);
-                        if (archivo.isNotEmpty) {
-                          await ShareFun.share(
-                              titulo: "Este es un contenido compacto de tipos",
-                              mensaje: "objeto de contactos",
-                              files:
-                                  archivo.map((e) => XFile(e.path)).toList());
+                        final tamanio =
+                            (await ContactoController.getItems(null)).length;
+                        Dialogs.showMorph(
+                            title: "Contactos",
+                            description:
+                                "Estas seguro de enviar los $tamanio contacto(s)\nEste proceso puede tardar unos segundos dependiendo de el tamaño de los datos obtenidos",
+                            loadingTitle: "procesando",
+                            onAcceptPressed: (context) async {
+                              final all = await ContactoController.getAll();
+                              var archivo = await ShareFun.shareDatas(
+                                  nombre: "contactos", datas: all);
+                              if (archivo.isNotEmpty) {
+                                await ShareFun.share(
+                                    titulo:
+                                        "Este es un contenido compacto de tipos",
+                                    mensaje: "objeto de contactos",
+                                    files: archivo
+                                        .map((e) => XFile(e.path))
+                                        .toList());
+                              }
+                            });
+                      },
+                      label: Text("Enviar todo",
+                          style: TextStyle(fontSize: 13.sp)),
+                      icon: Icon(Icons.done_all,
+                          color: ThemaMain.primary, size: 18.sp)),
+                if (selects.isNotEmpty)
+                  ElevatedButton.icon(
+                      style: ButtonStyle(
+                          padding: WidgetStatePropertyAll(EdgeInsets.symmetric(
+                              horizontal: 3.sp, vertical: .5.h))),
+                      onPressed: () async {
+                        if (selects.length <= 5) {
+                          await Dialogs.showMorph(
+                              title: "Sincronizar",
+                              description:
+                                  "¿Desea enviar este(os) contacto(s) a sincronizar?",
+                              loadingTitle: "Sincronizando",
+                              loadingDescription:
+                                  "Este proceso puede tomar unos minutos sea paciente",
+                              onAcceptPressed: (context) async {
+                                for (var i = 0; i < selects.length; i++) {
+                                  var cont = await ContactoController.getItemId(
+                                      id: selects[i].id!);
+                                  var data = cont!.copyWith(
+                                      pendiente: 0,
+                                      empleadoEstado:
+                                          ((cont.empleadoEstado == null ||
+                                                      cont.empleadoEstado ==
+                                                          provider.usuario
+                                                              ?.empleadoId) &&
+                                                  (cont.estado != null &&
+                                                      cont.estado != -1))
+                                              ? provider.usuario?.empleadoId
+                                              : cont.empleadoEstado,
+                                      aceptadoEmpleado:
+                                          provider.usuario?.empleadoId);
+                                  var referencia =
+                                      await ReferenciasController.getIdPrin(
+                                          idContacto: data.id!,
+                                          lat: data.latitud,
+                                          lng: data.longitud,
+                                          status: -1);
+
+                                  var notas =
+                                      await NotasController.getContactoId(
+                                          data.id!,
+                                          pendiente: 1);
+                                  var result = await ContactoFire.sendItem(
+                                      data: data,
+                                      table: data.id.toString(),
+                                      query: "id",
+                                      itsNumber: true);
+                                  if (result) {
+                                    await ContactoController.update(data);
+                                    for (var item in referencia) {
+                                      var newItem = item.copyWith(estatus: 0);
+                                      var result = await ReferenciaFire.send(
+                                          referencia: newItem);
+                                      if (result) {
+                                        await ReferenciasController.update(
+                                            newItem);
+                                      }
+                                    }
+                                    for (var item in notas) {
+                                      var newItem = item.copyWith(pendiente: 0);
+                                      var result =
+                                          await NotaFire.send(nota: newItem);
+                                      if (result) {
+                                        await NotasController.update(newItem);
+                                      }
+                                    }
+                                    showToast(
+                                        "Envio\nContacto numero ${i + 1} de ${selects.length}");
+                                  }
+                                }
+                              });
+                        } else {
+                          showToast(
+                              "No puedes enviar mas de 5 contactos al mismo tiempo.\nPor favor selecciona 5 o menos para enviar");
                         }
                       },
-                      child: Text("Enviar (${selects.length})",
-                          style: TextStyle(fontSize: 13.sp)))
+                      label: Text("Enviar (${selects.length})",
+                          style: TextStyle(fontSize: 13.sp)),
+                      icon: RiveAnimatedIcon(
+                          enableAbsorbPointer: true,
+                          riveIcon: RiveIcon.reload,
+                          color: ThemaMain.green,
+                          height: 3.h,
+                          width: 3.h)),
+                if (selects.isNotEmpty)
+                  ElevatedButton.icon(
+                      style: ButtonStyle(
+                          padding: WidgetStatePropertyAll(EdgeInsets.symmetric(
+                              horizontal: 3.sp, vertical: .5.h))),
+                      onPressed: () async {
+                        if (selects.length <= 100) {
+                          List<ContactoModelo> temps = [];
+                          for (var element in selects) {
+                            var cont = await ContactoController.getItemId(
+                                id: element.id!);
+                            if (cont != null) {
+                              temps.add(cont);
+                            }
+                          }
+                          var archivo = await ShareFun.shareDatas(
+                              nombre: "contactos", datas: temps);
+                          if (archivo.isNotEmpty) {
+                            await ShareFun.share(
+                                titulo:
+                                    "Este es un contenido compacto de tipos",
+                                mensaje: "objeto de contactos",
+                                files:
+                                    archivo.map((e) => XFile(e.path)).toList());
+                          }
+                        } else {
+                          showToast(
+                              "No compartir de mas de 100 contactos.\nPor favor selecciona 100 o menos para compartir");
+                        }
+                      },
+                      label: Text("Enviar (${selects.length})",
+                          style: TextStyle(fontSize: 13.sp)),
+                      icon: RiveAnimatedIcon(
+                          enableAbsorbPointer: true,
+                          riveIcon: RiveIcon.copy,
+                          color: ThemaMain.primary,
+                          height: 3.h,
+                          width: 3.h))
               ]),
               IconButton.filledTonal(
                   iconSize: 22.sp,
@@ -180,7 +278,8 @@ class _ContactosViewState extends State<ContactosView> {
                                   fontSize: 16.sp,
                                   fontWeight: FontWeight.bold)))
                       : Scrollbar(
-                          child: stick(provider, () async => await send(1)))),
+                          child:
+                              stick(provider, () async => await send(index)))),
           PaginadorGroupedWidget(
               max: max,
               length: contactos.length,
@@ -341,6 +440,7 @@ class _ContactosViewState extends State<ContactosView> {
                     sincronizado: 0,
                     aceptadoEmpleadoId: null,
                     fechaSincronizado: null,
+                    notasGuia: null,
                     contactos: [data],
                     referencias: referencia,
                     notas: notas);

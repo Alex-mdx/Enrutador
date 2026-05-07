@@ -247,6 +247,7 @@ class _SearchWidgetState extends State<SearchWidget> {
                                   await provider.slide.open();
                                 },
                                 compartir: false,
+                                naviPc: true,
                                 selectedVisible: false,
                                 selected: null,
                                 onSelected: (p0) {});

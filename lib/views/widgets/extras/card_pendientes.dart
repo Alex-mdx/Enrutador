@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:enrutador/controllers/contacto_fire.dart';
 import 'package:enrutador/controllers/pendiente_fire.dart';
 import 'package:enrutador/models/nota_model.dart';
@@ -6,11 +7,13 @@ import 'package:enrutador/utilities/services/dialog_services.dart';
 import 'package:enrutador/utilities/services/navigation_services.dart';
 import 'package:enrutador/utilities/textos.dart';
 import 'package:enrutador/utilities/theme/theme_app.dart';
+import 'package:enrutador/views/dialogs/dialog_send.dart';
 import 'package:enrutador/views/widgets/card_contacto_widget.dart';
 import 'package:enrutador/views/widgets/extras/card_nota.dart';
 import 'package:enrutador/views/widgets/extras/chip_referencia.dart';
 import 'package:enrutador/views/widgets/sliding_cards/tarjeta_contacto_detalle.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:oktoast/oktoast.dart';
@@ -43,11 +46,18 @@ class _CardPendientesState extends State<CardPendientes> {
             child: Column(children: [
               Align(
                   alignment: Alignment.topLeft,
-                  child: Text(widget.pendientes.id,
-                      style: TextStyle(
-                          fontSize: 14.sp,
-                          color: ThemaMain.darkGrey,
-                          fontWeight: FontWeight.bold))),
+                  child: InkWell(
+                      onLongPress: () async {
+                        await Clipboard.setData(
+                            ClipboardData(text: widget.pendientes.id));
+                        showToast("ID copiado al portapapeles");
+                      },
+                      borderRadius: BorderRadius.circular(borderRadius),
+                      child: Text(widget.pendientes.id,
+                          style: TextStyle(
+                              fontSize: 14.sp,
+                              color: ThemaMain.darkGrey,
+                              fontWeight: FontWeight.bold)))),
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                 GestureDetector(
                     onTap: () async {
@@ -297,6 +307,46 @@ class _CardPendientesState extends State<CardPendientes> {
                         style: TextStyle(
                             fontSize: 16.sp, fontWeight: FontWeight.bold)))
               ]),
+              SizedBox(
+                  width: double.infinity,
+                  child: InkWell(
+                      onTap: () async {
+                        if (((provider.usuario?.adminTipo ?? 0) >= 3 ||
+                                (provider.usuario?.adminTipo ?? 0) == -1) &&
+                            widget.pendientes.sincronizado == 1) {
+                          showDialog(
+                              context: context,
+                              builder: (context) => DialogSend(
+                                  cabeza: "Ingresar nota",
+                                  fun: (p0) async {
+                                    var newPendiente = widget.pendientes
+                                        .copyWith(notasGuia: p0);
+                                    await PendienteFire.sendItem(
+                                        table: "id",
+                                        query: widget.pendientes.id,
+                                        data: newPendiente);
+                                    if (widget.fun != null) {
+                                      await widget.fun!();
+                                    }
+                                  },
+                                  tipoTeclado: TextInputType.text,
+                                  fecha: null,
+                                  entradaTexto: widget.pendientes.notasGuia));
+                        }
+                      },
+                      child: Card(
+                          elevation: 0,
+                          color: ThemaMain.dialogbackground,
+                          child: Padding(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 1.w, vertical: .5.h),
+                              child: AutoSizeText(
+                                  widget.pendientes.notasGuia ??
+                                      "No se ingresaron ninguna nota guia",
+                                  maxLines: 2,
+                                  style: TextStyle(
+                                      color: ThemaMain.darkBlue,
+                                      fontSize: 14.sp)))))),
               Divider(height: .5.h),
               Row(children: [
                 if (widget.pendientes.sincronizado == 1 &&

@@ -56,12 +56,13 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
     final provider = Provider.of<MainProvider>(context);
     return bd.Badge(
       badgeAnimation: bd.BadgeAnimation.fade(),
-      onTap: () => showToast("Este contacto fue un tip"),
-      badgeStyle: bd.BadgeStyle(badgeColor: ThemaMain.second, elevation: 2),
-      position: bd.BadgePosition.topEnd(end: 0),
+      position: bd.BadgePosition.topEnd(end: 0, top: -25),
       showBadge: kDebugMode,
-      badgeContent:
-          Icon(LineIcons.handHoldingHeart, color: ThemaMain.pink, size: 18.sp),
+      badgeStyle: bd.BadgeStyle(badgeColor: Colors.transparent),
+      badgeContent: IconButton.filledTonal(
+          iconSize: 18.sp,
+          onPressed: () => showToast("Este contacto fue un tip"),
+          icon: Icon(LineIcons.handHoldingHeart, color: ThemaMain.pink)),
       child: Card(
           color: ThemaMain.dialogbackground,
           child: AnimatedContainer(
@@ -252,6 +253,8 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                                   builder: (context, data) {
                                                     return Text(
                                                         "Tipo: ${data.data?.nombre ?? "Ø"}",
+                                                        textAlign:
+                                                            TextAlign.start,
                                                         style: TextStyle(
                                                             shadows:
                                                                 data.data !=

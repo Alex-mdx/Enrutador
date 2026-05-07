@@ -1,6 +1,7 @@
 import 'package:enrutador/controllers/referencias_controller.dart';
 import 'package:enrutador/models/contacto_model.dart';
 import 'package:enrutador/utilities/preferences.dart';
+import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart' as sql;
 
 import '../utilities/textos.dart';
@@ -159,12 +160,10 @@ class ContactoController {
     return model;
   }
 
-  static Future<List<ContactoModelo>> getItems() async {
+  static Future<List<ContactoModelo>> getItems(double? zoom) async {
     final db = await database();
-    final modelo = (await db.query(
-      nombreDB,
-      columns: ["id", "latitud", "longitud", "tipo", "estado"],
-    ));
+    final modelo = (await db.query(nombreDB,
+        columns: ["id", "latitud", "longitud", "tipo", "estado"]));
     List<ContactoModelo> model = [];
     for (var element in modelo) {
       model.add(ContactoModelo.fromJson(element));
@@ -198,21 +197,11 @@ class ContactoController {
 
   static Future<List<ContactoModelo>> getItemsAll(
       {required String? nombre, required int limit, required int? page}) async {
-    String vacios = Preferences.tiposFilt == 0
-        ? "nombre_completo IS NOT NULL"
-        : Preferences.tiposFilt == 1
-            ? "tipo IS NOT NULL AND tipo_fecha IS NOT NULL"
-            : "estado IS NOT NULL AND estado_fecha IS NOT NULL";
-    vacios =
-        "$vacios${(Preferences.pendientesFilt ? " AND (pendiente IS NULL OR pendiente = 1)" : "")}";
-    print(vacios);
     final db = await database();
     final modelo = (await db.query(nombreDB,
-        where: nombre == "" || nombre == null
-            ? Preferences.vaciosFilt
-                ? vacios
-                : null
-            : "(nombre_completo LIKE ? OR numero LIKE ? OR otro_numero LIKE ?) ${Preferences.vaciosFilt ? "AND $vacios" : ""}",
+        where: nombre == "" || nombre == null || buildQueryFiltros().isEmpty
+            ? null 
+            : "(nombre_completo LIKE ? OR numero LIKE ? OR otro_numero LIKE ?) ${buildQueryFiltros().isNotEmpty ? "AND $buildQueryFiltros()" : ""}",
         whereArgs: nombre == "" || nombre == null
             ? null
             : ['%$nombre%', '%$nombre%', '%$nombre%'],
@@ -228,36 +217,18 @@ class ContactoController {
           "domicilio",
           "numero",
           "otro_numero",
-          "pendiente"
+          "pendiente",
+          "creado"
         ],
         orderBy:
-            "${Preferences.agruparFilt == 0 ? "nombre_completo" : Preferences.tiposFilt == 1 ? "tipo_fecha" : "estado_fecha"} ${Preferences.ordenFilt ? "DESC" : "ASC"}",
+            "${Preferences.agruparFilt == 0 ? "nombre_completo" : Preferences.vaciosFilt ?  Preferences.tiposFilt == 1 ? "tipo_fecha" : "estado_fecha" : "creado"} ${Preferences.ordenFilt ? "DESC" : "ASC"}",
         limit: limit,
         offset: ((page ?? 1) - 1) * limit));
     List<ContactoModelo> model = [];
     for (var element in modelo) {
       model.add(ContactoModelo.fromJson(element));
     }
-    var newModelfiltro1 = Preferences.tipos.isEmpty
-        ? model
-            .where((element) =>
-                Preferences.tiposFilt == 1 ? (element.tipo ?? -1) > -1 : true)
-            .toList()
-        : model
-            .where((element) =>
-                Preferences.tipos.contains(element.tipo.toString()))
-            .toList();
-    var newModelfiltro2 = Preferences.status.isEmpty
-        ? newModelfiltro1
-            .where((element) =>
-                Preferences.tiposFilt == 2 ? (element.estado ?? -1) > -1 : true)
-            .toList()
-        : newModelfiltro1
-            .where((element) =>
-                Preferences.status.contains(element.estado.toString()))
-            .toList();
-
-    return newModelfiltro2;
+    return buildList(model);
   }
 
   static Future<List<ContactoModelo>> buscar(String word, int? limit) async {
@@ -302,8 +273,8 @@ class ContactoController {
 
   static Future<int> getTotalRegistros() async {
     final db = await database();
-    var resultado =
-        await db.rawQuery('SELECT COUNT(*) as total FROM $nombreDB');
+    var resultado = await db.rawQuery(
+        'SELECT COUNT(*) as total FROM $nombreDB ${buildQueryFiltros().isNotEmpty ? "where ${buildQueryFiltros()}" : ""}');
     return resultado.first['total'] as int;
   }
 
@@ -317,5 +288,46 @@ class ContactoController {
   static Future<void> deleteAll() async {
     final db = await database();
     await db.delete(nombreDB);
+  }
+
+  static String buildQueryFiltros() {
+    String vacios = Preferences.tiposFilt == 0
+        ? Preferences.vaciosFilt
+            ? "nombre_completo IS NOT NULL"
+            : ""
+        : Preferences.tiposFilt == 1
+            ? Preferences.vaciosFilt
+                ? "tipo IS NOT NULL AND tipo_fecha IS NOT NULL"
+                : ""
+            : Preferences.vaciosFilt
+                ? "estado IS NOT NULL AND estado_fecha IS NOT NULL"
+                : "";
+    debugPrint("vacios $vacios");
+    vacios =
+        "$vacios${(Preferences.pendientesFilt ? " AND (pendiente IS NULL OR pendiente = 1)" : "")}";
+    debugPrint("vacios $vacios");
+    return vacios;
+  }
+
+  static List<ContactoModelo> buildList(List<ContactoModelo> model) {
+    var newModelfiltro1 = Preferences.tipos.isEmpty
+        ? model
+            .where((element) =>
+                Preferences.tiposFilt == 1 ? (element.tipo ?? -1) > -1 : true)
+            .toList()
+        : model
+            .where((element) =>
+                Preferences.tipos.contains(element.tipo.toString()))
+            .toList();
+    var newModelfiltro2 = Preferences.status.isEmpty
+        ? newModelfiltro1
+            .where((element) =>
+                Preferences.tiposFilt == 2 ? (element.estado ?? -1) > -1 : true)
+            .toList()
+        : newModelfiltro1
+            .where((element) =>
+                Preferences.status.contains(element.estado.toString()))
+            .toList();
+    return newModelfiltro2;
   }
 }

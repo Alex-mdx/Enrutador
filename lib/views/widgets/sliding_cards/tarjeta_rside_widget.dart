@@ -144,15 +144,19 @@ class _TarjetaRsideWidgetState extends State<TarjetaRsideWidget> {
                           await ContactoController.deleteItem(
                               provider.contacto!.id!);
                           var model = ContactoModelo.fromJson({
-                            "id": provider.contacto!.id,
+                            "id": null,
                             "latitud": provider.contacto!.latitud,
-                            "longitud": provider.contacto!.longitud
+                            "longitud": provider.contacto!.longitud,
+                            "pendiente": 1,
+                            "status": 0
                           });
                           provider.contacto = model;
                           await MapFun.touch(
                               provider: provider,
-                              lat: model.latitud,
-                              lng: model.longitud);
+                              lat: double.parse(
+                                  model.latitud.toStringAsFixed(7)),
+                              lng: double.parse(
+                                  model.longitud.toStringAsFixed(7)));
                           var datas = await EnrutarController.getItemContacto(
                               contactoId: provider.contacto!.id ?? -1);
                           if (datas != null) {
@@ -198,11 +202,12 @@ class _TarjetaRsideWidgetState extends State<TarjetaRsideWidget> {
               },
               icon: esperar
                   ? CircularProgressIndicator()
-                  : provider.contacto?.pendiente == 1
-                      ? provider.contacto?.id == null
-                          ? Icon(Icons.save, color: ThemaMain.green)
-                          : Icon(Icons.delete, color: ThemaMain.red)
-                      : Icon(LineIcons.userSlash, color: ThemaMain.pink)),
+                  : provider.contacto?.id == null
+                      ? Icon(Icons.save, color: ThemaMain.green)
+                      : provider.contacto?.pendiente == 1 &&
+                              provider.contacto?.status == 1
+                          ? Icon(Icons.delete, color: ThemaMain.red)
+                          : Icon(LineIcons.userSlash, color: ThemaMain.pink)),
           if (provider.contacto?.id != null)
             IconButton.filledTonal(
                 iconSize: 18.sp,

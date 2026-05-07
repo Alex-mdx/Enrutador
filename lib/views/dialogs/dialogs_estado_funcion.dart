@@ -53,7 +53,7 @@ class _DialogsEstadoFuncion extends State<DialogsEstadoFuncion> {
     name();
     send(1);
     super.initState();
-    contacto = widget.contacto.copyWith(empleadoEstado: widget.empleadoId);
+    contacto = widget.contacto.copyWith(empleadoEstado: widget.contacto.empleadoEstado ?? widget.empleadoId);
   }
 
   Future<void> name() async {
