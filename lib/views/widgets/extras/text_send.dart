@@ -35,6 +35,9 @@ class _TextSendState extends State<TextSend> {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+        keyboardType: TextInputType.twitter,
+        textCapitalization: TextCapitalization.words,
+        autocorrect: true,
         controller: controller,
         minLines: 1,
         maxLines: 3,
@@ -49,9 +52,7 @@ class _TextSendState extends State<TextSend> {
             suffixIcon: enviarDirecto
                 ? Stack(alignment: Alignment.center, children: [
                     LoadingAnimationWidget.inkDrop(
-                      color: ThemaMain.green,
-                      size: 22.sp
-                    ),
+                        color: ThemaMain.green, size: 22.sp),
                     Icon(Icons.circle, color: ThemaMain.background, size: 28.sp)
                   ])
                 : IconButton.filled(
@@ -63,20 +64,19 @@ class _TextSendState extends State<TextSend> {
                     onPressed: () async {
                       try {
                         setState(() => enviarDirecto = true);
-                      if (widget.fun != null) {
-                        await widget.fun!(controller.text);
-                      }
+                        if (widget.fun != null) {
+                          await widget.fun!(controller.text);
+                        }
 
-                      setState(() => enviarDirecto = false);
-                      controller.clear();
-                      if (widget.hideWhenSend) {
-                        FocusScope.of(context).unfocus();
-                      }
+                        setState(() => enviarDirecto = false);
+                        controller.clear();
+                        if (widget.hideWhenSend) {
+                          FocusScope.of(context).unfocus();
+                        }
                       } catch (e) {
                         setState(() => enviarDirecto = false);
-                      controller.clear();
+                        controller.clear();
                       }
-                      
                     })));
   }
 }

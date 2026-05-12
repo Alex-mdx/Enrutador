@@ -3,9 +3,7 @@ import 'package:enrutador/controllers/enrutar_controller.dart';
 import 'package:enrutador/models/contacto_model.dart';
 import 'package:enrutador/utilities/main_provider.dart';
 import 'package:enrutador/utilities/services/dialog_services.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_animations/flutter_map_animations.dart';
 import 'package:flutter_map_math/flutter_geo_math.dart';
 import 'package:get/get.dart';
@@ -45,11 +43,7 @@ class MapFun {
       provider.contacto = dir;
       await provider.slide.open();
     } else {
-      if (kDebugMode) {
-        await touchCuster(provider: provider, lat: lat, lng: lng);
-      } else {
-        await touch(provider: provider, lat: lat, lng: lng);
-      }
+      await touch(provider: provider, lat: lat, lng: lng);
     }
   }
 
@@ -149,13 +143,13 @@ class MapFun {
         tipo: null,
         tipoFecha: null,
         estado: null,
+        zonas: [],
         estadoFecha: null,
         foto: null,
         fotoFecha: null,
         fotoReferencia: null,
         fotoReferenciaFecha: null,
-        what3Words: null,
-        nota: null);
+        what3Words: null);
     provider.marker = AnimatedMarker(
         width: 21.sp,
         height: 21.sp,
@@ -179,6 +173,7 @@ class MapFun {
                     pendiente: 1,
                     status: 1,
                     domicilio: null,
+                    zonas: [],
                     fechaDomicilio: null,
                     numero: null,
                     numeroFecha: null,
@@ -193,8 +188,7 @@ class MapFun {
                     fotoFecha: null,
                     fotoReferencia: null,
                     fotoReferenciaFecha: null,
-                    what3Words: null,
-                    nota: null);
+                    what3Words: null);
                 await provider.slide.open();
               }
             },
@@ -211,219 +205,78 @@ class MapFun {
             ])));
   }
 
-  static Future<void> touchCuster(
-      {required MainProvider provider,
-      required double lat,
-      required double lng}) async {
-    var pc = PlusCodeFun.psCODE(double.parse(lat.toStringAsFixed(7)),
-        double.parse(lng.toStringAsFixed(7)));
-    var newlocation = PlusCodeFun.truncPlusCode(pc);
-    provider.contacto = ContactoModelo(
-        id: null,
-        nombreCompleto: null,
-        latitud: double.parse(newlocation.latitude.toStringAsFixed(7)),
-        longitud: double.parse(newlocation.longitude.toStringAsFixed(7)),
-        domicilio: null,
-        fechaDomicilio: null,
-        numero: null,
-        numeroFecha: null,
-        otroNumero: null,
-        otroNumeroFecha: null,
-        agendar: null,
-        tipo: null,
-        tipoFecha: null,
-        estado: null,
-        estadoFecha: null,
-        foto: null,
-        fotoFecha: null,
-        fotoReferencia: null,
-        fotoReferenciaFecha: null,
-        what3Words: null,
-        nota: null);
-    provider.custerMarker = Marker(
-        width: 21.sp,
-        height: 21.sp,
-        rotate: true,
-        point: LatLng(double.parse(newlocation.latitude.toStringAsFixed(7)),
-            double.parse(newlocation.longitude.toStringAsFixed(7))),
-        child: InkWell(
-            onTap: () async {
-              provider.animaMap.centerOnPoint(
-                  LatLng(double.parse(newlocation.latitude.toStringAsFixed(7)),
-                      double.parse(newlocation.longitude.toStringAsFixed(7))),
-                  zoom: 18);
-              if (!provider.descargarZona) {
-                provider.contacto = ContactoModelo(
-                    id: null,
-                    nombreCompleto: null,
-                    latitud:
-                        double.parse(newlocation.latitude.toStringAsFixed(7)),
-                    longitud:
-                        double.parse(newlocation.longitude.toStringAsFixed(7)),
-                    pendiente: 1,
-                    status: 1,
-                    domicilio: null,
-                    fechaDomicilio: null,
-                    numero: null,
-                    numeroFecha: null,
-                    otroNumero: null,
-                    otroNumeroFecha: null,
-                    agendar: null,
-                    tipo: null,
-                    tipoFecha: null,
-                    estado: null,
-                    estadoFecha: null,
-                    foto: null,
-                    fotoFecha: null,
-                    fotoReferencia: null,
-                    fotoReferenciaFecha: null,
-                    what3Words: null,
-                    nota: null);
-                await provider.slide.open();
-              }
-            },
-            child: Stack(alignment: Alignment.center, children: [
-              Image.asset("assets/mark_point2.png"),
-              Padding(
-                  padding: EdgeInsets.only(bottom: 5.sp),
-                  child: Icon(
-                      size: 20.sp,
-                      Icons.add_circle,
-                      color: provider.descargarZona
-                          ? ThemaMain.green
-                          : ThemaMain.red))
-            ])));
-  }
-
-  static AnimatedMarker marcadores(MainProvider provider, ContactoModelo e) {
+  static AnimatedMarker marcadores(
+      MainProvider provider, ContactoModelo e, double? zoom) {
     var tocable = (provider.contacto?.latitud == e.latitud &&
         provider.contacto?.longitud == e.longitud);
     return AnimatedMarker(
-        width: tocable ? 23.sp : 19.sp,
-        height: tocable ? 23.sp : 19.sp,
+        width: tocable ? 23.sp : 18.sp,
+        height: tocable ? 23.sp : 18.sp,
         rotate: true,
         point: LatLng(e.latitud, e.longitud),
-        builder: (context, animation) => InkWell(
-            onLongPress: () async => Dialogs.showMorph(
-                title: "Eliminar",
-                description:
-                    "¿Esta seguro de eliminar este punteo?\nSe no habra manera de recuperar este dato",
-                loadingTitle: "Eliminando",
-                onAcceptPressed: (context) async {
-                  await ContactoController.deleteItemByltlng(
-                      lat: e.latitud, lng: e.longitud);
-                  provider.contacto = null;
-                }),
-            onTap: () async {
-              try {
-                provider.animaMap
-                    .centerOnPoint(LatLng(e.latitud, e.longitud), zoom: 18);
-                provider.contacto = await ContactoController.getItem(
-                    lat: e.latitud, lng: e.longitud, id: e.id);
-              } catch (err) {
-                debugPrint("$err");
-                showToast("No se pudo obtener sus fotos, intente de nuevo");
-              }
+        builder: (context, animation) => zoom! < 15
+            ? Icon(Icons.circle,
+                color: provider.estados
+                    .firstWhereOrNull((element) => element.id == e.estado)
+                    ?.color,
+                size: (zoom).clamp(8, 15).sp)
+            : InkWell(
+                onLongPress: () async => Dialogs.showMorph(
+                    title: "Eliminar",
+                    description:
+                        "¿Esta seguro de eliminar este punteo?\nSe no habra manera de recuperar este dato",
+                    loadingTitle: "Eliminando",
+                    onAcceptPressed: (context) async {
+                      await ContactoController.deleteItemByltlng(
+                          lat: e.latitud, lng: e.longitud);
+                      provider.contacto = null;
+                    }),
+                onTap: () async {
+                  try {
+                    provider.animaMap
+                        .centerOnPoint(LatLng(e.latitud, e.longitud), zoom: 18);
+                    provider.contacto = await ContactoController.getItem(
+                        lat: e.latitud, lng: e.longitud, id: e.id);
+                  } catch (err) {
+                    debugPrint("$err");
+                    showToast("No se pudo obtener sus fotos, intente de nuevo");
+                  }
 
-              await provider.slide.open();
-            },
-            child: bd.Badge(
-                badgeStyle: bd.BadgeStyle(
-                    badgeColor: Colors.black, shape: bd.BadgeShape.twitter),
-                showBadge: e.estado != null && (e.estado ?? -1) != -1,
-                badgeAnimation: bd.BadgeAnimation.slide(),
-                badgeContent: Icon(Icons.circle,
-                    color: provider.estados
-                        .firstWhereOrNull((element) => element.id == e.estado)
-                        ?.color,
-                    size: tocable ? 14.sp : 10.sp),
-                child: Stack(
-                    fit: StackFit.expand,
-                    alignment: Alignment.center,
-                    children: [
-                      Image.asset(tocable
-                          ? "assets/mark_point2.png"
-                          : "assets/mark_point.png"),
-                      Padding(
-                          padding: EdgeInsets.only(bottom: tocable ? 5.sp : 0),
-                          child: Icon(
-                              provider.tipos
-                                      .firstWhereOrNull(
-                                          (element) => element.id == e.tipo)
-                                      ?.icon ??
-                                  Icons.person,
-                              size: tocable ? 20.sp : 16.5.sp,
-                              color: provider.tipos
-                                      .firstWhereOrNull(
-                                          (element) => element.id == e.tipo)
-                                      ?.color ??
-                                  ThemaMain.primary))
-                    ]))));
-  }
-
-  static Marker marcadoresCuster(MainProvider provider, ContactoModelo e) {
-    var tocable = (provider.contacto?.latitud == e.latitud &&
-        provider.contacto?.longitud == e.longitud);
-    return Marker(
-        width: tocable ? 23.sp : 20.sp,
-        height: tocable ? 23.sp : 20.sp,
-        rotate: true,
-        point: LatLng(e.latitud, e.longitud),
-        child: InkWell(
-            onLongPress: () async => Dialogs.showMorph(
-                title: "Eliminar",
-                description:
-                    "¿Esta seguro de eliminar este punteo?\nSe no habra manera de recuperar este dato",
-                loadingTitle: "Eliminando",
-                onAcceptPressed: (context) async {
-                  await ContactoController.deleteItemByltlng(
-                      lat: e.latitud, lng: e.longitud);
-                  provider.contacto = null;
-                }),
-            onTap: () async {
-              try {
-                provider.animaMap
-                    .centerOnPoint(LatLng(e.latitud, e.longitud), zoom: 18);
-                provider.contacto = await ContactoController.getItem(
-                    lat: e.latitud, lng: e.longitud, id: e.id);
-              } catch (err) {
-                debugPrint("error $err");
-                showToast("No se pudo obtener sus fotos, intente de nuevo");
-              }
-
-              await provider.slide.open();
-            },
-            child: bd.Badge(
-                badgeStyle: bd.BadgeStyle(
-                    badgeColor: Colors.black, shape: bd.BadgeShape.twitter),
-                showBadge: e.estado != null && (e.estado ?? -1) != -1,
-                badgeAnimation: bd.BadgeAnimation.slide(),
-                badgeContent: Icon(Icons.circle,
-                    color: provider.estados
-                        .firstWhereOrNull((element) => element.id == e.estado)
-                        ?.color,
-                    size: tocable ? 14.sp : 10.sp),
-                child: Stack(
-                    fit: StackFit.expand,
-                    alignment: Alignment.center,
-                    children: [
-                      Image.asset(tocable
-                          ? "assets/mark_point2.png"
-                          : "assets/mark_point.png"),
-                      Padding(
-                          padding: EdgeInsets.only(bottom: tocable ? 5.sp : 0),
-                          child: Icon(
-                              provider.tipos
-                                      .firstWhereOrNull(
-                                          (element) => element.id == e.tipo)
-                                      ?.icon ??
-                                  Icons.person,
-                              size: tocable ? 20.sp : 17.sp,
-                              color: provider.tipos
-                                      .firstWhereOrNull(
-                                          (element) => element.id == e.tipo)
-                                      ?.color ??
-                                  ThemaMain.primary))
-                    ]))));
+                  await provider.slide.open();
+                },
+                child: bd.Badge(
+                    badgeStyle: bd.BadgeStyle(
+                        badgeColor: Colors.black, shape: bd.BadgeShape.twitter),
+                    showBadge: e.estado != null && (e.estado ?? -1) != -1,
+                    badgeAnimation: bd.BadgeAnimation.slide(),
+                    badgeContent: Icon(Icons.circle,
+                        color: provider.estados
+                            .firstWhereOrNull(
+                                (element) => element.id == e.estado)
+                            ?.color,
+                        size: tocable ? 14.sp : 10.sp),
+                    child: Stack(
+                        fit: StackFit.expand,
+                        alignment: Alignment.center,
+                        children: [
+                          Image.asset(tocable
+                              ? "assets/mark_point2.png"
+                              : "assets/mark_point.png"),
+                          Padding(
+                              padding:
+                                  EdgeInsets.only(bottom: tocable ? 5.sp : 0),
+                              child: Icon(
+                                  provider.tipos
+                                          .firstWhereOrNull(
+                                              (element) => element.id == e.tipo)
+                                          ?.icon ??
+                                      Icons.person,
+                                  size: tocable ? 20.sp : 16.sp,
+                                  color: provider.tipos
+                                          .firstWhereOrNull(
+                                              (element) => element.id == e.tipo)
+                                          ?.color ??
+                                      ThemaMain.primary))
+                        ]))));
   }
 }

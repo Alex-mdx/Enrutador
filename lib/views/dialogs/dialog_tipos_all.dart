@@ -11,8 +11,9 @@ import '../../utilities/textos.dart';
 class DialogTiposAll extends StatelessWidget {
   final Function(TiposModelo) selected;
   final DateTime? fecha;
+  final List<int>? selects;
   const DialogTiposAll(
-      {super.key, required this.selected, required this.fecha});
+      {super.key, required this.selected, required this.fecha, this.selects});
 
   @override
   Widget build(BuildContext context) {
@@ -55,8 +56,9 @@ class DialogTiposAll extends StatelessWidget {
                             return ListTipoWidget(
                                 share: false,
                                 tipo: tipo,
-                                selected: false,
-                                selectedVisible: false,
+                                selected: selects?.contains(tipo.id) ?? false,
+                                selectedVisible:
+                                    selects?.contains(tipo.id) ?? false,
                                 onSelected: (p0) {},
                                 fun: () {
                                   selected(tipo);

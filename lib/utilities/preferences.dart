@@ -49,6 +49,11 @@ class Preferences {
   static set enviarDirectoNotas(bool value) =>
       _preferences?.setBool('enviarDirectoNotas', value);
 
+  static List<String> get shareText =>
+      _preferences?.getStringList('shareText') ?? [];
+  static set shareText(List<String> value) =>
+      _preferences?.setStringList('shareText', value);
+
   //*Filtros
   static int get tiposFilt => _preferences?.getInt('tiposFilt') ?? 0;
   static set tiposFilt(int value) => _preferences?.setInt('tiposFilt', value);

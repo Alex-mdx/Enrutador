@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:enrutador/models/contacto_model.dart';
 import 'package:enrutador/utilities/camara_fun.dart';
+import 'package:enrutador/utilities/preferences.dart';
 import 'package:enrutador/utilities/services/navigation_services.dart';
 import 'package:enrutador/utilities/share_fun.dart';
 import 'package:enrutador/views/widgets/sliding_cards/tarjeta_contacto_detalle.dart';
@@ -29,18 +30,47 @@ class DialogCompartir extends StatelessWidget {
             Card(
                 child: Column(children: [
               IconButton(
-                  onPressed: () async => await ShareFun.share(
-                          titulo: "Comparte este contacto",
-                          mensaje: contacto.nombreCompleto != null
-                              ? "\n*Nombre*: ${contacto.nombreCompleto}"
-                              : "",
-                          files: [
-                            if (contacto.fotoReferencia != null)
-                              XFile.fromData(
-                                  base64Decode(contacto.fotoReferencia!),
-                                  name: "${contacto.nombreCompleto}.png",
-                                  mimeType: "image/png")
-                          ]),
+                  onPressed: () async {
+                    List<XFile>? files;
+                    if (Preferences.shareText.contains("foto") &&
+                        (contacto.foto != null || contacto.foto != "")) {
+                      files = [...files ?? [], XFile.fromData(base64Decode(contacto.foto!),
+                          name: "${contacto.nombreCompleto}_foto.png",
+                          mimeType: "image/png")];
+                    }
+                    if (Preferences.shareText.contains("foto_referencia") &&
+                        (contacto.fotoReferencia != null ||
+                            contacto.fotoReferencia != "")) {
+                      files = [...files ?? [], XFile.fromData(
+                          base64Decode(contacto.fotoReferencia!),
+                          name: "${contacto.nombreCompleto}_referencia.png",
+                          mimeType: "image/png")];
+                    }
+                    debugPrint(
+                        "files: ${files?.length ?? "No tiene nada"}");
+                    await ShareFun.share(
+                        titulo: "Comparte este contacto",
+                        mensaje: contacto
+                            .toJson()
+                            .entries
+                            .where((element) =>
+                                !element.key.toLowerCase().contains("fecha") &&
+                                !element.key
+                                    .toLowerCase()
+                                    .contains("empleado") &&
+                                (Preferences.shareText.contains(element.key)) &&
+                                !element.key.toLowerCase().contains("foto") &&
+                                !element.key
+                                    .toLowerCase()
+                                    .contains("foto_referencia"))
+                            .toList()
+                            .map((e) {
+                              return "*${e.key.replaceAll("_", " ")}*: ${e.value}";
+                            })
+                            .toList()
+                            .join("\n"),
+                        files: files);
+                  },
                   icon: Icon(Icons.text_snippet,
                       size: 32.sp, color: ThemaMain.primary)),
               Text("Texto",

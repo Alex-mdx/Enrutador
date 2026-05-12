@@ -53,7 +53,8 @@ class _DialogsEstadoFuncion extends State<DialogsEstadoFuncion> {
     name();
     send(1);
     super.initState();
-    contacto = widget.contacto.copyWith(empleadoEstado: widget.contacto.empleadoEstado ?? widget.empleadoId);
+    contacto = widget.contacto.copyWith(
+        empleadoEstado: widget.contacto.empleadoEstado ?? widget.empleadoId);
   }
 
   Future<void> name() async {
@@ -154,7 +155,7 @@ class _DialogsEstadoFuncion extends State<DialogsEstadoFuncion> {
                                   children: actuales
                                       .map((e) => CardChildren(
                                           e: e,
-                                          width: 18.w,
+                                          width: 19.w,
                                           onTap: () => setState(() {
                                                 if (e.empleadoId ==
                                                     provider
@@ -176,7 +177,7 @@ class _DialogsEstadoFuncion extends State<DialogsEstadoFuncion> {
                                                     .empleadoEstado
                                                     ?.toString());
                                               }),
-                                          fontSize: 12.sp,
+                                          fontSize: 11.sp,
                                           card: contacto.empleadoEstado ==
                                                   e.empleadoId
                                               ? ThemaMain.green

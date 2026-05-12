@@ -54,10 +54,13 @@ class _ContactosViewState extends State<ContactosView> {
   }
 
   Future<void> send(int idx) async {
-    max = await ContactoController.getTotalRegistros();
+    var mx = await ContactoController.getTotalRegistros();
+
     setState(() {
+      max = mx;
       carga = false;
     });
+    debugPrint("Total de registros: $max");
     index = idx;
     contactos = await ContactoController.getItemsAll(
         nombre: buscador.text, limit: 100, page: index);
@@ -112,70 +115,141 @@ class _ContactosViewState extends State<ContactosView> {
                           padding: WidgetStatePropertyAll(EdgeInsets.symmetric(
                               horizontal: 3.sp, vertical: .5.h))),
                       onPressed: () async {
-                        if (selects.length <= 5) {
+                        var envio = ((provider.usuario?.adminTipo ?? 0) >= 3 ||
+                            (provider.usuario?.adminTipo ?? 0) == -1);
+                        if (selects.length <= 10) {
                           await Dialogs.showMorph(
-                              title: "Sincronizar",
+                              title: envio ? "Envio de datos" : "Sincronizar",
                               description:
-                                  "¿Desea enviar este(os) contacto(s) a sincronizar?",
-                              loadingTitle: "Sincronizando",
+                                  "¿Desea enviar este(os) contacto(s) a ${envio ? "sincronización" : "revision como pendiente"}?",
+                              loadingTitle: envio
+                                  ? "sincronizando"
+                                  : "Generando pendientes",
                               loadingDescription:
                                   "Este proceso puede tomar unos minutos sea paciente",
                               onAcceptPressed: (context) async {
                                 for (var i = 0; i < selects.length; i++) {
                                   var cont = await ContactoController.getItemId(
                                       id: selects[i].id!);
-                                  var data = cont!.copyWith(
-                                      pendiente: 0,
-                                      empleadoEstado:
-                                          ((cont.empleadoEstado == null ||
-                                                      cont.empleadoEstado ==
-                                                          provider.usuario
-                                                              ?.empleadoId) &&
-                                                  (cont.estado != null &&
-                                                      cont.estado != -1))
-                                              ? provider.usuario?.empleadoId
-                                              : cont.empleadoEstado,
-                                      aceptadoEmpleado:
-                                          provider.usuario?.empleadoId);
+
                                   var referencia =
                                       await ReferenciasController.getIdPrin(
-                                          idContacto: data.id!,
-                                          lat: data.latitud,
-                                          lng: data.longitud,
+                                          idContacto: cont!.id!,
+                                          lat: cont.latitud,
+                                          lng: cont.longitud,
                                           status: -1);
 
                                   var notas =
                                       await NotasController.getContactoId(
-                                          data.id!,
+                                          cont.id!,
                                           pendiente: 1);
-                                  var result = await ContactoFire.sendItem(
-                                      data: data,
-                                      table: data.id.toString(),
-                                      query: "id",
-                                      itsNumber: true);
-                                  if (result) {
-                                    await ContactoController.update(data);
-                                    for (var item in referencia) {
-                                      var newItem = item.copyWith(estatus: 0);
-                                      var result = await ReferenciaFire.send(
-                                          referencia: newItem);
-                                      if (result) {
+                                  if (envio) {
+                                    var data = cont.copyWith(
+                                        pendiente: 0,
+                                        empleadoEstado:
+                                            ((cont.empleadoEstado == null ||
+                                                        cont.empleadoEstado ==
+                                                            provider.usuario
+                                                                ?.empleadoId) &&
+                                                    (cont.estado != null &&
+                                                        cont.estado != -1))
+                                                ? provider.usuario?.empleadoId
+                                                : cont.empleadoEstado,
+                                        aceptadoEmpleado:
+                                            provider.usuario?.empleadoId);
+                                    var result = await ContactoFire.sendItem(
+                                        data: data,
+                                        table: data.id.toString(),
+                                        query: "id",
+                                        itsNumber: true);
+                                    if (result) {
+                                      await ContactoController.update(data);
+                                      for (var item in referencia) {
+                                        var newItem = item.copyWith(estatus: 0);
+                                        var result = await ReferenciaFire.send(
+                                            referencia: newItem);
+                                        if (result) {
+                                          await ReferenciasController.update(
+                                              newItem);
+                                        }
+                                      }
+                                      for (var item in notas) {
+                                        var newItem =
+                                            item.copyWith(pendiente: 0);
+                                        var result =
+                                            await NotaFire.send(nota: newItem);
+                                        if (result) {
+                                          await NotasController.update(newItem);
+                                        }
+                                      }
+                                      showToast(
+                                          "Envio\nContacto numero ${i + 1} de ${selects.length}");
+                                    } else {
+                                      showToast(
+                                          "No se pudo enviar el contacto numero ${i + 1}");
+                                    }
+                                  } else {
+                                    var data = cont.copyWith(
+                                        pendiente: 0,
+                                        empleadoEstado:
+                                            ((cont.empleadoEstado == null ||
+                                                        cont.empleadoEstado ==
+                                                            provider.usuario
+                                                                ?.empleadoId) &&
+                                                    (cont.estado != null &&
+                                                        cont.estado != -1))
+                                                ? provider.usuario?.empleadoId
+                                                : cont.empleadoEstado,
+                                        aceptadoEmpleado:
+                                            provider.usuario?.empleadoId);
+                                    debugPrint(
+                                        "empleadoEstado: ${data.empleadoEstado}");
+                                    for (var i = 0;
+                                        i < referencia.length;
+                                        i++) {
+                                      var newItem =
+                                          referencia[i].copyWith(estatus: 1);
+                                      referencia[i] = newItem;
+                                    }
+                                    for (var i = 0; i < notas.length; i++) {
+                                      var newItem =
+                                          notas[i].copyWith(pendiente: 1);
+                                      notas[i] = newItem;
+                                    }
+                                    PendienteModel pendiente = PendienteModel(
+                                        id: Textos.randomWord(6),
+                                        empleadoId:
+                                            provider.usuario!.empleadoId!,
+                                        fechaPendiente: DateTime.now(),
+                                        sincronizado: 0,
+                                        aceptadoEmpleadoId: null,
+                                        fechaSincronizado: null,
+                                        notasGuia: null,
+                                        contactos: [data],
+                                        referencias: referencia,
+                                        notas: notas);
+                                    var result = await PendienteFire.sendItem(
+                                        data: pendiente, query: pendiente.id);
+                                    if (result) {
+                                      await ContactoController.update(data);
+                                      for (var item in referencia) {
                                         await ReferenciasController.update(
-                                            newItem);
+                                            item);
                                       }
-                                    }
-                                    for (var item in notas) {
-                                      var newItem = item.copyWith(pendiente: 0);
-                                      var result =
-                                          await NotaFire.send(nota: newItem);
-                                      if (result) {
-                                        await NotasController.update(newItem);
+
+                                      for (var item in notas) {
+                                        await NotasController.update(item);
                                       }
+                                      showToast(
+                                          "Envio\nContacto numero ${i + 1} de ${selects.length}");
+                                    } else {
+                                      showToast(
+                                          "No se pudo enviar el contacto numero ${i + 1}");
                                     }
-                                    showToast(
-                                        "Envio\nContacto numero ${i + 1} de ${selects.length}");
                                   }
                                 }
+                                selects.clear();
+                                await send(index);
                               });
                         } else {
                           showToast(
@@ -293,6 +367,7 @@ class _ContactosViewState extends State<ContactosView> {
     return StickyGroupedListView<ContactoModelo, String?>(
         shrinkWrap: true,
         elements: contactos,
+        padding: EdgeInsets.symmetric(horizontal: .5.w, vertical: .1.h),
         groupBy: (element) => Preferences.tiposFilt == 0
             ? element.nombreCompleto?.substring(0, 1)
             : Preferences.tiposFilt == 1
@@ -334,9 +409,8 @@ class _ContactosViewState extends State<ContactosView> {
                 color: ThemaMain.dialogbackground,
                 fontWeight: FontWeight.bold)),
         itemBuilder: (context, contacto) {
-          var existencia = selects.firstWhereOrNull((element) =>
-              element.latitud == contacto.latitud &&
-              element.longitud == contacto.longitud);
+          var existencia =
+              selects.firstWhereOrNull((element) => element.id == contacto.id);
           return contacto.pendiente != 0
               ? slider(
                   contacto,
@@ -347,7 +421,7 @@ class _ContactosViewState extends State<ContactosView> {
                       funContact: (p0) {},
                       onSelected: (p0) => setState(() {
                             if (existencia != null) {
-                              selects.remove(contacto);
+                              selects.remove(existencia);
                             } else {
                               selects.add(contacto);
                             }
@@ -362,7 +436,7 @@ class _ContactosViewState extends State<ContactosView> {
                   funContact: (p0) {},
                   onSelected: (p0) => setState(() {
                         if (existencia != null) {
-                          selects.remove(contacto);
+                          selects.remove(existencia);
                         } else {
                           selects.add(contacto);
                         }

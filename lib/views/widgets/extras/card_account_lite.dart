@@ -7,8 +7,10 @@ import 'package:enrutador/utilities/main_provider.dart';
 import 'package:enrutador/utilities/services/dialog_services.dart';
 import 'package:enrutador/utilities/services/navigation_services.dart';
 import 'package:enrutador/utilities/textos.dart';
+import 'package:enrutador/utilities/theme/theme_app.dart';
 import 'package:enrutador/views/dialogs/dialog_hijos.dart';
 import 'package:enrutador/views/dialogs/dialog_send.dart';
+import 'package:enrutador/views/dialogs/dialog_tipos_all.dart';
 import 'package:flutter/material.dart';
 import 'package:input_quantity/input_quantity.dart';
 import 'package:line_icons/line_icons.dart';
@@ -124,11 +126,18 @@ class _CardAccountLiteState extends State<CardAccountLite> {
                                 }
                               },
                               child: user.foto != null
-                                  ? Image.memory(base64Decode(user.foto!),
-                                      filterQuality: FilterQuality.low,
-                                      fit: BoxFit.cover)
+                                  ? ClipRRect(
+                                      borderRadius:
+                                          BorderRadius.circular(borderRadius),
+                                      child: Image.memory(
+                                          width: 26.sp,
+                                          height: 26.sp,
+                                          base64Decode(user.foto!),
+                                          filterQuality: FilterQuality.low,
+                                          gaplessPlayback: true,
+                                          fit: BoxFit.cover))
                                   : Icon(Icons.photo_camera_front_rounded,
-                                      size: 22.sp))),
+                                      size: 26.sp))),
                       Expanded(
                           flex: 10,
                           child: GestureDetector(
@@ -318,44 +327,106 @@ class _CardAccountLiteState extends State<CardAccountLite> {
                                   fontSize: 15.sp,
                                   fontWeight: FontWeight.bold)))
                     ]),
-                Align(
-                    alignment: Alignment.centerLeft,
-                    child: ElevatedButton.icon(
-                        icon: Icon(LineIcons.helpingHands,
-                            color: ThemaMain.green, size: 20.sp),
-                        onPressed: () {
-                          if (((provider.usuario?.adminTipo ?? 0) >= 3 ||
-                                  (provider.usuario?.adminTipo ?? 0) == -1) ||
-                              provider.usuario?.uuid == user.uuid) {
-                            showDialog(
-                                context: context,
-                                builder: (context) => DialogHijos(
-                                    hijos: user.children,
-                                    user: user,
-                                    onSave: (p0) async {
-                                      var temp = user.copyWith(
-                                          children: p0,
-                                          actualizacion: DateTime.now());
-                                      if (!widget.local) {
-                                        await change(temp, pop: true);
-                                      } else {
-                                        setState(() {
-                                          user = temp;
-                                        });
-                                        await widget.fun!(user);
-                                        Navigation.pop();
-                                      }
-                                    }));
-                          } else {
-                            showToast(
-                                "No tienes el nivel de administrador permitido para modificar este contacto");
-                          }
-                        },
-                        label: Text("Hijos: ${user.children.length}",
-                            style: TextStyle(
-                                color: ThemaMain.darkBlue,
-                                fontSize: 15.sp,
-                                fontWeight: FontWeight.bold)))),
+                Wrap(
+                    alignment: WrapAlignment.spaceAround,
+                    runAlignment: WrapAlignment.spaceBetween,
+                    children: [
+                      ElevatedButton.icon(
+                          icon: Icon(LineIcons.helpingHands,
+                              color: ThemaMain.green, size: 20.sp),
+                          onPressed: () {
+                            if ((provider.usuario?.adminTipo ?? 0) >= 3 ||
+                                (provider.usuario?.adminTipo ?? 0) == -1) {
+                              showDialog(
+                                  context: context,
+                                  builder: (context) => DialogHijos(
+                                      hijos: user.children,
+                                      user: user,
+                                      onSave: (p0) async {
+                                        var temp = user.copyWith(
+                                            children: p0,
+                                            actualizacion: DateTime.now());
+                                        if (!widget.local) {
+                                          await change(temp, pop: true);
+                                        } else {
+                                          setState(() {
+                                            user = temp;
+                                          });
+                                          await widget.fun!(user);
+                                          Navigation.pop();
+                                        }
+                                      }));
+                            } else {
+                              showToast(
+                                  "No tienes el nivel de administrador permitido para modificar este contacto");
+                            }
+                          },
+                          label: Text("Hijos: ${user.children.length}",
+                              style: TextStyle(
+                                  color: ThemaMain.darkBlue,
+                                  fontSize: 15.sp,
+                                  fontWeight: FontWeight.bold))),
+                      ElevatedButton.icon(
+                          icon: Icon(LineIcons.mapMarked,
+                              color: ThemaMain.red, size: 20.sp),
+                          onPressed: () {
+                            if ((provider.usuario?.adminTipo ?? 0) >= 3 ||
+                                (provider.usuario?.adminTipo ?? 0) == -1) {
+                            } else {
+                              showToast(
+                                  "No tienes el nivel de administrador permitido para modificar este contacto");
+                            }
+                          },
+                          label: Text("Zonas: ${user.zonas.length}",
+                              style: TextStyle(
+                                  color: ThemaMain.darkBlue,
+                                  fontSize: 15.sp,
+                                  fontWeight: FontWeight.bold))),
+                      ElevatedButton.icon(
+                          icon: Icon(Icons.type_specimen,
+                              color: ThemaMain.primary, size: 20.sp),
+                          onPressed: () {
+                            List<int> tempTipos = user.tipos;
+                            if ((provider.usuario?.adminTipo ?? 0) >= 3 ||
+                                (provider.usuario?.adminTipo ?? 0) == -1) {
+                              showDialog(
+                                  context: context,
+                                  builder: (context) => DialogTiposAll(
+                                      fecha: null,
+                                      selects: tempTipos,
+                                      selected: (p0) async {
+                                        if (tempTipos
+                                            .where((e) => e == p0.id)
+                                            .isNotEmpty) {
+                                          tempTipos.remove(p0.id);
+                                        } else {
+                                          tempTipos.add(p0.id!);
+                                        }
+
+                                        var temp = user.copyWith(
+                                            tipos: tempTipos,
+                                            actualizacion: DateTime.now());
+                                        if (!widget.local) {
+                                          await change(temp, pop: false);
+                                        } else {
+                                          setState(() {
+                                            user = temp;
+                                          });
+                                          await widget.fun!(user);
+                                          Navigation.pop();
+                                        }
+                                      }));
+                            } else {
+                              showToast(
+                                  "No tienes el nivel de administrador permitido para modificar este contacto");
+                            }
+                          },
+                          label: Text("Tipos: ${user.tipos.length}",
+                              style: TextStyle(
+                                  color: ThemaMain.darkBlue,
+                                  fontSize: 15.sp,
+                                  fontWeight: FontWeight.bold)))
+                    ]),
                 Row(children: [
                   Expanded(
                       child: Text(

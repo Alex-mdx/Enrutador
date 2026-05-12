@@ -2,30 +2,24 @@ import 'dart:async';
 import 'package:enrutador/utilities/main_provider.dart';
 import 'package:enrutador/utilities/permisos.dart';
 import 'package:enrutador/utilities/services/dialog_services.dart';
-import 'package:enrutador/utilities/services/navigation_services.dart';
 import 'package:enrutador/utilities/theme/theme_color.dart';
 import 'package:enrutador/views/map_main.dart';
-import 'package:enrutador/views/widgets/map_widget/map_custer.dart';
 import 'package:enrutador/views/widgets/map_widget/map_navigation.dart';
 import 'package:enrutador/views/widgets/map_widget/map_sliding.dart';
 import 'package:enrutador/views/widgets/search/search_widget.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_slider_drawer/flutter_slider_drawer.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:line_icons/line_icons.dart';
 import 'package:open_location_code/open_location_code.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 import 'package:app_links/app_links.dart';
-import '../controllers/contacto_controller.dart';
 import '../utilities/uri_fun.dart';
 import 'widgets/extras/side_buttons.dart';
 import 'widgets/map_widget/map_alternative.dart';
-import 'package:badges/badges.dart' as bd;
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -162,7 +156,7 @@ class PaginadoState extends State<Paginado> {
   @override
   Widget build(BuildContext context) {
     return Stack(children: [
-      if (kDebugMode) MapCuster() else MapMain(),
+      MapMain(),
       Align(alignment: Alignment.bottomRight, child: MapNavigation()),
       Align(alignment: Alignment.bottomLeft, child: MapAlternative()),
       if (!widget.provider.descargarZona)

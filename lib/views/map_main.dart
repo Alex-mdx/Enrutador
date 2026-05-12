@@ -33,6 +33,15 @@ class _ViajeMapPageState extends State<MapMain>
   Widget build(BuildContext context) {
     final provider = Provider.of<MainProvider>(context);
     super.build(context);
+
+    double currentZoom = 17.0;
+    try {
+      currentZoom = provider.animaMap.mapController.camera.zoom;
+    } catch (e) {
+      debugPrint("Error al obtener el zoom: $e");
+      currentZoom = 17.0;
+    }
+
     return provider.local == null
         ? Center(
             child: LoadingAnimationWidget.staggeredDotsWave(
@@ -127,7 +136,7 @@ class _ViajeMapPageState extends State<MapMain>
                         }),
                 if (provider.contacto != null &&
                     !provider.descargarZona &&
-                    provider.animaMap.mapController.camera.zoom > 14)
+                    currentZoom > 14)
                   FutureBuilder(
                       future: ReferenciasController.getIdPrin(
                           idContacto: provider.contacto!.id,
@@ -157,13 +166,16 @@ class _ViajeMapPageState extends State<MapMain>
                       }),
                 if (!provider.descargarZona)
                   FutureBuilder(
-                      future: ContactoController.getItems(null),
+                      future: ContactoController.getItems(currentZoom),
                       builder: (context, snapshot) => AnimatedMarkerLayer(
                           alignment: Alignment.center,
                           markers: !snapshot.hasData
                               ? []
                               : snapshot.data!
-                                  .map((e) => MapFun.marcadores(provider, e))
+                                  .map((e) => MapFun.marcadores(
+                                      provider,
+                                      e,
+                                      currentZoom))
                                   .toList())),
                 if (provider.marker != null)
                   AnimatedMarkerLayer(

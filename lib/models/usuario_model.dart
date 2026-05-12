@@ -12,6 +12,8 @@ class UsuarioModel {
   int? status;
   String? foto;
   List<int> children;
+  List<int> zonas;
+  List<int> tipos;
   DateTime? creacion;
   DateTime? actualizacion;
 
@@ -25,6 +27,8 @@ class UsuarioModel {
       required this.status,
       required this.foto,
       required this.children,
+      required this.zonas,
+      required this.tipos,
       required this.creacion,
       this.actualizacion});
 
@@ -38,6 +42,8 @@ class UsuarioModel {
           int? status,
           String? foto,
           List<int>? children,
+          List<int>? zonas,
+          List<int>? tipos,
           DateTime? creacion,
           DateTime? actualizacion}) =>
       UsuarioModel(
@@ -50,6 +56,8 @@ class UsuarioModel {
           status: status ?? this.status,
           foto: foto ?? this.foto,
           children: children ?? this.children,
+          zonas: zonas ?? this.zonas,
+          tipos: tipos ?? this.tipos,
           creacion: creacion ?? this.creacion,
           actualizacion: actualizacion ?? this.actualizacion);
 
@@ -62,9 +70,10 @@ class UsuarioModel {
       adminTipo: json["admin_tipo"],
       status: Parser.toInt(json["status"]),
       foto: json["foto"],
-      children: json["children"] == null
-          ? []
-          : List<int>.from(json["children"]),
+      children:
+          json["children"] == null ? [] : List<int>.from(json["children"]),
+      zonas: json["zonas"] == null ? [] : List<int>.from(json["zonas"]),
+      tipos: json["tipos"] == null ? [] : List<int>.from(json["tipos"]),
       creacion: Textos.parseoDateFire(json["creacion"]),
       actualizacion: Textos.parseoDateFire(json["actualizacion"]));
 
@@ -78,6 +87,8 @@ class UsuarioModel {
         "status": status,
         "foto": foto,
         "children": children.map((e) => e).toList(),
+        "zonas": zonas.map((e) => e).toList(),
+        "tipos": tipos.map((e) => e).toList(),
         "creacion": creacion == null ? null : Timestamp.fromDate(creacion!),
         "actualizacion":
             actualizacion == null ? null : Timestamp.fromDate(actualizacion!)
@@ -93,6 +104,8 @@ class UsuarioModel {
         "status": status,
         "foto": foto,
         "children": children.map((e) => e).toList(),
+        "zonas": zonas.map((e) => e).toList(),
+        "tipos": tipos.map((e) => e).toList(),
         "creacion": creacion?.toIso8601String(),
         "actualizacion": actualizacion?.toIso8601String()
       };

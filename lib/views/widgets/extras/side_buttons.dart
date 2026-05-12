@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:enrutador/utilities/main_provider.dart';
 import 'package:enrutador/utilities/services/navigation_services.dart';
 import 'package:enrutador/utilities/theme/theme_color.dart';
@@ -49,189 +50,81 @@ class SideButtons extends StatelessWidget {
                                         size: 22.sp, color: ThemaMain.darkGrey)
                                   ])))))),
           if (kDebugMode)
-            GestureDetector(
-                onTap: () async {},
-                child: Card(
-                    child: Padding(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 1.w, vertical: 1.h),
-                        child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text("Listas",
-                                  style: TextStyle(
-                                      fontSize: 16.sp,
-                                      fontWeight: FontWeight.bold)),
-                              Icon(LineIcons.mapMarked,
-                                  size: 22.sp, color: ThemaMain.red)
-                            ])))),
-          GestureDetector(
-              onTap: () async => await Navigation.pushNamed(route: "tipos"),
-              child: Card(
-                  child: Padding(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 1.w, vertical: 1.h),
-                      child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text("Tipos",
-                                style: TextStyle(
-                                    fontSize: 16.sp,
-                                    fontWeight: FontWeight.bold)),
-                            Icon(Icons.type_specimen,
-                                size: 22.sp, color: ThemaMain.primary)
-                          ])))),
-          GestureDetector(
-              onTap: () async => await Navigation.pushNamed(route: "estatus"),
-              child: Card(
-                  child: Padding(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 1.w, vertical: 1.h),
-                      child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text("Estatus",
-                                style: TextStyle(
-                                    fontSize: 16.sp,
-                                    fontWeight: FontWeight.bold)),
-                            Icon(Icons.contact_emergency,
-                                size: 22.sp, color: ThemaMain.darkBlue)
-                          ])))),
-          GestureDetector(
-              onTap: () async => await Navigation.pushNamed(route: "navegar"),
-              child: Card(
-                  child: Padding(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 1.w, vertical: 1.h),
-                      child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text("Navegar",
-                                style: TextStyle(
-                                    fontSize: 16.sp,
-                                    fontWeight: FontWeight.bold)),
-                            Icon(LineIcons.globe,
-                                size: 22.sp, color: ThemaMain.green)
-                          ])))),
-          GestureDetector(
-              onTap: () async => await Navigation.pushNamed(route: "roles"),
-              child: Card(
-                  child: Padding(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 1.w, vertical: 1.h),
-                      child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text("Roles",
-                                style: TextStyle(
-                                    fontSize: 16.sp,
-                                    fontWeight: FontWeight.bold)),
-                            Icon(LineIcons.userTag,
-                                size: 22.sp, color: ThemaMain.darkBlue)
-                          ])))),
-          GestureDetector(
-              onTap: () async => await Navigation.pushNamed(route: "lada"),
-              child: Card(
-                  child: Padding(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 1.w, vertical: 1.h),
-                      child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text("Lada",
-                                style: TextStyle(
-                                    fontSize: 16.sp,
-                                    fontWeight: FontWeight.bold)),
-                            Icon(Icons.perm_phone_msg,
-                                size: 22.sp, color: ThemaMain.pink)
-                          ])))),
-          GestureDetector(
-              onTap: () async =>
-                  await Navigation.pushNamed(route: "regionesMapa"),
-              child: Card(
-                  child: Padding(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 1.w, vertical: 1.h),
-                      child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text("Regionar",
-                                style: TextStyle(
-                                    fontSize: 16.sp,
-                                    fontWeight: FontWeight.bold)),
-                            Icon(LineIcons.layerGroup,
-                                size: 22.sp, color: ThemaMain.primary)
-                          ])))),
-          GestureDetector(
-              onTap: () async => showDialog(
+            cards(context, () async {}, "Zonas", LineIcons.mapMarked,
+                ThemaMain.red),
+          cards(context, () async => await Navigation.pushNamed(route: "tipos"),
+              "Tipos", Icons.type_specimen, ThemaMain.primary),
+          cards(
+              context,
+              () async => await Navigation.pushNamed(route: "estatus"),
+              "Estatus",
+              Icons.contact_emergency,
+              ThemaMain.darkBlue),
+          cards(
+              context,
+              () async => await Navigation.pushNamed(route: "navegar"),
+              "Navegar",
+              LineIcons.globe,
+              ThemaMain.green),
+          cards(context, () async => await Navigation.pushNamed(route: "roles"),
+              "Roles", LineIcons.userTag, ThemaMain.darkBlue),
+          cards(context, () async => await Navigation.pushNamed(route: "lada"),
+              "Lada", Icons.perm_phone_msg, ThemaMain.pink),
+          cards(
+              context,
+              () async => await Navigation.pushNamed(route: "regionesMapa"),
+              "Regionar",
+              LineIcons.layerGroup,
+              ThemaMain.primary),
+          cards(
+              context,
+              () async => showDialog(
                   context: context,
                   builder: (context) => Dialog(child: CardAccout())),
-              child: Card(
-                  child: Padding(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 1.w, vertical: 1.h),
-                      child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text("Perfil",
-                                style: TextStyle(
-                                    fontSize: 16.sp,
-                                    fontWeight: FontWeight.bold)),
-                            Icon(Icons.person,
-                                size: 22.sp, color: ThemaMain.green)
-                          ])))),
-          GestureDetector(
-              onTap: () async => Navigation.pushNamed(
+              "Perfil",
+              Icons.person,
+              ThemaMain.green),
+          cards(
+              context,
+              () async => Navigation.pushNamed(
                   route: "pendientesView", arguments: provider.usuario),
-              child: Card(
-                  child: Padding(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 1.w, vertical: 1.h),
-                      child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text("Pendientes",
-                                style: TextStyle(
-                                    fontSize: 16.sp,
-                                    fontWeight: FontWeight.bold)),
-                            Icon(Icons.youtube_searched_for,
-                                size: 22.sp, color: ThemaMain.primary)
-                          ])))),
+              "Pendientes",
+              Icons.youtube_searched_for,
+              ThemaMain.primary),
           if ((provider.usuario?.adminTipo ?? 0) >= 4 ||
               (provider.usuario?.adminTipo ?? 0) <= -1)
-            GestureDetector(
-                onTap: () async => Navigation.pushNamed(route: "users"),
-                child: Card(
-                    child: Padding(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 1.w, vertical: 1.h),
-                        child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text("Usuarios",
-                                  style: TextStyle(
-                                      fontSize: 16.sp,
-                                      fontWeight: FontWeight.bold)),
-                              Icon(LineIcons.users,
-                                  size: 22.sp, color: ThemaMain.darkBlue)
-                            ])))),
-          GestureDetector(
-              onTap: () async => showDialog(
+            cards(context, () async => Navigation.pushNamed(route: "users"),
+                "Usuarios", LineIcons.users, ThemaMain.darkBlue),
+          cards(
+              context,
+              () async => showDialog(
                   context: context, builder: (context) => DialogSetting()),
-              child: Card(
-                  child: Padding(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 1.w, vertical: 1.h),
-                      child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text("Configuración",
-                                style: TextStyle(
-                                    fontSize: 15.sp,
-                                    fontWeight: FontWeight.bold)),
-                            Icon(Icons.settings,
-                                size: 22.sp, color: ThemaMain.darkGrey)
-                          ]))))
+              "Configuración",
+              Icons.settings,
+              ThemaMain.darkGrey)
         ]));
+  }
+
+  Widget cards(BuildContext context, Function() function, String text,
+      IconData icon, Color colorIcon) {
+    return GestureDetector(
+        onTap: () async => function(),
+        child: Card(
+            child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 1.w, vertical: .5.h),
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                          flex: 3,
+                          child: AutoSizeText(text,
+                              minFontSize: 14,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                              style: TextStyle(
+                                  fontSize: 16.sp,
+                                  fontWeight: FontWeight.bold))),
+                      Expanded(child: Icon(icon, size: 22.sp, color: colorIcon))
+                    ]))));
   }
 }

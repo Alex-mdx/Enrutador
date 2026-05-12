@@ -60,7 +60,7 @@ class ChipReferencia extends StatelessWidget {
             },
             child: Row(mainAxisSize: MainAxisSize.min, children: [
               Container(
-                  constraints: BoxConstraints(maxWidth: extended ? 25.w : 18.w),
+                  constraints: BoxConstraints(maxWidth: extended ? 25.w : 15.w),
                   child: AutoSizeText(
                       (provider.roles
                                   .firstWhereOrNull(
@@ -72,7 +72,7 @@ class ChipReferencia extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       minFontSize: 8,
                       style: TextStyle(
-                          fontSize: extended ? 18.sp : 15.sp,
+                          fontSize: extended ? 18.sp : 14.sp,
                           fontWeight: FontWeight.bold))),
               SizedBox(width: .5.w),
               Icon(Icons.assistant_direction,

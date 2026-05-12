@@ -12,33 +12,42 @@ class ContactoController {
   static Future<void> createTables(sql.Database database) async {
     await database.execute("""CREATE TABLE $nombreDB(
           id INTEGER PRIMARY KEY AUTOINCREMENT,
-          nombre_completo INTEGER,
-          latitud INTEGER,
-          longitud INTEGER,
+          nombre_completo TEXT,
+          latitud REAL,
+          longitud REAL,
           domicilio TEXT,
-          fecha_domicilio INTEGER,
+          fecha_domicilio TEXT,
           numero INTEGER,
-          numero_fecha INTEGER,
+          numero_fecha TEXT,
           otro_numero INTEGER,
-          otro_numero_fecha INTEGER,
-          agendar INTEGER,
-          contacto_enlances INTEGER,
+          otro_numero_fecha TEXT,
+          agendar TEXT,
           tipo INTEGER,
-          tipo_fecha INTEGER,
+          tipo_fecha TEXT,
+          zonas INTEGER,
           estado INTEGER,
-          estado_fecha INTEGER,
+          estado_fecha TEXT,
           foto TEXT,
-          foto_fecha INTEGER,
+          foto_fecha TEXT,
           foto_referencia TEXT,
-          foto_referencia_fecha INTEGER,
+          foto_referencia_fecha TEXT,
+          empleado_foto TEXT,
+          empleado_foto_referencia TEXT,
+          empleado_domicilio TEXT,
+          empleado_numero TEXT,
+          empleado_otro_num TEXT,
+          empleado_tipo TEXT,
+          empleado_estado TEXT,
           what_3_words TEXT,
           nota TEXT,
-          uuid TEXT,
+          empleado_id TEXT,
           status INTEGER,
           pendiente INTEGER,
-          aceptado_uuid TEXT,
-          creado INTEGER,
-          modificado INTEGER
+          aceptado_empleado TEXT,
+          creado TEXT,
+          modificado TEXT,
+          uuid TEXT,
+          sincronizado INTEGER
       )""");
   }
 
@@ -162,8 +171,13 @@ class ContactoController {
 
   static Future<List<ContactoModelo>> getItems(double? zoom) async {
     final db = await database();
-    final modelo = (await db.query(nombreDB,
-        columns: ["id", "latitud", "longitud", "tipo", "estado"]));
+    List<String> query = [];
+    if (zoom! < 15) {
+      query = ["id", "latitud", "longitud"];
+    } else {
+      query = ["id", "latitud", "longitud", "tipo", "estado"];
+    }
+    final modelo = (await db.query(nombreDB, columns: query));
     List<ContactoModelo> model = [];
     for (var element in modelo) {
       model.add(ContactoModelo.fromJson(element));
@@ -200,8 +214,8 @@ class ContactoController {
     final db = await database();
     final modelo = (await db.query(nombreDB,
         where: nombre == "" || nombre == null || buildQueryFiltros().isEmpty
-            ? null 
-            : "(nombre_completo LIKE ? OR numero LIKE ? OR otro_numero LIKE ?) ${buildQueryFiltros().isNotEmpty ? "AND $buildQueryFiltros()" : ""}",
+            ? null
+            : "(nombre_completo LIKE ? OR numero LIKE ? OR otro_numero LIKE ?) ${buildQueryFiltros().isNotEmpty ? "AND ${buildQueryFiltros()}" : ""}",
         whereArgs: nombre == "" || nombre == null
             ? null
             : ['%$nombre%', '%$nombre%', '%$nombre%'],
@@ -221,7 +235,7 @@ class ContactoController {
           "creado"
         ],
         orderBy:
-            "${Preferences.agruparFilt == 0 ? "nombre_completo" : Preferences.vaciosFilt ?  Preferences.tiposFilt == 1 ? "tipo_fecha" : "estado_fecha" : "creado"} ${Preferences.ordenFilt ? "DESC" : "ASC"}",
+            "${Preferences.agruparFilt == 0 ? "nombre_completo" : Preferences.vaciosFilt ? Preferences.tiposFilt == 1 ? "tipo_fecha" : "estado_fecha" : "creado"} ${Preferences.ordenFilt ? "DESC" : "ASC"}",
         limit: limit,
         offset: ((page ?? 1) - 1) * limit));
     List<ContactoModelo> model = [];
@@ -274,7 +288,7 @@ class ContactoController {
   static Future<int> getTotalRegistros() async {
     final db = await database();
     var resultado = await db.rawQuery(
-        'SELECT COUNT(*) as total FROM $nombreDB ${buildQueryFiltros().isNotEmpty ? "where ${buildQueryFiltros()}" : ""}');
+        'SELECT COUNT(*) as total FROM $nombreDB ${buildQueryFiltros().isNotEmpty ? "WHERE ${buildQueryFiltros()}" : ""}');
     return resultado.first['total'] as int;
   }
 
@@ -312,18 +326,12 @@ class ContactoController {
   static List<ContactoModelo> buildList(List<ContactoModelo> model) {
     var newModelfiltro1 = Preferences.tipos.isEmpty
         ? model
-            .where((element) =>
-                Preferences.tiposFilt == 1 ? (element.tipo ?? -1) > -1 : true)
-            .toList()
         : model
             .where((element) =>
                 Preferences.tipos.contains(element.tipo.toString()))
             .toList();
     var newModelfiltro2 = Preferences.status.isEmpty
         ? newModelfiltro1
-            .where((element) =>
-                Preferences.tiposFilt == 2 ? (element.estado ?? -1) > -1 : true)
-            .toList()
         : newModelfiltro1
             .where((element) =>
                 Preferences.status.contains(element.estado.toString()))

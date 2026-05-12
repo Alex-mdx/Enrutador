@@ -70,6 +70,8 @@ class _UsersViewState extends State<UsersView> {
                           status: 0,
                           foto: null,
                           children: [],
+                          zonas: [],
+                          tipos: [],
                           creacion: DateTime.now());
                       showDialog(
                           context: context,

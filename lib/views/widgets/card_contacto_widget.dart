@@ -57,8 +57,8 @@ class CardContactoWidget extends StatelessWidget {
             onTap: () => funContact(contacto),
             child: Card(
                 child: Padding(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 1.w, vertical: .5.h),
+                    padding: EdgeInsets.only(
+                        left: .5.w, right: 2.w, top: .5.h, bottom: .5.h),
                     child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -69,6 +69,7 @@ class CardContactoWidget extends StatelessWidget {
                                   children: [
                                     if (selectedVisible)
                                       Checkbox.adaptive(
+                                          activeColor: ThemaMain.green,
                                           value: selected,
                                           onChanged: (value) =>
                                               onSelected(value)),

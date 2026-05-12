@@ -14,6 +14,7 @@ class ContactoModelo {
   int? otroNumero;
   DateTime? otroNumeroFecha;
   DateTime? agendar;
+  List<int> zonas;
   int? tipo;
   DateTime? tipoFecha;
   int? estado;
@@ -23,7 +24,6 @@ class ContactoModelo {
   String? fotoReferencia;
   DateTime? fotoReferenciaFecha;
   String? what3Words;
-  String? nota;
   String? empleadoId;
   String? empleadoFoto;
   String? empleadoFotoReferencia;
@@ -50,6 +50,7 @@ class ContactoModelo {
       required this.otroNumero,
       required this.otroNumeroFecha,
       required this.agendar,
+      required this.zonas,
       required this.tipo,
       required this.tipoFecha,
       required this.estado,
@@ -59,7 +60,6 @@ class ContactoModelo {
       required this.fotoReferencia,
       required this.fotoReferenciaFecha,
       required this.what3Words,
-      required this.nota,
       this.pendiente,
       this.aceptadoEmpleado,
       this.empleadoId,
@@ -86,6 +86,7 @@ class ContactoModelo {
           int? otroNumero,
           DateTime? otroNumeroFecha,
           DateTime? agendar,
+          List<int>? zonas,
           int? tipo,
           DateTime? tipoFecha,
           int? estado,
@@ -121,6 +122,7 @@ class ContactoModelo {
           otroNumero: otroNumero ?? this.otroNumero,
           otroNumeroFecha: otroNumeroFecha ?? this.otroNumeroFecha,
           agendar: agendar,
+          zonas: zonas ?? this.zonas,
           tipo: tipo ?? this.tipo,
           tipoFecha: tipoFecha ?? this.tipoFecha,
           estado: estado ?? this.estado,
@@ -138,7 +140,6 @@ class ContactoModelo {
           fotoReferencia: fotoReferencia ?? this.fotoReferencia,
           fotoReferenciaFecha: fotoReferenciaFecha ?? this.fotoReferenciaFecha,
           what3Words: what3Words ?? this.what3Words,
-          nota: nota ?? this.nota,
           pendiente: pendiente ?? this.pendiente,
           aceptadoEmpleado: aceptadoEmpleado ?? this.aceptadoEmpleado,
           empleadoId: empleadoId ?? this.empleadoId,
@@ -160,6 +161,9 @@ class ContactoModelo {
       otroNumero: Parser.toInt(json["otro_numero"]),
       otroNumeroFecha: Textos.parseoDateFire(json["otro_numero_fecha"]),
       agendar: Textos.parseoDateFire(json["agendar"]),
+      zonas: json["zonas"] == null
+          ? []
+          : List<int>.from(json["zonas"]),
       tipo: json["tipo"],
       tipoFecha: Textos.parseoDateFire(json["tipo_fecha"]),
       estado: json["estado"],
@@ -176,7 +180,6 @@ class ContactoModelo {
       empleadoTipo: json["empleado_tipo"]?.toString(),
       empleadoEstado: json["empleado_estado"]?.toString(),
       what3Words: json["what_3_words"],
-      nota: json["nota"],
       pendiente: Parser.toInt(json["pendiente"]),
       aceptadoEmpleado: json["aceptado_empleado"]?.toString(),
       empleadoId: json["empleado_id"]?.toString(),
@@ -202,6 +205,7 @@ class ContactoModelo {
         "agendar": agendar == null ? null : Timestamp.fromDate(agendar!),
         "tipo": tipo,
         "tipo_fecha": tipoFecha == null ? null : Timestamp.fromDate(tipoFecha!),
+        "zonas": zonas.map((e) => e).toList(),
         "estado": estado,
         "estado_fecha":
             estadoFecha == null ? null : Timestamp.fromDate(estadoFecha!),
@@ -219,7 +223,6 @@ class ContactoModelo {
         "empleado_tipo": empleadoTipo,
         "empleado_estado": empleadoEstado,
         "what_3_words": what3Words,
-        "nota": nota,
         "empleado_id": empleadoId,
         "status": status ?? 1,
         "pendiente": pendiente ?? 1,
@@ -269,7 +272,6 @@ class ContactoModelo {
         "empleado_tipo": empleadoTipo,
         "empleado_estado": empleadoEstado,
         "what_3_words": what3Words,
-        "nota": nota,
         "empleado_id": empleadoId,
         "status": status ?? 1,
         "pendiente": pendiente ?? 1,

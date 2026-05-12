@@ -209,7 +209,22 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                 children: [
                                   Expanded(
                                       child: (!widget.compartir)
-                                          ? TextButton.icon(
+                                          ? FutureBuilder(
+                                                  future: TipoController.getItem(
+                                                      data: widget.contacto?.tipo ??
+                                                          -1),
+                                                  builder: (context, data) {
+                                                    return TextButton.icon(
+                                              onLongPress: () async {
+                                                if (widget.contacto?.tipo != null) {
+                                                  await Clipboard.setData(ClipboardData(
+                                                      text: data.data?.nombre ??
+                                                          "Tipo: Sin Tipo"));
+                                                  showToast("Tipo copiado");
+                                                } else {
+                                                  showToast("No tiene tipo ingresado");
+                                                }
+                                              },
                                               style: ButtonStyle(
                                                   padding: WidgetStatePropertyAll(
                                                       EdgeInsets.symmetric(
@@ -246,12 +261,7 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                                             provider.contacto =
                                                                 newModel;
                                                           })),
-                                              label: FutureBuilder(
-                                                  future: TipoController.getItem(
-                                                      data: widget.contacto?.tipo ??
-                                                          -1),
-                                                  builder: (context, data) {
-                                                    return Text(
+                                              label:  Text(
                                                         "Tipo: ${data.data?.nombre ?? "Ø"}",
                                                         textAlign:
                                                             TextAlign.start,
@@ -274,8 +284,8 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                                             fontSize: 15.sp,
                                                             fontWeight:
                                                                 FontWeight
-                                                                    .bold));
-                                                  }))
+                                                                    .bold)));
+                                                  })
                                           : FutureBuilder(
                                               future: TipoController.getItem(
                                                   data: widget.contacto?.tipo ??
@@ -286,12 +296,28 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                                   style: TextStyle(shadows: data.data != null ? [Shadow(color: Colors.black, offset: Offset(1, 1), blurRadius: 2)] : [], color: data.data?.color, fontSize: 15.sp, fontStyle: FontStyle.italic, fontWeight: FontWeight.bold)))),
                                   Expanded(
                                       child: !widget.compartir
-                                          ? TextButton.icon(
+                                          ? FutureBuilder(
+                                                  future: EstadoController.getItem(
+                                                      data: widget.contacto
+                                                              ?.estado ??
+                                                          -1),
+                                                  builder: (context, data) {
+                                                    return TextButton.icon(
                                               style: ButtonStyle(
                                                   padding: WidgetStatePropertyAll(
                                                       EdgeInsets.symmetric(
                                                           horizontal: 1.w,
                                                           vertical: 0))),
+                                              onLongPress: () async {
+                                                if (widget.contacto?.estadoFecha != null) {
+                                                  await Clipboard.setData(ClipboardData(
+                                                      text: data.data?.nombre ??
+                                                          "Estado: Sin Estado"));
+                                                  showToast("Estado copiado");
+                                                } else {
+                                                  showToast("No tiene estado ingresado");
+                                                }
+                                              },
                                               onPressed: () => showDialog(
                                                   context: context,
                                                   builder: (context) =>
@@ -325,13 +351,7 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                                             provider.contacto =
                                                                 newModel;
                                                           })),
-                                              label: FutureBuilder(
-                                                  future: EstadoController.getItem(
-                                                      data: widget.contacto
-                                                              ?.estado ??
-                                                          -1),
-                                                  builder: (context, data) {
-                                                    return Text(
+                                              label: Text(
                                                         "Estado: ${data.data?.nombre ?? "Ø"}",
                                                         textAlign:
                                                             TextAlign.end,
@@ -354,8 +374,8 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                                             fontSize: 15.sp,
                                                             fontWeight:
                                                                 FontWeight
-                                                                    .bold));
-                                                  }))
+                                                                    .bold)));
+                                                  })
                                           : FutureBuilder(
                                               future: EstadoController.getItem(
                                                   data: widget.contacto?.estado ?? -1),

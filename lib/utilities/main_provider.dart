@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:enrutador/controllers/estado_controller.dart';
 import 'package:enrutador/controllers/roles_controller.dart';
+import 'package:enrutador/controllers/sql_generator.dart';
 import 'package:enrutador/controllers/tipo_controller.dart';
 import 'package:enrutador/controllers/usuario_controller.dart';
 import 'package:enrutador/controllers/usuario_fire.dart';
@@ -13,7 +14,6 @@ import 'package:enrutador/models/usuario_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_animations/flutter_map_animations.dart';
 import 'package:flutter_slider_drawer/flutter_slider_drawer.dart';
 import 'package:geolocator/geolocator.dart';
@@ -98,13 +98,6 @@ class MainProvider with ChangeNotifier implements TickerProvider {
   AnimatedMarker? get marker => _marker;
   set marker(AnimatedMarker? valor) {
     _marker = valor;
-    notifyListeners();
-  }
-
-  Marker? _custerMarker;
-  Marker? get custerMarker => _custerMarker;
-  set custerMarker(Marker? valor) {
-    _custerMarker = valor;
     notifyListeners();
   }
 
@@ -195,10 +188,10 @@ class MainProvider with ChangeNotifier implements TickerProvider {
   //?Funciones
 
   Future<void> logeo() async {
-   
     tipos = await TipoController.getItems();
     estados = await EstadoController.getItems();
     roles = await RolesController.getAll();
+    SqlGenerator.aads();
     if (internet) {
       var temp = await UsuarioFire.getItem(
           table: "uuid", query: FirebaseAuth.instance.currentUser?.uid ?? "");

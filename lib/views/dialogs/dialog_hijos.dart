@@ -109,7 +109,7 @@ class _DialogHijosState extends State<DialogHijos> {
                                   fontSize: 16.sp, fontStyle: FontStyle.italic))
                           : Wrap(
                               alignment: WrapAlignment.spaceAround,
-                              spacing: .2.w,
+                              spacing: .1.w,
                               children: hijosG
                                   .map((e) => CardChildren(
                                       e: e,
