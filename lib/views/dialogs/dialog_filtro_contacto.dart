@@ -1,9 +1,9 @@
 import 'package:enrutador/utilities/preferences.dart';
 import 'package:enrutador/utilities/services/navigation_services.dart';
 import 'package:enrutador/utilities/theme/theme_color.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
-import 'package:oktoast/oktoast.dart';
 import 'package:sizer/sizer.dart';
 
 class DialogFiltroContacto extends StatefulWidget {
@@ -37,7 +37,8 @@ class _DialogFiltroContactoState extends State<DialogFiltroContacto> {
       Text("Filtro de contacto",
           style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold)),
       Divider(),
-      Text("Visualizar por", style: TextStyle(fontSize: 15.sp)),
+      Text("Visualizar por ${kDebugMode ? "tiposFilt" : ""}",
+          style: TextStyle(fontSize: 15.sp)),
       Wrap(spacing: 1.w, children: [
         ChoiceChip(
             selectedColor: ThemaMain.green,
@@ -65,7 +66,8 @@ class _DialogFiltroContactoState extends State<DialogFiltroContacto> {
                 }))
       ]),
       Divider(indent: 5.w, endIndent: 5.w),
-      Text("Agrupar por", style: TextStyle(fontSize: 15.sp)),
+      Text("Agrupar por ${kDebugMode ? "agruparFilt" : ""}",
+          style: TextStyle(fontSize: 15.sp)),
       Wrap(alignment: WrapAlignment.center, spacing: 1.w, children: [
         ChoiceChip(
             selectedColor: ThemaMain.green,
@@ -81,14 +83,9 @@ class _DialogFiltroContactoState extends State<DialogFiltroContacto> {
                 style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold)),
             selected: agrupar == 1,
             onSelected: (value) {
-              if (tipos != 0) {
-                setState(() {
-                  agrupar = 1;
-                });
-              } else {
-                showToast(
-                    "No se puede agrupar por fecha al visualizar por nombre");
-              }
+              setState(() {
+                agrupar = 1;
+              });
             })
       ]),
       Divider(indent: 5.w, endIndent: 5.w),

@@ -15,6 +15,7 @@ import 'package:flutter/material.dart';
 import '../../views/account_view.dart';
 import '../../views/home_view.dart';
 import '../../views/roles_view.dart';
+import '../../views/zonas_view.dart';
 
 class AppRoutes {
   static String initialRoute =
@@ -43,7 +44,8 @@ class AppRoutes {
     pendientes: (_) => const PendientesHome(),
     notasBuilder: (_) => const NotasBuilder(),
     pendientesView: (_) => const PendientesView(),
-    users: (_) => const UsersView()
+    users: (_) => const UsersView(),
+    zonas: (_) => const ZonasView()
   };
   static Map<String, Widget Function(BuildContext)> get routes => _routes;
   static String get home => 'home';
@@ -60,4 +62,5 @@ class AppRoutes {
   static String get notasBuilder => 'notasBuilder';
   static String get pendientesView => 'pendientesView';
   static String get users => 'users';
+  static String get zonas => 'zonas';
 }

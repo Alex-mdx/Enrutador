@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:sizer/sizer.dart';
 
 import 'navigation_services.dart';
 
 class MorphDialog extends StatefulWidget {
-  const MorphDialog({
-    super.key,
-    required this.title,
-    required this.description,
-    required this.cancelText,
-    required this.acceptText,
-    required this.onAcceptPressed,
-    required this.loadingTitle,
-    required this.loadingDescription,
-  });
+  const MorphDialog(
+      {super.key,
+      required this.title,
+      required this.description,
+      required this.cancelText,
+      required this.acceptText,
+      required this.onAcceptPressed,
+      required this.loadingTitle,
+      required this.loadingDescription});
 
   final String title, description, loadingTitle, loadingDescription;
   final Text cancelText, acceptText;
@@ -55,23 +55,23 @@ class _ConfirmDialogState extends State<MorphDialog>
                 children: [
               Padding(
                   padding:
-                      const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+                      EdgeInsets.symmetric(vertical: 16.sp, horizontal: 16.sp),
                   child: Text(!isAccepted ? widget.title : widget.loadingTitle,
                       textAlign: TextAlign.center,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                          fontSize: 22, fontWeight: FontWeight.bold))),
+                      style: TextStyle(
+                          fontSize: 22.sp, fontWeight: FontWeight.bold))),
               Padding(
                   padding:
-                      const EdgeInsets.only(bottom: 16, left: 16, right: 16),
+                      EdgeInsets.symmetric(vertical: 16.sp, horizontal: 16.sp),
                   child: Text(
                       !isAccepted
                           ? widget.description
                           : widget.loadingDescription,
-                      style: const TextStyle(fontSize: 18),
+                      style: TextStyle(fontSize: 18.sp),
                       textAlign: TextAlign.center)),
-              if (!isAccepted) const Divider(height: 1),
+              if (!isAccepted) Divider(height: 1.sp),
               !isAccepted
                   ? SizedBox(
                       height: size.height * 0.075,
@@ -83,7 +83,7 @@ class _ConfirmDialogState extends State<MorphDialog>
                                 highlightColor: Colors.grey[255],
                                 onTap: () => Navigation.pop(),
                                 child: Center(child: widget.cancelText))),
-                        const VerticalDivider(width: 1),
+                        VerticalDivider(width: 1.sp),
                         Expanded(
                             child: InkWell(
                                 splashFactory: InkSparkle
@@ -95,8 +95,8 @@ class _ConfirmDialogState extends State<MorphDialog>
                                 },
                                 child: Center(child: widget.acceptText)))
                       ]))
-                  : const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 16),
+                  : Padding(
+                      padding: EdgeInsets.symmetric(vertical: 16.sp),
                       child: Center(child: CircularProgressIndicator()))
             ])));
   }

@@ -40,7 +40,7 @@ class ContactosView extends StatefulWidget {
 
 class _ContactosViewState extends State<ContactosView> {
   TextEditingController buscador = TextEditingController();
-  final GroupedItemScrollController itemScrollController =
+  GroupedItemScrollController itemScrollController =
       GroupedItemScrollController();
   List<ContactoModelo> selects = [];
   bool carga = false;
@@ -65,6 +65,7 @@ class _ContactosViewState extends State<ContactosView> {
     contactos = await ContactoController.getItemsAll(
         nombre: buscador.text, limit: 100, page: index);
     setState(() {
+      itemScrollController = GroupedItemScrollController();
       carga = true;
     });
   }
@@ -352,6 +353,7 @@ class _ContactosViewState extends State<ContactosView> {
                                   fontSize: 16.sp,
                                   fontWeight: FontWeight.bold)))
                       : Scrollbar(
+                          thickness: 1.w,
                           child:
                               stick(provider, () async => await send(index)))),
           PaginadorGroupedWidget(
@@ -369,7 +371,10 @@ class _ContactosViewState extends State<ContactosView> {
         elements: contactos,
         padding: EdgeInsets.symmetric(horizontal: .5.w, vertical: .1.h),
         groupBy: (element) => Preferences.tiposFilt == 0
-            ? element.nombreCompleto?.substring(0, 1)
+            ? Preferences.vaciosFilt
+                ? element.nombreCompleto?.substring(0, 1)
+                : DateTime.parse(Textos.fechaYMD(fecha: element.creado ?? DateTime(0000, 1, 1)))
+                    .toString()
             : Preferences.tiposFilt == 1
                 ? (Preferences.agruparFilt == 1
                         ? DateTime.parse(Textos.fechaYMD(
@@ -377,22 +382,26 @@ class _ContactosViewState extends State<ContactosView> {
                         : (element.tipo ?? -1).toString())
                     .toString()
                 : (Preferences.agruparFilt == 1
-                    ? DateTime.parse(Textos.fechaYMD(
-                            fecha: element.estadoFecha ?? DateTime(0000, 1, 1)))
+                    ? DateTime.parse(Textos.fechaYMD(fecha: element.estadoFecha ?? DateTime(0000, 1, 1)))
                         .toString()
                     : (element.estado ?? -1).toString()),
         groupSeparatorBuilder: (element) => Text(
             Preferences.tiposFilt == 0
-                ? (element.nombreCompleto ?? "?").substring(0, 1)
+                ? Preferences.vaciosFilt
+                    ? (element.nombreCompleto ?? "?").substring(0, 1)
+                    : element.creado == null
+                        ? "Sin fecha"
+                        : DateTime.parse(Textos.fechaYMD(fecha: element.creado ?? DateTime(0000, 1, 1)))
+                            .toString()
                 : Preferences.tiposFilt == 1
                     ? Preferences.agruparFilt == 1
-                        ? "${Textos.fechaYMD(fecha: element.tipoFecha ?? DateTime(0001, 1, 1))} - ${Textos.conversionDiaNombre(element.tipoFecha ?? DateTime(0001, 1, 1), DateTime.now())}"
+                        ? " ${element.tipoFecha == null ? "Sin fecha" : Textos.fechaYMD(fecha: element.tipoFecha ?? DateTime(0001, 1, 1))} - ${element.tipoFecha == null ? "Desconocido" : Textos.conversionDiaNombre(element.tipoFecha ?? DateTime(0001, 1, 1), DateTime.now())}"
                         : provider.tipos
                                 .firstWhereOrNull((e) => e.id == element.tipo)
                                 ?.nombre ??
                             "Sin tipo"
                     : Preferences.agruparFilt == 1
-                        ? "${Textos.fechaYMD(fecha: element.estadoFecha ?? DateTime(0001, 1, 1))} - ${Textos.conversionDiaNombre(element.estadoFecha ?? DateTime(0001, 1, 1), DateTime.now())}"
+                        ? " ${element.estadoFecha == null ? "Sin fecha" : Textos.fechaYMD(fecha: element.estadoFecha ?? DateTime(0001, 1, 1))} - ${element.estadoFecha == null ? "Desconocido" : Textos.conversionDiaNombre(element.estadoFecha ?? DateTime(0001, 1, 1), DateTime.now())}"
                         : provider.estados
                                 .firstWhereOrNull((e) => e.id == element.estado)
                                 ?.nombre ??

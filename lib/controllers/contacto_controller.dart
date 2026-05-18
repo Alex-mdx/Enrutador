@@ -172,11 +172,11 @@ class ContactoController {
   static Future<List<ContactoModelo>> getItems(double? zoom) async {
     final db = await database();
     List<String> query = [];
-    if (zoom! < 15) {
+    /* if (zoom! < 15) {
       query = ["id", "latitud", "longitud"];
-    } else {
-      query = ["id", "latitud", "longitud", "tipo", "estado"];
-    }
+    } else { */
+    query = ["id", "latitud", "longitud", "tipo", "estado"];
+    //}
     final modelo = (await db.query(nombreDB, columns: query));
     List<ContactoModelo> model = [];
     for (var element in modelo) {
@@ -234,8 +234,7 @@ class ContactoController {
           "pendiente",
           "creado"
         ],
-        orderBy:
-            "${Preferences.agruparFilt == 0 ? "nombre_completo" : Preferences.vaciosFilt ? Preferences.tiposFilt == 1 ? "tipo_fecha" : "estado_fecha" : "creado"} ${Preferences.ordenFilt ? "DESC" : "ASC"}",
+        orderBy: buildItemsFilter(),
         limit: limit,
         offset: ((page ?? 1) - 1) * limit));
     List<ContactoModelo> model = [];
@@ -321,6 +320,13 @@ class ContactoController {
         "$vacios${(Preferences.pendientesFilt ? " AND (pendiente IS NULL OR pendiente = 1)" : "")}";
     debugPrint("vacios $vacios");
     return vacios;
+  }
+
+  static String buildItemsFilter() {
+    String orderBy =
+        "${Preferences.tiposFilt == 0 ? Preferences.agruparFilt == 0 ? Preferences.vaciosFilt ? "nombre_completo" : "nombre_completo" : "creado" : Preferences.tiposFilt == 1 ? "tipo_fecha" : "estado_fecha"} ${Preferences.ordenFilt ? "DESC" : "ASC"}";
+    debugPrint(orderBy);
+    return orderBy;
   }
 
   static List<ContactoModelo> buildList(List<ContactoModelo> model) {

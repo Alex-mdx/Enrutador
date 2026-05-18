@@ -50,7 +50,11 @@ class SideButtons extends StatelessWidget {
                                         size: 22.sp, color: ThemaMain.darkGrey)
                                   ])))))),
           if (kDebugMode)
-            cards(context, () async {}, "Zonas", LineIcons.mapMarked,
+            cards(
+                context,
+                () async => await Navigation.pushNamed(route: "zonas"),
+                "Zonas",
+                LineIcons.mapMarked,
                 ThemaMain.red),
           cards(context, () async => await Navigation.pushNamed(route: "tipos"),
               "Tipos", Icons.type_specimen, ThemaMain.primary),

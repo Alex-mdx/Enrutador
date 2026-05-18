@@ -13,6 +13,10 @@ class UsuarioController {
           empleado_id INTEGER,
           admin_tipo INTEGER,
           status INTEGER,
+          foto INTEGER,
+          children INTEGER,
+          zonas INTEGER,
+          tipos INTEGER,
           creacion TEXT,
           actualizacion TEXT
       )""");
@@ -59,7 +63,8 @@ class UsuarioController {
 
   static Future<UsuarioModel?> getItemUuid(String uuid) async {
     final db = await database();
-    final result = await db.query(nombreDB, where: 'uuid = ?', whereArgs: [uuid]);
+    final result =
+        await db.query(nombreDB, where: 'uuid = ?', whereArgs: [uuid]);
     return result.isNotEmpty ? UsuarioModel.fromJson(result.first) : null;
   }
 }

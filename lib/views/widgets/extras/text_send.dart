@@ -35,8 +35,8 @@ class _TextSendState extends State<TextSend> {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-        keyboardType: TextInputType.twitter,
-        textCapitalization: TextCapitalization.words,
+        keyboardType: TextInputType.multiline,
+        textCapitalization: TextCapitalization.sentences,
         autocorrect: true,
         controller: controller,
         minLines: 1,
@@ -45,7 +45,7 @@ class _TextSendState extends State<TextSend> {
         decoration: InputDecoration(
             hintText: "Agregar nota",
             contentPadding:
-                EdgeInsets.symmetric(horizontal: 2.w, vertical: 1.h),
+                EdgeInsets.symmetric(horizontal: 2.w, vertical: .5.h),
             border: OutlineInputBorder(
                 borderSide: BorderSide(color: ThemaMain.darkGrey),
                 borderRadius: BorderRadius.circular(borderRadius)),

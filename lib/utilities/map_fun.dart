@@ -216,10 +216,10 @@ class MapFun {
         point: LatLng(e.latitud, e.longitud),
         builder: (context, animation) => zoom! < 15
             ? Icon(Icons.circle,
-                color: provider.estados
-                    .firstWhereOrNull((element) => element.id == e.estado)
+                color: provider.tipos
+                    .firstWhereOrNull((element) => element.id == e.tipo)
                     ?.color,
-                size: (zoom).clamp(8, 15).sp)
+                size: (zoom - 1).clamp(6, 14).sp)
             : InkWell(
                 onLongPress: () async => Dialogs.showMorph(
                     title: "Eliminar",
