@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../controllers/contacto_controller.dart';
-import '../../../controllers/contacto_fire.dart';
+import '../../../controllers/fireController/contacto_fire.dart';
 import '../../../controllers/enrutar_controller.dart';
 import '../../../models/contacto_model.dart';
 import '../../../models/enrutar_model.dart';

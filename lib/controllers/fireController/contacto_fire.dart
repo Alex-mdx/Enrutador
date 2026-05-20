@@ -3,7 +3,7 @@ import 'package:enrutador/utilities/textos.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import '../models/contacto_model.dart';
+import '../../models/contacto_model.dart';
 
 class ContactoFire {
   static final db = FirebaseFirestore.instance;

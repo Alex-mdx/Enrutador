@@ -1,6 +1,6 @@
-import 'package:enrutador/controllers/contacto_fire.dart';
-import 'package:enrutador/controllers/pendiente_fire.dart';
-import 'package:enrutador/controllers/referencia_fire.dart';
+import 'package:enrutador/controllers/fireController/contacto_fire.dart';
+import 'package:enrutador/controllers/fireController/pendiente_fire.dart';
+import 'package:enrutador/controllers/fireController/referencia_fire.dart';
 import 'package:enrutador/controllers/referencias_controller.dart';
 import 'package:enrutador/models/pendiente_model.dart';
 import 'package:enrutador/utilities/main_provider.dart';
@@ -26,7 +26,7 @@ import 'package:sizer/sizer.dart';
 import 'package:sticky_grouped_list/sticky_grouped_list.dart';
 
 import '../controllers/nota_controller.dart';
-import '../controllers/nota_fire.dart';
+import '../controllers/fireController/nota_fire.dart';
 import '../utilities/preferences.dart';
 import 'widgets/card_contacto_widget.dart';
 import 'widgets/sliding_cards/slide_general.dart';

@@ -1,4 +1,4 @@
-import 'package:enrutador/controllers/contacto_fire.dart';
+import 'package:enrutador/controllers/fireController/contacto_fire.dart';
 import 'package:enrutador/models/contacto_model.dart';
 import 'package:enrutador/utilities/theme/theme_color.dart';
 import 'package:enrutador/views/widgets/sliding_cards/tarjeta_contacto_detalle.dart';

@@ -1,4 +1,4 @@
-import 'package:enrutador/controllers/pendiente_fire.dart';
+import 'package:enrutador/controllers/fireController/pendiente_fire.dart';
 import 'package:enrutador/models/pendiente_model.dart';
 import 'package:enrutador/models/usuario_model.dart';
 import 'package:enrutador/utilities/main_provider.dart';
@@ -10,7 +10,7 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 
-import '../controllers/usuario_fire.dart';
+import '../controllers/fireController/usuario_fire.dart';
 import '../utilities/theme/theme_color.dart';
 import 'widgets/extras/card_pendientes.dart';
 

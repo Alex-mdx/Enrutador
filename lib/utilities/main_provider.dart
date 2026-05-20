@@ -5,7 +5,7 @@ import 'package:enrutador/controllers/roles_controller.dart';
 import 'package:enrutador/controllers/sql_generator.dart';
 import 'package:enrutador/controllers/tipo_controller.dart';
 import 'package:enrutador/controllers/usuario_controller.dart';
-import 'package:enrutador/controllers/usuario_fire.dart';
+import 'package:enrutador/controllers/fireController/usuario_fire.dart';
 import 'package:enrutador/models/contacto_model.dart';
 import 'package:enrutador/models/estado_model.dart';
 import 'package:enrutador/models/roles_model.dart';

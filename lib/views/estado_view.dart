@@ -13,7 +13,7 @@ import 'package:provider/provider.dart';
 import 'package:rive_animated_icon/rive_animated_icon.dart';
 import 'package:sizer/sizer.dart';
 import 'package:timelines_plus/timelines_plus.dart';
-import '../controllers/estado_fire.dart';
+import '../controllers/fireController/estado_fire.dart';
 import 'widgets/list_estado_widget.dart';
 
 class EstadoView extends StatefulWidget {

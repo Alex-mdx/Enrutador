@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:enrutador/models/roles_model.dart';
 
-import '../utilities/textos.dart';
+import '../../utilities/textos.dart';
 
 class RolesFire {
   static final db = FirebaseFirestore.instance;

@@ -2,7 +2,7 @@ import 'dart:developer';
 import 'package:dynamic_background/dynamic_background.dart';
 import 'package:enrutador/controllers/sql_generator.dart';
 import 'package:enrutador/controllers/usuario_controller.dart';
-import 'package:enrutador/controllers/usuario_fire.dart';
+import 'package:enrutador/controllers/fireController/usuario_fire.dart';
 import 'package:enrutador/utilities/main_provider.dart';
 import 'package:enrutador/utilities/preferences.dart';
 import 'package:enrutador/utilities/services/dialog_services.dart';

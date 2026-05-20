@@ -1,3 +1,4 @@
+import 'package:enrutador/controllers/fireController/tipo_fire.dart';
 import 'package:enrutador/controllers/tipo_controller.dart';
 import 'package:enrutador/models/tipos_model.dart';
 import 'package:enrutador/utilities/main_provider.dart';
@@ -11,8 +12,6 @@ import 'package:oktoast/oktoast.dart';
 import 'package:provider/provider.dart';
 import 'package:rive_animated_icon/rive_animated_icon.dart';
 import 'package:sizer/sizer.dart';
-
-import '../controllers/tipo_fire.dart';
 import 'dialogs/dialogs_tipos.dart';
 import 'widgets/list_tipo_widget.dart';
 

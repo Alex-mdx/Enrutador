@@ -16,7 +16,7 @@ import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 import 'package:timelines_plus/timelines_plus.dart';
 
-import '../../controllers/usuario_fire.dart';
+import '../../controllers/fireController/usuario_fire.dart';
 import '../../utilities/textos.dart';
 import '../widgets/extras/card_children.dart';
 import '../widgets/extras/paginador_widget.dart';

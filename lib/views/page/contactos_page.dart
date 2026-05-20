@@ -9,11 +9,11 @@ import 'package:sizer/sizer.dart';
 import 'package:sticky_grouped_list/sticky_grouped_list.dart';
 
 import '../../controllers/contacto_controller.dart';
-import '../../controllers/contacto_fire.dart';
+import '../../controllers/fireController/contacto_fire.dart';
 import '../../controllers/nota_controller.dart';
-import '../../controllers/nota_fire.dart';
-import '../../controllers/pendiente_fire.dart';
-import '../../controllers/referencia_fire.dart';
+import '../../controllers/fireController/nota_fire.dart';
+import '../../controllers/fireController/pendiente_fire.dart';
+import '../../controllers/fireController/referencia_fire.dart';
 import '../../controllers/referencias_controller.dart';
 import '../../models/contacto_model.dart';
 import '../../utilities/services/dialog_services.dart';

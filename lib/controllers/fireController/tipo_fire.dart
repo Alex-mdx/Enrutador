@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:enrutador/models/tipos_model.dart';
 
-import '../utilities/textos.dart';
+import '../../utilities/textos.dart';
 
 class TipoFire {
   static final db = FirebaseFirestore.instance;

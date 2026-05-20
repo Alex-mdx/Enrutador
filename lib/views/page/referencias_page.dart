@@ -1,5 +1,5 @@
 import 'package:enrutador/controllers/contacto_controller.dart';
-import 'package:enrutador/controllers/referencia_fire.dart';
+import 'package:enrutador/controllers/fireController/referencia_fire.dart';
 import 'package:enrutador/models/referencia_model.dart';
 import 'package:enrutador/views/widgets/extras/chip_referencia.dart';
 import 'package:enrutador/views/widgets/sliding_cards/slide_general.dart';

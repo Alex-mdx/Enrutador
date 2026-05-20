@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:enrutador/controllers/usuario_fire.dart';
+import 'package:enrutador/controllers/fireController/usuario_fire.dart';
 import 'package:enrutador/models/usuario_model.dart';
 import 'package:enrutador/utilities/camara_fun.dart';
 import 'package:enrutador/utilities/main_provider.dart';

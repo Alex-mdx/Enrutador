@@ -15,7 +15,9 @@ import '../../utilities/theme/theme_color.dart';
 
 class DialogUbicacion extends StatefulWidget {
   final Function(LatLng?) funLat;
-  const DialogUbicacion({super.key, required this.funLat});
+  final bool showText;
+  const DialogUbicacion(
+      {super.key, required this.funLat, this.showText = true});
 
   @override
   State<DialogUbicacion> createState() => _DialogUbicacionState();
@@ -33,27 +35,28 @@ class _DialogUbicacionState extends State<DialogUbicacion> {
       Text("Cambio de ubicacion", style: TextStyle(fontSize: 16.sp)),
       Text("Ver ubicacion",
           style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.bold)),
-      Container(
-          decoration: BoxDecoration(
-              color: ThemaMain.background,
-              borderRadius: BorderRadius.circular(borderRadius)),
-          child: Column(mainAxisSize: MainAxisSize.min, children: [
-            Text("Plus Code", style: TextStyle(fontSize: 15.sp)),
-            DefaultTextStyle(
-                style: TextStyle(
-                    fontSize: 15.sp,
-                    fontWeight: FontWeight.bold,
-                    color: ThemaMain.darkBlue),
-                child: Row(mainAxisSize: MainAxisSize.min, children: [
-                  Text("Detallado"),
-                  Switch.adaptive(
-                      value: Preferences.psCodeExt,
-                      onChanged: (value) => setState(() {
-                            Preferences.psCodeExt = value;
-                          })),
-                  Text("Simple")
-                ]))
-          ])),
+      if (widget.showText)
+        Container(
+            decoration: BoxDecoration(
+                color: ThemaMain.background,
+                borderRadius: BorderRadius.circular(borderRadius)),
+            child: Column(mainAxisSize: MainAxisSize.min, children: [
+              Text("Plus Code", style: TextStyle(fontSize: 15.sp)),
+              DefaultTextStyle(
+                  style: TextStyle(
+                      fontSize: 15.sp,
+                      fontWeight: FontWeight.bold,
+                      color: ThemaMain.darkBlue),
+                  child: Row(mainAxisSize: MainAxisSize.min, children: [
+                    Text("Detallado"),
+                    Switch.adaptive(
+                        value: Preferences.psCodeExt,
+                        onChanged: (value) => setState(() {
+                              Preferences.psCodeExt = value;
+                            })),
+                    Text("Simple")
+                  ]))
+            ])),
       Divider(),
       Padding(
           padding: EdgeInsets.symmetric(horizontal: 1.w),
@@ -114,8 +117,10 @@ class _DialogUbicacionState extends State<DialogUbicacion> {
                                   ?.text
                                   ?.removeAllWhitespace;
                           if (string != null) {
-                            latController.text = string.split(",")[0];
-                            lngController.text = string.split(",")[1];
+                            setState(() {
+                              latController.text = string.split(",")[0];
+                              lngController.text = string.split(",")[1];
+                            });
                           }
                         } catch (e) {
                           showToast("No se detecto coordenadas");
@@ -173,6 +178,7 @@ class _DialogUbicacionState extends State<DialogUbicacion> {
           onPressed: () async {
             if (latController.text.isNotEmpty &&
                 lngController.text.isNotEmpty) {
+              debugPrint("lalong");
               try {
                 var ps = PlusCodeFun.psCODE(double.parse(latController.text),
                     double.parse(lngController.text));
@@ -183,6 +189,7 @@ class _DialogUbicacionState extends State<DialogUbicacion> {
               }
             } else if (w3wController.text.isNotEmpty) {
             } else if (psController.text.isNotEmpty) {
+              debugPrint("pc");
               try {
                 var short = await PlusCodeFun.convert(psController.text,
                     toShortFormat: false);
@@ -194,9 +201,9 @@ class _DialogUbicacionState extends State<DialogUbicacion> {
               }
             }
           },
-          label: Text("Cambiar ubicacion", style: TextStyle(fontSize: 15.sp)),
+          label: Text("Ingresar ubicacion", style: TextStyle(fontSize: 15.sp)),
           icon: Icon(Icons.change_circle,
-              size: 22.sp,
+              size: 20.sp,
               color: (latController.text.isEmpty &&
                       lngController.text.isEmpty &&
                       psController.text.isEmpty)

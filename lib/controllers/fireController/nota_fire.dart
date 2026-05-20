@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:enrutador/models/nota_model.dart';
 import 'package:oktoast/oktoast.dart';
 
-import '../utilities/textos.dart';
+import '../../utilities/textos.dart';
 
 class NotaFire {
   static final db = FirebaseFirestore.instance;

@@ -1,5 +1,5 @@
 import 'package:enrutador/controllers/contacto_controller.dart';
-import 'package:enrutador/controllers/nota_fire.dart';
+import 'package:enrutador/controllers/fireController/nota_fire.dart';
 import 'package:enrutador/models/nota_model.dart';
 import 'package:enrutador/utilities/theme/theme_app.dart';
 import 'package:enrutador/utilities/theme/theme_color.dart';

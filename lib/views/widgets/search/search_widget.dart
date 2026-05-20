@@ -217,7 +217,7 @@ class _SearchWidgetState extends State<SearchWidget> {
                     }
                   }))),
       FutureBuilder(
-          future: ContactoController.buscar(provider.buscar.text, 6),
+          future: ContactoController.buscar(provider.buscar.text, 5),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               return Container(

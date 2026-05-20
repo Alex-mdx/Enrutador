@@ -12,7 +12,7 @@ import 'package:oktoast/oktoast.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 
-import '../../controllers/usuario_fire.dart';
+import '../../controllers/fireController/usuario_fire.dart';
 import '../../models/usuario_model.dart';
 import '../../utilities/preferences.dart';
 import '../../utilities/services/navigation_services.dart';
