@@ -185,6 +185,13 @@ class MainProvider with ChangeNotifier implements TickerProvider {
     notifyListeners();
   }
 
+  List<LatLng> _latlongPrev = [];
+  List<LatLng> get latlongPrev => _latlongPrev;
+  set latlongPrev(List<LatLng> valor) {
+    _latlongPrev = valor;
+    notifyListeners();
+  }
+
   //?Funciones
 
   Future<void> logeo() async {

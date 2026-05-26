@@ -213,10 +213,10 @@ class ContactoController {
       {required String? nombre, required int limit, required int? page}) async {
     final db = await database();
     final modelo = (await db.query(nombreDB,
-        where: nombre == "" || nombre == null || buildQueryFiltros().isEmpty
-            ? null
+        where: (nombre == "" || nombre == null)
+            ? (buildQueryFiltros().isEmpty ? null : buildQueryFiltros())
             : "(nombre_completo LIKE ? OR numero LIKE ? OR otro_numero LIKE ?) ${buildQueryFiltros().isNotEmpty ? "AND ${buildQueryFiltros()}" : ""}",
-        whereArgs: nombre == "" || nombre == null
+        whereArgs: (nombre == "" || nombre == null)
             ? null
             : ['%$nombre%', '%$nombre%', '%$nombre%'],
         columns: [
@@ -255,6 +255,7 @@ class ContactoController {
           "id",
           "latitud",
           "longitud",
+          "domicilio",
           "tipo",
           "estado",
           "nombre_completo",

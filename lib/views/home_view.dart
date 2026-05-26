@@ -135,7 +135,7 @@ class PaginadoState extends State<Paginado> {
         widget.provider.animaMap.centerOnPoint(
             LatLng(widget.provider.local?.latitude ?? 0,
                 widget.provider.local?.longitude ?? 0),
-            duration: Duration(milliseconds: 50));
+            duration: Duration(milliseconds: 150));
       }
     });
     initDeepLinks();

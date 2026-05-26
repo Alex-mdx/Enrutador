@@ -4,6 +4,7 @@ import 'package:enrutador/models/contacto_model.dart';
 import 'package:enrutador/utilities/main_provider.dart';
 import 'package:enrutador/utilities/services/dialog_services.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_map_animations/flutter_map_animations.dart';
 import 'package:flutter_map_math/flutter_geo_math.dart';
 import 'package:get/get.dart';
@@ -157,6 +158,11 @@ class MapFun {
         point: LatLng(double.parse(newlocation.latitude.toStringAsFixed(7)),
             double.parse(newlocation.longitude.toStringAsFixed(7))),
         builder: (context, animation) => InkWell(
+            onLongPress: () {
+              Clipboard.setData(ClipboardData(
+                  text: "${newlocation.latitude},${newlocation.longitude}"));
+              showToast("Se han copiado las coordenadas del marcador");
+            },
             onTap: () async {
               provider.animaMap.centerOnPoint(
                   LatLng(double.parse(newlocation.latitude.toStringAsFixed(7)),

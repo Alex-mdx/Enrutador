@@ -2,7 +2,6 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:enrutador/utilities/main_provider.dart';
 import 'package:enrutador/utilities/services/navigation_services.dart';
 import 'package:enrutador/utilities/theme/theme_color.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:provider/provider.dart';
@@ -49,13 +48,11 @@ class SideButtons extends StatelessWidget {
                                     Icon(Icons.connect_without_contact,
                                         size: 22.sp, color: ThemaMain.darkGrey)
                                   ])))))),
-          if (kDebugMode)
-            cards(
-                context,
-                () async => await Navigation.pushNamed(route: "zonas"),
-                "Zonas",
-                LineIcons.mapMarked,
-                ThemaMain.red),
+          cards(context, () async {
+            ///await ZonasController.deleteAll();
+
+            await Navigation.pushNamed(route: "zonas");
+          }, "Zonas", LineIcons.mapMarked, ThemaMain.red),
           cards(context, () async => await Navigation.pushNamed(route: "tipos"),
               "Tipos", Icons.type_specimen, ThemaMain.primary),
           cards(

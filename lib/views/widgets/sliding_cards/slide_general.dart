@@ -35,7 +35,7 @@ class _SlideGeneralState extends State<SlideGeneral> {
   Widget build(BuildContext context) {
     return Slidable(
         key: ValueKey(widget.id),
-        startActionPane: (widget.delete != null || widget.ifDelete!)
+        startActionPane: (widget.delete != null && widget.ifDelete!)
             ? ActionPane(motion: ScrollMotion(), children: [
                 SlidableAction(
                     spacing: 1.h,

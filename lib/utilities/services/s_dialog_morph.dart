@@ -54,17 +54,15 @@ class _ConfirmDialogState extends State<MorphDialog>
                 mainAxisSize: MainAxisSize.min,
                 children: [
               Padding(
-                  padding:
-                      EdgeInsets.symmetric(vertical: 16.sp, horizontal: 16.sp),
+                  padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 3.w),
                   child: Text(!isAccepted ? widget.title : widget.loadingTitle,
                       textAlign: TextAlign.center,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                          fontSize: 22.sp, fontWeight: FontWeight.bold))),
+                          fontSize: 20.sp, fontWeight: FontWeight.bold))),
               Padding(
-                  padding:
-                      EdgeInsets.symmetric(vertical: 16.sp, horizontal: 16.sp),
+                  padding: EdgeInsets.symmetric(vertical: 2.h, horizontal: 3.w),
                   child: Text(
                       !isAccepted
                           ? widget.description

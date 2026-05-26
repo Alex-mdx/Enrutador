@@ -1,19 +1,15 @@
+import 'package:enrutador/controllers/zonas_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart' as sql;
 
-import 'contacto_controller.dart';
-import 'usuario_controller.dart';
-
 class SqlGenerator {
   static Future<void> aads() async {
-    var db = await ContactoController.database();
+    var db = await ZonasController.database();
     await SqlGenerator.existColumna(
-        add: "zonas", database: db, nombreDB: "contacto");
-    var db2 = await UsuarioController.database();
-    await SqlGenerator.existColumna(
-        add: "zonas", database: db2, nombreDB: "usuario");
-    await SqlGenerator.existColumna(
-        add: "tipos", database: db2, nombreDB: "usuario");
+        add: "color", database: db, nombreDB: "zonas");
+        await SqlGenerator.existColumna(
+        add: "status", database: db, nombreDB: "zonas");
+   
   }
 
   static Future<bool> existColumna(

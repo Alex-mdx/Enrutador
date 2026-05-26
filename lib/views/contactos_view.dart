@@ -64,8 +64,11 @@ class _ContactosViewState extends State<ContactosView> {
     index = idx;
     contactos = await ContactoController.getItemsAll(
         nombre: buscador.text, limit: 100, page: index);
+
     setState(() {
-      itemScrollController = GroupedItemScrollController();
+      if (itemScrollController.isAttached) {
+        itemScrollController.jumpTo(index: 0);
+      }
       carga = true;
     });
   }

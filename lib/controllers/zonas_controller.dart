@@ -1,4 +1,3 @@
-
 import 'package:sqflite/sqflite.dart' as sql;
 
 import '../models/zona_model.dart';
@@ -10,7 +9,8 @@ class ZonasController {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         nombre TEXT,
         notas TEXT,
-        latlongs TEXT
+        color INTEGER,
+        latlongs INTEGER
       )""");
   }
 
@@ -23,9 +23,13 @@ class ZonasController {
 
   static Future<void> insert(ZonasModel data) async {
     final db = await database();
-
-    await db.insert(nombreDB, data.toJson(),
-        conflictAlgorithm: sql.ConflictAlgorithm.replace);
+    var find = await getId(data.id);
+    if (find == null) {
+      await db.insert(nombreDB, data.toJson(),
+          conflictAlgorithm: sql.ConflictAlgorithm.replace);
+    } else {
+      await update(data);
+    }
   }
 
   static Future<void> update(ZonasModel data) async {
@@ -42,17 +46,22 @@ class ZonasController {
     return maps.map((x) => ZonasModel.fromJson(x)).toList();
   }
 
-  static Future<ZonasModel?> getId(int id) async {
+  static Future<ZonasModel?> getId(int? id) async {
+    if (id == null) return null;
     final db = await database();
-    final Map<String, dynamic> maps = (await db.query(nombreDB,
-        where: "id = ?", whereArgs: [id])).first;
-    return  maps.isNotEmpty ? ZonasModel.fromJson(maps) : null;
+    final Map<String, dynamic> maps =
+        (await db.query(nombreDB, where: "id = ?", whereArgs: [id])).first;
+    return maps.isNotEmpty ? ZonasModel.fromJson(maps) : null;
   }
-  
-
 
   static Future<void> delete(int id) async {
     final db = await database();
     await db.delete(nombreDB, where: "id = ?", whereArgs: [id]);
+  }
+
+  static Future<List<ZonasModel>> deleteAll() async {
+    final db = await database();
+    await db.delete(nombreDB);
+    return [];
   }
 }
