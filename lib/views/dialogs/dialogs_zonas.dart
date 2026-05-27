@@ -93,90 +93,117 @@ class _DialogsZonasState extends State<DialogsZonas> {
                       color: colorsMain ?? ThemaMain.primary))
             ]),
             Divider(),
-            for (var item in latlongs)
-              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                Container(
-                    color: ThemaMain.background,
-                    padding: EdgeInsets.all(2.sp),
-                    width: 58.w,
-                    height: 3.h,
+            Container(
+                constraints: BoxConstraints(maxHeight: 40.h),
+                child: Scrollbar(
+                    thickness: 1.w,
                     child: SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
-                            spacing: .1.w,
-                            children: item
-                                .map((e) => SizedBox(
-                                    width: 16.w,
-                                    child: Card(
-                                        elevation: 0,
-                                        color: ThemaMain.dialogbackground,
-                                        child: Text(e,
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: TextStyle(
-                                                fontSize: 12.sp,
-                                                fontWeight: FontWeight.bold,
-                                                color: ThemaMain.darkGrey)))))
-                                .toList()))),
-                Row(mainAxisSize: MainAxisSize.min, spacing: 0, children: [
-                  InkWell(
-                      onTap: () async {
-                        List<LatLng> lats = [];
-                        try {
-                          for (var e in item) {
-                            var newE =
-                                e.replaceAll("(", "").replaceAll(")", "");
-                            lats.add(LatLng(double.parse(newE.split(",")[0]),
-                                double.parse(newE.split(",")[1])));
-                          }
+                        child: Column(children: [
+                      for (var item in latlongs)
+                        Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Container(
+                                  color: ThemaMain.background,
+                                  padding: EdgeInsets.all(2.sp),
+                                  width: 58.w,
+                                  height: 3.h,
+                                  child: SingleChildScrollView(
+                                      scrollDirection: Axis.horizontal,
+                                      child: Row(
+                                          spacing: .1.w,
+                                          children: item
+                                              .map((e) => SizedBox(
+                                                  width: 16.w,
+                                                  child: Card(
+                                                      elevation: 0,
+                                                      color: ThemaMain
+                                                          .dialogbackground,
+                                                      child: Text(e,
+                                                          maxLines: 1,
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
+                                                          style: TextStyle(
+                                                              fontSize: 12.sp,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                              color: ThemaMain
+                                                                  .darkGrey)))))
+                                              .toList()))),
+                              Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  spacing: 0,
+                                  children: [
+                                    InkWell(
+                                        onTap: () async {
+                                          List<LatLng> lats = [];
+                                          try {
+                                            for (var e in item) {
+                                              var newE = e
+                                                  .replaceAll("(", "")
+                                                  .replaceAll(")", "");
+                                              lats.add(LatLng(
+                                                  double.parse(
+                                                      newE.split(",")[0]),
+                                                  double.parse(
+                                                      newE.split(",")[1])));
+                                            }
 
-                          await showDialog(
-                              context: context,
-                              builder: (context) => DialogMapLite(
-                                  latlongPrev: lats,
-                                  onPress: (value) {
-                                    item.clear();
-                                    setState(() {
-                                      item.addAll(value!
-                                          .map((e) =>
-                                              "(${e.latitude}, ${e.longitude})")
-                                          .toList());
-                                    });
-                                  }));
-                        } catch (e) {
-                          showToast("Error al procesar las coordenadas");
-                        }
-                      },
-                      child: Card(
-                          child: Padding(
-                              padding: EdgeInsets.all(5.sp),
-                              child: Text("Coord",
-                                  style: TextStyle(
-                                      fontSize: 14.sp,
-                                      color: ThemaMain.darkBlue,
-                                      fontWeight: FontWeight.bold))))),
-                  InkWell(
-                      onTap: () => Dialogs.showMorph(
-                          title: "Eliminar",
-                          description:
-                              "¿Desea eliminar este listado de coordenadas?",
-                          loadingTitle: "Eliminando",
-                          onAcceptPressed: (context) {
-                            setState(() {
-                              latlongs.remove(item);
-                            });
-                          }),
-                      child: Card(
-                          child: Padding(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: .5.w, vertical: 0),
-                              child: Text(" - ",
-                                  style: TextStyle(
-                                      fontSize: 18.sp,
-                                      color: ThemaMain.red,
-                                      fontWeight: FontWeight.bold)))))
-                ])
-              ]),
+                                            await showDialog(
+                                                context: context,
+                                                builder: (context) =>
+                                                    DialogMapLite(
+                                                        latlongPrev: lats,
+                                                        onPress: (value) {
+                                                          item.clear();
+                                                          setState(() {
+                                                            item.addAll(value!
+                                                                .map((e) =>
+                                                                    "(${e.latitude}, ${e.longitude})")
+                                                                .toList());
+                                                          });
+                                                        }));
+                                          } catch (e) {
+                                            showToast(
+                                                "Error al procesar las coordenadas");
+                                          }
+                                        },
+                                        child: Card(
+                                            child: Padding(
+                                                padding: EdgeInsets.all(5.sp),
+                                                child: Text("Coord",
+                                                    style: TextStyle(
+                                                        fontSize: 14.sp,
+                                                        color:
+                                                            ThemaMain.darkBlue,
+                                                        fontWeight: FontWeight
+                                                            .bold))))),
+                                    InkWell(
+                                        onTap: () => Dialogs.showMorph(
+                                            title: "Eliminar",
+                                            description:
+                                                "¿Desea eliminar este listado de coordenadas?",
+                                            loadingTitle: "Eliminando",
+                                            onAcceptPressed: (context) {
+                                              setState(() {
+                                                latlongs.remove(item);
+                                              });
+                                            }),
+                                        child: Card(
+                                            child: Padding(
+                                                padding: EdgeInsets.symmetric(
+                                                    horizontal: .5.w,
+                                                    vertical: 0),
+                                                child: Text(" - ",
+                                                    style: TextStyle(
+                                                        fontSize: 18.sp,
+                                                        color: ThemaMain.red,
+                                                        fontWeight:
+                                                            FontWeight.bold)))))
+                                  ])
+                            ])
+                    ])))),
             ElevatedButton.icon(
                 onPressed: () {
                   setState(() {

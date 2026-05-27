@@ -1,11 +1,13 @@
 import 'package:enrutador/controllers/fireController/zona_fire.dart';
 import 'package:enrutador/models/zona_model.dart';
+import 'package:enrutador/utilities/main_provider.dart';
 import 'package:enrutador/utilities/theme/theme_color.dart';
 import 'package:enrutador/views/dialogs/dialogs_zonas.dart';
 import 'package:enrutador/views/widgets/list_zona_widget.dart';
 import 'package:enrutador/views/widgets/sliding_cards/slide_general.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 
 import '../controllers/zonas_controller.dart';
@@ -43,6 +45,7 @@ class _ZonasViewState extends State<ZonasView> {
 
   @override
   Widget build(BuildContext context) {
+    final provider = Provider.of<MainProvider>(context);
     return Scaffold(
         appBar: AppBar(
             title: Text("Zonas", style: TextStyle(fontSize: 18.sp)),
@@ -114,7 +117,25 @@ class _ZonasViewState extends State<ZonasView> {
                               ZonasModel zona = zonas[index];
                               return SlideGeneral(
                                   id: zona.id!,
-                                  ifDirecto: zona.status == 0,
+                                  ifDelete:
+                                      (provider.usuario?.adminTipo ?? 0) >= 3 ||
+                                          provider.usuario?.adminTipo == -1,
+                                  delete: () async {
+                                    await Dialogs.showMorph(
+                                        title: "Eliminar",
+                                        description:
+                                            "Esta seguro que desea eliminar la zona",
+                                        loadingTitle: "Procesando",
+                                        onAcceptPressed: (context) async {
+                                          await ZonasController.delete(
+                                              zona.id!);
+                                          await send();
+                                        });
+                                  },
+                                  ifDirecto: zona.status == 0 &&
+                                      ((provider.usuario?.adminTipo ?? 0) >=
+                                              3 ||
+                                          provider.usuario?.adminTipo == -1),
                                   directo: () async {
                                     await Dialogs.showMorph(
                                         title: "Sincronizar",

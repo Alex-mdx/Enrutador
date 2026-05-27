@@ -49,9 +49,9 @@ class ZonasController {
   static Future<ZonasModel?> getId(int? id) async {
     if (id == null) return null;
     final db = await database();
-    final Map<String, dynamic> maps =
-        (await db.query(nombreDB, where: "id = ?", whereArgs: [id])).first;
-    return maps.isNotEmpty ? ZonasModel.fromJson(maps) : null;
+    final List<Map<String, dynamic>> maps = await db.query(
+        nombreDB, where: "id = ?", whereArgs: [id]);
+    return maps.isEmpty ? null : ZonasModel.fromJson(maps.first);
   }
 
   static Future<void> delete(int id) async {
