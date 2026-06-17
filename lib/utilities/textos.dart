@@ -35,12 +35,19 @@ class Textos {
 
   static String normalizar(String text) {
     // Reemplaza los acentos y caracteres especiales
+    text = text.replaceAll(RegExp(r'[ÁÀÄÂÃ]'), 'A');
     text = text.replaceAll(RegExp(r'[áàäâã]'), 'a');
+    text = text.replaceAll(RegExp(r'[ÉÈËÊ]'), 'E');
     text = text.replaceAll(RegExp(r'[éèëê]'), 'e');
+    text = text.replaceAll(RegExp(r'[ÍÌÏÎ]'), 'I');
     text = text.replaceAll(RegExp(r'[íìïî]'), 'i');
+    text = text.replaceAll(RegExp(r'[ÓÒÖÔÕ]'), 'O');
     text = text.replaceAll(RegExp(r'[óòöôõ]'), 'o');
+    text = text.replaceAll(RegExp(r'[ÚÙÜÛ]'), 'U');
     text = text.replaceAll(RegExp(r'[úùüû]'), 'u');
+    text = text.replaceAll(RegExp(r'[Ç]'), 'C');
     text = text.replaceAll(RegExp(r'[ç]'), 'c');
+    text = text.replaceAll(RegExp(r'[Ñ]'), 'N');
     text = text.replaceAll(RegExp(r'[ñ]'), 'n');
 
     return text;

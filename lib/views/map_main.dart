@@ -15,6 +15,8 @@ import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
+import '../controllers/zonas_controller.dart';
+
 class MapMain extends StatefulWidget {
   const MapMain({super.key});
 
@@ -102,6 +104,31 @@ class _ViajeMapPageState extends State<MapMain>
                                 Icons.circle,
                                 color: Colors.white)),
                         markerDirection: MarkerDirection.heading)),
+                for (var zona in Preferences.zonasDibujar ? Preferences.zonas : [])
+                    FutureBuilder(
+                        future: ZonasController.getId(int.parse(zona)),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            return PolylineLayer(
+                                polylines: snapshot.data!.latlongs.map((e) {
+                              var newE = e.map((lt) {
+                                var newlt =
+                                    lt.replaceAll("(", "").replaceAll(")", "");
+                                return LatLng(double.parse(newlt.split(",")[0]),
+                                    double.parse(newlt.split(",")[1]));
+                              });
+
+                              return Polyline(
+                                  points: [...newE, newE.first],
+                                  color:
+                                      snapshot.data!.color ?? ThemaMain.primary,
+                                  strokeWidth: 7.sp,
+                                  borderColor: ThemaMain.darkGrey);
+                            }).toList());
+                          } else {
+                            return SizedBox();
+                          }
+                        }),
                 if (!provider.descargarZona)
                   if (provider.contacto != null && !provider.descargarZona)
                     FutureBuilder(
@@ -173,9 +200,7 @@ class _ViajeMapPageState extends State<MapMain>
                               ? []
                               : snapshot.data!
                                   .map((e) => MapFun.marcadores(
-                                      provider,
-                                      e,
-                                      currentZoom))
+                                      provider, e, currentZoom))
                                   .toList())),
                 if (provider.marker != null)
                   AnimatedMarkerLayer(

@@ -161,9 +161,7 @@ class ContactoModelo {
       otroNumero: Parser.toInt(json["otro_numero"]),
       otroNumeroFecha: Textos.parseoDateFire(json["otro_numero_fecha"]),
       agendar: Textos.parseoDateFire(json["agendar"]),
-      zonas: json["zonas"] == null
-          ? []
-          : List<int>.from(json["zonas"]),
+      zonas: json["zonas"] == null ? [] : List<int>.from(json["zonas"]),
       tipo: json["tipo"],
       tipoFecha: Textos.parseoDateFire(json["tipo_fecha"]),
       estado: json["estado"],
@@ -253,6 +251,7 @@ class ContactoModelo {
         "tipo": tipo,
         "tipo_fecha":
             tipoFecha == null ? null : Textos.fechaYMDHMS(fecha: tipoFecha!),
+        "zonas": zonas.map((e) => e).toList(),
         "estado": estado,
         "estado_fecha": estadoFecha == null
             ? null

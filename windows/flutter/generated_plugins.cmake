@@ -11,7 +11,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   objectbox_flutter_libs
   pasteboard
   permission_handler_windows
-  rive_common
+  rive_native
   share_plus
   url_launcher_windows
 )

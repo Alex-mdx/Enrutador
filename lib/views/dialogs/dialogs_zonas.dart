@@ -151,7 +151,7 @@ class _DialogsZonasState extends State<DialogsZonas> {
                                             }
 
                                             await showDialog(
-                                                context: context,
+                                                context: context,barrierDismissible: false,
                                                 builder: (context) =>
                                                     DialogMapLite(
                                                         latlongPrev: lats,

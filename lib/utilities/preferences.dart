@@ -44,6 +44,10 @@ class Preferences {
   static set zonas(List<String> value) =>
       _preferences?.setStringList('zonas', value);
 
+  static bool get zonasDibujar => _preferences?.getBool('zonasDibujar') ?? false;
+  static set zonasDibujar(bool value) =>
+      _preferences?.setBool('zonasDibujar', value);
+
   static bool get enviarDirectoNotas =>
       _preferences?.getBool('enviarDirectoNotas') ?? false;
   static set enviarDirectoNotas(bool value) =>

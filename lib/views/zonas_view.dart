@@ -46,48 +46,19 @@ class _ZonasViewState extends State<ZonasView> {
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<MainProvider>(context);
-    return Scaffold(
-        appBar: AppBar(
-            title: Text("Zonas", style: TextStyle(fontSize: 18.sp)),
-            actions: [
-              IconButton.filled(
-                  iconSize: 20.sp,
-                  onPressed: () => showDialog(
-                      context: context, builder: (context) => DialogsZonas()),
-                  icon: Icon(Icons.add, color: ThemaMain.green))
-            ]),
-        body: !carga
-            ? Center(
-                child: LoadingAnimationWidget.twoRotatingArc(
-                    color: ThemaMain.primary, size: 36.sp))
-            : zonas.isEmpty
-                ? Center(
-                    child: TextButton.icon(
-                        onPressed: () async {
-                          bool result = false;
-                          await Dialogs.showMorph(
-                              title: "Descargar zonas",
-                              description:
-                                  "Desea descargar las zonas de la base de datos?",
-                              loadingTitle: "procesando",
-                              onAcceptPressed: (context) async => setState(() {
-                                    result = true;
-                                  }));
-                          if (result) {
-                            carga = false;
-                            var cont = await ZonasFire.getItems();
-                            for (var element in cont) {
-                              await ZonasController.insert(element);
-                            }
-                            await send();
-                          }
-                        },
-                        icon: Icon(Icons.refresh, size: 20.sp),
-                        label: Text("No se ha ingresado ninguna zona",
-                            style: TextStyle(
-                                fontSize: 16.sp, fontWeight: FontWeight.bold))))
-                : RefreshIndicator(
-                    onRefresh: () async {
+    return PopScope(
+      canPop: true,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) {
+          provider.zonas = zonas;
+        }
+      },
+      child: Scaffold(
+          appBar: AppBar(
+              title: Text("Zonas", style: TextStyle(fontSize: 18.sp)),
+              actions: [
+                IconButton.filledTonal(
+                    onPressed: () async {
                       bool result = false;
                       await Dialogs.showMorph(
                           title: "Descargar zonas",
@@ -106,66 +77,133 @@ class _ZonasViewState extends State<ZonasView> {
                         await send();
                       }
                     },
-                    child: Scrollbar(
-                        interactive: true,
-                        controller: itemScrollController,
-                        child: ListView.builder(
-                            controller: itemScrollController,
-                            shrinkWrap: true,
-                            itemCount: zonas.length,
-                            itemBuilder: (context, index) {
-                              ZonasModel zona = zonas[index];
-                              return SlideGeneral(
-                                  id: zona.id!,
-                                  ifDelete:
-                                      (provider.usuario?.adminTipo ?? 0) >= 3 ||
-                                          provider.usuario?.adminTipo == -1,
-                                  delete: () async {
-                                    await Dialogs.showMorph(
-                                        title: "Eliminar",
-                                        description:
-                                            "Esta seguro que desea eliminar la zona",
-                                        loadingTitle: "Procesando",
-                                        onAcceptPressed: (context) async {
-                                          await ZonasController.delete(
-                                              zona.id!);
-                                          await send();
-                                        });
-                                  },
-                                  ifDirecto: zona.status == 0 &&
-                                      ((provider.usuario?.adminTipo ?? 0) >=
-                                              3 ||
-                                          provider.usuario?.adminTipo == -1),
-                                  directo: () async {
-                                    await Dialogs.showMorph(
-                                        title: "Sincronizar",
-                                        description:
-                                            "Desea sincronizar la zona al servidor?",
-                                        loadingTitle: "Procesando",
-                                        onAcceptPressed: (context) async {
-                                          var tempZ = zona.copyWith(status: 1);
-                                          var result =
-                                              await ZonasFire.send(zona: tempZ);
-                                          if (result) {
-                                            await ZonasController.insert(tempZ);
+                    icon: Icon(Icons.refresh),
+                    iconSize: 20.sp),
+                IconButton.filled(
+                    iconSize: 20.sp,
+                    onPressed: () => showDialog(
+                            barrierDismissible: false,
+                            context: context,
+                            builder: (context) => DialogsZonas())
+                        .whenComplete(() async => await send()),
+                    icon: Icon(Icons.add, color: ThemaMain.green))
+              ]),
+          body: !carga
+              ? Center(
+                  child: LoadingAnimationWidget.twoRotatingArc(
+                      color: ThemaMain.primary, size: 36.sp))
+              : zonas.isEmpty
+                  ? Center(
+                      child: TextButton.icon(
+                          onPressed: () async {
+                            bool result = false;
+                            await Dialogs.showMorph(
+                                title: "Descargar zonas",
+                                description:
+                                    "Desea descargar las zonas de la base de datos?",
+                                loadingTitle: "procesando",
+                                onAcceptPressed: (context) async =>
+                                    setState(() {
+                                      result = true;
+                                    }));
+                            if (result) {
+                              carga = false;
+                              var cont = await ZonasFire.getItems();
+                              for (var element in cont) {
+                                await ZonasController.insert(element);
+                              }
+                              await send();
+                            }
+                          },
+                          icon: Icon(Icons.refresh, size: 20.sp),
+                          label: Text("No se ha ingresado ninguna zona",
+                              style: TextStyle(
+                                  fontSize: 16.sp,
+                                  fontWeight: FontWeight.bold))))
+                  : RefreshIndicator(
+                      onRefresh: () async {
+                        bool result = false;
+                        await Dialogs.showMorph(
+                            title: "Descargar zonas",
+                            description:
+                                "Desea descargar las zonas de la base de datos?",
+                            loadingTitle: "procesando",
+                            onAcceptPressed: (context) async => setState(() {
+                                  result = true;
+                                }));
+                        if (result) {
+                          carga = false;
+                          var cont = await ZonasFire.getItems();
+                          for (var element in cont) {
+                            await ZonasController.insert(element);
+                          }
+                          await send();
+                        }
+                      },
+                      child: Scrollbar(
+                          interactive: true,
+                          controller: itemScrollController,
+                          child: ListView.builder(
+                              controller: itemScrollController,
+                              shrinkWrap: true,
+                              itemCount: zonas.length,
+                              itemBuilder: (context, index) {
+                                ZonasModel zona = zonas[index];
+                                return SlideGeneral(
+                                    id: zona.id!,
+                                    ifDelete:
+                                        (provider.usuario?.adminTipo ?? 0) >=
+                                                3 ||
+                                            provider.usuario?.adminTipo == -1,
+                                    delete: () async {
+                                      await Dialogs.showMorph(
+                                          title: "Eliminar",
+                                          description:
+                                              "Esta seguro que desea eliminar la zona",
+                                          loadingTitle: "Procesando",
+                                          onAcceptPressed: (context) async {
+                                            await ZonasController.delete(
+                                                zona.id!);
                                             await send();
-                                          }
-                                        });
-                                  },
-                                  model: ListZonaWidget(
-                                      zona: zona,
-                                      selected: selects[index],
-                                      selectedVisible: true,
-                                      onSelected: (p0) => setState(() {
-                                            selects[index] = !selects[index];
-                                          }),
-                                      fun: () async {
-                                        await showDialog(
-                                            context: context,
-                                            builder: (context) =>
-                                                DialogsZonas(item: zona));
-                                        await send();
-                                      }));
-                            }))));
+                                          });
+                                    },
+                                    ifDirecto: zona.status == 0 &&
+                                        ((provider.usuario?.adminTipo ?? 0) >=
+                                                3 ||
+                                            provider.usuario?.adminTipo == -1),
+                                    directo: () async {
+                                      await Dialogs.showMorph(
+                                          title: "Sincronizar",
+                                          description:
+                                              "Desea sincronizar la zona al servidor?",
+                                          loadingTitle: "Procesando",
+                                          onAcceptPressed: (context) async {
+                                            var tempZ =
+                                                zona.copyWith(status: 1);
+                                            var result = await ZonasFire.send(
+                                                zona: tempZ);
+                                            if (result) {
+                                              await ZonasController.insert(
+                                                  tempZ);
+                                              await send();
+                                            }
+                                          });
+                                    },
+                                    model: ListZonaWidget(
+                                        zona: zona,
+                                        selected: selects[index],
+                                        selectedVisible: true,
+                                        onSelected: (p0) => setState(() {
+                                              selects[index] = !selects[index];
+                                            }),
+                                        fun: () async {
+                                          await showDialog(
+                                              context: context,
+                                              builder: (context) =>
+                                                  DialogsZonas(item: zona));
+                                          await send();
+                                        }));
+                              })))),
+    );
   }
 }

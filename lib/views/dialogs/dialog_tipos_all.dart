@@ -28,7 +28,7 @@ class DialogTiposAll extends StatelessWidget {
               size: 18.sp, color: ThemaMain.darkBlue),
           onPressed: () {
             selected(TiposModelo(
-                id: -1, nombre: "", descripcion: "", icon: null, color: null));
+                id: null, nombre: "", descripcion: "", icon: null, color: null));
             Navigation.pop();
           },
           label: Text("Limpiar Tipo",

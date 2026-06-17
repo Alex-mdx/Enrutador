@@ -47,6 +47,7 @@ class _DialogsEstadoFuncion extends State<DialogsEstadoFuncion> {
   List<UsuarioModel> actuales = [];
   int index = 1;
   int max = 0;
+  final int maxLenght = 6;
   bool press = false;
   @override
   void initState() {
@@ -70,13 +71,17 @@ class _DialogsEstadoFuncion extends State<DialogsEstadoFuncion> {
     setState(() {
       search = true;
     });
-    max = await UsuarioFire.countAll();
+    max = await UsuarioFire.countAll(activo: true);
     setState(() {
       index = idx;
     });
 
     var list = await UsuarioFire.getAllItems(
-        limit: 4, index: idx - 1, orden: "nombre", decender: false);
+        limit: maxLenght,
+        index: idx - 1,
+        orden: "nombre",
+        decender: false,
+        activo: true);
 
     if (!mounted) return;
     setState(() {
@@ -155,7 +160,7 @@ class _DialogsEstadoFuncion extends State<DialogsEstadoFuncion> {
                                   children: actuales
                                       .map((e) => CardChildren(
                                           e: e,
-                                          width: 19.w,
+                                          width: 25.w,
                                           onTap: () => setState(() {
                                                 if (e.empleadoId ==
                                                     provider
@@ -177,7 +182,7 @@ class _DialogsEstadoFuncion extends State<DialogsEstadoFuncion> {
                                                     .empleadoEstado
                                                     ?.toString());
                                               }),
-                                          fontSize: 11.sp,
+                                          fontSize: 12.sp,
                                           card: contacto.empleadoEstado ==
                                                   e.empleadoId
                                               ? ThemaMain.green
@@ -187,7 +192,7 @@ class _DialogsEstadoFuncion extends State<DialogsEstadoFuncion> {
                       PaginadorGroupedWidget(
                           max: max,
                           length: actuales.length,
-                          maxLenght: 4,
+                          maxLenght: maxLenght,
                           send: (index) async => await send(index),
                           itemScrollController: null)
                     ]))),

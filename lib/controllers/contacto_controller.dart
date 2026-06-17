@@ -318,7 +318,7 @@ class ContactoController {
                 : "";
     debugPrint("vacios $vacios");
     vacios =
-        "$vacios${(Preferences.pendientesFilt ? " AND (pendiente IS NULL OR pendiente = 1)" : "")}";
+        "$vacios${(Preferences.pendientesFilt ? " ${vacios.isNotEmpty ? "AND" : ""} (pendiente IS NULL OR pendiente = 1)" : "")}";
     debugPrint("vacios $vacios");
     return vacios;
   }

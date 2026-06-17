@@ -7,6 +7,7 @@ import 'package:enrutador/models/what_3_words_model.dart';
 import 'package:enrutador/utilities/main_provider.dart';
 import 'package:enrutador/utilities/map_fun.dart';
 import 'package:enrutador/utilities/pluscode_fun.dart';
+import 'package:enrutador/utilities/preferences.dart';
 import 'package:enrutador/utilities/theme/theme_app.dart';
 import 'package:enrutador/utilities/theme/theme_color.dart';
 import 'package:enrutador/utilities/w3w_fun.dart';
@@ -81,14 +82,22 @@ class _SearchWidgetState extends State<SearchWidget> {
     } else if (provider.buscar.text.isNumericOnly) {
       debugPrint("postal");
       var geoPostal = await GeoFun.searchPostalCode(provider.buscar.text, null)
-          .timeout(Duration(seconds: 3));
+          .timeout(Duration(seconds: 3))
+          .catchError((e) {
+        debugPrint("error: $e");
+        return <GeoPostalModel>[];
+      });
       setState(() {
         geoPostalSuggest = geoPostal;
       });
     } else {
       debugPrint("geoNames");
       var geoNames = await GeoFun.searchCity(provider.buscar.text, null)
-          .timeout(Duration(seconds: 3));
+          .timeout(Duration(seconds: 3))
+          .catchError((e) {
+        debugPrint("error: $e");
+        return <GeoNamesModel>[];
+      });
       setState(() {
         geoNamesSuggest = geoNames;
       });
@@ -185,7 +194,17 @@ class _SearchWidgetState extends State<SearchWidget> {
                       'Codigo Postal ej: 12345',
                       'Ciudad ej: Ciudad, Estado, Pais'
                     ]),
-                RowFiltro(),
+                RowFiltro(
+                    tipos: Preferences.tipos,
+                    estados: Preferences.status,
+                    zonas: Preferences.zonas,
+                    updateData: ( tipo, estado, zona) {
+                      setState(() {
+                        Preferences.tipos = tipo;
+                        Preferences.status = estado;
+                        Preferences.zonas = zona;
+                      });
+                    }),
                 if (provider.buscar.text != "") w3wBuilder(provider)
               ]))
         ]));
@@ -217,7 +236,7 @@ class _SearchWidgetState extends State<SearchWidget> {
                     }
                   }))),
       FutureBuilder(
-          future: ContactoController.buscar(provider.buscar.text, 5),
+          future: ContactoController.buscar(provider.buscar.text, 4),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               return Container(

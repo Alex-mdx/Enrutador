@@ -26,7 +26,6 @@ class TarjetaRsideWidget extends StatefulWidget {
 }
 
 class _TarjetaRsideWidgetState extends State<TarjetaRsideWidget> {
-  bool esperar = false;
   Future<void> funcion({required ContactoModelo contacto}) async {
     var data =
         await EnrutarController.getItemContacto(contactoId: contacto.id!);
@@ -164,80 +163,43 @@ class _TarjetaRsideWidgetState extends State<TarjetaRsideWidget> {
                           }
                           showToast("Marcador limpiado");
                         });
-                  } else {
-                    var contact =
-                        await ContactoFire.getItem(id: provider.contacto!.id);
-                    if (contact != null) {
-                      await Dialogs.showMorph(
-                          title: "Inhabilitar Punteo",
-                          description:
-                              "¿Desea inhabilitar este punteo?\nYa no se tendra acceso a este marcador de manera local",
-                          loadingTitle: "Inhabilitando",
-                          onAcceptPressed: (context) async {
-                            await ContactoController.deleteItem(
-                                provider.contacto!.id!);
-                            var model = ContactoModelo.fromJson({
-                              "id": provider.contacto!.id,
-                              "latitud": provider.contacto!.latitud,
-                              "longitud": provider.contacto!.longitud
-                            });
-                            provider.contacto =
-                                model.copyWith(pendiente: 1, status: 0);
-                            await MapFun.touch(
-                                provider: provider,
-                                lat: model.latitud,
-                                lng: model.longitud);
-                            var datas = await EnrutarController.getItemContacto(
-                                contactoId: provider.contacto!.id ?? -1);
-                            if (datas != null) {
-                              await EnrutarController.deleteItem(datas.id!);
-                            }
-                            showToast("Marcador inhabilitado");
-                          });
-                    } else {
-                      showToast("Este contacto sigue como pendiente");
-                    }
                   }
                 }
               },
-              icon: esperar
-                  ? CircularProgressIndicator()
-                  : provider.contacto?.id == null
-                      ? Icon(Icons.save, color: ThemaMain.green)
-                      : provider.contacto?.pendiente == 1 &&
-                              provider.contacto?.status == 1
-                          ? Icon(Icons.delete, color: ThemaMain.red)
-                          : Icon(LineIcons.userSlash, color: ThemaMain.pink)),
+              icon: provider.contacto?.id == null
+                  ? Icon(Icons.save, color: ThemaMain.green)
+                  : Icon(Icons.delete, color: ThemaMain.red)),
           if (provider.contacto?.id != null)
             IconButton.filledTonal(
                 iconSize: 18.sp,
                 onPressed: () async {
                   if (provider.internet) {
-                    var contact =
-                        await ContactoFire.getItem(id: provider.contacto!.id);
-                    if (contact != null) {
-                      if (provider.contacto?.pendiente == 1) {
-                        Dialogs.showMorph(
-                            title: "Cambios detectados",
-                            description:
-                                "¿Desea sincronizar los cambios?\nSe van a descargar los cambios del servidor y se van a sobreescribir los cambios locales",
-                            loadingTitle: "Sincronizando",
-                            onAcceptPressed: (context) async {
+                    if (provider.contacto?.pendiente == 1) {
+                      Dialogs.showMorph(
+                          title: "Cambios detectados",
+                          description:
+                              "¿Desea sincronizar los cambios?\nSe van a descargar los cambios del servidor y se van a sobreescribir los cambios locales",
+                          loadingTitle: "Sincronizando",
+                          onAcceptPressed: (context) async {
+                            var contact = await ContactoFire.getItem(
+                                id: provider.contacto!.id);
+                            if (contact != null) {
                               var temp = contact.copyWith(pendiente: 0);
                               await ContactoController.update(temp);
                               provider.contacto = temp;
                               showToast("Contacto sincronizado");
-                            });
-                      } else {
-                        showToast("Contacto sincronizado");
-                      }
+                            } else {
+                              if (provider.contacto?.pendiente == 1) {
+                                showToast(
+                                    "Contacto no encontrado en el servidor");
+                              } else {
+                                showToast(
+                                    "Puede que este contacto esta pendiente a aceptar o no exista en el servidor");
+                              }
+                            }
+                          });
                     } else {
-                      if (provider.contacto?.pendiente == 1) {
-                        showToast("Contacto no encontrado en el servidor");
-                      } else {
-                        showToast(
-                            "Puede que este contacto esta pendiente a aceptar o no exista en el servidor");
-                      }
+                      showToast("Contacto sincronizado");
                     }
                   } else {
                     showToast("Sin internet\nintente mas tarde");
@@ -249,7 +211,65 @@ class _TarjetaRsideWidgetState extends State<TarjetaRsideWidget> {
                         : LineIcons.alternateCloudDownload,
                     color: provider.contacto?.pendiente == 0
                         ? ThemaMain.green
-                        : ThemaMain.darkBlue))
+                        : ThemaMain.darkBlue)),
+          if (((provider.usuario?.adminTipo ?? 0) > 4 ||
+                  (provider.usuario?.adminTipo ?? 0) == -1) &&
+              (provider.contacto?.pendiente != 1))
+            IconButton.filledTonal(
+                iconSize: 18.sp,
+                onPressed: () async {
+                  if (provider.internet) {
+                    await Dialogs.showMorph(
+                        title: "Inhabilitar Punteo",
+                        description:
+                            "¿Desea inhabilitar este punteo?\nYa no se tendra acceso a este marcador de manera local ademas de bloquear su acceso a la aplicacion",
+                        loadingTitle: "Inhabilitando",
+                        onAcceptPressed: (context) async {
+                          showToast("Buscando contacto...");
+                          var contact = await ContactoFire.getItem(
+                              id: provider.contacto!.id);
+                          if (contact != null) {
+                            showToast("Inhabilitando contacto...");
+                            var result = await ContactoFire.sendItem(
+                                data:
+                                    contact.copyWith(pendiente: 0, status: 0));
+                            if (result) {
+                              showToast(
+                                  "Contacto inhabilitado correctamente\nSe eliminara localmente");
+                            } else {
+                              showToast(
+                                  "Error al inhabilitar contacto\nSe eliminara localmente");
+                            }
+                          } else {
+                            showToast(
+                                "Contacto no encontrado\nSe eliminara localmente");
+                          }
+
+                          await ContactoController.deleteItem(
+                              provider.contacto!.id!);
+                          var model = ContactoModelo.fromJson({
+                            "id": provider.contacto!.id,
+                            "latitud": provider.contacto!.latitud,
+                            "longitud": provider.contacto!.longitud
+                          });
+                          provider.contacto =
+                              model.copyWith(pendiente: 1, status: 0);
+                          await MapFun.touch(
+                              provider: provider,
+                              lat: model.latitud,
+                              lng: model.longitud);
+                          var datas = await EnrutarController.getItemContacto(
+                              contactoId: provider.contacto!.id ?? -1);
+                          if (datas != null) {
+                            await EnrutarController.deleteItem(datas.id!);
+                          }
+                          showToast("Marcador inhabilitado");
+                        });
+                  } else {
+                    showToast("Sin internet\nintente mas tarde");
+                  }
+                },
+                icon: Icon(LineIcons.userSlash, color: ThemaMain.pink))
         ]);
   }
 }

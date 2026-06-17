@@ -25,6 +25,45 @@ class ContactoFire {
     return ContactoModelo.fromJson(querySnapshot.docs.first.data());
   }
 
+  static Future<List<ContactoModelo>> getItemPersonalizado(
+      {int? id,
+      List<Filter>? filters,
+      int max = 50,
+      String orderBy = "nombre_completo",
+      bool descending = false}) async {
+    Query<Map<String, dynamic>> query = db.collection(name);
+    if (id != null || (filters != null && filters.isNotEmpty)) {
+      if (filters != null && filters.isNotEmpty) {
+        for (var f in filters) {
+          query = query.where(f);
+        }
+      } else if (id != null) {
+        query = query.where("id", isEqualTo: id);
+      }
+    }
+    query = query.orderBy(orderBy, descending: descending).limit(max);
+    final querySnapshot = await query.get();
+    return querySnapshot.docs
+        .map((doc) => ContactoModelo.fromJson(doc.data()))
+        .toList();
+  }
+
+  static Future<bool> deleteItem({required ContactoModelo model}) async {
+    try {
+      final querySnapshot = await db
+          .collection(name)
+          .where("id", isEqualTo: model.id)
+          .limit(1)
+          .get();
+      if (querySnapshot.docs.isEmpty) return false;
+      await db.collection(name).doc(querySnapshot.docs.first.id).delete();
+      return true;
+    } catch (e) {
+      debugPrint(e.toString());
+      return false;
+    }
+  }
+
   static Future<bool> sendItem(
       {required ContactoModelo data,
       String? table,
@@ -48,7 +87,10 @@ class ContactoFire {
         var docId = Textos.randomWord(30);
         await db.collection(name).doc(docId).set(data.toFirestore());
       } else {
-        await db.collection(name).doc(doc.docs.first.id).update(data.toFirestore());
+        await db
+            .collection(name)
+            .doc(doc.docs.first.id)
+            .update(data.toFirestore());
       }
       return true;
     } catch (e) {

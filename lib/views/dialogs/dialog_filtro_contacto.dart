@@ -1,4 +1,3 @@
-import 'package:enrutador/utilities/preferences.dart';
 import 'package:enrutador/utilities/services/navigation_services.dart';
 import 'package:enrutador/utilities/theme/theme_color.dart';
 import 'package:flutter/foundation.dart';
@@ -8,7 +7,22 @@ import 'package:sizer/sizer.dart';
 
 class DialogFiltroContacto extends StatefulWidget {
   final Function() fun;
-  const DialogFiltroContacto({super.key, required this.fun});
+  final int tipo;
+  final int agrupar;
+  final bool ordenar;
+  final bool vacios;
+  final bool pendientes;
+  final Function(
+      int tipo, int agrupar, bool ordenar, bool vacios, bool pendientes) apply;
+  const DialogFiltroContacto(
+      {super.key,
+      required this.fun,
+      required this.tipo,
+      required this.agrupar,
+      required this.ordenar,
+      required this.vacios,
+      required this.pendientes,
+      required this.apply});
 
   @override
   State<DialogFiltroContacto> createState() => _DialogFiltroContactoState();
@@ -22,11 +36,11 @@ class _DialogFiltroContactoState extends State<DialogFiltroContacto> {
   bool pendientes = false;
   @override
   void initState() {
-    tipos = Preferences.tiposFilt;
-    agrupar = Preferences.agruparFilt;
-    ordenar = Preferences.ordenFilt;
-    vacios = Preferences.vaciosFilt;
-    pendientes = Preferences.pendientesFilt;
+    tipos = widget.tipo;
+    agrupar = widget.agrupar;
+    ordenar = widget.ordenar;
+    vacios = widget.vacios;
+    pendientes = widget.pendientes;
     super.initState();
   }
 
@@ -117,7 +131,7 @@ class _DialogFiltroContactoState extends State<DialogFiltroContacto> {
             Expanded(
                 flex: 5,
                 child: Text(
-                    "No mostrar vacios\nSolo contacto con nombre, tipo y estado",
+                    "No mostrar vacios. Solo contactos con nombre, tipo y estado ingresados",
                     textAlign: TextAlign.center,
                     style: TextStyle(
                         fontSize: 14.sp, fontWeight: FontWeight.bold))),
@@ -151,11 +165,7 @@ class _DialogFiltroContactoState extends State<DialogFiltroContacto> {
       ElevatedButton.icon(
           icon: Icon(LineIcons.checkCircle, size: 20.sp),
           onPressed: () {
-            Preferences.tiposFilt = tipos;
-            Preferences.agruparFilt = agrupar;
-            Preferences.ordenFilt = ordenar;
-            Preferences.vaciosFilt = vacios;
-            Preferences.pendientesFilt = pendientes;
+            widget.apply(tipos, agrupar, ordenar, vacios, pendientes);
             widget.fun();
             Navigation.pop();
           },

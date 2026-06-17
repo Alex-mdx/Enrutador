@@ -77,21 +77,26 @@ class UsuarioFire {
       {int limit = 50,
       int index = 0,
       String? orden,
-      bool decender = true}) async {
+      bool decender = true,
+      bool? activo}) async {
     final baseRef = db.collection(collection);
+    Filter? filtro;
+    if (activo != null) {
+      filtro = Filter("status", isEqualTo: activo == true ? 1 : 0);
+    }
+    // Aplicar el filtro y el orden de forma consistente en todas las consultas
+    Query<Map<String, dynamic>> queryWithFilter =
+        filtro != null ? baseRef.where(filtro) : baseRef;
+    queryWithFilter = queryWithFilter.orderBy(orden ?? "id", descending: decender);
 
     Query<Map<String, dynamic>> pageRef;
 
     if (index <= 0) {
       // Primera página: sin cursor usando solo el limite establecido
-      pageRef =
-          baseRef.orderBy(orden ?? "id", descending: decender).limit(limit);
+      pageRef = queryWithFilter.limit(limit);
     } else {
       // Páginas siguientes: obtenemos el ultimo doc de la página previa
-      final cursorSnap = await baseRef
-          .orderBy(orden ?? "id", descending: decender)
-          .limit(limit * index)
-          .get();
+      final cursorSnap = await queryWithFilter.limit(limit * index).get();
 
       if (cursorSnap.docs.isEmpty) {
         // El índice sale del rango, se devuelve vacío
@@ -99,8 +104,7 @@ class UsuarioFire {
       }
 
       // Empezamos DESPUÉS del último documento del bloque anterior
-      pageRef = baseRef
-          .orderBy(orden ?? "id", descending: decender)
+      pageRef = queryWithFilter
           .startAfterDocument(cursorSnap.docs.last)
           .limit(limit);
     }
@@ -113,8 +117,16 @@ class UsuarioFire {
 
   /// Retorna el número total de documentos en [collection].
   /// Usa la API de agregación de Firestore (no descarga los docs, es eficiente).
-  static Future<int> countAll() async {
-    final snapshot = await db.collection(collection).count().get();
+  static Future<int> countAll({bool? activo}) async {
+    Filter? filtro;
+    if (activo != null) {
+      filtro = Filter("status", isEqualTo: activo == true ? 1 : 0);
+    }
+    Query query = db.collection(collection);
+    if (filtro != null) {
+      query = query.where(filtro);
+    }
+    final snapshot = await query.count().get();
     debugPrint("Count: ${snapshot.count}");
     return snapshot.count ?? 0;
   }

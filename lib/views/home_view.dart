@@ -15,9 +15,11 @@ import 'package:internet_connection_checker_plus/internet_connection_checker_plu
 import 'package:latlong2/latlong.dart';
 import 'package:open_location_code/open_location_code.dart';
 import 'package:provider/provider.dart';
+import 'package:rive_animated_icon/rive_animated_icon.dart';
 import 'package:sizer/sizer.dart';
 import 'package:app_links/app_links.dart';
 import '../utilities/uri_fun.dart';
+import 'dialogs/dialog_download.dart';
 import 'widgets/extras/side_buttons.dart';
 import 'widgets/map_widget/map_alternative.dart';
 
@@ -51,6 +53,18 @@ class _HomeViewState extends State<HomeView> {
                     toolbarHeight: 6.h,
                     title: Text("Enrutador", style: TextStyle(fontSize: 18.sp)),
                     actions: [
+                      IconButton.filledTonal(
+                          iconSize: 20.sp,
+                          onPressed: () => showDialog(
+                              context: context,barrierDismissible: false,
+                              builder: (context) => DialogDownload()),
+                          icon: RiveAnimatedIcon(
+                              riveIcon: RiveIcon.upload,
+                              strokeWidth: 20.sp,
+                              enableAbsorbPointer: true,
+                              color: ThemaMain.green,
+                              width: 20.sp,
+                              height: 20.sp)),
                       /* FutureBuilder(
                           future: ContactoController.getCountPendiente(),
                           builder: (context, snapshot) => bd.Badge(
@@ -92,9 +106,8 @@ class _HomeViewState extends State<HomeView> {
                                   title: "Salir",
                                   description: "¿Desea salir de la aplicación?",
                                   loadingTitle: "Cerrando aplicacion",
-                                  onAcceptPressed: (context) async {
-                                    await SystemNavigator.pop();
-                                  });
+                                  onAcceptPressed: (context) async =>
+                                      await SystemNavigator.pop());
                             },
                             child: Paginado(provider: provider)))))));
   }

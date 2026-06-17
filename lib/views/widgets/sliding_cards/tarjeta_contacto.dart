@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:enrutador/controllers/contacto_controller.dart';
 import 'package:enrutador/controllers/enrutar_controller.dart';
@@ -14,6 +16,7 @@ import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 import 'package:widgets_to_image/widgets_to_image.dart';
 import '../../../models/contacto_model.dart';
+import '../../../utilities/map_fun.dart';
 import '../../dialogs/dialog_ubicacion.dart';
 import 'tarjeta_contacto_detalle.dart';
 import 'tarjeta_rside_widget.dart';
@@ -48,7 +51,7 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
         child: Column(children: [
           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
             SizedBox(
-                width: 50.w,
+                width: 52.w,
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -73,24 +76,30 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                                           horizontal: 0, vertical: 0))),
                               onPressed: () async {
                                 if (provider.contacto != null) {
-                                  showDialog(
+                                  await showDialog(
                                       context: context,
                                       builder: (context) =>
                                           DialogUbicacion(funLat: (lat) async {
+                                            var zonas =
+                                                await MapFun.checkPointWithZona(
+                                                    point: lat ?? LatLng(0, 0));
+                                            log("${zonas.map((e) => e.nombre).toList()}");
                                             var temp = provider.contacto!
                                                 .copyWith(
                                                     pendiente: 1,
-                                                    latitud: double.parse(
-                                                        lat
-                                                                ?.latitude
+                                                    latitud: double.parse(lat
+                                                            ?.latitude
+                                                            .toStringAsFixed(
+                                                                7) ??
+                                                        "0"),
+                                                    longitud: double.parse(
+                                                        lat?.longitude
                                                                 .toStringAsFixed(
                                                                     7) ??
                                                             "0"),
-                                                    longitud: double.parse(lat
-                                                            ?.longitude
-                                                            .toStringAsFixed(
-                                                                7) ??
-                                                        "0"));
+                                                    zonas: zonas
+                                                        .map((e) => e.id!)
+                                                        .toList());
                                             funcion(contacto: temp);
                                             Navigation.pop();
                                             await ContactoController.update(
@@ -119,6 +128,30 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis))),
                       InkWell(
+                          onTap: () async {
+                            var zonas = await MapFun.checkPointWithZona(
+                                point: LatLng(provider.contacto?.latitud ?? 0,
+                                    provider.contacto?.longitud ?? 0));
+                            showToast("${zonas.map((e) => e.nombre).toList()}");
+                          },
+                          onDoubleTap: () async {
+                            if (provider.contacto!.id != null) {
+                              var zonas = await MapFun.checkPointWithZona(
+                                  point: LatLng(provider.contacto?.latitud ?? 0,
+                                      provider.contacto?.longitud ?? 0));
+                              var temp = provider.contacto!.copyWith(
+                                  pendiente: 1,
+                                  zonas: zonas.map((e) => e.id!).toList());
+                              log("zonas ${zonas.map((e) => e.nombre).toList()}");
+                              await ContactoController.update(temp);
+                              provider.contacto =
+                                  await ContactoController.getItem(
+                                      id: temp.id!,
+                                      lat: temp.latitud,
+                                      lng: temp.longitud);
+                              showToast("Zona actualizada");
+                            }
+                          },
                           onLongPress: () async {
                             await Clipboard.setData(ClipboardData(
                                 text:

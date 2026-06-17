@@ -96,7 +96,7 @@ class CardContactoWidget extends StatelessWidget {
                                   children: [
                                 SubstringHighlight(
                                     text:
-                                        "${contacto.nombreCompleto ?? "Sin nombre"}${kDebugMode ? "|${contacto.tipo}|${contacto.estado}" : ""}",
+                                        "${contacto.nombreCompleto ?? "Sin nombre"}${kDebugMode ? "|${contacto.tipo}|${contacto.estado}|${contacto.id}" : ""}",
                                     term: entrada,
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,

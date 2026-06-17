@@ -32,6 +32,22 @@ class ReferenciaFire {
     return ReferenciaModelo.fromJson(querySnapshot.docs.first.data());
   }
 
+  static Future<ReferenciaModelo?> getItemRId({required int? id}) async {
+    if (id == null) return null;
+    final querySnapshot =
+        await db.collection(name).where("id_foranea", isEqualTo: id).limit(1).get();
+    if (querySnapshot.docs.isEmpty) return null;
+    return ReferenciaModelo.fromJson(querySnapshot.docs.first.data());
+  }
+
+  static Future<ReferenciaModelo?> getItemIdForanea({required int? id}) async {
+    if (id == null) return null;
+    final querySnapshot =
+        await db.collection(name).where("id_r_forenea", isEqualTo: id).limit(1).get();
+    if (querySnapshot.docs.isEmpty) return null;
+    return ReferenciaModelo.fromJson(querySnapshot.docs.first.data());
+  }
+
   static Future<bool> send({required ReferenciaModelo referencia}) async {
     var data = await getItem(id: referencia.id);
     if (data == null) {

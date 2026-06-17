@@ -1,5 +1,8 @@
+import 'dart:developer';
+
 import 'package:enrutador/controllers/contacto_controller.dart';
 import 'package:enrutador/controllers/enrutar_controller.dart';
+import 'package:enrutador/controllers/zonas_controller.dart';
 import 'package:enrutador/models/contacto_model.dart';
 import 'package:enrutador/utilities/main_provider.dart';
 import 'package:enrutador/utilities/services/dialog_services.dart';
@@ -13,8 +16,10 @@ import 'package:open_location_code/open_location_code.dart';
 import 'package:sizer/sizer.dart';
 import 'package:badges/badges.dart' as bd;
 import '../models/enrutar_model.dart';
+import '../models/zona_model.dart';
 import 'pluscode_fun.dart';
 import 'theme/theme_color.dart';
+import 'package:maps_toolkit/maps_toolkit.dart' as toolkit;
 
 class MapFun {
   static Future<void> getUri(
@@ -284,5 +289,47 @@ class MapFun {
                                           ?.color ??
                                       ThemaMain.primary))
                         ]))));
+  }
+
+  static Future<bool> inPoly({
+    required LatLng point,
+    required List<LatLng> puntos,
+  }) async {
+    final polygonForMath =
+        puntos.map((p) => toolkit.LatLng(p.latitude, p.longitude)).toList();
+
+    final pointForMath = toolkit.LatLng(point.latitude, point.longitude);
+
+    final bool isInside = toolkit.PolygonUtil.containsLocation(
+        pointForMath, polygonForMath, false);
+    return isInside;
+  }
+
+  static Future<List<ZonasModel>> checkPointWithZona(
+      {required LatLng point}) async {
+    var zonasSQl = await ZonasController.getAll();
+    log("${zonasSQl.length} - ${point.latitude} - ${point.longitude}");
+    if (zonasSQl.isEmpty) {
+      debugPrint("no existen zonas");
+      return [];
+    }
+    List<ZonasModel> zonas = [];
+    for (var zona in zonasSQl) {
+      List<LatLng> lats = [];
+      for (var e in zona.latlongs) {
+        for (var punto in e) {
+          var newE = punto.replaceAll("(", "").replaceAll(")", "");
+          lats.add(LatLng(double.parse(newE.split(",")[0]),
+              double.parse(newE.split(",")[1])));
+        }
+      }
+      final bool inside = await inPoly(point: point, puntos: lats);
+      log("${zona.nombre} $inside");
+      if (inside) {
+        zonas.add(zona);
+      }
+    }
+
+    return zonas;
   }
 }

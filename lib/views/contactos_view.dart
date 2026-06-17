@@ -311,7 +311,20 @@ class _ContactosViewState extends State<ContactosView> {
                   iconSize: 22.sp,
                   onPressed: () => showDialog(
                       context: context,
-                      builder: (context) => DialogFiltroContacto(fun: () async {
+                      builder: (context) => DialogFiltroContacto(
+                          ordenar: Preferences.ordenFilt,
+                          agrupar: Preferences.agruparFilt,
+                          pendientes: Preferences.pendientesFilt,
+                          tipo: Preferences.tiposFilt,
+                          vacios: Preferences.vaciosFilt,
+                          apply: (tipo, agrupar, ordenar, vacios, pendientes) {
+                            Preferences.pendientesFilt = pendientes;
+                            Preferences.tiposFilt = tipo;
+                            Preferences.vaciosFilt = vacios;
+                            Preferences.ordenFilt = ordenar;
+                            Preferences.agruparFilt = agrupar;
+                          },
+                          fun: () async {
                             index = 1;
                             await send(index);
                           })),
@@ -342,7 +355,18 @@ class _ContactosViewState extends State<ContactosView> {
                               color: ThemaMain.green)),
                       contentPadding: EdgeInsets.symmetric(
                           horizontal: 2.w, vertical: 1.h)))),
-          RowFiltro(press: () => send(index)),
+          RowFiltro(
+              tipos: Preferences.tipos,
+              estados: Preferences.status,
+              zonas: Preferences.zonas,
+              updateData: ( tipo, estado, zona) {
+                setState(() {
+                  Preferences.tipos = tipo;
+                  Preferences.status = estado;
+                  Preferences.zonas = zona;
+                });
+              },
+              press: () => send(index)),
           Expanded(
               flex: 10,
               child: !carga

@@ -6,6 +6,7 @@ import 'package:enrutador/controllers/sql_generator.dart';
 import 'package:enrutador/controllers/tipo_controller.dart';
 import 'package:enrutador/controllers/usuario_controller.dart';
 import 'package:enrutador/controllers/fireController/usuario_fire.dart';
+import 'package:enrutador/controllers/zonas_controller.dart';
 import 'package:enrutador/models/contacto_model.dart';
 import 'package:enrutador/models/estado_model.dart';
 import 'package:enrutador/models/roles_model.dart';
@@ -21,6 +22,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 import '../models/referencia_model.dart';
+import '../models/zona_model.dart';
 
 class MainProvider with ChangeNotifier implements TickerProvider {
   late AnimatedMapController _animaMap;
@@ -122,6 +124,13 @@ class MainProvider with ChangeNotifier implements TickerProvider {
     notifyListeners();
   }
 
+  List<ZonasModel> _zonas = [];
+  List<ZonasModel> get zonas => _zonas;
+  set zonas(List<ZonasModel> valor) {
+    _zonas = valor;
+    notifyListeners();
+  }
+
   bool _mapaReal = false;
   bool get mapaReal => _mapaReal;
   set mapaReal(bool valor) {
@@ -198,6 +207,7 @@ class MainProvider with ChangeNotifier implements TickerProvider {
     tipos = await TipoController.getItems();
     estados = await EstadoController.getItems();
     roles = await RolesController.getAll();
+    zonas = await ZonasController.getAll();
     SqlGenerator.aads();
     if (internet) {
       var temp = await UsuarioFire.getItem(

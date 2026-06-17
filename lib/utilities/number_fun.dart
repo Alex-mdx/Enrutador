@@ -4,7 +4,7 @@ class NumberFun {
   static String formatNumber(String number) {
     Iterable<PhoneNumber> country;
     country = PhoneNumber.findPotentialPhoneNumbers(number);
-    return country.firstOrNull?.formatNsn() ?? "0";
+    return country.firstOrNull?.formatNsn() ?? number;
   }
 
   static String formatNumberWithLada(String number) {

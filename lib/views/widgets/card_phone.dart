@@ -33,61 +33,58 @@ class PhoneStateWidget extends StatelessWidget {
                             .replaceAll(" ", ""),
                         2),
                     builder: (context, contacto) => InkWell(
-                          borderRadius: BorderRadius.circular(borderRadius),
-                          onTap: () async {
-                            if (contacto.hasData && contacto.data!.isNotEmpty) {
-                              await provider.animaMap.centerOnPoint(
-                                  LatLng(contacto.data!.firstOrNull!.latitud,
-                                      contacto.data!.firstOrNull!.longitud),
-                                  zoom: 18);
-                            }
-                          },
-                          child: Card(
-                              elevation: 2,
-                              child: Padding(
-                                  padding:
-                                      EdgeInsets.symmetric(horizontal: 1.w),
-                                  child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Stack(
-                                            alignment: Alignment.center,
-                                            children: [
-                                              Icon(Icons.circle,
-                                                  color: ThemaMain.green,
-                                                  size: 28.sp),
-                                              RiveAnimatedIcon(
-                                                  riveIcon: RiveIcon.call,
-                                                  strokeWidth: 2.h,
-                                                  height: 4.h,
-                                                  width: 4.h),
-                                            ]),
-                                        Column(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              SizedBox(
-                                                  width: 30.w,
-                                                  child: AutoSizeText(
-                                                      contacto.hasData
-                                                          ? contacto.data!
-                                                                  .map((e) => e
-                                                                      .nombreCompleto)
-                                                                  .toList()
-                                                                  .firstOrNull ??
-                                                              "Llamando...\nDesconocido"
-                                                          : "Llamando...\nDesconocido",
-                                                      maxLines: 2,
-                                                      minFontSize: 14,
-                                                      textAlign: TextAlign.end,
-                                                      overflow:
-                                                          TextOverflow.fade,
-                                                      style: TextStyle(
-                                                          fontSize: 16.sp,
-                                                          fontWeight:
-                                                              FontWeight.bold)))
-                                            ])
-                                      ]))),
-                        )))
+                        borderRadius: BorderRadius.circular(borderRadius),
+                        onTap: () async {
+                          if (contacto.hasData && contacto.data!.isNotEmpty) {
+                            await provider.animaMap.centerOnPoint(
+                                LatLng(contacto.data!.firstOrNull!.latitud,
+                                    contacto.data!.firstOrNull!.longitud),
+                                zoom: 18);
+                          }
+                        },
+                        child: Card(
+                            elevation: 2,
+                            child: Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 1.w),
+                                child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Stack(
+                                          alignment: Alignment.center,
+                                          children: [
+                                            Icon(Icons.circle,
+                                                color: ThemaMain.green,
+                                                size: 28.sp),
+                                            RiveAnimatedIcon(
+                                                riveIcon: RiveIcon.call,
+                                                strokeWidth: 2.h,
+                                                height: 4.h,
+                                                width: 4.h),
+                                          ]),
+                                      Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            SizedBox(
+                                                width: 30.w,
+                                                child: AutoSizeText(
+                                                    contacto.hasData
+                                                        ? contacto.data!
+                                                                .map((e) => e
+                                                                    .nombreCompleto)
+                                                                .toList()
+                                                                .firstOrNull ??
+                                                            "Llamando...\nDesconocido"
+                                                        : "Llamando...\nDesconocido",
+                                                    maxLines: 2,
+                                                    minFontSize: 14,
+                                                    textAlign: TextAlign.end,
+                                                    overflow: TextOverflow.fade,
+                                                    style: TextStyle(
+                                                        fontSize: 16.sp,
+                                                        fontWeight:
+                                                            FontWeight.bold)))
+                                          ])
+                                    ]))))))
             : SizedBox());
   }
 }
