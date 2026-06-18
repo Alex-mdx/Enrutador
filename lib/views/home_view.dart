@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:enrutador/controllers/contacto_controller.dart';
 import 'package:enrutador/utilities/main_provider.dart';
 import 'package:enrutador/utilities/permisos.dart';
 import 'package:enrutador/utilities/services/dialog_services.dart';
@@ -55,9 +56,9 @@ class _HomeViewState extends State<HomeView> {
                     actions: [
                       IconButton.filledTonal(
                           iconSize: 20.sp,
-                          onPressed: () => showDialog(
-                              context: context,barrierDismissible: false,
-                              builder: (context) => DialogDownload()),
+                          onPressed: () async {
+                            await ContactoController.updateAllStatusToZero();
+                          },
                           icon: RiveAnimatedIcon(
                               riveIcon: RiveIcon.upload,
                               strokeWidth: 20.sp,

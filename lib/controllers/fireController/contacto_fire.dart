@@ -25,6 +25,17 @@ class ContactoFire {
     return ContactoModelo.fromJson(querySnapshot.docs.first.data());
   }
 
+  static Future<int> countItems({List<Filter>? filters}) async {
+    Query<Map<String, dynamic>> query = db.collection(name);
+    if (filters != null && filters.isNotEmpty) {
+      for (var f in filters) {
+        query = query.where(f);
+      }
+    }
+    final querySnapshot = await query.count().get();
+    return querySnapshot.count ?? 0;
+  }
+
   static Future<List<ContactoModelo>> getItemPersonalizado(
       {int? id,
       List<Filter>? filters,
@@ -78,22 +89,28 @@ class ContactoFire {
                       query ?? FirebaseAuth.instance.currentUser?.uid ?? "")
                   : query ?? FirebaseAuth.instance.currentUser?.uid)
           .limit(1)
-          .get();
+          .get(const GetOptions(source: Source.server))
+          .timeout(const Duration(seconds: 15));
+          
       var user = doc.docs.firstOrNull == null
           ? null
           : ContactoModelo.fromJson(doc.docs.firstOrNull!.data());
       debugPrint("${user?.toJson() ?? "nada"} - ${doc.docs.firstOrNull?.id}");
+      
       if (user == null) {
         var docId = Textos.randomWord(30);
-        await db.collection(name).doc(docId).set(data.toFirestore());
+        await db.collection(name).doc(docId).set(data.toFirestore())
+            .timeout(const Duration(seconds: 15));
       } else {
         await db
             .collection(name)
             .doc(doc.docs.first.id)
-            .update(data.toFirestore());
+            .update(data.toFirestore())
+            .timeout(const Duration(seconds: 15));
       }
       return true;
     } catch (e) {
+      debugPrint("Error al enviar a Firebase: $e");
       return false;
     }
   }

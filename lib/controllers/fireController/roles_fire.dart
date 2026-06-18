@@ -30,16 +30,20 @@ class RolesFire {
   }
 
   static Future<bool> send({required RolesModel rol}) async {
-    var data = await getItem(id: rol.id);
-    if (data == null) {
-      var rdm = Textos.randomWord(30);
-      await db.collection(name).doc(rdm).set(rol.toFirestore());
-      return true;
-    } else {
-      var docId = await getDocId(id: rol.id);
-      if (docId == null) return false;
-      await db.collection(name).doc(docId).update(rol.toFirestore());
-      return true;
+    try {
+      var data = await getItem(id: rol.id).timeout(const Duration(seconds: 15));
+      if (data == null) {
+        var rdm = Textos.randomWord(30);
+        await db.collection(name).doc(rdm).set(rol.toFirestore()).timeout(const Duration(seconds: 15));
+        return true;
+      } else {
+        var docId = await getDocId(id: rol.id).timeout(const Duration(seconds: 15));
+        if (docId == null) return false;
+        await db.collection(name).doc(docId).update(rol.toFirestore()).timeout(const Duration(seconds: 15));
+        return true;
+      }
+    } catch (e) {
+      return false;
     }
   }
 }

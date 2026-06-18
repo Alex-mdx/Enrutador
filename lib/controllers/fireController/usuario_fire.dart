@@ -145,7 +145,8 @@ class UsuarioFire {
                       query ?? FirebaseAuth.instance.currentUser?.uid ?? "")
                   : query ?? FirebaseAuth.instance.currentUser?.uid)
           .limit(1)
-          .get();
+          .get(const GetOptions(source: Source.server))
+          .timeout(const Duration(seconds: 15));
       var user = doc.docs.firstOrNull == null
           ? null
           : UsuarioModel.fromJson(doc.docs.firstOrNull!.data());
@@ -154,10 +155,12 @@ class UsuarioFire {
         await db
             .collection(collection)
             .doc(doc.docs.first.id)
-            .update(data.toFirestore());
+            .update(data.toFirestore())
+            .timeout(const Duration(seconds: 15));
         return true;
       } else {
-        await db.collection(collection).add(data.toFirestore());
+        await db.collection(collection).add(data.toFirestore())
+            .timeout(const Duration(seconds: 15));
         return true;
       }
     } catch (e) {

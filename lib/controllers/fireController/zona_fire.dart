@@ -30,25 +30,33 @@ class ZonasFire {
   }
 
   static Future<bool> send({required ZonasModel zona}) async {
-    var data = await getItem(id: zona.id);
-    if (data == null) {
-      var rdm = Textos.randomWord(30);
-      await db.collection(name).doc(rdm).set(zona.toJson());
-      return true;
-    } else {
-      var docId = await getDocId(id: zona.id);
-      if (docId == null) return false;
-      await db.collection(name).doc(docId).update(zona.toJson());
-      return true;
+    try {
+      var data = await getItem(id: zona.id).timeout(const Duration(seconds: 15));
+      if (data == null) {
+        var rdm = Textos.randomWord(30);
+        await db.collection(name).doc(rdm).set(zona.toJson()).timeout(const Duration(seconds: 15));
+        return true;
+      } else {
+        var docId = await getDocId(id: zona.id).timeout(const Duration(seconds: 15));
+        if (docId == null) return false;
+        await db.collection(name).doc(docId).update(zona.toJson()).timeout(const Duration(seconds: 15));
+        return true;
+      }
+    } catch (e) {
+      return false;
     }
   }
 
   static Future<bool> delete({required ZonasModel zona}) async {
-    var data = await getItem(id: zona.id);
-    if (data == null) return false;
-    var docId = await getDocId(id: zona.id);
-    if (docId == null) return false;
-    await db.collection(name).doc(docId).delete();
-    return true;
+    try {
+      var data = await getItem(id: zona.id).timeout(const Duration(seconds: 15));
+      if (data == null) return false;
+      var docId = await getDocId(id: zona.id).timeout(const Duration(seconds: 15));
+      if (docId == null) return false;
+      await db.collection(name).doc(docId).delete().timeout(const Duration(seconds: 15));
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 }

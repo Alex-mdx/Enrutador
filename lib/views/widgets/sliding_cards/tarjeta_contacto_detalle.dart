@@ -58,7 +58,8 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
     return bd.Badge(
         badgeAnimation: bd.BadgeAnimation.rotation(),
         position: bd.BadgePosition.topEnd(end: 0, top: -12),
-        showBadge: widget.contacto?.zonas.isNotEmpty ?? false,
+        showBadge: (widget.contacto?.zonas.isNotEmpty ?? false) &&
+            provider.contacto?.id != null,
         badgeStyle: bd.BadgeStyle(badgeColor: Colors.transparent),
         badgeContent: Container(
             padding: EdgeInsets.symmetric(horizontal: 1.w, vertical: 0),

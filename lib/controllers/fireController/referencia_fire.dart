@@ -49,16 +49,20 @@ class ReferenciaFire {
   }
 
   static Future<bool> send({required ReferenciaModelo referencia}) async {
-    var data = await getItem(id: referencia.id);
-    if (data == null) {
-      var rdm = Textos.randomWord(30);
-      await db.collection(name).doc(rdm).set(referencia.toFirestore());
-      return true;
-    } else {
-      var docId = await getDocId(id: referencia.id);
-      if (docId == null) return false;
-      await db.collection(name).doc(docId).update(referencia.toFirestore());
-      return true;
+    try {
+      var data = await getItem(id: referencia.id).timeout(const Duration(seconds: 15));
+      if (data == null) {
+        var rdm = Textos.randomWord(30);
+        await db.collection(name).doc(rdm).set(referencia.toFirestore()).timeout(const Duration(seconds: 15));
+        return true;
+      } else {
+        var docId = await getDocId(id: referencia.id).timeout(const Duration(seconds: 15));
+        if (docId == null) return false;
+        await db.collection(name).doc(docId).update(referencia.toFirestore()).timeout(const Duration(seconds: 15));
+        return true;
+      }
+    } catch (e) {
+      return false;
     }
   }
 }

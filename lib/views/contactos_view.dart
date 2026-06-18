@@ -78,7 +78,7 @@ class _ContactosViewState extends State<ContactosView> {
     final provider = Provider.of<MainProvider>(context);
     return Scaffold(
         appBar: AppBar(
-            title: Text("Contactos", style: TextStyle(fontSize: 18.sp)),
+            title: Text("Contactos ($max)", style: TextStyle(fontSize: 18.sp)),
             actions: [
               OverflowBar(spacing: 1.w, children: [
                 if (kDebugMode)
@@ -121,7 +121,7 @@ class _ContactosViewState extends State<ContactosView> {
                       onPressed: () async {
                         var envio = ((provider.usuario?.adminTipo ?? 0) >= 3 ||
                             (provider.usuario?.adminTipo ?? 0) == -1);
-                        if (selects.length <= 10) {
+                        if (selects.length <= 5) {
                           await Dialogs.showMorph(
                               title: envio ? "Envio de datos" : "Sincronizar",
                               description:
@@ -359,7 +359,7 @@ class _ContactosViewState extends State<ContactosView> {
               tipos: Preferences.tipos,
               estados: Preferences.status,
               zonas: Preferences.zonas,
-              updateData: ( tipo, estado, zona) {
+              updateData: (tipo, estado, zona) {
                 setState(() {
                   Preferences.tipos = tipo;
                   Preferences.status = estado;

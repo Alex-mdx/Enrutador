@@ -136,32 +136,44 @@ class PendienteFire {
       String? table,
       String? query,
       bool itsNumber = false}) async {
-    var doc = await db
-        .collection(name)
-        .where(table ?? "id",
-            isEqualTo: itsNumber
-                ? int.tryParse(
-                    query ?? FirebaseAuth.instance.currentUser?.uid ?? "")
-                : query ?? FirebaseAuth.instance.currentUser?.uid)
-        .limit(1)
-        .get();
-    var uuid = doc.docs.firstOrNull?.id ?? Textos.randomWord(30);
-    await db.collection(name).doc(uuid).set(data.toFirestore());
-    return true;
+    try {
+      var doc = await db
+          .collection(name)
+          .where(table ?? "id",
+              isEqualTo: itsNumber
+                  ? int.tryParse(
+                      query ?? FirebaseAuth.instance.currentUser?.uid ?? "")
+                  : query ?? FirebaseAuth.instance.currentUser?.uid)
+          .limit(1)
+          .get(const GetOptions(source: Source.server))
+          .timeout(const Duration(seconds: 15));
+      var uuid = doc.docs.firstOrNull?.id ?? Textos.randomWord(30);
+      await db.collection(name).doc(uuid).set(data.toFirestore())
+          .timeout(const Duration(seconds: 15));
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 
   static Future<bool> deleteItem(
       {String? table, String? query, bool itsNumber = false}) async {
-    var doc = await db
-        .collection(name)
-        .where(table ?? "id",
-            isEqualTo: itsNumber
-                ? int.tryParse(
-                    query ?? FirebaseAuth.instance.currentUser?.uid ?? "")
-                : query ?? FirebaseAuth.instance.currentUser?.uid)
-        .get();
-    if (doc.docs.firstOrNull == null) return false;
-    await db.collection(name).doc(doc.docs.first.id).delete();
-    return true;
+    try {
+      var doc = await db
+          .collection(name)
+          .where(table ?? "id",
+              isEqualTo: itsNumber
+                  ? int.tryParse(
+                      query ?? FirebaseAuth.instance.currentUser?.uid ?? "")
+                  : query ?? FirebaseAuth.instance.currentUser?.uid)
+          .get(const GetOptions(source: Source.server))
+          .timeout(const Duration(seconds: 15));
+      if (doc.docs.firstOrNull == null) return false;
+      await db.collection(name).doc(doc.docs.first.id).delete()
+          .timeout(const Duration(seconds: 15));
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 }

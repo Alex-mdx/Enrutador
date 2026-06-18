@@ -8,6 +8,10 @@ import 'package:sizer/sizer.dart';
 import '../../../controllers/contacto_controller.dart';
 import '../../../controllers/fireController/contacto_fire.dart';
 import '../../../controllers/enrutar_controller.dart';
+import '../../../controllers/fireController/nota_fire.dart';
+import '../../../controllers/fireController/referencia_fire.dart';
+import '../../../controllers/nota_controller.dart';
+import '../../../controllers/referencias_controller.dart';
 import '../../../models/contacto_model.dart';
 import '../../../models/enrutar_model.dart';
 import '../../../utilities/main_provider.dart';
@@ -172,6 +176,71 @@ class _TarjetaRsideWidgetState extends State<TarjetaRsideWidget> {
           if (provider.contacto?.id != null)
             IconButton.filledTonal(
                 iconSize: 18.sp,
+                onLongPress: () {
+                  if (provider.internet) {
+                    if (provider.contacto?.pendiente == 1) {
+                      Dialogs.showMorph(
+                          title: "Verificar Cambios",
+                          description: "¿Desea sincronizar los cambios?",
+                          loadingTitle: "Verificando",
+                          onAcceptPressed: (context) async {
+                            var cont = await ContactoController.getItemId(
+                                id: provider.contacto!.id!);
+
+                            var referencia =
+                                await ReferenciasController.getIdPrin(
+                                    idContacto: cont!.id!,
+                                    lat: cont.latitud,
+                                    lng: cont.longitud,
+                                    status: -1);
+
+                            var notas = await NotasController.getContactoId(
+                                cont.id!,
+                                pendiente: 1);
+                            var data = cont.copyWith(
+                                pendiente: 0,
+                                empleadoEstado: ((cont.empleadoEstado == null ||
+                                            cont.empleadoEstado ==
+                                                provider.usuario?.empleadoId) &&
+                                        (cont.estado != null &&
+                                            cont.estado != -1))
+                                    ? provider.usuario?.empleadoId
+                                    : cont.empleadoEstado,
+                                aceptadoEmpleado: provider.usuario?.empleadoId);
+                            var result = await ContactoFire.sendItem(
+                                data: data,
+                                table: data.id.toString(),
+                                query: "id",
+                                itsNumber: true);
+                            if (result) {
+                              await ContactoController.update(data);
+                              for (var item in referencia) {
+                                var newItem = item.copyWith(estatus: 0);
+                                var result = await ReferenciaFire.send(
+                                    referencia: newItem);
+                                if (result) {
+                                  await ReferenciasController.update(newItem);
+                                }
+                              }
+                              for (var item in notas) {
+                                var newItem = item.copyWith(pendiente: 0);
+                                var result = await NotaFire.send(nota: newItem);
+                                if (result) {
+                                  await NotasController.update(newItem);
+                                }
+                              }
+                              showToast("Envio\nContacto numero");
+                            } else {
+                              showToast("No se pudo enviar el contacto}");
+                            }
+                          });
+                    } else {
+                      showToast("Contacto sincronizado");
+                    }
+                  } else {
+                    showToast("Sin internet\nintente mas tarde");
+                  }
+                },
                 onPressed: () async {
                   if (provider.internet) {
                     if (provider.contacto?.pendiente == 1) {
@@ -214,7 +283,8 @@ class _TarjetaRsideWidgetState extends State<TarjetaRsideWidget> {
                         : ThemaMain.darkBlue)),
           if (((provider.usuario?.adminTipo ?? 0) > 4 ||
                   (provider.usuario?.adminTipo ?? 0) == -1) &&
-              (provider.contacto?.pendiente != 1))
+              (provider.contacto?.pendiente != 1) &&
+              provider.contacto?.id != null)
             IconButton.filledTonal(
                 iconSize: 18.sp,
                 onPressed: () async {

@@ -52,8 +52,13 @@ class _DialogDownloadState extends State<DialogDownload> {
     return Dialog(
         child: Column(mainAxisSize: MainAxisSize.min, children: [
       AppBar(
-          title:
-              Text("Descarga de\ncontactos", style: TextStyle(fontSize: 16.sp)),
+          title: InkWell(
+              onDoubleTap: () async {
+                int items = await ContactoFire.countItems(filters: []);
+                showToast("Items: $items");
+              },
+              child: Text("Descarga de\ncontactos",
+                  style: TextStyle(fontSize: 16.sp))),
           actions: [
             Padding(
                 padding: EdgeInsets.all(8.sp),
@@ -171,15 +176,21 @@ class _DialogDownloadState extends State<DialogDownload> {
                                 onAcceptPressed: (context) async {
                                   List<Filter> filter = [];
                                   filter.add(Filter("id", whereIn: refStr));
-                                  var temp =
-                                      await ContactoFire.getItemPersonalizado(
-                                          id: null,
-                                          filters: filter,
-                                          max: currentValue);
+                                  try {
+                                    var temp =
+                                        await ContactoFire.getItemPersonalizado(
+                                            id: null,
+                                            filters: filter,
+                                            max: currentValue);
 
-                                  setState(() {
-                                    selects.addAll(temp);
-                                  });
+                                    setState(() {
+                                      selects.addAll(temp);
+                                    });
+                                  } catch (e) {
+                                    var str = await TransFun.trad(e.toString());
+                                    showToast("Error: $str");
+                                    log("Error: ${e.toString()}");
+                                  }
                                 });
                           }
                         } catch (e) {

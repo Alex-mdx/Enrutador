@@ -88,6 +88,11 @@ class ContactoController {
         conflictAlgorithm: sql.ConflictAlgorithm.replace);
   }
 
+  static Future<void> updateAllStatusToZero() async {
+    final db = await database();
+    await db.update(nombreDB, {'pendiente': 1});
+  }
+
   static Future<ContactoModelo?> getItem(
       {required double lat, required double lng, int? id}) async {
     final db = await database();

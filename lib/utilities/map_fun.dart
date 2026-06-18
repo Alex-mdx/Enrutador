@@ -174,6 +174,8 @@ class MapFun {
                       double.parse(newlocation.longitude.toStringAsFixed(7))),
                   zoom: 18);
               if (!provider.descargarZona) {
+                var zonas =
+                    await MapFun.checkPointWithZona(point: LatLng(lat, lng));
                 provider.contacto = ContactoModelo(
                     id: null,
                     nombreCompleto: null,
@@ -184,7 +186,7 @@ class MapFun {
                     pendiente: 1,
                     status: 1,
                     domicilio: null,
-                    zonas: [],
+                    zonas: zonas.map((e) => e.id!).toList(),
                     fechaDomicilio: null,
                     numero: null,
                     numeroFecha: null,
@@ -192,6 +194,7 @@ class MapFun {
                     otroNumeroFecha: null,
                     agendar: null,
                     tipo: null,
+                    creado: DateTime.now(),
                     tipoFecha: null,
                     estado: null,
                     estadoFecha: null,
@@ -315,18 +318,18 @@ class MapFun {
     }
     List<ZonasModel> zonas = [];
     for (var zona in zonasSQl) {
-      List<LatLng> lats = [];
       for (var e in zona.latlongs) {
+        List<LatLng> lats = [];
         for (var punto in e) {
           var newE = punto.replaceAll("(", "").replaceAll(")", "");
           lats.add(LatLng(double.parse(newE.split(",")[0]),
               double.parse(newE.split(",")[1])));
         }
-      }
-      final bool inside = await inPoly(point: point, puntos: lats);
-      log("${zona.nombre} $inside");
-      if (inside) {
-        zonas.add(zona);
+        final bool inside = await inPoly(point: point, puntos: lats);
+        log("${zona.nombre} $inside\n${lats.map((e) => e.latitude).toList()}, ${lats.map((e) => e.longitude).toList()}");
+        if (inside && !zonas.contains(zona)) {
+          zonas.add(zona);
+        }
       }
     }
 

@@ -30,16 +30,20 @@ class TipoFire {
   }
 
   static Future<bool> send({required TiposModelo tipo}) async {
-    var data = await getItem(id: tipo.id);
-    if (data == null) {
-      var rdm = Textos.randomWord(30);
-      await db.collection(name).doc(rdm).set(tipo.toJson());
-      return true;
-    } else {
-      var docId = await getDocId(id: tipo.id);
-      if (docId == null) return false;
-      await db.collection(name).doc(docId).update(tipo.toJson());
-      return true;
+    try {
+      var data = await getItem(id: tipo.id).timeout(const Duration(seconds: 15));
+      if (data == null) {
+        var rdm = Textos.randomWord(30);
+        await db.collection(name).doc(rdm).set(tipo.toJson()).timeout(const Duration(seconds: 15));
+        return true;
+      } else {
+        var docId = await getDocId(id: tipo.id).timeout(const Duration(seconds: 15));
+        if (docId == null) return false;
+        await db.collection(name).doc(docId).update(tipo.toJson()).timeout(const Duration(seconds: 15));
+        return true;
+      }
+    } catch (e) {
+      return false;
     }
   }
 }
