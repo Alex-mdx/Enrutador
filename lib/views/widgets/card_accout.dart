@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -71,14 +72,17 @@ class _CardAccoutState extends State<CardAccout> {
                                     fecha: null,
                                     entradaTexto: FirebaseAuth
                                         .instance.currentUser?.displayName)),
-                            icon: FirebaseAuth.instance.currentUser?.photoURL !=
-                                    null
+                            icon: provider.usuario?.foto != null
                                 ? ClipRRect(
                                     borderRadius:
                                         BorderRadius.circular(borderRadius),
-                                    child: Image.network(FirebaseAuth.instance.currentUser!.photoURL!,
+                                    child: Image.memory(
+                                        base64Decode(provider.usuario!.foto!),
+                                        gaplessPlayback: true,
                                         width: 12.w,
                                         height: 12.w,
+                                        fit: BoxFit.cover,
+                                        filterQuality: FilterQuality.low,
                                         errorBuilder:
                                             (context, error, stackTrace) =>
                                                 Icon(Icons.account_circle,

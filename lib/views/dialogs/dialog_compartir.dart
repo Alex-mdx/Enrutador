@@ -34,20 +34,24 @@ class DialogCompartir extends StatelessWidget {
                     List<XFile>? files;
                     if (Preferences.shareText.contains("foto") &&
                         (contacto.foto != null || contacto.foto != "")) {
-                      files = [...files ?? [], XFile.fromData(base64Decode(contacto.foto!),
-                          name: "${contacto.nombreCompleto}_foto.png",
-                          mimeType: "image/png")];
+                      files = [
+                        ...files ?? [],
+                        XFile.fromData(base64Decode(contacto.foto!),
+                            name: "${contacto.nombreCompleto}_foto.png",
+                            mimeType: "image/png")
+                      ];
                     }
                     if (Preferences.shareText.contains("foto_referencia") &&
                         (contacto.fotoReferencia != null ||
                             contacto.fotoReferencia != "")) {
-                      files = [...files ?? [], XFile.fromData(
-                          base64Decode(contacto.fotoReferencia!),
-                          name: "${contacto.nombreCompleto}_referencia.png",
-                          mimeType: "image/png")];
+                      files = [
+                        ...files ?? [],
+                        XFile.fromData(base64Decode(contacto.fotoReferencia!),
+                            name: "${contacto.nombreCompleto}_referencia.png",
+                            mimeType: "image/png")
+                      ];
                     }
-                    debugPrint(
-                        "files: ${files?.length ?? "No tiene nada"}");
+                    debugPrint("files: ${files?.length ?? "No tiene nada"}");
                     await ShareFun.share(
                         titulo: "Comparte este contacto",
                         mensaje: contacto
@@ -63,6 +67,10 @@ class DialogCompartir extends StatelessWidget {
                                 !element.key
                                     .toLowerCase()
                                     .contains("foto_referencia"))
+                            .where((element) => Preferences.removeVacios
+                                ? !(element.value == null ||
+                                    element.value == "")
+                                : true)
                             .toList()
                             .map((e) {
                               return "*${e.key.replaceAll("_", " ")}*: ${e.value}";

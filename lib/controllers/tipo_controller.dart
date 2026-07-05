@@ -46,7 +46,7 @@ class TipoController {
         (await db.query(nombreDB, where: "id = ?", whereArgs: [data], limit: 1))
             .firstOrNull;
 
-    return modelo == null ? null : TiposModelo.fromJson(modelo);
+    return modelo != null ? TiposModelo.fromJson(modelo) : null;
   }
 
   static Future<List<TiposModelo>> getItems() async {

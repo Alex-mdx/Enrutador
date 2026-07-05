@@ -40,12 +40,13 @@ class _NotasBuilderState extends State<NotasBuilder> {
     setState(() => loading = true);
     notas = await NotasController.getContactoId(contactoId!);
     setState(() => loading = false);
-    if (itemScrollController.isAttached) {
-      await itemScrollController.scrollTo(
-          index: notas.length - 1,
-          duration: const Duration(seconds: 1),
-          curve: Curves.easeInOut);
-    }
+    
+    // Esperamos un momento para que el ListView termine de construirse
+    Future.delayed(const Duration(milliseconds: 100), () {
+      if (itemScrollController.isAttached && notas.isNotEmpty) {
+        itemScrollController.jumpTo(index: notas.length - 1);
+      }
+    });
   }
 
   @override
@@ -135,12 +136,16 @@ class _NotasBuilderState extends State<NotasBuilder> {
                     creado: DateTime.now());
                 await NotasController.insert(tempNota);
                 setState(() => notas.add(tempNota));
-                if (itemScrollController.isAttached) {
-                  await itemScrollController.scrollTo(
-                      index: notas.length - 1,
-                      duration: const Duration(milliseconds: 300),
-                      curve: Curves.easeInOut);
-                }
+                
+                // Esperamos un momento para que el nuevo elemento se renderice
+                Future.delayed(const Duration(milliseconds: 100), () async {
+                  if (itemScrollController.isAttached && notas.isNotEmpty) {
+                    await itemScrollController.scrollTo(
+                        index: notas.length - 1,
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeInOut);
+                  }
+                });
               }))
         ])));
   }

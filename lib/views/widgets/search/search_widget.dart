@@ -51,6 +51,7 @@ class _SearchWidgetState extends State<SearchWidget> {
     try {
       var coordenadas =
           await PlusCodeFun.convert(provider.buscar.text, toShortFormat: false);
+      log("${coordenadas}");
       var ps = PlusCodeFun.truncPlusCode(coordenadas);
       log("${ps.toJson()}");
       await MapFun.sendInitUri(
@@ -198,7 +199,7 @@ class _SearchWidgetState extends State<SearchWidget> {
                     tipos: Preferences.tipos,
                     estados: Preferences.status,
                     zonas: Preferences.zonas,
-                    updateData: ( tipo, estado, zona) {
+                    updateData: (tipo, estado, zona) {
                       setState(() {
                         Preferences.tipos = tipo;
                         Preferences.status = estado;

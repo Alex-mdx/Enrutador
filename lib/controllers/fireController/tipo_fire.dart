@@ -1,3 +1,4 @@
+import 'fire_constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:enrutador/models/tipos_model.dart';
 
@@ -9,16 +10,25 @@ class TipoFire {
 
   static Future<String?> getDocId({required int? id}) async {
     if (id == null) return null;
-    final querySnapshot =
-        await db.collection(name).where("id", isEqualTo: id).limit(1).get();
+    final querySnapshot = await db
+        .collection(name)
+        .where("id", isEqualTo: id)
+        .limit(1)
+        .get(options)
+        .timeout(const Duration(seconds: firebaseTimeout));
     if (querySnapshot.docs.isEmpty) return null;
     return querySnapshot.docs.first.id;
   }
 
   static Future<List<TiposModelo>> getItems() async {
-    final querySnapshot = await db.collection(name).get();
+    final querySnapshot = await db
+        .collection(name)
+        .get(options)
+        .timeout(const Duration(seconds: firebaseTimeout));
     if (querySnapshot.docs.isEmpty) return [];
-    return querySnapshot.docs.map((e) => TiposModelo.fromJson(e.data())).toList();
+    return querySnapshot.docs
+        .map((e) => TiposModelo.fromJson(e.data()))
+        .toList();
   }
 
   static Future<TiposModelo?> getItem({required int? id}) async {
@@ -31,15 +41,23 @@ class TipoFire {
 
   static Future<bool> send({required TiposModelo tipo}) async {
     try {
-      var data = await getItem(id: tipo.id).timeout(const Duration(seconds: 15));
+      var data = await getItem(id: tipo.id);
       if (data == null) {
         var rdm = Textos.randomWord(30);
-        await db.collection(name).doc(rdm).set(tipo.toJson()).timeout(const Duration(seconds: 15));
+        await db
+            .collection(name)
+            .doc(rdm)
+            .set(tipo.toJson())
+            .timeout(const Duration(seconds: firebaseTimeout));
         return true;
       } else {
-        var docId = await getDocId(id: tipo.id).timeout(const Duration(seconds: 15));
+        var docId = await getDocId(id: tipo.id);
         if (docId == null) return false;
-        await db.collection(name).doc(docId).update(tipo.toJson()).timeout(const Duration(seconds: 15));
+        await db
+            .collection(name)
+            .doc(docId)
+            .update(tipo.toJson())
+            .timeout(const Duration(seconds: firebaseTimeout));
         return true;
       }
     } catch (e) {

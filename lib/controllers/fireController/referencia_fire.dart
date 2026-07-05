@@ -1,3 +1,4 @@
+import 'fire_constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:enrutador/models/referencia_model.dart';
 
@@ -10,13 +11,13 @@ class ReferenciaFire {
   static Future<String?> getDocId({required int? id}) async {
     if (id == null) return null;
     final querySnapshot =
-        await db.collection(name).where("id", isEqualTo: id).limit(1).get();
+        await db.collection(name).where("id", isEqualTo: id).limit(1).get(options).timeout(const Duration(seconds: firebaseTimeout));
     if (querySnapshot.docs.isEmpty) return null;
     return querySnapshot.docs.first.id;
   }
 
   static Future<List<ReferenciaModelo>> getItems() async {
-    final querySnapshot = await db.collection(name).get();
+    final querySnapshot = await db.collection(name).get(options);
     List<ReferenciaModelo> model = [];
     for (var element in querySnapshot.docs) {
       model.add(ReferenciaModelo.fromJson(element.data()));
@@ -27,7 +28,7 @@ class ReferenciaFire {
   static Future<ReferenciaModelo?> getItem({required int? id}) async {
     if (id == null) return null;
     final querySnapshot =
-        await db.collection(name).where("id", isEqualTo: id).limit(1).get();
+        await db.collection(name).where("id", isEqualTo: id).limit(1).get(options).timeout(const Duration(seconds: firebaseTimeout));
     if (querySnapshot.docs.isEmpty) return null;
     return ReferenciaModelo.fromJson(querySnapshot.docs.first.data());
   }
@@ -35,7 +36,7 @@ class ReferenciaFire {
   static Future<ReferenciaModelo?> getItemRId({required int? id}) async {
     if (id == null) return null;
     final querySnapshot =
-        await db.collection(name).where("id_foranea", isEqualTo: id).limit(1).get();
+        await db.collection(name).where("id_foranea", isEqualTo: id).limit(1).get(options);
     if (querySnapshot.docs.isEmpty) return null;
     return ReferenciaModelo.fromJson(querySnapshot.docs.first.data());
   }
@@ -50,15 +51,15 @@ class ReferenciaFire {
 
   static Future<bool> send({required ReferenciaModelo referencia}) async {
     try {
-      var data = await getItem(id: referencia.id).timeout(const Duration(seconds: 15));
+      var data = await getItem(id: referencia.id);
       if (data == null) {
         var rdm = Textos.randomWord(30);
-        await db.collection(name).doc(rdm).set(referencia.toFirestore()).timeout(const Duration(seconds: 15));
+        await db.collection(name).doc(rdm).set(referencia.toFirestore()).timeout(const Duration(seconds: firebaseTimeout));
         return true;
       } else {
-        var docId = await getDocId(id: referencia.id).timeout(const Duration(seconds: 15));
+        var docId = await getDocId(id: referencia.id);
         if (docId == null) return false;
-        await db.collection(name).doc(docId).update(referencia.toFirestore()).timeout(const Duration(seconds: 15));
+        await db.collection(name).doc(docId).update(referencia.toFirestore()).timeout(const Duration(seconds: firebaseTimeout));
         return true;
       }
     } catch (e) {

@@ -63,7 +63,7 @@ class CardContactoWidget extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Container(
-                              constraints: BoxConstraints(maxWidth: 25.w),
+                              constraints: BoxConstraints(maxWidth: 23.w),
                               child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [

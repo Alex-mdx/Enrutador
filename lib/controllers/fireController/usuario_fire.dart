@@ -1,3 +1,4 @@
+import 'fire_constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -145,8 +146,8 @@ class UsuarioFire {
                       query ?? FirebaseAuth.instance.currentUser?.uid ?? "")
                   : query ?? FirebaseAuth.instance.currentUser?.uid)
           .limit(1)
-          .get(const GetOptions(source: Source.server))
-          .timeout(const Duration(seconds: 15));
+          .get(options)
+          .timeout(const Duration(seconds: firebaseTimeout));
       var user = doc.docs.firstOrNull == null
           ? null
           : UsuarioModel.fromJson(doc.docs.firstOrNull!.data());
@@ -156,11 +157,11 @@ class UsuarioFire {
             .collection(collection)
             .doc(doc.docs.first.id)
             .update(data.toFirestore())
-            .timeout(const Duration(seconds: 15));
+            .timeout(const Duration(seconds: firebaseTimeout));
         return true;
       } else {
         await db.collection(collection).add(data.toFirestore())
-            .timeout(const Duration(seconds: 15));
+            .timeout(const Duration(seconds: firebaseTimeout));
         return true;
       }
     } catch (e) {

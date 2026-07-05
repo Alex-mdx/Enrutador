@@ -9,7 +9,11 @@ import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class DialogComparativa extends StatefulWidget {
   final ContactoModelo entrada;
-  const DialogComparativa({super.key, required this.entrada});
+  final ContactoModelo? salida;
+  final String pag1;
+  final String pag2;
+  final bool? cargar;
+  const DialogComparativa({super.key, required this.entrada,  this.salida, required this.pag1, required this.pag2,  this.cargar = true});
 
   @override
   State<DialogComparativa> createState() => _DialogComparativaState();
@@ -22,7 +26,12 @@ class _DialogComparativaState extends State<DialogComparativa> {
   @override
   void initState() {
     super.initState();
+    if(widget.cargar!){
     initEntrada();
+    }else{
+      salida = widget.salida;
+      cargando = false;
+    }
   }
 
   Future<void> initEntrada() async {
@@ -62,7 +71,7 @@ class _DialogComparativaState extends State<DialogComparativa> {
                                 Row(mainAxisSize: MainAxisSize.min, children: [
                               Icon(Icons.youtube_searched_for,
                                   size: 20.sp, color: ThemaMain.primary),
-                              Text('Pendiente a enviar',
+                              Text(widget.pag1,
                                   style: TextStyle(
                                       fontSize: 15.sp,
                                       fontWeight: FontWeight.bold))
@@ -75,7 +84,7 @@ class _DialogComparativaState extends State<DialogComparativa> {
                         Row(mainAxisSize: MainAxisSize.min, children: [
                           Icon(Icons.cloud_upload,
                               size: 20.sp, color: ThemaMain.green),
-                          Text("En servidor",
+                          Text(widget.pag2,
                               style: TextStyle(
                                   fontSize: 15.sp, fontWeight: FontWeight.bold))
                         ]),

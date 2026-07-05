@@ -60,7 +60,72 @@ class _DialogSettingState extends State<DialogSetting> {
             runSpacing: 0,
             spacing: .1.w,
             children:
-                obtenerKeysContacto().map((e) => _buildItem(key: e)).toList())
+                obtenerKeysContacto().map((e) => _buildItem(key: e)).toList()),
+        Padding(
+            padding: EdgeInsets.all(8.sp),
+            child: CheckboxListTile(
+                dense: true,
+                contentPadding: EdgeInsets.zero,
+                minVerticalPadding: 0,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(borderRadius)),
+                tileColor: ThemaMain.second,
+                title: Text("No mostrar vacios",
+                    style: TextStyle(fontSize: 13.sp)),
+                subtitle: Text(
+                    "Si se selecciono un campo, pero este no tiene contenido ingresado, no se mostrará en el texto compartido",
+                    style: TextStyle(
+                        fontSize: 12.sp, fontWeight: FontWeight.bold)),
+                value: Preferences.removeVacios,
+                onChanged: (value) => setState(() {
+                      Preferences.removeVacios = value!;
+                    }))),
+        const Divider(),
+        Text("Zoom", style: TextStyle(fontSize: 16.sp)),
+        Text(
+            "Cantidad mínima de zoom permitida antes de que los marcadores se muestren como circulos.",
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 14.sp)),
+        Slider(
+            value: Preferences.zoomMark.toDouble(),
+            showValueIndicator: ShowValueIndicator.onDrag,
+            divisions: 12,
+            label: Preferences.zoomMark.toString(),
+            min: 10,
+            max: 16,
+            onChanged: (value) {
+              setState(() {
+                Preferences.zoomMark = value;
+              });
+            }),
+        const Divider(),
+        Text("Preferencias de red", style: TextStyle(fontSize: 16.sp)),
+        Text(
+            "Subida automática de datos según el tipo de conexión a internet disponible.",
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 14.sp)),
+        Padding(
+            padding: EdgeInsets.symmetric(vertical: 8.sp),
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ChoiceChip(
+                      avatar: Icon(Icons.network_cell,
+                          color: Preferences.redMobile ? null : ThemaMain.grey),
+                      label: Text("Mobile", style: TextStyle(fontSize: 14.sp)),
+                      selected: Preferences.redMobile,
+                      onSelected: (bool selected) => setState(() {
+                            Preferences.redMobile = selected;
+                          })),
+                  ChoiceChip(
+                      avatar: Icon(Icons.wifi,
+                          color: Preferences.redWifi ? null : ThemaMain.grey),
+                      label: Text("Wi-Fi", style: TextStyle(fontSize: 14.sp)),
+                      selected: Preferences.redWifi,
+                      onSelected: (bool selected) => setState(() {
+                            Preferences.redWifi = selected;
+                          }))
+                ]))
       ])
     ]));
   }
@@ -84,7 +149,7 @@ class _DialogSettingState extends State<DialogSetting> {
             elevation:
                 Preferences.shareText.where((e) => e == key).isNotEmpty ? 3 : 0,
             child: Padding(
-                padding: EdgeInsets.all(6.sp),
+                padding: EdgeInsets.all(4.sp),
                 child: Text(key.toUpperCase(),
                     style: TextStyle(
                         fontSize: 13.sp, fontWeight: FontWeight.bold)))));

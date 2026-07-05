@@ -69,23 +69,21 @@ class _TarjetaRsideWidgetState extends State<TarjetaRsideWidget> {
                       ? SizedBox()
                       : IconButton.filled(
                           iconSize: 22.sp,
-                          onPressed: () async {
-                            Dialogs.showMorph(
-                                title: "Enrutar",
-                                description:
-                                    "¿Usar este contacto para enrutar?\nSe metera este contacto a una lista para visitar",
-                                loadingTitle: "Enrutando...",
-                                onAcceptPressed: (contexto) async {
-                                  EnrutarModelo data = EnrutarModelo(
-                                      visitado: 0,
-                                      orden: 0,
-                                      contactoId: provider.contacto!.id!,
-                                      buscar: provider.contacto!);
-                                  await EnrutarController.insert(data);
-                                  showToast(
-                                      "Contacto ingresado para el enrutamiento");
-                                });
-                          },
+                          onPressed: () async => Dialogs.showMorph(
+                              title: "Enrutar",
+                              description:
+                                  "¿Usar este contacto para enrutar?\nSe metera este contacto a una lista para visitar",
+                              loadingTitle: "Enrutando...",
+                              onAcceptPressed: (contexto) async {
+                                EnrutarModelo data = EnrutarModelo(
+                                    visitado: 0,
+                                    orden: 0,
+                                    contactoId: provider.contacto!.id!,
+                                    buscar: provider.contacto!);
+                                await EnrutarController.insert(data);
+                                showToast(
+                                    "Contacto ingresado para el enrutamiento");
+                              }),
                           icon: Icon(LineIcons.directions,
                               color: ThemaMain.green));
                 }),

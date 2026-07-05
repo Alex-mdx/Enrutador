@@ -1,8 +1,4 @@
-import 'package:enrutador/controllers/fireController/contacto_fire.dart';
-import 'package:enrutador/controllers/fireController/pendiente_fire.dart';
-import 'package:enrutador/controllers/fireController/referencia_fire.dart';
 import 'package:enrutador/controllers/referencias_controller.dart';
-import 'package:enrutador/models/pendiente_model.dart';
 import 'package:enrutador/utilities/main_provider.dart';
 import 'package:enrutador/utilities/services/dialog_services.dart';
 import 'package:enrutador/utilities/textos.dart';
@@ -25,8 +21,8 @@ import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 import 'package:sticky_grouped_list/sticky_grouped_list.dart';
 
+import '../controllers/fireController/fire_constants.dart';
 import '../controllers/nota_controller.dart';
-import '../controllers/fireController/nota_fire.dart';
 import '../utilities/preferences.dart';
 import 'widgets/card_contacto_widget.dart';
 import 'widgets/sliding_cards/slide_general.dart';
@@ -148,44 +144,13 @@ class _ContactosViewState extends State<ContactosView> {
                                           cont.id!,
                                           pendiente: 1);
                                   if (envio) {
-                                    var data = cont.copyWith(
-                                        pendiente: 0,
-                                        empleadoEstado:
-                                            ((cont.empleadoEstado == null ||
-                                                        cont.empleadoEstado ==
-                                                            provider.usuario
-                                                                ?.empleadoId) &&
-                                                    (cont.estado != null &&
-                                                        cont.estado != -1))
-                                                ? provider.usuario?.empleadoId
-                                                : cont.empleadoEstado,
-                                        aceptadoEmpleado:
-                                            provider.usuario?.empleadoId);
-                                    var result = await ContactoFire.sendItem(
-                                        data: data,
-                                        table: data.id.toString(),
-                                        query: "id",
-                                        itsNumber: true);
-                                    if (result) {
-                                      await ContactoController.update(data);
-                                      for (var item in referencia) {
-                                        var newItem = item.copyWith(estatus: 0);
-                                        var result = await ReferenciaFire.send(
-                                            referencia: newItem);
-                                        if (result) {
-                                          await ReferenciasController.update(
-                                              newItem);
-                                        }
-                                      }
-                                      for (var item in notas) {
-                                        var newItem =
-                                            item.copyWith(pendiente: 0);
-                                        var result =
-                                            await NotaFire.send(nota: newItem);
-                                        if (result) {
-                                          await NotasController.update(newItem);
-                                        }
-                                      }
+                                    var res = await FireConstants.sendServer(
+                                        contacto: cont,
+                                        referencia: referencia,
+                                        notas: notas,
+                                        empleado: provider.usuario!.empleadoId!,
+                                        send: () async {});
+                                    if (res) {
                                       showToast(
                                           "Envio\nContacto numero ${i + 1} de ${selects.length}");
                                     } else {
@@ -193,57 +158,15 @@ class _ContactosViewState extends State<ContactosView> {
                                           "No se pudo enviar el contacto numero ${i + 1}");
                                     }
                                   } else {
-                                    var data = cont.copyWith(
-                                        pendiente: 0,
-                                        empleadoEstado:
-                                            ((cont.empleadoEstado == null ||
-                                                        cont.empleadoEstado ==
-                                                            provider.usuario
-                                                                ?.empleadoId) &&
-                                                    (cont.estado != null &&
-                                                        cont.estado != -1))
-                                                ? provider.usuario?.empleadoId
-                                                : cont.empleadoEstado,
-                                        aceptadoEmpleado:
-                                            provider.usuario?.empleadoId);
-                                    debugPrint(
-                                        "empleadoEstado: ${data.empleadoEstado}");
-                                    for (var i = 0;
-                                        i < referencia.length;
-                                        i++) {
-                                      var newItem =
-                                          referencia[i].copyWith(estatus: 1);
-                                      referencia[i] = newItem;
-                                    }
-                                    for (var i = 0; i < notas.length; i++) {
-                                      var newItem =
-                                          notas[i].copyWith(pendiente: 1);
-                                      notas[i] = newItem;
-                                    }
-                                    PendienteModel pendiente = PendienteModel(
-                                        id: Textos.randomWord(6),
-                                        empleadoId:
-                                            provider.usuario!.empleadoId!,
-                                        fechaPendiente: DateTime.now(),
-                                        sincronizado: 0,
-                                        aceptadoEmpleadoId: null,
-                                        fechaSincronizado: null,
-                                        notasGuia: null,
-                                        contactos: [data],
-                                        referencias: referencia,
-                                        notas: notas);
-                                    var result = await PendienteFire.sendItem(
-                                        data: pendiente, query: pendiente.id);
-                                    if (result) {
-                                      await ContactoController.update(data);
-                                      for (var item in referencia) {
-                                        await ReferenciasController.update(
-                                            item);
-                                      }
-
-                                      for (var item in notas) {
-                                        await NotasController.update(item);
-                                      }
+                                    var res =
+                                        await FireConstants.pendienteServer(
+                                            cont: cont,
+                                            referencia: referencia,
+                                            notas: notas,
+                                            empleado:
+                                                provider.usuario!.empleadoId!,
+                                            send: () async {});
+                                    if (res) {
                                       showToast(
                                           "Envio\nContacto numero ${i + 1} de ${selects.length}");
                                     } else {
@@ -359,13 +282,11 @@ class _ContactosViewState extends State<ContactosView> {
               tipos: Preferences.tipos,
               estados: Preferences.status,
               zonas: Preferences.zonas,
-              updateData: (tipo, estado, zona) {
-                setState(() {
-                  Preferences.tipos = tipo;
-                  Preferences.status = estado;
-                  Preferences.zonas = zona;
-                });
-              },
+              updateData: (tipo, estado, zona) => setState(() {
+                    Preferences.tipos = tipo;
+                    Preferences.status = estado;
+                    Preferences.zonas = zona;
+                  }),
               press: () => send(index)),
           Expanded(
               flex: 10,
@@ -398,7 +319,7 @@ class _ContactosViewState extends State<ContactosView> {
         elements: contactos,
         padding: EdgeInsets.symmetric(horizontal: .5.w, vertical: .1.h),
         groupBy: (element) => Preferences.tiposFilt == 0
-            ? Preferences.vaciosFilt
+            ? Preferences.agruparFilt == 0
                 ? element.nombreCompleto?.substring(0, 1)
                 : DateTime.parse(Textos.fechaYMD(fecha: element.creado ?? DateTime(0000, 1, 1)))
                     .toString()
@@ -414,7 +335,7 @@ class _ContactosViewState extends State<ContactosView> {
                     : (element.estado ?? -1).toString()),
         groupSeparatorBuilder: (element) => Text(
             Preferences.tiposFilt == 0
-                ? Preferences.vaciosFilt
+                ? Preferences.agruparFilt == 0
                     ? (element.nombreCompleto ?? "?").substring(0, 1)
                     : element.creado == null
                         ? "Sin fecha"
@@ -520,53 +441,12 @@ class _ContactosViewState extends State<ContactosView> {
                   "¿Desea enviar este contacto para que sea revisado?\nEstas enviando ${referencia.length} referencias y ${notas.length} notas ligadas a este contacto",
               loadingTitle: "Enviando",
               onAcceptPressed: (contexto) async {
-                var sqlContacto =
-                    await ContactoController.getItemId(id: contacto.id!);
-                debugPrint(
-                    "${sqlContacto?.estado} ${(sqlContacto?.empleadoEstado == null || sqlContacto?.empleadoEstado == provider.usuario?.empleadoId) && (sqlContacto?.estado != null || sqlContacto?.estado != -1)}");
-                var data = sqlContacto!.copyWith(
-                    pendiente: 0,
-                    empleadoEstado: ((sqlContacto.empleadoEstado == null ||
-                                sqlContacto.empleadoEstado ==
-                                    provider.usuario?.empleadoId) &&
-                            (sqlContacto.estado != null &&
-                                sqlContacto.estado != -1))
-                        ? provider.usuario?.empleadoId
-                        : sqlContacto.empleadoEstado,
-                    aceptadoEmpleado: provider.usuario?.empleadoId);
-                debugPrint("empleadoEstado: ${data.empleadoEstado}");
-                for (var i = 0; i < referencia.length; i++) {
-                  var newItem = referencia[i].copyWith(estatus: 1);
-                  referencia[i] = newItem;
-                }
-                for (var i = 0; i < notas.length; i++) {
-                  var newItem = notas[i].copyWith(pendiente: 1);
-                  notas[i] = newItem;
-                }
-                PendienteModel pendiente = PendienteModel(
-                    id: Textos.randomWord(6),
-                    empleadoId: provider.usuario!.empleadoId!,
-                    fechaPendiente: DateTime.now(),
-                    sincronizado: 0,
-                    aceptadoEmpleadoId: null,
-                    fechaSincronizado: null,
-                    notasGuia: null,
-                    contactos: [data],
-                    referencias: referencia,
-                    notas: notas);
-                var result = await PendienteFire.sendItem(
-                    data: pendiente, query: pendiente.id);
-                if (result) {
-                  await ContactoController.update(data);
-                  for (var item in referencia) {
-                    await ReferenciasController.update(item);
-                  }
-
-                  for (var item in notas) {
-                    await NotasController.update(item);
-                  }
-                  await send();
-                }
+                await FireConstants.pendienteServer(
+                    cont: contacto,
+                    referencia: referencia,
+                    notas: notas,
+                    empleado: provider.usuario!.empleadoId!,
+                    send: () async => await send());
               });
         },
         ifDirecto: ((provider.usuario?.adminTipo ?? 1) >= 2 ||
@@ -585,49 +465,13 @@ class _ContactosViewState extends State<ContactosView> {
               description:
                   "¿Desea guardar este contacto con sus cambios de manera directa?\nEstas enviando ${referencia.length} referencia(s) y ${notas.length} nota(s) ligada(s) a este contacto",
               loadingTitle: "Guardando",
-              onAcceptPressed: (contexto) async {
-                var sqlContacto =
-                    await ContactoController.getItemId(id: contacto.id!);
-                debugPrint(
-                    "${sqlContacto?.estado} - ${sqlContacto?.empleadoEstado}\n${(sqlContacto?.empleadoEstado == null || sqlContacto?.empleadoEstado == provider.usuario?.empleadoId) && (sqlContacto?.estado != null || sqlContacto?.estado != -1)}");
-                var data = sqlContacto!.copyWith(
-                    pendiente: 0,
-                    empleadoEstado: ((sqlContacto.empleadoEstado == null ||
-                                sqlContacto.empleadoEstado ==
-                                    provider.usuario?.empleadoId) &&
-                            (sqlContacto.estado != null &&
-                                sqlContacto.estado != -1))
-                        ? provider.usuario?.empleadoId
-                        : sqlContacto.empleadoEstado,
-                    aceptadoEmpleado: provider.usuario?.empleadoId);
-                debugPrint("empleadoEstado: ${data.empleadoEstado}");
-                var result = await ContactoFire.sendItem(
-                    data: data,
-                    table: "id",
-                    query: contacto.id.toString(),
-                    itsNumber: true);
-                if (result) {
-                  await ContactoController.update(data);
-                  for (var item in referencia) {
-                    var newItem = item.copyWith(estatus: 0);
-                    var result = await ReferenciaFire.send(referencia: newItem);
-                    if (result) {
-                      await ReferenciasController.update(newItem);
-                    }
-                  }
-                  for (var item in notas) {
-                    var newItem = item.copyWith(pendiente: 0);
-                    var result = await NotaFire.send(nota: newItem);
-                    if (result) {
-                      await NotasController.update(newItem);
-                    }
-                  }
-                  await send();
-                  showToast("Contacto enviado");
-                } else {
-                  showToast("Error al enviar datos");
-                }
-              });
+              onAcceptPressed: (contexto) async =>
+                  await FireConstants.sendServer(
+                      contacto: contacto,
+                      referencia: referencia,
+                      notas: notas,
+                      empleado: provider.usuario!.empleadoId!,
+                      send: () async => await send()));
         },
         model: modelo);
   }

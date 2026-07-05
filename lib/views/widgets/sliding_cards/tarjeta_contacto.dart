@@ -80,6 +80,56 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                                       context: context,
                                       builder: (context) =>
                                           DialogUbicacion(funLat: (lat) async {
+                                            var newLat = double.parse(lat
+                                                    ?.latitude
+                                                    .toStringAsFixed(7) ??
+                                                "0");
+                                            var newLng = double.parse(lat
+                                                    ?.longitude
+                                                    .toStringAsFixed(7) ??
+                                                "0");
+
+                                            var existingContact =
+                                                await ContactoController
+                                                    .getItem(
+                                                        lat: newLat,
+                                                        lng: newLng);
+
+                                            if (existingContact != null &&
+                                                existingContact.id !=
+                                                    provider.contacto!.id) {
+                                              bool? override = await showDialog<
+                                                      bool>(
+                                                  context: context,
+                                                  builder: (context) =>
+                                                      AlertDialog(
+                                                          title: Text(
+                                                              "Contacto existente"),
+                                                          content: Text(
+                                                              "Ya existe un contacto en esta ubicación. ¿Deseas sobreescribirlo?"),
+                                                          actions: [
+                                                            TextButton(
+                                                                onPressed: () =>
+                                                                    Navigator.pop(
+                                                                        context,
+                                                                        false),
+                                                                child: Text(
+                                                                    "Cancelar")),
+                                                            TextButton(
+                                                                onPressed: () =>
+                                                                    Navigator.pop(
+                                                                        context,
+                                                                        true),
+                                                                child: Text(
+                                                                    "Sobreescribir"))
+                                                          ]));
+
+                                              if (override != true) {
+                                                Navigation.pop();
+                                                return;
+                                              }
+                                            }
+
                                             var zonas =
                                                 await MapFun.checkPointWithZona(
                                                     point: lat ?? LatLng(0, 0));
@@ -87,16 +137,8 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                                             var temp = provider.contacto!
                                                 .copyWith(
                                                     pendiente: 1,
-                                                    latitud: double.parse(lat
-                                                            ?.latitude
-                                                            .toStringAsFixed(
-                                                                7) ??
-                                                        "0"),
-                                                    longitud: double.parse(
-                                                        lat?.longitude
-                                                                .toStringAsFixed(
-                                                                    7) ??
-                                                            "0"),
+                                                    latitud: newLat,
+                                                    longitud: newLng,
                                                     zonas: zonas
                                                         .map((e) => e.id!)
                                                         .toList());

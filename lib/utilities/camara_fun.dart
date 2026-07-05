@@ -23,6 +23,7 @@ class CamaraFun {
                 style:
                     TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold))),
         cameraStyle: CameraStyle(),
+        fileSelectorAllowedTypes: ["png", "jpg", "jpeg"],
         allowedTypes: PickerAssetType.image,
         maxVideoDuration: 60,
         selectionLimit: 1);

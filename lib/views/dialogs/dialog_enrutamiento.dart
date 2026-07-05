@@ -74,6 +74,7 @@ class _DialogEnrutamientoState extends State<DialogEnrutamiento> {
             child: Text("Limpiar", style: TextStyle(fontSize: 14.sp)))
       ]),
       Container(
+          padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 0),
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(borderRadius),
               color: ThemaMain.second),
@@ -81,6 +82,7 @@ class _DialogEnrutamientoState extends State<DialogEnrutamiento> {
             Text("Agrupar por visitado",
                 style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold)),
             Checkbox.adaptive(
+                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 activeColor: ThemaMain.yellow,
                 value: Preferences.visitados,
                 onChanged: (value) => setState(() {
@@ -88,6 +90,9 @@ class _DialogEnrutamientoState extends State<DialogEnrutamiento> {
                     }))
           ])),
       ElevatedButton.icon(
+          style: ButtonStyle(
+              padding: WidgetStateProperty.all(
+                  EdgeInsets.symmetric(vertical: 0, horizontal: 2.w))),
           icon: Icon(LineIcons.route, color: ThemaMain.green, size: 24.sp),
           onPressed: () async => showDialog(
               context: context,
@@ -174,10 +179,10 @@ class _DialogEnrutamientoState extends State<DialogEnrutamiento> {
                                       fontStyle: FontStyle.italic)))
                           : Scrollbar(
                               child: Container(
-                                  constraints: BoxConstraints(maxHeight: 32.h),
+                                  constraints: BoxConstraints(maxHeight: 33.h),
                                   child: ListView.builder(
                                       padding: EdgeInsets.symmetric(
-                                          horizontal: 1.w, vertical: 1.h),
+                                          horizontal: 1.w, vertical: .5.h),
                                       shrinkWrap: true,
                                       itemCount: snapshot.data!.length,
                                       itemBuilder: (context, index) {
@@ -226,10 +231,10 @@ class _DialogEnrutamientoState extends State<DialogEnrutamiento> {
                             : Scrollbar(
                                 child: Container(
                                     constraints:
-                                        BoxConstraints(maxHeight: 32.h),
+                                        BoxConstraints(maxHeight: 33.h),
                                     child: ListView.builder(
                                         padding: EdgeInsets.symmetric(
-                                            horizontal: 1.w, vertical: 1.h),
+                                            horizontal: 1.w, vertical: .5.h),
                                         shrinkWrap: true,
                                         itemCount: snapshot.data!.length,
                                         itemBuilder: (context, index) {

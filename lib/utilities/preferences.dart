@@ -58,6 +58,14 @@ class Preferences {
   static set shareText(List<String> value) =>
       _preferences?.setStringList('shareText', value);
 
+  static bool get removeVacios => _preferences?.getBool('removeVacios') ?? false;
+  static set removeVacios(bool value) =>
+      _preferences?.setBool('removeVacios', value);
+
+  static double get zoomMark => _preferences?.getDouble('zoomMark') ?? 15;
+  static set zoomMark(double value) =>
+      _preferences?.setDouble('zoomMark', value);
+
   //*Filtros
   static int get tiposFilt => _preferences?.getInt('tiposFilt') ?? 0;
   static set tiposFilt(int value) => _preferences?.setInt('tiposFilt', value);
@@ -99,6 +107,12 @@ class Preferences {
 
   static bool get autoNav => _preferences?.getBool('autoNav') ?? false;
   static set autoNav(bool value) => _preferences?.setBool('autoNav', value);
+
+  static bool get redMobile => _preferences?.getBool('redMobile') ?? true;
+  static set redMobile(bool value) => _preferences?.setBool('redMobile', value);
+
+  static bool get redWifi => _preferences?.getBool('redWifi') ?? true;
+  static set redWifi(bool value) => _preferences?.setBool('redWifi', value);
 
   static bool get version => _preferences?.getBool('version') ?? true;
   static set version(bool value) => _preferences?.setBool('version', value);

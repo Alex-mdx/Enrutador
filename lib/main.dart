@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:enrutador/utilities/main_provider.dart';
-import 'package:enrutador/views/home_view.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
@@ -84,11 +83,5 @@ class Main extends StatelessWidget {
               theme: Preferences.thema ? light : dark,
               navigatorKey: NavigationKey.navigatorKey,
               initialRoute: AppRoutes.initialRoute,
-              routes: AppRoutes.routes,
-              onGenerateRoute: (settings) {
-                if (settings.name == '/') {
-                  return MaterialPageRoute(builder: (_) => const HomeView());
-                }
-                return null;
-              })));
+              routes: AppRoutes.routes)));
 }

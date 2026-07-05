@@ -125,21 +125,23 @@ class _CardPendientesState extends State<CardPendientes> {
                             builder: (context) => Dialog(
                                 child: ListView.builder(
                                     shrinkWrap: true,
-                                    itemCount:
-                                        widget.pendientes.contactos.length,
+                                    itemCount: widget
+                                        .pendientes.contactos.length,
                                     itemBuilder: (context, index) =>
                                         CardContactoWidget(
                                             entrada: "",
                                             contacto: widget
                                                 .pendientes.contactos[index],
                                             naviPc: false,
-                                            funContact: (p0) {
-                                              showDialog(
-                                                  context: context,
-                                                  builder: (context) =>
-                                                      DialogComparativa(
-                                                          entrada: p0));
-                                            },
+                                            funContact: (p0) => showDialog(
+                                                context: context,
+                                                builder: (context) =>
+                                                    DialogComparativa(
+                                                        entrada: p0,
+                                                        cargar: true,
+                                                        pag1:
+                                                            "Pendiente a enviar",
+                                                        pag2: "En servidor")),
                                             compartir: false,
                                             selectedVisible: false,
                                             onSelected: (p0) {}))));

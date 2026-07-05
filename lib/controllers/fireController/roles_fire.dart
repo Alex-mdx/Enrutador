@@ -1,3 +1,4 @@
+import 'fire_constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:enrutador/models/roles_model.dart';
 
@@ -24,22 +25,22 @@ class RolesFire {
   static Future<RolesModel?> getItem({required int? id}) async {
     if (id == null) return null;
     final querySnapshot =
-        await db.collection(name).where("id", isEqualTo: id).limit(1).get();
+        await db.collection(name).where("id", isEqualTo: id).limit(1).get(options).timeout(const Duration(seconds: firebaseTimeout));
     if (querySnapshot.docs.isEmpty) return null;
     return RolesModel.fromJson(querySnapshot.docs.first.data());
   }
 
   static Future<bool> send({required RolesModel rol}) async {
     try {
-      var data = await getItem(id: rol.id).timeout(const Duration(seconds: 15));
+      var data = await getItem(id: rol.id);
       if (data == null) {
         var rdm = Textos.randomWord(30);
-        await db.collection(name).doc(rdm).set(rol.toFirestore()).timeout(const Duration(seconds: 15));
+        await db.collection(name).doc(rdm).set(rol.toFirestore()).timeout(const Duration(seconds: firebaseTimeout));
         return true;
       } else {
-        var docId = await getDocId(id: rol.id).timeout(const Duration(seconds: 15));
+        var docId = await getDocId(id: rol.id).timeout(const Duration(seconds: firebaseTimeout));
         if (docId == null) return false;
-        await db.collection(name).doc(docId).update(rol.toFirestore()).timeout(const Duration(seconds: 15));
+        await db.collection(name).doc(docId).update(rol.toFirestore()).timeout(const Duration(seconds: firebaseTimeout));
         return true;
       }
     } catch (e) {

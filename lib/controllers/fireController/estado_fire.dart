@@ -1,3 +1,4 @@
+import 'fire_constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:enrutador/models/estado_model.dart';
 
@@ -9,8 +10,12 @@ class EstadoFire {
 
   static Future<String?> getDocId({required int? id}) async {
     if (id == null) return null;
-    final querySnapshot =
-        await db.collection(name).where("id", isEqualTo: id).limit(1).get();
+    final querySnapshot = await db
+        .collection(name)
+        .where("id", isEqualTo: id)
+        .limit(1)
+        .get(options)
+        .timeout(const Duration(seconds: firebaseTimeout));
     if (querySnapshot.docs.isEmpty) return null;
     return querySnapshot.docs.first.id;
   }
@@ -26,23 +31,35 @@ class EstadoFire {
 
   static Future<EstadoModel?> getItem({required int? id}) async {
     if (id == null) return null;
-    final querySnapshot =
-        await db.collection(name).where("id", isEqualTo: id).limit(1).get();
+    final querySnapshot = await db
+        .collection(name)
+        .where("id", isEqualTo: id)
+        .limit(1)
+        .get(options)
+        .timeout(const Duration(seconds: firebaseTimeout));
     if (querySnapshot.docs.isEmpty) return null;
     return EstadoModel.fromJson(querySnapshot.docs.first.data());
   }
 
   static Future<bool> send({required EstadoModel estado}) async {
     try {
-      var data = await getItem(id: estado.id).timeout(const Duration(seconds: 15));
+      var data = await getItem(id: estado.id);
       if (data == null) {
         var rdm = Textos.randomWord(30);
-        await db.collection(name).doc(rdm).set(estado.toJson()).timeout(const Duration(seconds: 15));
+        await db
+            .collection(name)
+            .doc(rdm)
+            .set(estado.toJson())
+            .timeout(const Duration(seconds: firebaseTimeout));
         return true;
       } else {
-        var docId = await getDocId(id: estado.id).timeout(const Duration(seconds: 15));
+        var docId = await getDocId(id: estado.id);
         if (docId == null) return false;
-        await db.collection(name).doc(docId).update(estado.toJson()).timeout(const Duration(seconds: 15));
+        await db
+            .collection(name)
+            .doc(docId)
+            .update(estado.toJson())
+            .timeout(const Duration(seconds: firebaseTimeout));
         return true;
       }
     } catch (e) {

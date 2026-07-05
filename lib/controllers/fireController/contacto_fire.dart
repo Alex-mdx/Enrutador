@@ -1,3 +1,7 @@
+import 'package:enrutador/utilities/trans_fun.dart';
+import 'package:oktoast/oktoast.dart';
+
+import 'fire_constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:enrutador/utilities/textos.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -12,7 +16,7 @@ class ContactoFire {
   static Future<String?> getDocId({required int? id}) async {
     if (id == null) return null;
     final querySnapshot =
-        await db.collection(name).where("id", isEqualTo: id).limit(1).get();
+        await db.collection(name).where("id", isEqualTo: id).limit(1).get(options);
     if (querySnapshot.docs.isEmpty) return null;
     return querySnapshot.docs.first.id;
   }
@@ -20,7 +24,7 @@ class ContactoFire {
   static Future<ContactoModelo?> getItem({required int? id}) async {
     if (id == null) return null;
     final querySnapshot =
-        await db.collection(name).where("id", isEqualTo: id).limit(1).get();
+        await db.collection(name).where("id", isEqualTo: id).limit(1).get(options);
     if (querySnapshot.docs.isEmpty) return null;
     return ContactoModelo.fromJson(querySnapshot.docs.first.data());
   }
@@ -89,28 +93,33 @@ class ContactoFire {
                       query ?? FirebaseAuth.instance.currentUser?.uid ?? "")
                   : query ?? FirebaseAuth.instance.currentUser?.uid)
           .limit(1)
-          .get(const GetOptions(source: Source.server))
-          .timeout(const Duration(seconds: 15));
-          
+          .get(options)
+          .timeout(const Duration(seconds: firebaseTimeout));
+
       var user = doc.docs.firstOrNull == null
           ? null
           : ContactoModelo.fromJson(doc.docs.firstOrNull!.data());
       debugPrint("${user?.toJson() ?? "nada"} - ${doc.docs.firstOrNull?.id}");
-      
+
       if (user == null) {
         var docId = Textos.randomWord(30);
-        await db.collection(name).doc(docId).set(data.toFirestore())
-            .timeout(const Duration(seconds: 15));
+        await db
+            .collection(name)
+            .doc(docId)
+            .set(data.toFirestore())
+            .timeout(const Duration(seconds: firebaseTimeout));
       } else {
         await db
             .collection(name)
             .doc(doc.docs.first.id)
             .update(data.toFirestore())
-            .timeout(const Duration(seconds: 15));
+            .timeout(const Duration(seconds: firebaseTimeout));
       }
       return true;
     } catch (e) {
-      debugPrint("Error al enviar a Firebase: $e");
+      var strFunc = await TransFun.trad(e.toString());
+      showToast(strFunc);
+      debugPrint(strFunc);
       return false;
     }
   }

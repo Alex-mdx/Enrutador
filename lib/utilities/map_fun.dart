@@ -18,6 +18,7 @@ import 'package:badges/badges.dart' as bd;
 import '../models/enrutar_model.dart';
 import '../models/zona_model.dart';
 import 'pluscode_fun.dart';
+import 'preferences.dart';
 import 'theme/theme_color.dart';
 import 'package:maps_toolkit/maps_toolkit.dart' as toolkit;
 
@@ -28,7 +29,7 @@ class MapFun {
     var newText = uri.replaceRange(0, newindex + 3, "");
     List<String> datas = newText.split(",");
     var pc = PlusCodeFun.psCODE(double.parse(datas[0]), double.parse(datas[1]));
-    var newlocation = PlusCode(pc).decode().southWest;
+    var newlocation = PlusCode(pc).decode().center;
     await sendInitUri(
         provider: provider,
         lat: double.parse(newlocation.latitude.toStringAsFixed(7)),
@@ -41,8 +42,6 @@ class MapFun {
       required double lng,
       int? index}) async {
     provider.mapSeguir = false;
-
-    debugPrint("$lat - $lng");
     var dir = await ContactoController.getItem(lat: lat, lng: lng, id: index);
     await provider.animaMap.centerOnPoint(LatLng(lat, lng), zoom: 18);
     if (dir != null) {
@@ -133,7 +132,9 @@ class MapFun {
       required double lng}) async {
     var pc = PlusCodeFun.psCODE(double.parse(lat.toStringAsFixed(7)),
         double.parse(lng.toStringAsFixed(7)));
+    log(pc);
     var newlocation = PlusCodeFun.truncPlusCode(pc);
+    log("${newlocation.toJson()}");
     provider.contacto = ContactoModelo(
         id: null,
         nombreCompleto: null,
@@ -160,8 +161,7 @@ class MapFun {
         width: 21.sp,
         height: 21.sp,
         rotate: true,
-        point: LatLng(double.parse(newlocation.latitude.toStringAsFixed(7)),
-            double.parse(newlocation.longitude.toStringAsFixed(7))),
+        point: newlocation,
         builder: (context, animation) => InkWell(
             onLongPress: () {
               Clipboard.setData(ClipboardData(
@@ -169,13 +169,9 @@ class MapFun {
               showToast("Se han copiado las coordenadas del marcador");
             },
             onTap: () async {
-              provider.animaMap.centerOnPoint(
-                  LatLng(double.parse(newlocation.latitude.toStringAsFixed(7)),
-                      double.parse(newlocation.longitude.toStringAsFixed(7))),
-                  zoom: 18);
+              provider.animaMap.centerOnPoint(newlocation, zoom: 18);
               if (!provider.descargarZona) {
-                var zonas =
-                    await MapFun.checkPointWithZona(point: LatLng(lat, lng));
+                var zonas = await MapFun.checkPointWithZona(point: newlocation);
                 provider.contacto = ContactoModelo(
                     id: null,
                     nombreCompleto: null,
@@ -228,12 +224,12 @@ class MapFun {
         height: tocable ? 23.sp : 18.sp,
         rotate: true,
         point: LatLng(e.latitud, e.longitud),
-        builder: (context, animation) => zoom! < 15
+        builder: (context, animation) => !tocable && zoom! < Preferences.zoomMark
             ? Icon(Icons.circle,
                 color: provider.tipos
                     .firstWhereOrNull((element) => element.id == e.tipo)
                     ?.color,
-                size: (zoom - 1).clamp(6, 14).sp)
+                size: (zoom - 1).clamp(6, Preferences.zoomMark - 1).sp)
             : InkWell(
                 onLongPress: () async => Dialogs.showMorph(
                     title: "Eliminar",

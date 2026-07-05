@@ -1,3 +1,4 @@
+import 'fire_constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../models/zona_model.dart';
@@ -31,15 +32,15 @@ class ZonasFire {
 
   static Future<bool> send({required ZonasModel zona}) async {
     try {
-      var data = await getItem(id: zona.id).timeout(const Duration(seconds: 15));
+      var data = await getItem(id: zona.id).timeout(const Duration(seconds: firebaseTimeout));
       if (data == null) {
         var rdm = Textos.randomWord(30);
-        await db.collection(name).doc(rdm).set(zona.toJson()).timeout(const Duration(seconds: 15));
+        await db.collection(name).doc(rdm).set(zona.toJson()).timeout(const Duration(seconds: firebaseTimeout));
         return true;
       } else {
-        var docId = await getDocId(id: zona.id).timeout(const Duration(seconds: 15));
+        var docId = await getDocId(id: zona.id).timeout(const Duration(seconds: firebaseTimeout));
         if (docId == null) return false;
-        await db.collection(name).doc(docId).update(zona.toJson()).timeout(const Duration(seconds: 15));
+        await db.collection(name).doc(docId).update(zona.toJson()).timeout(const Duration(seconds: firebaseTimeout));
         return true;
       }
     } catch (e) {
@@ -49,11 +50,11 @@ class ZonasFire {
 
   static Future<bool> delete({required ZonasModel zona}) async {
     try {
-      var data = await getItem(id: zona.id).timeout(const Duration(seconds: 15));
+      var data = await getItem(id: zona.id).timeout(const Duration(seconds: firebaseTimeout));
       if (data == null) return false;
-      var docId = await getDocId(id: zona.id).timeout(const Duration(seconds: 15));
+      var docId = await getDocId(id: zona.id).timeout(const Duration(seconds: firebaseTimeout));
       if (docId == null) return false;
-      await db.collection(name).doc(docId).delete().timeout(const Duration(seconds: 15));
+      await db.collection(name).doc(docId).delete().timeout(const Duration(seconds: firebaseTimeout));
       return true;
     } catch (e) {
       return false;

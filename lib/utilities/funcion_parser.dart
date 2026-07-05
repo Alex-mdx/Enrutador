@@ -1,3 +1,5 @@
+// ignore_for_file: non_const_argument_for_const_parameter
+
 import 'dart:developer';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';

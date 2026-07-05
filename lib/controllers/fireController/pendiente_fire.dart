@@ -1,3 +1,4 @@
+import 'fire_constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:enrutador/models/pendiente_model.dart';
 import 'package:enrutador/utilities/textos.dart';
@@ -122,7 +123,7 @@ class PendienteFire {
   }
 
   static Future<List<PendienteModel>> getAllItems({int limit = 50}) async {
-    var data = await db.collection(name).limit(limit).get();
+    var data = await db.collection(name).limit(limit).get(options).timeout(const Duration(seconds: firebaseTimeout));
     List<PendienteModel> list = [];
     for (var item in data.docs) {
       list.add(PendienteModel.fromJson(item.data()));
@@ -145,11 +146,11 @@ class PendienteFire {
                       query ?? FirebaseAuth.instance.currentUser?.uid ?? "")
                   : query ?? FirebaseAuth.instance.currentUser?.uid)
           .limit(1)
-          .get(const GetOptions(source: Source.server))
-          .timeout(const Duration(seconds: 15));
+          .get(options)
+          .timeout(const Duration(seconds: firebaseTimeout));
       var uuid = doc.docs.firstOrNull?.id ?? Textos.randomWord(30);
       await db.collection(name).doc(uuid).set(data.toFirestore())
-          .timeout(const Duration(seconds: 15));
+          .timeout(const Duration(seconds: firebaseTimeout));
       return true;
     } catch (e) {
       return false;
@@ -166,11 +167,11 @@ class PendienteFire {
                   ? int.tryParse(
                       query ?? FirebaseAuth.instance.currentUser?.uid ?? "")
                   : query ?? FirebaseAuth.instance.currentUser?.uid)
-          .get(const GetOptions(source: Source.server))
-          .timeout(const Duration(seconds: 15));
+          .get(options)
+          .timeout(const Duration(seconds: firebaseTimeout));
       if (doc.docs.firstOrNull == null) return false;
       await db.collection(name).doc(doc.docs.first.id).delete()
-          .timeout(const Duration(seconds: 15));
+          .timeout(const Duration(seconds: firebaseTimeout));
       return true;
     } catch (e) {
       return false;

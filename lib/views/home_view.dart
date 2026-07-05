@@ -1,7 +1,7 @@
 import 'dart:async';
-import 'package:enrutador/controllers/contacto_controller.dart';
 import 'package:enrutador/utilities/main_provider.dart';
 import 'package:enrutador/utilities/permisos.dart';
+import 'package:enrutador/utilities/preferences.dart';
 import 'package:enrutador/utilities/services/dialog_services.dart';
 import 'package:enrutador/utilities/theme/theme_color.dart';
 import 'package:enrutador/views/map_main.dart';
@@ -12,7 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_slider_drawer/flutter_slider_drawer.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:open_location_code/open_location_code.dart';
 import 'package:provider/provider.dart';
@@ -32,7 +32,6 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
-  bool out = false;
   @override
   Widget build(BuildContext context) {
     return Consumer<MainProvider>(
@@ -56,9 +55,10 @@ class _HomeViewState extends State<HomeView> {
                     actions: [
                       IconButton.filledTonal(
                           iconSize: 20.sp,
-                          onPressed: () async {
-                            await ContactoController.updateAllStatusToZero();
-                          },
+                          onPressed: () => showDialog(
+                              context: context,
+                              barrierDismissible: false,
+                              builder: (context) => DialogDownload()),
                           icon: RiveAnimatedIcon(
                               riveIcon: RiveIcon.upload,
                               strokeWidth: 20.sp,
@@ -128,15 +128,20 @@ class PaginadoState extends State<Paginado> {
   @override
   void initState() {
     super.initState();
-    InternetConnection().onStatusChange.listen((InternetStatus status) {
-      switch (status) {
-        case InternetStatus.connected:
-          widget.provider.internet = true;
+    Connectivity()
+        .onConnectivityChanged
+        .listen((List<ConnectivityResult> results) {
+      bool isConnected = false;
+      for (var result in results) {
+        if ((result == ConnectivityResult.mobile || result == ConnectivityResult.other) && Preferences.redMobile) {
+          isConnected = true;
           break;
-        case InternetStatus.disconnected:
-          widget.provider.internet = false;
+        } else if (result == ConnectivityResult.wifi && Preferences.redWifi) {
+          isConnected = true;
           break;
+        }
       }
+      widget.provider.internet = isConnected;
     });
     widget.provider.logeo();
     Permisos.determinePosition();

@@ -14,7 +14,7 @@ class ShareFun {
       {required String? titulo,
       required String? mensaje,
       List<XFile>? files}) async {
-    final params = ShareParams(title: titulo, text: mensaje, files: files);
+    final params = ShareParams(title: titulo, text: mensaje == "" ? null : mensaje, files: files);
     var share = await SharePlus.instance.share(params);
     return share.status.index;
   }
