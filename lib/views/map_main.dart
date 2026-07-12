@@ -65,7 +65,7 @@ class _ViajeMapPageState extends State<MapMain>
                     provider.local!.latitude, provider.local!.longitude)),
             children: [
                 Stack(children: [
-                  provider.mapaReal
+                   provider.mapaReal
                       ? TileLayer(
                           maxZoom: 20,
                           maxNativeZoom: 18,
@@ -73,20 +73,26 @@ class _ViajeMapPageState extends State<MapMain>
                           urlTemplate:
                               'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
                           userAgentPackageName:
-                              'dev.fleaflet.flutter_map.example')
+                              'dev.fleaflet.flutter_map.example',
+                          errorTileCallback: (tile, error, stackTrace) =>
+                              SizedBox())
                       : TileLayer(
                           maxZoom: 20,
                           maxNativeZoom: 19,
                           urlTemplate:
                               'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                           retinaMode: false,
-                          userAgentPackageName: 'com.enrutador.app'),
+                          userAgentPackageName: 'com.enrutador.app',
+                          errorTileCallback: (tile, error, stackTrace) =>
+                              const SizedBox()),
                   if (Preferences.grid)
                     TileLayer(
                         tms: true,
                         urlTemplate:
                             'https://grid.plus.codes/grid/tms/{z}/{x}/{y}.png${provider.mapaReal ? "?col=white" : ""}',
-                        userAgentPackageName: 'com.enrutador.app')
+                        userAgentPackageName: 'com.enrutador.app', 
+                        errorTileCallback: (tile, error, stackTrace) =>
+                            const SizedBox())
                 ]),
                 CurrentLocationLayer(
                     alignDirectionAnimationDuration: Durations.short3,

@@ -1,8 +1,9 @@
+import 'dart:developer';
 import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:advanced_media_picker/advanced_media_picker.dart';
-import 'package:cunning_document_scanner/cunning_document_scanner.dart';
+import 'package:flutter_doc_scanner/flutter_doc_scanner.dart';
 import 'package:flutter/material.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:path_provider/path_provider.dart';
@@ -14,19 +15,24 @@ class CamaraFun {
   static Future<List<XFile>> getGalleria(
       BuildContext context, String? nombre) async {
     return await AdvancedMediaPicker.openPicker(
-        context: context,
-        isNeedVideoCamera: false,
-        style: PickerStyle(
-            crossAxisCount: 4,
-            backgroundColor: ThemaMain.second,
-            titleWidget: Text(nombre ?? "Seleccionar imagen",
-                style:
-                    TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold))),
-        cameraStyle: CameraStyle(),
-        fileSelectorAllowedTypes: ["png", "jpg", "jpeg"],
-        allowedTypes: PickerAssetType.image,
-        maxVideoDuration: 60,
-        selectionLimit: 1);
+            context: context,
+            isNeedVideoCamera: false,
+            style: PickerStyle(
+                crossAxisCount: 4,
+                backgroundColor: ThemaMain.second,
+                titleWidget: Text(nombre ?? "Seleccionar imagen",
+                    style: TextStyle(
+                        fontSize: 16.sp, fontWeight: FontWeight.bold))),
+            cameraStyle: CameraStyle(),
+            fileSelectorAllowedTypes: ["png", "jpg", "jpeg"],
+            allowedTypes: PickerAssetType.image,
+            maxVideoDuration: 60,
+            selectionLimit: 1)
+        .catchError((e) {
+      debugPrint("error al abrir galeria: $e");
+      showToast("Error al abrir la galería");
+      return <XFile>[];
+    });
   }
 
   static Future<File?> imagen(
@@ -45,21 +51,24 @@ class CamaraFun {
     }
   }
 
-  static Future<Uint8List?> scanner() async {
-    List<String>? data;
-    try {
-      data = await CunningDocumentScanner.getPictures(
-          isGalleryImportAllowed: true,
-          noOfPages: 1,
-          iosScannerOptions: IosScannerOptions(jpgCompressionQuality: 1));
-    } catch (e) {
-      showToast("Error al escanear");
-    }
 
-    if (data?.isNotEmpty ?? false) {
-      var archivoTemp = XFile(data!.first);
-      var base = (await archivoTemp.readAsBytes());
-      return base;
+  static Future<Uint8List?> getScanner() async {
+    try {
+      final scanner = FlutterDocScanner();
+      final data =
+          await scanner.getScannedDocumentAsImages(page: 1, quality: .6);
+
+      if (data != null && data.images.isNotEmpty) {
+        final imagePath = data.images.first;
+        // Convertir URI (file:///...) a ruta del sistema si es necesario
+        final filePath = imagePath.startsWith('file://')
+            ? Uri.parse(imagePath).toFilePath()
+            : imagePath;
+        return await XFile(filePath).readAsBytes();
+      }
+    } catch (e) {
+      log(e.toString());
+      showToast("Error al escanear");
     }
     return null;
   }

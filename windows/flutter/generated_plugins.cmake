@@ -8,6 +8,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   connectivity_plus
   firebase_auth
   firebase_core
+  flutter_doc_scanner
   geolocator_windows
   objectbox_flutter_libs
   pasteboard

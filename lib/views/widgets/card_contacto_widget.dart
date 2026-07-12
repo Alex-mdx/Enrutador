@@ -150,14 +150,8 @@ class CardContactoWidget extends StatelessWidget {
                                         Expanded(
                                             flex: 3,
                                             child: AutoSizeText(
-                                                contacto.domicilio
-                                                        ?.replaceRange(
-                                                            0,
-                                                            contacto.domicilio
-                                                                ?.toLowerCase()
-                                                                .indexOf(
-                                                                    "colonia"),
-                                                            "") ??
+                                                contacto.domicilio?.substring(
+                                                        contacto.domicilio!.toLowerCase().indexOf("colonia").clamp(0, contacto.domicilio!.length)) ??
                                                     "Sin domicilio",
                                                 maxLines: 1,
                                                 minFontSize: 12,

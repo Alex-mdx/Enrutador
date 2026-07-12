@@ -18,7 +18,7 @@ dependencies:
   cloud_firestore: ^6.5.0
   connectivity_plus: ^7.2.0
   crop_your_image: ^2.0.0
-  cunning_document_scanner: ^2.3.0
+  flutter_doc_scanner: ^0.0.20
   cupertino_icons: ^1.0.9
   dynamic_background: ^0.5.0
   filesize: ^2.0.1

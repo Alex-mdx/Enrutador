@@ -41,8 +41,24 @@ class _DialogArchivoState extends State<DialogArchivo> {
 
   Future<void> init() async {
     setState(() => carga = true);
-    archivos =
-        await ArchivoController.getAllByContactoId(widget.contacto.id ?? -1);
+    try {
+      archivos =
+          await ArchivoController.getAllByContactoId(widget.contacto.id ?? -1);
+
+      // Validamos si algún archivo está corrupto
+      for (int i = 0; i < archivos.length; i++) {
+        try {
+          if (archivos[i].archivo != null && archivos[i].archivo!.isNotEmpty) {
+            base64Decode(archivos[i].archivo!);
+          }
+        } catch (e) {
+          archivos[i] = archivos[i].copyWith(archivo: "");
+        }
+      }
+    } catch (e) {
+      archivos = [];
+      showToast("Error al cargar los archivos\n${e.toString()}89");
+    }
     setState(() => carga = false);
   }
 
@@ -55,28 +71,69 @@ class _DialogArchivoState extends State<DialogArchivo> {
           "Agrega la documentacion del contacto necesaria, como INE, Recibo de Luz, respaldo del contrato, etc.",
           textAlign: TextAlign.center,
           style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.bold)),
-      ElevatedButton.icon(
-          onPressed: () async {
-            if (archivos.length >= 6) {
-              showToast(
-                  "Se alcanzo el limite de archivos permitidos por contacto");
-              return;
-            }
-            var data = await CamaraFun.scanner();
-            if (data != null) {
-              var base = base64Encode(data);
-              ArchivoModel archivo = ArchivoModel(
-                  nombre: "test",
-                  archivo: base,
-                  contactoId: widget.contacto.id ?? -1);
-              await ArchivoController.insert(archivo);
-              await init();
-              setState(() {});
-            }
-          },
-          label: Text("Agregar archivo", style: TextStyle(fontSize: 16.sp)),
-          icon: Icon(Icons.document_scanner,
-              size: 20.sp, color: ThemaMain.primary)),
+      Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          ElevatedButton.icon(
+              onPressed: () async {
+                if (archivos.length >= 6) {
+                  showToast(
+                      "Se alcanzo el limite de archivos permitidos por contacto");
+                  return;
+                }
+                try {
+                  var data = await CamaraFun.getScanner();
+                  if (data != null) {
+                    var base = base64Encode(data);
+                    ArchivoModel archivo = ArchivoModel(
+                        nombre: "test",
+                        archivo: base,
+                        contactoId: widget.contacto.id ?? -1);
+                    await ArchivoController.insert(archivo);
+                    await init();
+                    setState(() {});
+                  }
+                } catch (e) {
+                  if (context.mounted) {
+                    showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                                title: Row(children: [
+                                  Icon(Icons.broken_image,
+                                      color: ThemaMain.red),
+                                  const SizedBox(width: 8),
+                                  const Text("Archivo corrupto",
+                                      style: TextStyle(fontSize: 18))
+                                ]),
+                                content: const Text(
+                                    "Ocurrió un error al procesar el archivo o la base de datos."),
+                                actions: [
+                                  TextButton(
+                                      onPressed: () => Navigator.pop(context),
+                                      child: const Text("Aceptar"))
+                                ]));
+                  }
+                }
+              },
+              label: Text("Agregar archivo", style: TextStyle(fontSize: 16.sp)),
+              icon: Icon(Icons.document_scanner,
+                  size: 20.sp, color: ThemaMain.primary)),
+          IconButton.filled(
+              onPressed: () => Dialogs.showMorph(
+                  title: "Eliminar Archivos",
+                  description:
+                      "¿Estas seguro de eliminar todos los archivos el contacto? y se perderan todas sus copias de seguridad",
+                  loadingTitle: "Eliminando Archivos",
+                  onAcceptPressed: (context) async {
+                    await ArchivoController.deleteByContactoId(
+                        widget.contacto.id ?? -1);
+                    await init();
+                  }),
+              icon: Icon(Icons.delete_forever, color: ThemaMain.pink),
+              iconSize: 20.sp)
+        ],
+      ),
       Text("${archivos.length}/6",
           textAlign: TextAlign.center,
           style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.bold)),
@@ -158,23 +215,24 @@ class _DialogArchivoState extends State<DialogArchivo> {
                                                       carrusel:
                                                           "Fecha Creacion: ${Textos.fechaYMDHMS(fecha: archivo.actualizacion!)}")),
                                           onDoubleTap: () async {
-                                            var data =
-                                                await CamaraFun.scanner();
-                                            if (data != null) {
-                                              var base = base64Encode(data);
-                                              ArchivoModel archivoNew =
-                                                  archivo.copyWith(
-                                                      archivo: base,
-                                                      actualizacion:
-                                                          DateTime.now());
-                                              ArchivoModel(
-                                                  nombre: "test",
-                                                  archivo: base,
-                                                  contactoId:
-                                                      widget.contacto.id ?? -1);
-                                              await ArchivoController.update(
-                                                  archivoNew);
-                                              await init();
+                                            try {
+                                              var data =
+                                                  await CamaraFun.getScanner();
+                                              if (data != null) {
+                                                var base = base64Encode(data);
+                                                ArchivoModel archivoNew =
+                                                    archivo.copyWith(
+                                                        archivo: base,
+                                                        actualizacion:
+                                                            DateTime.now());
+
+                                                await ArchivoController.update(
+                                                    archivoNew);
+                                                await init();
+                                              }
+                                            } catch (e) {
+                                              showToast(
+                                                  "Archivo corrupto\n${e.toString()}");
                                             }
                                           },
                                           compartir: false,

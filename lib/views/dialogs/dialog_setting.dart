@@ -110,16 +110,22 @@ class _DialogSettingState extends State<DialogSetting> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   ChoiceChip(
+                      showCheckmark: false,
                       avatar: Icon(Icons.network_cell,
-                          color: Preferences.redMobile ? null : ThemaMain.grey),
+                          color: Preferences.redMobile
+                              ? ThemaMain.primary
+                              : ThemaMain.grey),
                       label: Text("Mobile", style: TextStyle(fontSize: 14.sp)),
                       selected: Preferences.redMobile,
                       onSelected: (bool selected) => setState(() {
                             Preferences.redMobile = selected;
                           })),
                   ChoiceChip(
+                      showCheckmark: false,
                       avatar: Icon(Icons.wifi,
-                          color: Preferences.redWifi ? null : ThemaMain.grey),
+                          color: Preferences.redWifi
+                              ? ThemaMain.green
+                              : ThemaMain.grey),
                       label: Text("Wi-Fi", style: TextStyle(fontSize: 14.sp)),
                       selected: Preferences.redWifi,
                       onSelected: (bool selected) => setState(() {

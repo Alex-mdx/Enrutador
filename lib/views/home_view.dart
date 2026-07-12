@@ -133,7 +133,9 @@ class PaginadoState extends State<Paginado> {
         .listen((List<ConnectivityResult> results) {
       bool isConnected = false;
       for (var result in results) {
-        if ((result == ConnectivityResult.mobile || result == ConnectivityResult.other) && Preferences.redMobile) {
+        if ((result == ConnectivityResult.mobile ||
+                result == ConnectivityResult.other) &&
+            Preferences.redMobile) {
           isConnected = true;
           break;
         } else if (result == ConnectivityResult.wifi && Preferences.redWifi) {

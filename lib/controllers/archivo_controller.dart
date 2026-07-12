@@ -59,6 +59,11 @@ class ArchivoController {
     return maps.map((x) => ArchivoModel.fromJson(x)).toList();
   }
 
+  static Future<void> deleteByContactoId(int contactoId) async {
+    final db = await database();
+    await db.delete(nombreDB, where: "contacto_id = ?", whereArgs: [contactoId]);
+  }
+
   static Future<void> delete(int id) async {
     final db = await database();
     await db.delete(nombreDB, where: "id = ?", whereArgs: [id]);

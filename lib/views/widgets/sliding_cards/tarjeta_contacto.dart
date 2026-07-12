@@ -51,7 +51,7 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
         child: Column(children: [
           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
             SizedBox(
-                width: 52.w,
+                width: 50.w,
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -64,8 +64,13 @@ class _TarjetaContactoState extends State<TarjetaContacto> {
                                   Preferences.psCodeExt && provider.internet),
                           builder: (context, snapshot) => TextButton(
                               onLongPress: () async {
-                                await Clipboard.setData(
-                                    ClipboardData(text: snapshot.data ?? "?"));
+                                await Clipboard.setData(ClipboardData(
+                                    text: PlusCodeFun.psCODE(
+                                        provider.contacto?.latitud.toDouble() ??
+                                            0,
+                                        provider.contacto?.longitud
+                                                .toDouble() ??
+                                            0)));
                                 showToast("Plus Code copiados");
                               },
                               style: ButtonStyle(

@@ -60,7 +60,9 @@ class _DialogMapLiteState extends State<DialogMapLite> {
                 TileLayer(
                     urlTemplate:
                         'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                    userAgentPackageName: 'com.example.enrutador'),
+                    userAgentPackageName: 'com.example.enrutador',
+                    errorTileCallback: (tile, error, stackTrace) =>
+                        const SizedBox()),
                 PolylineLayer(polylines: [
                   if (latLongs.isNotEmpty)
                     Polyline(

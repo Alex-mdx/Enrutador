@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:enrutador/controllers/fireController/usuario_fire.dart';
 import 'package:enrutador/models/usuario_model.dart';
 import 'package:enrutador/utilities/main_provider.dart';
@@ -59,7 +61,7 @@ class _UsersViewState extends State<UsersView> {
                       var max = (await UsuarioFire.getAllItems(
                               limit: 1, index: 0, orden: "id", decender: true))
                           .firstOrNull;
-                      debugPrint("Max: ${max?.id ?? 0}");
+                      log("Max: ${max?.id ?? 0}");
                       var newUser = UsuarioModel(
                           id: (max?.id ?? 0) + 1,
                           uuid: null,
@@ -106,7 +108,10 @@ class _UsersViewState extends State<UsersView> {
                                               onPressed: () async {
                                                 var result =
                                                     await UsuarioFire.sendItem(
-                                                        data: newUser);
+                                                        data: newUser,
+                                                        table: "id",
+                                                        query: newUser.id.toString(),
+                                                        itsNumber: true);
                                                 showToast(result
                                                     ? "Se creo el usuario de manera exitosa"
                                                     : "No se pudo crear el usuario");

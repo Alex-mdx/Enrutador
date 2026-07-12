@@ -1,0 +1,3 @@
+-dontwarn org.conscrypt.**
+-dontwarn com.huawei.**
+-dontwarn com.huawei.hms.**
