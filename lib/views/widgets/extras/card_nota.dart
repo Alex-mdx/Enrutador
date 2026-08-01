@@ -1,7 +1,11 @@
+import 'dart:developer';
+
 import 'package:enrutador/models/nota_model.dart';
 import 'package:enrutador/utilities/main_provider.dart';
 import 'package:enrutador/utilities/services/dialog_services.dart';
+import 'package:enrutador/utilities/theme/theme_app.dart';
 import 'package:enrutador/utilities/theme/theme_color.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:readmore/readmore.dart';
@@ -23,7 +27,8 @@ class CardNota extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<MainProvider>(context);
-    return GestureDetector(
+    return InkWell(
+        borderRadius: BorderRadius.circular(borderRadius),
         onLongPress: () async {
           if (onDelete != null) {
             await Dialogs.showMorph(
@@ -33,6 +38,11 @@ class CardNota extends StatelessWidget {
                 onAcceptPressed: (context) async => await onDelete!());
           }
         },
+        onTap: kDebugMode
+            ? () {
+                log("${element.toJson()}");
+              }
+            : null,
         child: Card(
             elevation:
                 element.empleadoId == provider.usuario?.empleadoId ? 2 : 1,
@@ -43,16 +53,16 @@ class CardNota extends StatelessWidget {
               Padding(
                   padding: const EdgeInsets.all(4),
                   child: Row(mainAxisSize: MainAxisSize.min, children: [
-                    eliminado
-                        ? Icon(Icons.delete, color: ThemaMain.red, size: 15.sp)
-                        : element.pendiente == 0
-                            ? Icon(Icons.cloud_done,
-                                color: ThemaMain.green, size: 15.sp)
-                            : element.pendiente == -1
-                                ? Icon(Icons.search_off,
-                                    color: ThemaMain.darkGrey, size: 15.sp)
-                                : Icon(Icons.cloud_off,
-                                    color: ThemaMain.darkGrey, size: 15.sp)
+                    if (eliminado)
+                      Icon(Icons.delete, color: ThemaMain.red, size: 15.sp),
+                    element.pendiente == 0
+                        ? Icon(Icons.cloud_done,
+                            color: ThemaMain.green, size: 15.sp)
+                        : element.pendiente == -1
+                            ? Icon(Icons.search_off,
+                                color: ThemaMain.darkGrey, size: 15.sp)
+                            : Icon(Icons.cloud_off,
+                                color: ThemaMain.darkGrey, size: 15.sp)
                   ])),
               ListTile(
                   contentPadding:

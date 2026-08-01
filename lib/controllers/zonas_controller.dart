@@ -25,8 +25,7 @@ class ZonasController {
     final db = await database();
     var find = await getId(data.id);
     if (find == null) {
-      await db.insert(nombreDB, data.toJson(),
-          conflictAlgorithm: sql.ConflictAlgorithm.replace);
+      await db.insert(nombreDB, data.toJson());
     } else {
       await update(data);
     }
@@ -40,17 +39,17 @@ class ZonasController {
         conflictAlgorithm: sql.ConflictAlgorithm.replace);
   }
 
-  static Future<List<ZonasModel>> getAll() async {
+  static Future<List<ZonasModel>> getAll({String? orden}) async {
     final db = await database();
-    final List<Map<String, dynamic>> maps = await db.query(nombreDB);
+    final List<Map<String, dynamic>> maps = await db.query(nombreDB, orderBy: orden);
     return maps.map((x) => ZonasModel.fromJson(x)).toList();
   }
 
-  static Future<ZonasModel?> getId(int? id) async {
+  static Future<ZonasModel?> getId(int? id, {String? orden}) async {
     if (id == null) return null;
     final db = await database();
     final List<Map<String, dynamic>> maps = await db.query(
-        nombreDB, where: "id = ?", whereArgs: [id]);
+        nombreDB, where: "id = ?", whereArgs: [id], orderBy: orden);
     return maps.isEmpty ? null : ZonasModel.fromJson(maps.first);
   }
 

@@ -32,11 +32,14 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
+  final GlobalKey<SliderDrawerState> _sliderDrawerKey =
+      GlobalKey<SliderDrawerState>();
+
   @override
   Widget build(BuildContext context) {
     return Consumer<MainProvider>(
         builder: (context, provider, child) => SliderDrawer(
-            key: provider.sliderDrawerKey,
+            key: _sliderDrawerKey,
             animationDuration: 300,
             appBar: Placeholder(),
             sliderOpenSize: 35.w,
@@ -46,7 +49,7 @@ class _HomeViewState extends State<HomeView> {
                 appBar: AppBar(
                     leading: IconButton(
                         onPressed: () => setState(() {
-                              provider.sliderDrawerKey.currentState?.toggle();
+                              _sliderDrawerKey.currentState?.toggle();
                             }),
                         icon: Icon(Icons.menu,
                             color: ThemaMain.darkBlue, size: 20.sp)),
@@ -91,11 +94,11 @@ class _HomeViewState extends State<HomeView> {
                     ]),
                 body: IgnorePointer(
                     ignoring:
-                        provider.sliderDrawerKey.currentState?.isDrawerOpen ??
+                        _sliderDrawerKey.currentState?.isDrawerOpen ??
                             false,
                     child: AnimatedOpacity(
                         duration: Durations.medium1,
-                        opacity: (provider.sliderDrawerKey.currentState
+                        opacity: (_sliderDrawerKey.currentState
                                     ?.isDrawerOpen ??
                                 false)
                             ? .25

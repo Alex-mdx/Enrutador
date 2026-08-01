@@ -57,7 +57,7 @@ class _DialogDownloadState extends State<DialogDownload> {
                 int items = await ContactoFire.countItems(filters: []);
                 showToast("Items: $items");
               },
-              child: Text("Descarga de\ncontactos",
+              child: Text("Busqueda de\ncontactos",
                   style: TextStyle(fontSize: 16.sp))),
           actions: [
             Padding(
@@ -118,12 +118,12 @@ class _DialogDownloadState extends State<DialogDownload> {
                           carga = true;
                         });
                         selects.clear();
-                        List<Filter> tempFilter = [];
+                        List<Filter>? tempFilter;
                         String texto = buscador.text;
                         try {
                           // Si no es un número, solo buscamos por nombre
                           if (texto.isNotEmpty) {
-                            tempFilter.add(Filter.and(
+                            tempFilter!.add(Filter.and(
                                 Filter("nombre_completo",
                                     isGreaterThanOrEqualTo: texto),
                                 Filter("nombre_completo",
@@ -131,15 +131,15 @@ class _DialogDownloadState extends State<DialogDownload> {
                           }
 
                           if (tipos.isNotEmpty) {
-                            tempFilter.add(Filter("tipo",
+                            tempFilter!.add(Filter("tipo",
                                 whereIn: tipos.map((e) => int.parse(e))));
                           }
                           if (estados.isNotEmpty) {
-                            tempFilter.add(Filter("estado",
+                            tempFilter!.add(Filter("estado",
                                 whereIn: estados.map((e) => int.parse(e))));
                           }
                           if (zonas.isNotEmpty) {
-                            tempFilter.add(Filter("zona",
+                            tempFilter!.add(Filter("zona",
                                 whereIn: zonas.map((e) => int.parse(e))));
                           }
 

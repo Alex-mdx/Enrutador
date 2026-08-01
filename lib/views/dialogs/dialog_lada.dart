@@ -1,3 +1,4 @@
+import 'package:country_flags/country_flags.dart';
 import 'package:enrutador/utilities/services/navigation_services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_libphonenumber/flutter_libphonenumber.dart';
@@ -11,7 +12,8 @@ class DialogLada extends StatelessWidget {
   Widget build(BuildContext context) {
     return Dialog(
         child: Column(mainAxisSize: MainAxisSize.min, children: [
-      Text("Seleccione un lada telefonico", style: TextStyle(fontSize: 16.sp)),
+              
+            Text("Seleccione un lada telefonico", style: TextStyle(fontSize: 16.sp)),
       FutureBuilder(
           future: getAllSupportedRegions(),
           builder: (context, snapshot) {
@@ -31,6 +33,10 @@ class DialogLada extends StatelessWidget {
                                   ladaGet("+${data.phoneCode}");
                                   Navigation.pop();
                                 },
+                                trailing: CountryFlag.fromPhonePrefix(
+                                  "+${data.phoneCode}",
+                                  theme: EmojiTheme(size: 20.sp),
+                                ),
                                 leading: Text("+${data.phoneCode}",
                                     style: TextStyle(
                                         fontSize: 15.sp,

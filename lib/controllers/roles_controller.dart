@@ -32,8 +32,7 @@ class RolesController {
           nombreDB,
           data
               .copyWith(creacion: DateTime.now(), actualizacion: DateTime.now())
-              .toJson(),
-          conflictAlgorithm: sql.ConflictAlgorithm.replace);
+              .toJson());
       debugPrint("ingreso");
     } else {
       await update(data);

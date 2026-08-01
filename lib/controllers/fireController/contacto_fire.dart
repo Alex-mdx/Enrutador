@@ -15,16 +15,22 @@ class ContactoFire {
 
   static Future<String?> getDocId({required int? id}) async {
     if (id == null) return null;
-    final querySnapshot =
-        await db.collection(name).where("id", isEqualTo: id).limit(1).get(options);
+    final querySnapshot = await db
+        .collection(name)
+        .where("id", isEqualTo: id)
+        .limit(1)
+        .get(options);
     if (querySnapshot.docs.isEmpty) return null;
     return querySnapshot.docs.first.id;
   }
 
   static Future<ContactoModelo?> getItem({required int? id}) async {
     if (id == null) return null;
-    final querySnapshot =
-        await db.collection(name).where("id", isEqualTo: id).limit(1).get(options);
+    final querySnapshot = await db
+        .collection(name)
+        .where("id", isEqualTo: id)
+        .limit(1)
+        .get(options);
     if (querySnapshot.docs.isEmpty) return null;
     return ContactoModelo.fromJson(querySnapshot.docs.first.data());
   }

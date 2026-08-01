@@ -371,7 +371,8 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                                       .toList() ??
                                                   []))
                                     ]),
-                              if (!widget.compartir) notasArchivero(context)
+                              if (!widget.compartir)
+                                notasArchivero(context, provider)
                             ])
                       ])))
                 ]))));
@@ -421,7 +422,7 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
     ]);
   }
 
-  Row notasArchivero(BuildContext context) {
+  Row notasArchivero(BuildContext context, MainProvider provider) {
     return Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
       ElevatedButton.icon(
           icon:
@@ -430,7 +431,8 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
               padding: WidgetStatePropertyAll(
                   EdgeInsets.symmetric(vertical: 0, horizontal: 1.w))),
           onPressed: () async => await Navigation.pushNamed(
-              route: "notasBuilder", arguments: widget.contacto?.id),
+              route: "notasBuilder",
+              arguments: [widget.contacto, provider.usuario]),
           label: Text("Notas", style: TextStyle(fontSize: 16.sp))),
       ElevatedButton.icon(
           style: ButtonStyle(

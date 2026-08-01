@@ -37,13 +37,15 @@ class Parser {
   }
 
   static Future<Uint8List?> reducirUint8List(
-      {required Uint8List imgBytes, int? minHeight, int? minWidth, int calidad = 70}) async {
+      {required Uint8List imgBytes,
+      int? minHeight,
+      int? minWidth,
+      int calidad = 70}) async {
     try {
-      var newImgBytes = await FlutterImageCompress.compressWithList(
-                                      imgBytes,
-                                      minHeight: minHeight ?? 540,
-                                      minWidth: minWidth ?? 960,
-                                      quality: calidad);
+      var newImgBytes = await FlutterImageCompress.compressWithList(imgBytes,
+          minHeight: minHeight ?? 540,
+          minWidth: minWidth ?? 960,
+          quality: calidad);
       return newImgBytes;
     } catch (e) {
       log('error: $e');
@@ -51,8 +53,12 @@ class Parser {
     }
   }
 
-  static IconData? stringToIconData(String iconString) {
+  static IconData? stringToIconData(String? iconString) {
     try {
+      if (iconString == null) {
+        return LineIcons.question;
+      }
+
       // Dividimos el string usando el delimitador
       final parts = iconString.split('_');
       if (parts.length != 2) {

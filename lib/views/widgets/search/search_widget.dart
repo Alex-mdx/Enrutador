@@ -35,10 +35,25 @@ class SearchWidget extends StatefulWidget {
 
 class _SearchWidgetState extends State<SearchWidget> {
   FocusNode foc = FocusNode();
+  final TextEditingController buscarController = TextEditingController();
   List<What3WordsModel> w3wSuggest = [];
   List<GeoNamesModel> geoNamesSuggest = [];
   List<GeoPostalModel> geoPostalSuggest = [];
   bool buscar = false;
+
+  @override
+  void initState() {
+    super.initState();
+    buscarController.addListener(() {
+      setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    buscarController.dispose();
+    super.dispose();
+  }
 
   Future<void> send(MainProvider provider) async {
     setState(() {
@@ -50,7 +65,7 @@ class _SearchWidgetState extends State<SearchWidget> {
 
     try {
       var coordenadas =
-          await PlusCodeFun.convert(provider.buscar.text, toShortFormat: false);
+          await PlusCodeFun.convert(buscarController.text, toShortFormat: false);
       log("${coordenadas}");
       var ps = PlusCodeFun.truncPlusCode(coordenadas);
       log("${ps.toJson()}");
@@ -61,7 +76,7 @@ class _SearchWidgetState extends State<SearchWidget> {
       debugPrint("error: $e");
     }
     try {
-      var newText = provider.buscar.text.removeAllWhitespace.split(",");
+      var newText = buscarController.text.removeAllWhitespace.split(",");
       var text = LatLng(double.parse(newText[0]), double.parse(newText[1]));
       var ps = PlusCodeFun.psCODE(text.latitude, text.longitude);
       var coordenadas = PlusCodeFun.truncPlusCode(ps);
@@ -74,15 +89,15 @@ class _SearchWidgetState extends State<SearchWidget> {
     } catch (e) {
       debugPrint("error: $e");
     }
-    if (provider.buscar.text.split(".").length == 3) {
-      var w3w = await W3wFun.suggets(provider.buscar.text)
+    if (buscarController.text.split(".").length == 3) {
+      var w3w = await W3wFun.suggets(buscarController.text)
           .timeout(Duration(seconds: 3));
       setState(() {
         w3wSuggest = w3w;
       });
-    } else if (provider.buscar.text.isNumericOnly) {
+    } else if (buscarController.text.isNumericOnly) {
       debugPrint("postal");
-      var geoPostal = await GeoFun.searchPostalCode(provider.buscar.text, null)
+      var geoPostal = await GeoFun.searchPostalCode(buscarController.text, null)
           .timeout(Duration(seconds: 3))
           .catchError((e) {
         debugPrint("error: $e");
@@ -93,7 +108,7 @@ class _SearchWidgetState extends State<SearchWidget> {
       });
     } else {
       debugPrint("geoNames");
-      var geoNames = await GeoFun.searchCity(provider.buscar.text, null)
+      var geoNames = await GeoFun.searchCity(buscarController.text, null)
           .timeout(Duration(seconds: 3))
           .catchError((e) {
         debugPrint("error: $e");
@@ -133,15 +148,15 @@ class _SearchWidgetState extends State<SearchWidget> {
                         foc.unfocus();
                       }
                     },
-                    controller: provider.buscar,
+                    controller: buscarController,
                     onSubmitted: (value) async =>
                         await send(provider).whenComplete(() => setState(() {
                               buscar = false;
                             })),
                     decoration: InputDecoration(
                         fillColor: ThemaMain.second,
-                        suffixIcon: provider
-                                .buscar.text.removeAllWhitespace.isNotEmpty
+                        suffixIcon: buscarController
+                                .text.removeAllWhitespace.isNotEmpty
                             ? buscar
                                 ? LoadingAnimationWidget.inkDrop(
                                     color: ThemaMain.primary, size: 20.sp)
@@ -163,7 +178,7 @@ class _SearchWidgetState extends State<SearchWidget> {
                                   geoPostalSuggest.clear();
                                   geoNamesSuggest.clear();
                                   setState(() {
-                                    provider.buscar.clear();
+                                    buscarController.clear();
                                     buscar = false;
                                   });
                                   if (foc.hasFocus) {
@@ -177,7 +192,7 @@ class _SearchWidgetState extends State<SearchWidget> {
                                 child: Icon(Icons.search_rounded,
                                     size: 22.sp, color: ThemaMain.primary)),
                             crossFadeState:
-                                provider.buscar.text.removeAllWhitespace.isNotEmpty
+                                buscarController.text.removeAllWhitespace.isNotEmpty
                                     ? CrossFadeState.showFirst
                                     : CrossFadeState.showSecond,
                             duration: Durations.medium1),
@@ -206,7 +221,7 @@ class _SearchWidgetState extends State<SearchWidget> {
                         Preferences.zonas = zona;
                       });
                     }),
-                if (provider.buscar.text != "") w3wBuilder(provider)
+                if (buscarController.text != "") w3wBuilder(provider)
               ]))
         ]));
   }
@@ -237,7 +252,7 @@ class _SearchWidgetState extends State<SearchWidget> {
                     }
                   }))),
       FutureBuilder(
-          future: ContactoController.buscar(provider.buscar.text, 4),
+          future: ContactoController.buscar(buscarController.text, 4),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               return Container(
@@ -250,7 +265,7 @@ class _SearchWidgetState extends State<SearchWidget> {
                           itemBuilder: (context, index) {
                             final contacto = snapshot.data![index];
                             return CardContactoWidget(
-                                entrada: provider.buscar.text,
+                                entrada: buscarController.text,
                                 contacto: contacto,
                                 funContact: (p0) async {
                                   provider.animaMap.centerOnPoint(
@@ -263,7 +278,7 @@ class _SearchWidgetState extends State<SearchWidget> {
                                           lat: contacto.latitud,
                                           lng: contacto.longitud,
                                           id: contacto.id);
-                                  provider.buscar.clear();
+                                  buscarController.clear();
                                   await provider.slide.open();
                                 },
                                 compartir: false,

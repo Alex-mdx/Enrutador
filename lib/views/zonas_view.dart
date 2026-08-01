@@ -36,7 +36,7 @@ class _ZonasViewState extends State<ZonasView> {
       carga = false;
     });
     selects = [];
-    zonas = await ZonasController.getAll();
+    zonas = await ZonasController.getAll(orden: "nombre ASC");
     selects.addAll(zonas.map((e) => false).toList());
     setState(() {
       carga = true;

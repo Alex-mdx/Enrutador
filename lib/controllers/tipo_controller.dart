@@ -28,8 +28,7 @@ class TipoController {
       await update(data);
       return;
     }
-    await db.insert(nombreDB, data.toJson(),
-        conflictAlgorithm: sql.ConflictAlgorithm.replace);
+    await db.insert(nombreDB, data.toJson());
   }
 
   static Future<void> update(TiposModelo data) async {

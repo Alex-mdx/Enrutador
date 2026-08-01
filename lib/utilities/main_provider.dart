@@ -16,7 +16,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_map_animations/flutter_map_animations.dart';
-import 'package:flutter_slider_drawer/flutter_slider_drawer.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
@@ -25,25 +24,21 @@ import '../models/referencia_model.dart';
 import '../models/zona_model.dart';
 
 class MainProvider with ChangeNotifier implements TickerProvider {
-  late AnimatedMapController _animaMap;
+  late final AnimatedMapController animaMap;
   MainProvider() {
-    _animaMap = AnimatedMapController(
+    animaMap = AnimatedMapController(
         vsync: this, duration: Durations.extralong2, curve: Curves.easeInOut);
   }
   @override
   Ticker createTicker(TickerCallback onTick) => Ticker(onTick);
 
-  AnimatedMapController get animaMap => _animaMap;
-  set animaMap(AnimatedMapController valor) {
-    animaMap = valor;
-    notifyListeners();
-  }
-
   bool _internet = false;
   bool get internet => _internet;
   set internet(bool valor) {
-    _internet = valor;
-    notifyListeners();
+    if (_internet != valor) {
+      _internet = valor;
+      notifyListeners();
+    }
   }
 
   List<RolesModel> _roles = [];
@@ -60,21 +55,6 @@ class MainProvider with ChangeNotifier implements TickerProvider {
     notifyListeners();
   }
 
-  TextEditingController _buscar = TextEditingController();
-  TextEditingController get buscar => _buscar;
-  set buscar(TextEditingController valor) {
-    _buscar = valor;
-    notifyListeners();
-  }
-
-  GlobalKey<SliderDrawerState> _sliderDrawerKey =
-      GlobalKey<SliderDrawerState>();
-  GlobalKey<SliderDrawerState> get sliderDrawerKey => _sliderDrawerKey;
-  set sliderDrawerKey(GlobalKey<SliderDrawerState> valor) {
-    _sliderDrawerKey = valor;
-    notifyListeners();
-  }
-
   Position? _local;
   Position? get local => _local;
   set local(Position? valor) {
@@ -82,12 +62,7 @@ class MainProvider with ChangeNotifier implements TickerProvider {
     notifyListeners();
   }
 
-  PanelController _slide = PanelController();
-  PanelController get slide => _slide;
-  set slide(PanelController valor) {
-    _slide = valor;
-    notifyListeners();
-  }
+  final PanelController slide = PanelController();
 
   ContactoModelo? _contacto;
   ContactoModelo? get contacto => _contacto;
@@ -200,6 +175,8 @@ class MainProvider with ChangeNotifier implements TickerProvider {
     _latlongPrev = valor;
     notifyListeners();
   }
+
+  
 
   //?Funciones
 

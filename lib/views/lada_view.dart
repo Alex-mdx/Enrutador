@@ -1,3 +1,4 @@
+import 'package:country_flags/country_flags.dart';
 import 'package:enrutador/utilities/preferences.dart';
 import 'package:enrutador/utilities/services/dialog_services.dart';
 import 'package:flutter/material.dart';
@@ -74,6 +75,9 @@ class _LadaViewState extends State<LadaView> {
                                   style: TextStyle(
                                       fontSize: 15.sp,
                                       fontWeight: FontWeight.bold)),
+                              trailing: CountryFlag.fromPhonePrefix(
+                                  "+${data.phoneCode}",
+                                  theme: EmojiTheme(size: 20.sp)),
                               title: Text(
                                   "${data.countryName} - ${data.countryCode}",
                                   style: TextStyle(fontSize: 14.sp)),

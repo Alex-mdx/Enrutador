@@ -1,5 +1,6 @@
+import 'dart:developer';
+
 import 'package:enrutador/models/nota_model.dart';
-import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart' as sql;
 
 String nombreDB = "notas";
@@ -28,12 +29,13 @@ class NotasController {
     final db = await database();
     var existencia = await getId(data.id ?? -1);
     if (existencia == null) {
-      await db.insert(nombreDB, data.copyWith(creado: DateTime.now()).toJson(),
-          conflictAlgorithm: sql.ConflictAlgorithm.replace);
-      debugPrint("ingreso");
+      final map = data.copyWith(creado: DateTime.now()).toJson();
+      final insertedId = await db.insert(nombreDB, map);
+      data.id = insertedId;
+      log("ingreso con id: $insertedId");
     } else {
       await update(data);
-      debugPrint("actualizo");
+      log("actualizo");
     }
   }
 
@@ -49,12 +51,18 @@ class NotasController {
   }
 
   static Future<List<NotaModel>> getContactoId(int contactoId,
-      {int? pendiente, String? order}) async {
+      {int? pendiente, String? empleadoId, String? order}) async {
     final db = await database();
     final query = await db.query(nombreDB,
         where:
-            "contacto_id = ? ${pendiente != null ? "AND pendiente = ?" : ""}",
-        whereArgs: pendiente == null ? [contactoId] : [contactoId, pendiente],
+            "contacto_id = ? ${pendiente != null ? "AND pendiente = ?" : ""} ${empleadoId != null ? "AND empleado_id = ?" : ""}",
+        whereArgs: pendiente == null
+            ? empleadoId == null
+                ? [contactoId]
+                : [contactoId, empleadoId]
+            : empleadoId == null
+                ? [contactoId, pendiente]
+                : [contactoId, pendiente, empleadoId],
         limit: 50,
         orderBy: order ?? "id DESC");
     List<NotaModel> notas = query.map((e) => NotaModel.fromJson(e)).toList();

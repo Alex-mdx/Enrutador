@@ -35,8 +35,7 @@ class ReferenciasController {
     await SqlGenerator.existColumna(
         add: "rol_id", database: db, nombreDB: nombreDB);
     if (existencia == null) {
-      await db.insert(nombreDB, data.toJson(),
-          conflictAlgorithm: sql.ConflictAlgorithm.replace);
+      await db.insert(nombreDB, data.toJson());
       debugPrint("ingreso");
     } else {
       await update(data);

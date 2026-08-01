@@ -61,8 +61,7 @@ class ContactoController {
   static Future<void> insert(ContactoModelo data) async {
     final db = await database();
 
-    await db.insert(nombreDB, data.toJson(),
-        conflictAlgorithm: sql.ConflictAlgorithm.replace);
+    await db.insert(nombreDB, data.toJson());
   }
 
   static Future<void> update(ContactoModelo data) async {

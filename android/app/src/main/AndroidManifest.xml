@@ -85,6 +85,14 @@
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@mipmap/ic_launcher" />
 
+        <!-- Asegurar que el servicio de ubicación en segundo plano se detenga al cerrar la app de la barra de tareas -->
+        <service
+            android:name="com.baseflow.geolocator.GeolocatorPlayServices"
+            android:foregroundServiceType="location"
+            android:stopWithTask="true"
+            tools:replace="android:stopWithTask"
+            android:exported="false" />
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"

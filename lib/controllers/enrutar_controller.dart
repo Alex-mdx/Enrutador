@@ -24,8 +24,7 @@ class EnrutarController {
   static Future<void> insert(EnrutarModelo data) async {
     final db = await database();
 
-    await db.insert(nombreDB, data.toJson(),
-        conflictAlgorithm: sql.ConflictAlgorithm.replace);
+    await db.insert(nombreDB, data.toJson());
   }
 
   static Future<void> update(EnrutarModelo data) async {

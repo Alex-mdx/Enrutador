@@ -27,8 +27,7 @@ class ArchivoController {
 
     await db.insert(nombreDB, data
               .copyWith(actualizacion: DateTime.now())
-              .toJson(),
-        conflictAlgorithm: sql.ConflictAlgorithm.replace);
+              .toJson());
   }
 
   static Future<void> update(ArchivoModel data) async {

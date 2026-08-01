@@ -21,17 +21,8 @@ import 'firebase_options.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 
-class MyHttpOverrides extends HttpOverrides {
-  @override
-  HttpClient createHttpClient(SecurityContext? context) =>
-      super.createHttpClient(context)
-        ..badCertificateCallback =
-            (X509Certificate cert, String host, int port) => true;
-}
-
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  HttpOverrides.global = MyHttpOverrides();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   try {
     await FMTCObjectBoxBackend().initialise(); // The default/built-in backend
@@ -49,9 +40,8 @@ Future<void> main() async {
   await Preferences.init();
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitDown, DeviceOrientation.portraitUp]).then((_) {
-    runApp(MultiProvider(
-        providers: [ChangeNotifierProvider(create: (_) => MainProvider())],
-        child: const Main()));
+    runApp(ChangeNotifierProvider(
+        create: (_) => MainProvider(), child: const Main()));
   });
 }
 

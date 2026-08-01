@@ -45,7 +45,7 @@ class NotaModel {
       fijado: json["fijado"],
       creado: Textos.parseoDateFire(json["creado"])!);
 
-      Map<String, dynamic> toFirestore() => {
+  Map<String, dynamic> toFirestore() => {
         "id": id,
         "contacto_id": contactoId,
         "descripcion": descripcion,

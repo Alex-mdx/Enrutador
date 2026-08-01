@@ -35,8 +35,7 @@ class UsuarioController {
     if (object != null) {
       await updateItem(data.id, data);
     } else {
-      await db.insert(nombreDB, data.toJson(),
-          conflictAlgorithm: sql.ConflictAlgorithm.replace);
+      await db.insert(nombreDB, data.toJson());
     }
   }
 

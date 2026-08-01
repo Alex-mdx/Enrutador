@@ -28,8 +28,7 @@ class EstadoController {
       await update(data);
       return;
     }
-    await db.insert(nombreDB, data.toJson(),
-        conflictAlgorithm: sql.ConflictAlgorithm.replace);
+    await db.insert(nombreDB, data.toJson());
   }
 
   static Future<void> update(EstadoModel data) async {
