@@ -17,6 +17,7 @@ import firebase_messaging
 import flutter_doc_scanner
 import flutter_image_compress_macos
 import flutter_libphonenumber_darwin
+import flutter_local_notifications
 import geocoding_darwin
 import geolocator_apple
 import google_sign_in_ios
@@ -43,6 +44,7 @@ func RegisterGeneratedPlugins(registry: FlutterPluginRegistry) {
   FlutterDocScannerPlugin.register(with: registry.registrar(forPlugin: "FlutterDocScannerPlugin"))
   FlutterImageCompressMacosPlugin.register(with: registry.registrar(forPlugin: "FlutterImageCompressMacosPlugin"))
   FlutterLibphonenumberPlugin.register(with: registry.registrar(forPlugin: "FlutterLibphonenumberPlugin"))
+  FlutterLocalNotificationsPlugin.register(with: registry.registrar(forPlugin: "FlutterLocalNotificationsPlugin"))
   GeocodingDarwinPlugin.register(with: registry.registrar(forPlugin: "GeocodingDarwinPlugin"))
   GeolocatorPlugin.register(with: registry.registrar(forPlugin: "GeolocatorPlugin"))
   FLTGoogleSignInPlugin.register(with: registry.registrar(forPlugin: "FLTGoogleSignInPlugin"))

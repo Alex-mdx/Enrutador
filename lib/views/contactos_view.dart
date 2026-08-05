@@ -35,6 +35,7 @@ class ContactosView extends StatefulWidget {
 }
 
 class _ContactosViewState extends State<ContactosView> {
+  FocusNode focusNode = FocusNode();
   TextEditingController buscador = TextEditingController();
   GroupedItemScrollController itemScrollController =
       GroupedItemScrollController();
@@ -77,7 +78,7 @@ class _ContactosViewState extends State<ContactosView> {
             title: Text("Contactos ($max)", style: TextStyle(fontSize: 18.sp)),
             actions: [
               OverflowBar(spacing: 1.w, children: [
-                if (kDebugMode)
+                /* if (kDebugMode)
                   ElevatedButton.icon(
                       style: ButtonStyle(
                           padding: WidgetStatePropertyAll(EdgeInsets.symmetric(
@@ -108,150 +109,32 @@ class _ContactosViewState extends State<ContactosView> {
                       label: Text("Enviar todo",
                           style: TextStyle(fontSize: 13.sp)),
                       icon: Icon(Icons.done_all,
-                          color: ThemaMain.primary, size: 18.sp)),
-                if (selects.isNotEmpty)
-                  ElevatedButton.icon(
-                      style: ButtonStyle(
-                          padding: WidgetStatePropertyAll(EdgeInsets.symmetric(
-                              horizontal: 3.sp, vertical: .5.h))),
-                      onPressed: () async {
-                        var envio = ((provider.usuario?.adminTipo ?? 0) >= 3 ||
-                            (provider.usuario?.adminTipo ?? 0) == -1);
-                        if (selects.length <= 5) {
-                          await Dialogs.showMorph(
-                              title: envio ? "Envio de datos" : "Sincronizar",
-                              description:
-                                  "¿Desea enviar este(os) contacto(s) a ${envio ? "sincronización" : "revision como pendiente"}?",
-                              loadingTitle: envio
-                                  ? "sincronizando"
-                                  : "Generando pendientes",
-                              loadingDescription:
-                                  "Este proceso puede tomar unos minutos sea paciente",
-                              onAcceptPressed: (context) async {
-                                for (var i = 0; i < selects.length; i++) {
-                                  var cont = await ContactoController.getItemId(
-                                      id: selects[i].id!);
+                          color: ThemaMain.primary, size: 18.sp)), */
 
-                                  var referencia =
-                                      await ReferenciasController.getIdPrin(
-                                          idContacto: cont!.id!,
-                                          lat: cont.latitud,
-                                          lng: cont.longitud,
-                                          status: -1);
-
-                                  var notas =
-                                      await NotasController.getContactoId(
-                                          cont.id!,
-                                          pendiente: 1);
-                                  if (envio) {
-                                    var res = await FireConstants.sendServer(
-                                        contacto: cont,
-                                        referencia: referencia,
-                                        notas: notas,
-                                        empleado: provider.usuario!.empleadoId!,
-                                        send: () async {});
-                                    if (res) {
-                                      showToast(
-                                          "Envio\nContacto numero ${i + 1} de ${selects.length}");
-                                    } else {
-                                      showToast(
-                                          "No se pudo enviar el contacto numero ${i + 1}");
-                                    }
-                                  } else {
-                                    var res =
-                                        await FireConstants.pendienteServer(
-                                            cont: cont,
-                                            referencia: referencia,
-                                            notas: notas,
-                                            empleado:
-                                                provider.usuario!.empleadoId!,
-                                            send: () async {});
-                                    if (res) {
-                                      showToast(
-                                          "Envio\nContacto numero ${i + 1} de ${selects.length}");
-                                    } else {
-                                      showToast(
-                                          "No se pudo enviar el contacto numero ${i + 1}");
-                                    }
-                                  }
-                                }
-                                selects.clear();
-                                await send(index);
-                              });
-                        } else {
-                          showToast(
-                              "No puedes enviar mas de 5 contactos al mismo tiempo.\nPor favor selecciona 5 o menos para enviar");
-                        }
-                      },
-                      label: Text("Enviar (${selects.length})",
-                          style: TextStyle(fontSize: 13.sp)),
-                      icon: RiveAnimatedIcon(
-                          enableAbsorbPointer: true,
-                          riveIcon: RiveIcon.reload,
-                          color: ThemaMain.green,
-                          height: 3.h,
-                          width: 3.h)),
-                if (selects.isNotEmpty)
-                  ElevatedButton.icon(
-                      style: ButtonStyle(
-                          padding: WidgetStatePropertyAll(EdgeInsets.symmetric(
-                              horizontal: 3.sp, vertical: .5.h))),
-                      onPressed: () async {
-                        if (selects.length <= 100) {
-                          List<ContactoModelo> temps = [];
-                          for (var element in selects) {
-                            var cont = await ContactoController.getItemId(
-                                id: element.id!);
-                            if (cont != null) {
-                              temps.add(cont);
-                            }
-                          }
-                          var archivo = await ShareFun.shareDatas(
-                              nombre: "contactos", datas: temps);
-                          if (archivo.isNotEmpty) {
-                            await ShareFun.share(
-                                titulo:
-                                    "Este es un contenido compacto de tipos",
-                                mensaje: "objeto de contactos",
-                                files:
-                                    archivo.map((e) => XFile(e.path)).toList());
-                          }
-                        } else {
-                          showToast(
-                              "No compartir de mas de 100 contactos.\nPor favor selecciona 100 o menos para compartir");
-                        }
-                      },
-                      label: Text("Enviar (${selects.length})",
-                          style: TextStyle(fontSize: 13.sp)),
-                      icon: RiveAnimatedIcon(
-                          enableAbsorbPointer: true,
-                          riveIcon: RiveIcon.copy,
-                          color: ThemaMain.primary,
-                          height: 3.h,
-                          width: 3.h))
-              ]),
-              IconButton.filledTonal(
-                  iconSize: 22.sp,
-                  onPressed: () => showDialog(
-                      context: context,
-                      builder: (context) => DialogFiltroContacto(
-                          ordenar: Preferences.ordenFilt,
-                          agrupar: Preferences.agruparFilt,
-                          pendientes: Preferences.pendientesFilt,
-                          tipo: Preferences.tiposFilt,
-                          vacios: Preferences.vaciosFilt,
-                          apply: (tipo, agrupar, ordenar, vacios, pendientes) {
-                            Preferences.pendientesFilt = pendientes;
-                            Preferences.tiposFilt = tipo;
-                            Preferences.vaciosFilt = vacios;
-                            Preferences.ordenFilt = ordenar;
-                            Preferences.agruparFilt = agrupar;
-                          },
-                          fun: () async {
-                            index = 1;
-                            await send(index);
-                          })),
-                  icon: Icon(LineIcons.filter))
+                IconButton.filledTonal(
+                    iconSize: 22.sp,
+                    onPressed: () => showDialog(
+                        context: context,
+                        builder: (context) => DialogFiltroContacto(
+                            ordenar: Preferences.ordenFilt,
+                            agrupar: Preferences.agruparFilt,
+                            pendientes: Preferences.pendientesFilt,
+                            tipo: Preferences.tiposFilt,
+                            vacios: Preferences.vaciosFilt,
+                            apply:
+                                (tipo, agrupar, ordenar, vacios, pendientes) {
+                              Preferences.pendientesFilt = pendientes;
+                              Preferences.tiposFilt = tipo;
+                              Preferences.vaciosFilt = vacios;
+                              Preferences.ordenFilt = ordenar;
+                              Preferences.agruparFilt = agrupar;
+                            },
+                            fun: () async {
+                              index = 1;
+                              await send(index);
+                            })),
+                    icon: Icon(LineIcons.filter))
+              ])
             ]),
         body: Column(children: [
           Padding(
@@ -259,6 +142,10 @@ class _ContactosViewState extends State<ContactosView> {
               child: TextFormField(
                   controller: buscador,
                   enabled: carga,
+                  focusNode: focusNode,
+                  onTapOutside: (event) {
+                    if (focusNode.hasFocus) focusNode.unfocus();
+                  },
                   onEditingComplete: () async => await send(index),
                   style: TextStyle(fontSize: 18.sp),
                   decoration: InputDecoration(
@@ -309,7 +196,256 @@ class _ContactosViewState extends State<ContactosView> {
               length: contactos.length,
               send: (index) async => await send(index),
               itemScrollController: itemScrollController)
-        ]));
+        ]),
+        floatingActionButton: selects.isNotEmpty
+            ? FloatingActionButton(
+                onPressed: () => showDialog(
+                    context: context,
+                    builder: (context) => Dialog(
+                            child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                              Text("Selector de opciones multiples",
+                                  style: TextStyle(
+                                      fontSize: 16.sp,
+                                      fontWeight: FontWeight.bold)),
+                              Wrap(
+                                  spacing: 1.w,
+                                  runSpacing: .1.h,
+                                  alignment: WrapAlignment.spaceAround,
+                                  children: [
+                                    if ((provider.usuario?.adminTipo ?? 0) >=
+                                            3 ||
+                                        (provider.usuario?.adminTipo ?? 0) ==
+                                            -1)
+                                      InkWell(
+                                        onTap: () async {
+                                          var envio = ((provider
+                                                          .usuario?.adminTipo ??
+                                                      0) >=
+                                                  3 ||
+                                              (provider.usuario?.adminTipo ??
+                                                      0) ==
+                                                  -1);
+                                          if (selects.length <= 5) {
+                                            await Dialogs.showMorph(
+                                                title: envio
+                                                    ? "Envio de datos"
+                                                    : "Sincronizar",
+                                                description:
+                                                    "¿Desea enviar este(os) contacto(s) a ${envio ? "sincronización" : "revision como pendiente"}?",
+                                                loadingTitle: envio
+                                                    ? "sincronizando"
+                                                    : "Generando pendientes",
+                                                loadingDescription:
+                                                    "Este proceso puede tomar unos minutos sea paciente",
+                                                onAcceptPressed:
+                                                    (context) async {
+                                                  for (var i = 0;
+                                                      i < selects.length;
+                                                      i++) {
+                                                    var cont =
+                                                        await ContactoController
+                                                            .getItemId(
+                                                                id: selects[i]
+                                                                    .id!);
+
+                                                    var referencia =
+                                                        await ReferenciasController
+                                                            .getIdPrin(
+                                                                idContacto:
+                                                                    cont!.id!,
+                                                                lat: cont
+                                                                    .latitud,
+                                                                lng: cont
+                                                                    .longitud,
+                                                                status: -1);
+
+                                                    var notas =
+                                                        await NotasController
+                                                            .getContactoId(
+                                                                cont.id!,
+                                                                pendiente: 1);
+                                                    if (envio) {
+                                                      var res = await FireConstants
+                                                          .sendServer(
+                                                              contacto: cont,
+                                                              referencia:
+                                                                  referencia,
+                                                              notas: notas,
+                                                              empleado: provider
+                                                                  .usuario!
+                                                                  .empleadoId!,
+                                                              send:
+                                                                  () async {});
+                                                      if (res) {
+                                                        showToast(
+                                                            "Envio\nContacto numero ${i + 1} de ${selects.length}");
+                                                      } else {
+                                                        showToast(
+                                                            "No se pudo enviar el contacto numero ${i + 1}");
+                                                      }
+                                                    } else {
+                                                      var res = await FireConstants
+                                                          .pendienteServer(
+                                                              cont: cont,
+                                                              referencia:
+                                                                  referencia,
+                                                              notas: notas,
+                                                              empleado: provider
+                                                                  .usuario!
+                                                                  .empleadoId!,
+                                                              send:
+                                                                  () async {});
+                                                      if (res) {
+                                                        showToast(
+                                                            "Envio\nContacto numero ${i + 1} de ${selects.length}");
+                                                      } else {
+                                                        showToast(
+                                                            "No se pudo enviar el contacto numero ${i + 1}");
+                                                      }
+                                                    }
+                                                  }
+                                                  selects.clear();
+                                                  await send(index);
+                                                });
+                                          } else {
+                                            showToast(
+                                                "No puedes enviar mas de 5 contactos al mismo tiempo.\nPor favor selecciona 5 o menos para enviar");
+                                          }
+                                        },
+                                        child: Card(
+                                            child: Column(children: [
+                                          RiveAnimatedIcon(
+                                              enableAbsorbPointer: true,
+                                              riveIcon: ((provider.usuario
+                                                                  ?.adminTipo ??
+                                                              0) >=
+                                                          3 ||
+                                                      (provider.usuario
+                                                                  ?.adminTipo ??
+                                                              0) ==
+                                                          -1)
+                                                  ? RiveIcon.reload
+                                                  : RiveIcon.search,
+                                              color: ((provider.usuario
+                                                                  ?.adminTipo ??
+                                                              0) >=
+                                                          3 ||
+                                                      (provider.usuario
+                                                                  ?.adminTipo ??
+                                                              0) ==
+                                                          -1)
+                                                  ? ThemaMain.green
+                                                  : ThemaMain.primary,
+                                              height: 32.sp,
+                                              width: 32.sp,
+                                              strokeWidth: 12.sp),
+                                          Text(
+                                              ((provider.usuario?.adminTipo ??
+                                                              0) >=
+                                                          3 ||
+                                                      (provider.usuario
+                                                                  ?.adminTipo ??
+                                                              0) ==
+                                                          -1)
+                                                  ? "Sincronizar"
+                                                  : "Pendientes",
+                                              style: TextStyle(
+                                                  fontSize: 14.sp,
+                                                  fontWeight: FontWeight.bold))
+                                        ])),
+                                      ),
+                                    InkWell(
+                                        onTap: () async {
+                                          if (selects.length <= 100) {
+                                            List<ContactoModelo> temps = [];
+                                            for (var element in selects) {
+                                              var cont =
+                                                  await ContactoController
+                                                      .getItemId(
+                                                          id: element.id!);
+                                              if (cont != null) {
+                                                temps.add(cont);
+                                              }
+                                            }
+                                            var archivo =
+                                                await ShareFun.shareDatas(
+                                                    nombre: "contactos",
+                                                    datas: temps);
+                                            if (archivo.isNotEmpty) {
+                                              await ShareFun.share(
+                                                  titulo:
+                                                      "Este es un contenido compacto de tipos",
+                                                  mensaje:
+                                                      "objeto de contactos",
+                                                  files: archivo
+                                                      .map((e) => XFile(e.path))
+                                                      .toList());
+                                            }
+                                          } else {
+                                            showToast(
+                                                "No compartir de mas de 100 contactos.\nPor favor selecciona 100 o menos para compartir");
+                                          }
+                                        },
+                                        child: Card(
+                                            child: Column(children: [
+                                          RiveAnimatedIcon(
+                                              enableAbsorbPointer: true,
+                                              riveIcon: RiveIcon.copy,
+                                              color: ThemaMain.darkBlue,
+                                              height: 32.sp,
+                                              width: 32.sp,
+                                              strokeWidth: 12.sp),
+                                          Text("Copiar",
+                                              style: TextStyle(
+                                                  fontSize: 14.sp,
+                                                  fontWeight: FontWeight.bold))
+                                        ]))),
+                                    InkWell(
+                                        onTap: () async {},
+                                        child: Card(
+                                            child: Column(children: [
+                                          RiveAnimatedIcon(
+                                              enableAbsorbPointer: true,
+                                              riveIcon: RiveIcon.bell,
+                                              color: ThemaMain.yellow,
+                                              height: 32.sp,
+                                              width: 32.sp,
+                                              strokeWidth: 12.sp),
+                                          Text("Tip",
+                                              style: TextStyle(
+                                                  fontSize: 14.sp,
+                                                  fontWeight: FontWeight.bold))
+                                        ]))),
+                                    InkWell(
+                                        onTap: () async {},
+                                        child: Card(
+                                            child: Column(children: [
+                                          RiveAnimatedIcon(
+                                              enableAbsorbPointer: true,
+                                              riveIcon: RiveIcon.edit,
+                                              color: ThemaMain.red,
+                                              height: 32.sp,
+                                              width: 32.sp,
+                                              strokeWidth: 12.sp),
+                                          Text("Reporte",
+                                              style: TextStyle(
+                                                  fontSize: 14.sp,
+                                                  fontWeight: FontWeight.bold))
+                                        ])))
+                                  ])
+                            ]))),
+                child: RiveAnimatedIcon(
+                    enableAbsorbPointer: true,
+                    riveIcon: RiveIcon.menuDots,
+                    color: ThemaMain.background,
+                    height: 22.sp,
+                    width: 22.sp,
+                    strokeWidth: 14.sp))
+            : null,
+        floatingActionButtonLocation:
+            FloatingActionButtonLocation.miniEndFloat);
   }
 
   StickyGroupedListView<ContactoModelo, String?> stick(

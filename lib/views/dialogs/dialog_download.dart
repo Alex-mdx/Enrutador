@@ -24,6 +24,7 @@ import '../../models/referencia_model.dart';
 import '../../utilities/theme/theme_color.dart';
 import '../widgets/card_contacto_widget.dart';
 import '../widgets/search/row_filtro.dart';
+import 'dialog_send_tip.dart';
 
 class DialogDownload extends StatefulWidget {
   const DialogDownload({super.key});
@@ -34,6 +35,7 @@ class DialogDownload extends StatefulWidget {
 
 class _DialogDownloadState extends State<DialogDownload> {
   TextEditingController buscador = TextEditingController();
+  List<int> tips = [];
   List<ContactoModelo> selects = [];
   List<ReferenciaModelo> referencias = [];
   double progress = 0;
@@ -270,9 +272,21 @@ class _DialogDownloadState extends State<DialogDownload> {
                                                     compartir: true))),
                                         compartir: false,
                                         naviPc: true,
-                                        selectedVisible: false,
-                                        selected: null,
-                                        onSelected: (p0) {})),
+                                        selectedVisible: true,
+                                        selected: tips
+                                            .where(
+                                                (e) => e == (contacto.id ?? -1))
+                                            .isNotEmpty,
+                                        onSelected: (p0) {
+                                          setState(() {
+                                            if (p0 == true) {
+                                              tips.add(contacto.id ?? -1);
+                                            } else {
+                                              tips.removeWhere((e) =>
+                                                  e == (contacto.id ?? -1));
+                                            }
+                                          });
+                                        })),
                                 if (selects.length - 1 == index)
                                   TextButton.icon(
                                       icon: Icon(LineIcons.eraser,
@@ -295,48 +309,66 @@ class _DialogDownloadState extends State<DialogDownload> {
                   (selects.length + referencias.length),
               minHeight: .6.h,
               valueColor: AlwaysStoppedAnimation(ThemaMain.green)),
-        ElevatedButton.icon(
-            onPressed: () async {
-              await Dialogs.showMorph(
-                  title: "Descargar la carga",
-                  description:
-                      "Desea ingresar los contactos encontrados como contactos nuevos?",
-                  loadingTitle: "Descargando ...",
-                  onAcceptPressed: (context) async {
-                    setState(() {
-                      c = true;
+        Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
+          if (tips.isNotEmpty)
+            ElevatedButton.icon(
+                onPressed: () => showDialog(
+                    context: context,
+                    builder: (context) =>
+                        DialogSendTip(tips: tips, user: provider.usuario!)),
+                icon:
+                    Icon(LineIcons.bell, size: 20.sp, color: ThemaMain.yellow),
+                label: Text("Generar Tip", style: TextStyle(fontSize: 14.sp))),
+          ElevatedButton.icon(
+              onPressed: () async {
+                await Dialogs.showMorph(
+                    title: "Descargar la carga",
+                    description:
+                        "Desea ingresar los contactos encontrados como contactos nuevos?",
+                    loadingTitle: "Descargando ...",
+                    onAcceptPressed: (context) async {
+                      setState(() {
+                        c = true;
+                      });
                     });
-                  });
-              if (c) {
-                try {
-                  for (var i = 0; i < selects.length; i++) {
-                    var contacto = selects[i];
-                    List<ContactoModelo> data = await ContactoController.buscar(
-                        contacto.nombreCompleto!, 1);
-                    if (data.isNotEmpty) {
-                      await ContactoController.update(data.first);
-                    } else {
-                      await ContactoController.insert(contacto);
-                    }
+                if (c) {
+                  try {
+                    for (var i = 0; i < selects.length; i++) {
+                      var contacto = selects[i];
+                      List<ContactoModelo> data =
+                          await ContactoController.buscar(
+                              contacto.nombreCompleto!, 1);
+                      if (data.isNotEmpty) {
+                        await ContactoController.update(data.first);
+                      } else {
+                        await ContactoController.insert(contacto);
+                      }
 
-                    setState(() {
-                      progress++;
-                    });
+                      setState(() {
+                        progress++;
+                      });
+                    }
+                    for (var element in referencias) {
+                      await ReferenciasController.insert(element);
+                      setState(() {
+                        progress++;
+                      });
+                    }
+                    showToast("Se han descargado todos los contactos");
+                  } catch (e) {
+                    showToast("Hubo un error\n$e");
                   }
-                  for (var element in referencias) {
-                    await ReferenciasController.insert(element);
-                    setState(() {
-                      progress++;
-                    });
-                  }
-                  showToast("Se han descargado todos los contactos");
-                } catch (e) {
-                  showToast("Hubo un error\n$e");
                 }
-              }
-            },
-            icon: Icon(Icons.done_all, color: ThemaMain.green),
-            label: Text("Descargar", style: TextStyle(fontSize: 14.sp)))
+              },
+              icon: Icon(Icons.done_all,
+                  color: selects.isNotEmpty || referencias.isNotEmpty
+                      ? ThemaMain.green
+                      : ThemaMain.darkGrey,
+                  size: selects.isNotEmpty || referencias.isNotEmpty
+                      ? 20.sp
+                      : 18.sp),
+              label: Text("Descargar", style: TextStyle(fontSize: 14.sp)))
+        ])
       ])
     ]));
   }

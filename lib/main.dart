@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_map_tile_caching/flutter_map_tile_caching.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:oktoast/oktoast.dart';
@@ -34,6 +35,30 @@ Future<void> main() async {
 
     await dir.delete(recursive: true);
   }
+
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+
+  // Inicialización de las notificaciones locales
+  const AndroidInitializationSettings initializationSettingsAndroid =
+      AndroidInitializationSettings('@mipmap/ic_launcher');
+
+  const InitializationSettings initializationSettings =
+      InitializationSettings(android: initializationSettingsAndroid);
+
+  await flutterLocalNotificationsPlugin.initialize(initializationSettings,
+      onDidReceiveNotificationResponse: (NotificationResponse response) {
+    debugPrint("Notificación presionada con payload: ${response.payload}");
+  });
+
+  // Obtener implementación de Android del plugin
+  final AndroidFlutterLocalNotificationsPlugin? androidImplementation =
+      flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin>();
+
+  // Solicitar permiso de notificaciones (requerido para Android 13+)
+  await androidImplementation?.requestNotificationsPermission();
+
   FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
   await GoogleSignIn.instance
       .initialize(serverClientId: Firebase.app().options.androidClientId);
