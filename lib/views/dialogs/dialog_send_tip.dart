@@ -1,4 +1,5 @@
 import 'package:enrutador/models/usuario_model.dart';
+import 'package:enrutador/utilities/services/navigation_services.dart';
 import 'package:enrutador/utilities/theme/theme_color.dart';
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
@@ -7,6 +8,7 @@ import 'package:rive_animated_icon/rive_animated_icon.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../utilities/main_provider.dart';
+import '../widgets/extras/card_user_select.dart';
 
 class DialogSendTip extends StatefulWidget {
   final List<int> tips;
@@ -20,6 +22,7 @@ class DialogSendTip extends StatefulWidget {
 class _DialogSendTipState extends State<DialogSendTip> {
   late String currentTip;
   String? assignedTo;
+  TextEditingController controller = TextEditingController();
 
   @override
   void initState() {
@@ -32,32 +35,41 @@ class _DialogSendTipState extends State<DialogSendTip> {
     final provider = Provider.of<MainProvider>(context);
     return Dialog(
         child: Column(mainAxisSize: MainAxisSize.min, children: [
-      AppBar(
-        title: Text("Generar Tips", style: TextStyle(fontSize: 16.sp)),
-      ),
-      Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            RiveAnimatedIcon(
-                riveIcon: RiveIcon.bell,
-                color: ThemaMain.yellow,
-                loopAnimation: true,
-                enableAbsorbPointer: true,
-                width: 22.sp,
-                height: 22.sp,
-                strokeWidth: 12.sp),
-            Text("Estas asignando ${widget.tips.length} tips",
-                style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.bold))
-          ]),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
+      AppBar(title: Text("Generar Tips", style: TextStyle(fontSize: 16.sp))),
+      Column(children: [
+        Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              RiveAnimatedIcon(
+                  riveIcon: RiveIcon.bell,
+                  color: ThemaMain.yellow,
+                  loopAnimation: true,
+                  enableAbsorbPointer: true,
+                  width: 22.sp,
+                  height: 22.sp,
+                  strokeWidth: 12.sp),
+              Text("Estas asignando ${widget.tips.length} tips",
+                  style:
+                      TextStyle(fontSize: 15.sp, fontWeight: FontWeight.bold))
+            ]),
+        Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
           ElevatedButton.icon(
               style: ButtonStyle(
                   padding: WidgetStatePropertyAll(
                       EdgeInsets.symmetric(horizontal: 1.w, vertical: 0))),
-              onPressed: () {},
+              onPressed: () => showDialog(
+                  context: context,
+                  builder: (context) => Dialog(
+                        child: CardUserSelect(
+                            empleadoSelected: currentTip,
+                            onTap: (e) {
+                              setState(() {
+                                currentTip = e.empleadoId!;
+                              });
+                              Navigation.pop();
+                            }),
+                      )),
               icon: Icon(LineIcons.helpingHands,
                   size: 20.sp, color: ThemaMain.green),
               label: Text(
@@ -67,17 +79,39 @@ class _DialogSendTipState extends State<DialogSendTip> {
               style: ButtonStyle(
                   padding: WidgetStatePropertyAll(
                       EdgeInsets.symmetric(horizontal: 1.w, vertical: 0))),
-              onPressed: () {},
+              onPressed: () => showDialog(
+                  context: context,
+                  builder: (context) => Dialog(
+                      child: CardUserSelect(
+                          empleadoSelected: assignedTo,
+                          onTap: (e) {
+                            setState(() {
+                              assignedTo = e.empleadoId;
+                            });
+                            Navigation.pop();
+                          }))),
               icon: Icon(LineIcons.handHoldingHeart,
                   size: 20.sp, color: ThemaMain.pink),
               label: Text(
                   "Asignado a: ${assignedTo == provider.usuario?.empleadoId.toString() ? "Ti mismo" : assignedTo ?? "Nadie"}",
                   style: TextStyle(fontSize: 14.sp)))
-        ],
-      ),
-      ElevatedButton(
-          onPressed: () {},
-          child: Text("Asignar Tip", style: TextStyle(fontSize: 15.sp)))
+        ]),
+        Padding(
+            padding: EdgeInsets.all(8.sp),
+            child: TextField(
+                minLines: 1,
+                maxLines: 4,
+                controller: controller,
+                decoration: InputDecoration(
+                    hintText: "Contexto del tip",
+                    focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: ThemaMain.darkGrey)),
+                    contentPadding:
+                        EdgeInsets.symmetric(horizontal: 1.w, vertical: 1.w)))),
+        ElevatedButton(
+            onPressed: () {},
+            child: Text("Asignar Tip", style: TextStyle(fontSize: 15.sp)))
+      ])
     ]));
   }
 }

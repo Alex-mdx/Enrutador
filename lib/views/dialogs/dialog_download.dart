@@ -74,6 +74,7 @@ class _DialogDownloadState extends State<DialogDownload> {
                         initVal: currentValue,
                         minVal: 1,
                         qtyFormProps: QtyFormProps(
+                            enabled: !carga,
                             enableTyping: false,
                             style: TextStyle(
                                 fontSize: 15.sp, fontWeight: FontWeight.bold)),
@@ -125,7 +126,8 @@ class _DialogDownloadState extends State<DialogDownload> {
                         try {
                           // Si no es un número, solo buscamos por nombre
                           if (texto.isNotEmpty) {
-                            tempFilter!.add(Filter.and(
+                            tempFilter ??= [];
+                            tempFilter.add(Filter.and(
                                 Filter("nombre_completo",
                                     isGreaterThanOrEqualTo: texto),
                                 Filter("nombre_completo",
@@ -133,15 +135,18 @@ class _DialogDownloadState extends State<DialogDownload> {
                           }
 
                           if (tipos.isNotEmpty) {
-                            tempFilter!.add(Filter("tipo",
+                            tempFilter ??= [];
+                            tempFilter.add(Filter("tipo",
                                 whereIn: tipos.map((e) => int.parse(e))));
                           }
                           if (estados.isNotEmpty) {
-                            tempFilter!.add(Filter("estado",
+                            tempFilter ??= [];
+                            tempFilter.add(Filter("estado",
                                 whereIn: estados.map((e) => int.parse(e))));
                           }
                           if (zonas.isNotEmpty) {
-                            tempFilter!.add(Filter("zona",
+                            tempFilter ??= [];
+                            tempFilter.add(Filter("zona",
                                 whereIn: zonas.map((e) => int.parse(e))));
                           }
 

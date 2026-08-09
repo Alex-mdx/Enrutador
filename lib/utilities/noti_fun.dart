@@ -19,8 +19,12 @@ class NotiFun {
     const NotificationDetails notificationDetails =
         NotificationDetails(android: androidDetails);
 
-    await flutterLocalNotificationsPlugin
-        .show(id, title, body, notificationDetails, payload: payload);
+    await flutterLocalNotificationsPlugin.show(
+        id: id,
+        title: title,
+        body: body,
+        notificationDetails: notificationDetails,
+        payload: payload);
   }
 
 // Función global para enviar una notificación con barra de progreso
@@ -46,7 +50,10 @@ class NotiFun {
         NotificationDetails(android: androidDetails);
 
     await flutterLocalNotificationsPlugin.show(
-        id, title, body, notificationDetails);
+        id: id,
+        title: title,
+        body: body,
+        notificationDetails: notificationDetails);
   }
 
 // Función global para enviar una notificación de texto largo expandible (Big Text Style)
@@ -72,7 +79,11 @@ class NotiFun {
     final NotificationDetails notificationDetails =
         NotificationDetails(android: androidDetails);
 
-    await flutterLocalNotificationsPlugin
-        .show(id, title, body, notificationDetails, payload: payload);
+    await flutterLocalNotificationsPlugin.show(
+        id: id,
+        title: title,
+        body: body,
+        notificationDetails: notificationDetails,
+        payload: payload);
   }
 }

@@ -155,92 +155,106 @@ class _DialogHijosState extends State<DialogHijos> {
                               color: ThemaMain.background,
                               elevation: 0,
                               child: Column(children: [
-                                 search
-                            ? Center(
-                                child: LoadingAnimationWidget.threeArchedCircle(
-                                    color: ThemaMain.primary, size: 22.sp))
-                            : actuales.isEmpty
-                                ? Text("No se han encontrado usuarios",
-                                    style: TextStyle(fontSize: 14.sp))
-                                : Wrap(
-                                    alignment: WrapAlignment.spaceAround,
-                                    spacing: .2.w,
-                                    children: actuales
-                                        .map((e) => CardChildren(
-                                            e: e,
-                                            width: 25.w,
-                                            onTap: () {
-                                              if (hijosG.firstWhereOrNull(
-                                                          (element) =>
-                                                              element.id ==
-                                                              e.id) !=
-                                                      null ||
-                                                  hijosSeleccionados
-                                                          .firstWhereOrNull(
-                                                              (element) =>
-                                                                  element.id ==
-                                                                  e.id) !=
-                                                      null) {
-                                                debugPrint("remove");
-                                                if (hijosG.firstWhereOrNull(
-                                                        (element) =>
-                                                            element.id ==
-                                                            e.id) !=
-                                                    null) {
-                                                  showToast(
-                                                      "Deseleccione desde la lista de hijos principal");
-                                                  return;
-                                                }
-                                                setState(() {
-                                                  hijosSeleccionados
-                                                      .removeWhere((element) =>
-                                                          element.id == e.id);
-                                                });
-                                              } else {
-                                                debugPrint("add");
-                                                if ((hijosSeleccionados.length +
-                                                        hijosG.length) <
-                                                    6) {
-                                                  if ((e.adminTipo ?? 1) >
-                                                      (widget.user.adminTipo ??
-                                                          0)) {
-                                                    showToast(
-                                                        "No se puede agregar un administrador como hijo / No se puede agregar un usuario con mas permisos que el tuyo");
-                                                    return;
-                                                  }
-                                                  if (e.id == widget.user.id) {
-                                                    showToast(
-                                                        "No puedes agregar al usuario como su propio hijo");
-                                                    return;
-                                                  }
-                                                  setState(() {
-                                                    hijosSeleccionados.add(e);
-                                                  });
-                                                } else {
-                                                  showToast(
-                                                      "Se ha alcanzado el numero maximo de hijos por usuario");
-                                                }
-                                              }
-                                            },
-                                            fontSize: 12.sp,
-                                            card: hijosG.firstWhereOrNull(
-                                                            (element) =>
-                                                                element.id ==
-                                                                e.id) !=
-                                                        null ||
-                                                    hijosSeleccionados
-                                                            .firstWhereOrNull(
+                                search
+                                    ? Center(
+                                        child: LoadingAnimationWidget
+                                            .threeArchedCircle(
+                                                color: ThemaMain.primary,
+                                                size: 22.sp))
+                                    : actuales.isEmpty
+                                        ? Text("No se han encontrado usuarios",
+                                            style: TextStyle(fontSize: 14.sp))
+                                        : Wrap(
+                                            alignment:
+                                                WrapAlignment.spaceAround,
+                                            spacing: .2.w,
+                                            children: actuales
+                                                .map((e) => CardChildren(
+                                                    e: e,
+                                                    width: 25.w,
+                                                    onTap: () {
+                                                      if (hijosG.firstWhereOrNull(
+                                                                  (element) =>
+                                                                      element
+                                                                          .id ==
+                                                                      e.id) !=
+                                                              null ||
+                                                          hijosSeleccionados
+                                                                  .firstWhereOrNull(
+                                                                      (element) =>
+                                                                          element
+                                                                              .id ==
+                                                                          e.id) !=
+                                                              null) {
+                                                        debugPrint("remove");
+                                                        if (hijosG.firstWhereOrNull(
                                                                 (element) =>
                                                                     element
                                                                         .id ==
                                                                     e.id) !=
-                                                        null
-                                                ? ThemaMain.green
-                                                : e.id == widget.user.id
-                                                    ? ThemaMain.darkGrey
-                                                    : null,
-                                            elevation: 2))
-                                        .toList()),
+                                                            null) {
+                                                          showToast(
+                                                              "Deseleccione desde la lista de hijos principal");
+                                                          return;
+                                                        }
+                                                        setState(() {
+                                                          hijosSeleccionados
+                                                              .removeWhere(
+                                                                  (element) =>
+                                                                      element
+                                                                          .id ==
+                                                                      e.id);
+                                                        });
+                                                      } else {
+                                                        debugPrint("add");
+                                                        if ((hijosSeleccionados
+                                                                    .length +
+                                                                hijosG.length) <
+                                                            6) {
+                                                          if ((e.adminTipo ??
+                                                                  1) >
+                                                              (widget.user
+                                                                      .adminTipo ??
+                                                                  0)) {
+                                                            showToast(
+                                                                "No se puede agregar un administrador como hijo / No se puede agregar un usuario con mas permisos que el tuyo");
+                                                            return;
+                                                          }
+                                                          if (e.id ==
+                                                              widget.user.id) {
+                                                            showToast(
+                                                                "No puedes agregar al usuario como su propio hijo");
+                                                            return;
+                                                          }
+                                                          setState(() {
+                                                            hijosSeleccionados
+                                                                .add(e);
+                                                          });
+                                                        } else {
+                                                          showToast(
+                                                              "Se ha alcanzado el numero maximo de hijos por usuario");
+                                                        }
+                                                      }
+                                                    },
+                                                    fontSize: 12.sp,
+                                                    card: hijosG.firstWhereOrNull(
+                                                                    (element) =>
+                                                                        element
+                                                                            .id ==
+                                                                        e.id) !=
+                                                                null ||
+                                                            hijosSeleccionados.firstWhereOrNull(
+                                                                    (element) =>
+                                                                        element
+                                                                            .id ==
+                                                                        e.id) !=
+                                                                null
+                                                        ? ThemaMain.green
+                                                        : e.id == widget.user.id
+                                                            ? ThemaMain.darkGrey
+                                                            : null,
+                                                    elevation: 2))
+                                                .toList()),
                                 PaginadorGroupedWidget(
                                     max: max,
                                     length: actuales.length,
