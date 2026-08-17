@@ -44,7 +44,7 @@ class _TarjetaRsideWidgetState extends State<TarjetaRsideWidget> {
   Widget build(BuildContext context) {
     final provider = Provider.of<MainProvider>(context);
     return Row(
-        spacing: .1.w,
+        spacing: 0,
         mainAxisAlignment: MainAxisAlignment.end,
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -279,65 +279,90 @@ class _TarjetaRsideWidgetState extends State<TarjetaRsideWidget> {
                     color: provider.contacto?.pendiente == 0
                         ? ThemaMain.green
                         : ThemaMain.darkBlue)),
-          if (((provider.usuario?.adminTipo ?? 0) > 4 ||
-                  (provider.usuario?.adminTipo ?? 0) == -1) &&
-              (provider.contacto?.pendiente != 1) &&
-              provider.contacto?.id != null)
-            IconButton.filledTonal(
-                iconSize: 18.sp,
-                onPressed: () async {
-                  if (provider.internet) {
-                    await Dialogs.showMorph(
-                        title: "Inhabilitar Punteo",
-                        description:
-                            "¿Desea inhabilitar este punteo?\nYa no se tendra acceso a este marcador de manera local ademas de bloquear su acceso a la aplicacion",
-                        loadingTitle: "Inhabilitando",
-                        onAcceptPressed: (context) async {
-                          showToast("Buscando contacto...");
-                          var contact = await ContactoFire.getItem(
-                              id: provider.contacto!.id);
-                          if (contact != null) {
-                            showToast("Inhabilitando contacto...");
-                            var result = await ContactoFire.sendItem(
-                                data:
-                                    contact.copyWith(pendiente: 0, status: 0));
-                            if (result) {
-                              showToast(
-                                  "Contacto inhabilitado correctamente\nSe eliminara localmente");
+          OverflowBar(spacing: 0, children: [
+            if (((provider.usuario?.adminTipo ?? 0) > 4 ||
+                    (provider.usuario?.adminTipo ?? 0) == -1) &&
+                (provider.contacto?.pendiente != 1) &&
+                provider.contacto?.id != null)
+              IconButton.filledTonal(
+                  iconSize: 18.sp,
+                  onPressed: () async {
+                    if (provider.internet) {
+                      await Dialogs.showMorph(
+                          title: "Inhabilitar Punteo",
+                          description:
+                              "¿Desea inhabilitar este punteo?\nYa no se tendra acceso a este marcador de manera local ademas de bloquear su acceso a la aplicacion",
+                          loadingTitle: "Inhabilitando",
+                          onAcceptPressed: (context) async {
+                            showToast("Buscando contacto...");
+                            var contact = await ContactoFire.getItem(
+                                id: provider.contacto!.id);
+                            if (contact != null) {
+                              showToast("Inhabilitando contacto...");
+                              var result = await ContactoFire.sendItem(
+                                  data: contact.copyWith(
+                                      pendiente: 0, status: 0));
+                              if (result) {
+                                showToast(
+                                    "Contacto inhabilitado correctamente\nSe eliminara localmente");
+                              } else {
+                                showToast(
+                                    "Error al inhabilitar contacto\nSe eliminara localmente");
+                              }
                             } else {
                               showToast(
-                                  "Error al inhabilitar contacto\nSe eliminara localmente");
+                                  "Contacto no encontrado\nSe eliminara localmente");
                             }
-                          } else {
-                            showToast(
-                                "Contacto no encontrado\nSe eliminara localmente");
-                          }
 
-                          await ContactoController.deleteItem(
-                              provider.contacto!.id!);
-                          var model = ContactoModelo.fromJson({
-                            "id": provider.contacto!.id,
-                            "latitud": provider.contacto!.latitud,
-                            "longitud": provider.contacto!.longitud
+                            await ContactoController.deleteItem(
+                                provider.contacto!.id!);
+                            var model = ContactoModelo.fromJson({
+                              "id": provider.contacto!.id,
+                              "latitud": provider.contacto!.latitud,
+                              "longitud": provider.contacto!.longitud
+                            });
+                            provider.contacto =
+                                model.copyWith(pendiente: 1, status: 0);
+                            await MapFun.touch(
+                                provider: provider,
+                                lat: model.latitud,
+                                lng: model.longitud);
+                            var datas = await EnrutarController.getItemContacto(
+                                contactoId: provider.contacto!.id ?? -1);
+                            if (datas != null) {
+                              await EnrutarController.deleteItem(datas.id!);
+                            }
+                            showToast("Marcador inhabilitado");
                           });
-                          provider.contacto =
-                              model.copyWith(pendiente: 1, status: 0);
-                          await MapFun.touch(
-                              provider: provider,
-                              lat: model.latitud,
-                              lng: model.longitud);
-                          var datas = await EnrutarController.getItemContacto(
-                              contactoId: provider.contacto!.id ?? -1);
-                          if (datas != null) {
-                            await EnrutarController.deleteItem(datas.id!);
-                          }
-                          showToast("Marcador inhabilitado");
-                        });
-                  } else {
-                    showToast("Sin internet\nintente mas tarde");
-                  }
-                },
-                icon: Icon(LineIcons.userSlash, color: ThemaMain.pink))
+                    } else {
+                      showToast("Sin internet\nintente mas tarde");
+                    }
+                  },
+                  icon: Icon(LineIcons.userSlash, color: ThemaMain.pink)),
+            if (((provider.usuario?.adminTipo ?? 0) > 4 ||
+                    (provider.usuario?.adminTipo ?? 0) == -1) &&
+                provider.contacto?.id != null)
+              IconButton.filled(
+                  onPressed: () => Dialogs.showMorph(
+                      title: "Tip",
+                      description: (provider.contacto?.tip) == 1
+                          ? "¿Eliminar tip de este contacto?"
+                          : "¿Marcar este contacto como tip?",
+                      loadingTitle: "Procesando...",
+                      onAcceptPressed: (context) async {
+                        var tempContacto = provider.contacto!.copyWith(
+                            tip: (provider.contacto?.tip == 1) ? 0 : 1,
+                            pendiente: 1);
+                        await ContactoController.update(tempContacto);
+                        provider.contacto = tempContacto;
+                        showToast("Tip actualizado");
+                      }),
+                  icon: Icon(LineIcons.handHoldingHeart,
+                      color: (provider.contacto?.tip == 1)
+                          ? ThemaMain.yellow
+                          : ThemaMain.background),
+                  iconSize: 18.sp)
+          ])
         ]);
   }
 }

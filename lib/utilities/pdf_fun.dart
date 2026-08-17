@@ -105,7 +105,7 @@ class PDFFun {
                               minWith: 25.w),
                           cell(
                               pw.Text(
-                                  "${e.nombreCompleto ?? "Sin nombre"}\n${e.domicilio ?? "Sin Domicilio"}",
+                                  "${e.nombreCompleto ?? "Sin nombre"}\n${e.domicilio?.substring(e.domicilio!.toLowerCase().indexOf("colonia").clamp(0, e.domicilio!.length)) ?? "Sin domicilio"}",
                                   style: pw.TextStyle(
                                       fontSize: 14.sp,
                                       fontStyle: e.nombreCompleto != null
@@ -163,7 +163,13 @@ class PDFFun {
                                       ? null
                                       : pw.FontStyle.italic))),
                           cell(
-                              pw.Text("", style: pw.TextStyle(fontSize: 13.sp)))
+                               pw.Text(e.tip == 1 ?"Si":"No",
+                                  textAlign: pw.TextAlign.center,
+                                  style: pw.TextStyle(
+                                      fontSize: 13.sp,
+                                      fontWeight: e.tip == 1 ? pw.FontWeight.bold: pw.FontWeight.normal,
+                                      color: e.tip == 1 ? PdfColors.green: PdfColors.red))
+                              )
                         ]);
                       })
                     ])

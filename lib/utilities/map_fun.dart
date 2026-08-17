@@ -194,6 +194,7 @@ class MapFun {
                     tipoFecha: null,
                     estado: null,
                     estadoFecha: null,
+                    empleadoId: provider.usuario!.empleadoId,
                     foto: null,
                     fotoFecha: null,
                     fotoReferencia: null,

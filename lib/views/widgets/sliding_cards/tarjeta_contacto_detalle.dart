@@ -57,8 +57,9 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
     final provider = Provider.of<MainProvider>(context);
     return bd.Badge(
         badgeAnimation: bd.BadgeAnimation.rotation(),
-        position: bd.BadgePosition.topEnd(end: 0, top: -12),
-        showBadge: (widget.contacto?.zonas.isNotEmpty ?? false) &&
+        position: bd.BadgePosition.topEnd(end: 0, top: -10),
+        showBadge: ((widget.contacto?.zonas.isNotEmpty ?? false) ||
+                (widget.contacto?.tip == 1)) &&
             provider.contacto?.id != null,
         badgeStyle: bd.BadgeStyle(badgeColor: Colors.transparent),
         badgeContent: Container(
@@ -66,8 +67,8 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
             decoration: BoxDecoration(
                 color: ThemaMain.darkBlue,
                 borderRadius: BorderRadius.circular(borderRadius)),
-            child: Row(mainAxisSize: MainAxisSize.min, spacing: 2.w, children: [
-              if (kDebugMode)
+            child: Row(mainAxisSize: MainAxisSize.min, spacing: 1.w, children: [
+              if (widget.contacto?.tip == 1)
                 GestureDetector(
                     onTap: () {
                       showToast("Este contacto fue un tip");
@@ -75,24 +76,25 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                     child: Padding(
                         padding: EdgeInsets.all(6.sp),
                         child: Icon(LineIcons.handHoldingHeart,
-                            color: ThemaMain.pink, size: 20.sp))),
-              GestureDetector(
-                  onTap: () => showToast(
-                      "Este contacto tiene zonas ${widget.contacto?.zonas.toList()}"),
-                  child: Text(
-                      widget.contacto?.zonas.isNotEmpty ?? false
-                          ? widget.contacto?.zonas
-                                  .map((e) => provider.zonas
-                                      .firstWhere((z) => z.id == e)
-                                      .nombre)
-                                  .join(", ") ??
-                              "Sin Zona"
-                          : "Sin Zona",
-                      style: TextStyle(
-                          fontSize: 14.sp,
-                          fontWeight: FontWeight.bold,
-                          color: ThemaMain.background),
-                      overflow: TextOverflow.ellipsis))
+                            color: ThemaMain.pink, size: 17.sp))),
+              if (widget.contacto?.zonas.isNotEmpty ?? false)
+                GestureDetector(
+                    onTap: () => showToast(
+                        "Este contacto tiene zonas ${widget.contacto?.zonas.toList()}"),
+                    child: Text(
+                        widget.contacto?.zonas.isNotEmpty ?? false
+                            ? widget.contacto?.zonas
+                                    .map((e) => provider.zonas
+                                        .firstWhere((z) => z.id == e)
+                                        .nombre)
+                                    .join(", ") ??
+                                "Sin Zona"
+                            : "Sin Zona",
+                        style: TextStyle(
+                            fontSize: 13.sp,
+                            fontWeight: FontWeight.bold,
+                            color: ThemaMain.background),
+                        overflow: TextOverflow.ellipsis))
             ])),
         child: Card(
             color: ThemaMain.dialogbackground,

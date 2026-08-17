@@ -3,6 +3,8 @@ import 'package:enrutador/utilities/preferences.dart';
 import 'package:enrutador/utilities/theme/theme_app.dart';
 import 'package:enrutador/utilities/theme/theme_color.dart';
 import 'package:flutter/material.dart';
+import 'package:input_quantity/input_quantity.dart';
+import 'package:line_icons/line_icons.dart';
 import 'package:sizer/sizer.dart';
 
 class DialogSetting extends StatefulWidget {
@@ -98,6 +100,30 @@ class _DialogSettingState extends State<DialogSetting> {
                 Preferences.zoomMark = value;
               });
             }),
+        const Divider(),
+        Text("Numero de contactos encontrados",
+            style: TextStyle(fontSize: 16.sp)),
+        Text(
+            "Cantidad máxima de contactos que se mostrarán en pantalla al realizar una búsqueda.",
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 14.sp)),
+        InputQty.int(
+            maxVal: 8,
+            onQtyChanged: (val) => setState(() {
+                  Preferences.contactosMax = val;
+                }),
+            initVal: Preferences.contactosMax,
+            minVal: 4,
+            qtyFormProps: QtyFormProps(
+                enableTyping: false,
+                style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold)),
+            decoration: QtyDecorationProps(
+                plusBtn: Icon(LineIcons.plusCircle, size: 22.sp),
+                minusBtn: Icon(LineIcons.minusCircle, size: 22.sp),
+                fillColor: ThemaMain.background,
+                isDense: true,
+                isBordered: false),
+            steps: 1),
         const Divider(),
         Text("Preferencias de red", style: TextStyle(fontSize: 16.sp)),
         Text(

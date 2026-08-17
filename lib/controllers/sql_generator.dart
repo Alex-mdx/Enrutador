@@ -1,3 +1,4 @@
+import 'package:enrutador/controllers/contacto_controller.dart';
 import 'package:enrutador/controllers/zonas_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart' as sql;
@@ -9,6 +10,9 @@ class SqlGenerator {
         add: "color", database: db, nombreDB: "zonas");
         await SqlGenerator.existColumna(
         add: "status", database: db, nombreDB: "zonas");
+var db1 = await ContactoController.database();
+        await SqlGenerator.existColumna(
+        add: "tip", database: db1, nombreDB: "contacto");
    
   }
 

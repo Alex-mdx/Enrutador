@@ -64,8 +64,8 @@ class _SearchWidgetState extends State<SearchWidget> {
     geoNamesSuggest.clear();
 
     try {
-      var coordenadas =
-          await PlusCodeFun.convert(buscarController.text, toShortFormat: false);
+      var coordenadas = await PlusCodeFun.convert(buscarController.text,
+          toShortFormat: false);
       log("${coordenadas}");
       var ps = PlusCodeFun.truncPlusCode(coordenadas);
       log("${ps.toJson()}");
@@ -155,20 +155,20 @@ class _SearchWidgetState extends State<SearchWidget> {
                             })),
                     decoration: InputDecoration(
                         fillColor: ThemaMain.second,
-                        suffixIcon: buscarController
-                                .text.removeAllWhitespace.isNotEmpty
-                            ? buscar
-                                ? LoadingAnimationWidget.inkDrop(
-                                    color: ThemaMain.primary, size: 20.sp)
-                                : IconButton.filled(
-                                    iconSize: 20.sp,
-                                    onPressed: () async => await send(provider)
-                                        .whenComplete(() => setState(() {
-                                              buscar = false;
-                                            })),
-                                    icon: Icon(Icons.send_rounded,
-                                        color: ThemaMain.green))
-                            : null,
+                        suffixIcon:
+                            buscarController.text.removeAllWhitespace.isNotEmpty
+                                ? buscar
+                                    ? LoadingAnimationWidget.inkDrop(
+                                        color: ThemaMain.primary, size: 20.sp)
+                                    : IconButton.filled(
+                                        iconSize: 20.sp,
+                                        onPressed: () async => await send(provider)
+                                            .whenComplete(() => setState(() {
+                                                  buscar = false;
+                                                })),
+                                        icon: Icon(Icons.send_rounded,
+                                            color: ThemaMain.green))
+                                : null,
                         prefixIcon: AnimatedCrossFade(
                             alignment: AlignmentGeometry.center,
                             firstChild: IconButton(
@@ -191,10 +191,10 @@ class _SearchWidgetState extends State<SearchWidget> {
                                 padding: EdgeInsets.only(left: 2.w, top: 1.h),
                                 child: Icon(Icons.search_rounded,
                                     size: 22.sp, color: ThemaMain.primary)),
-                            crossFadeState:
-                                buscarController.text.removeAllWhitespace.isNotEmpty
-                                    ? CrossFadeState.showFirst
-                                    : CrossFadeState.showSecond,
+                            crossFadeState: buscarController
+                                    .text.removeAllWhitespace.isNotEmpty
+                                ? CrossFadeState.showFirst
+                                : CrossFadeState.showSecond,
                             duration: Durations.medium1),
                         contentPadding:
                             EdgeInsets.symmetric(horizontal: 2.w, vertical: 1.h)),
@@ -252,7 +252,8 @@ class _SearchWidgetState extends State<SearchWidget> {
                     }
                   }))),
       FutureBuilder(
-          future: ContactoController.buscar(buscarController.text, 4),
+          future: ContactoController.buscar(
+              buscarController.text, Preferences.contactosMax),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               return Container(

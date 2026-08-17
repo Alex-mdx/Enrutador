@@ -46,10 +46,11 @@ Future<void> main() async {
   const InitializationSettings initializationSettings =
       InitializationSettings(android: initializationSettingsAndroid);
 
-  await flutterLocalNotificationsPlugin.initialize(settings: initializationSettings,
+  await flutterLocalNotificationsPlugin.initialize(
+      settings: initializationSettings,
       onDidReceiveNotificationResponse: (NotificationResponse response) {
-    debugPrint("Notificación presionada con payload: ${response.payload}");
-  });
+        debugPrint("Notificación presionada con payload: ${response.payload}");
+      });
 
   // Obtener implementación de Android del plugin
   final AndroidFlutterLocalNotificationsPlugin? androidImplementation =

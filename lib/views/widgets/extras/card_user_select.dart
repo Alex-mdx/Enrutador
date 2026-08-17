@@ -14,8 +14,12 @@ import '../../../utilities/theme/theme_color.dart';
 class CardUserSelect extends StatefulWidget {
   final Function(UsuarioModel) onTap;
   final String? empleadoSelected;
+  final bool onlyOwn;
   const CardUserSelect(
-      {super.key, required this.onTap, required this.empleadoSelected});
+      {super.key,
+      required this.onTap,
+      required this.empleadoSelected,
+      this.onlyOwn = false});
 
   @override
   State<CardUserSelect> createState() => _CardUserSelectState();
@@ -89,8 +93,9 @@ class _CardUserSelectState extends State<CardUserSelect> {
                                   e: e,
                                   width: 25.w,
                                   onTap: () => setState(() {
-                                        if (e.empleadoId ==
-                                            provider.usuario?.empleadoId) {
+                                        if (!widget.onlyOwn &&
+                                            e.empleadoId ==
+                                                provider.usuario?.empleadoId) {
                                           showToast(
                                               "No puedes tomar tu propio contacto");
                                           return;

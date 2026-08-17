@@ -44,7 +44,8 @@ class Preferences {
   static set zonas(List<String> value) =>
       _preferences?.setStringList('zonas', value);
 
-  static bool get zonasDibujar => _preferences?.getBool('zonasDibujar') ?? false;
+  static bool get zonasDibujar =>
+      _preferences?.getBool('zonasDibujar') ?? false;
   static set zonasDibujar(bool value) =>
       _preferences?.setBool('zonasDibujar', value);
 
@@ -58,13 +59,23 @@ class Preferences {
   static set shareText(List<String> value) =>
       _preferences?.setStringList('shareText', value);
 
-  static bool get removeVacios => _preferences?.getBool('removeVacios') ?? false;
+  static bool get removeVacios =>
+      _preferences?.getBool('removeVacios') ?? false;
   static set removeVacios(bool value) =>
       _preferences?.setBool('removeVacios', value);
 
   static double get zoomMark => _preferences?.getDouble('zoomMark') ?? 15;
   static set zoomMark(double value) =>
       _preferences?.setDouble('zoomMark', value);
+
+  static int get contactosMax => _preferences?.getInt('contactosMax') ?? 4;
+  static set contactosMax(int value) =>
+      _preferences?.setInt('contactosMax', value);
+
+  static List<String> get tipsReaded =>
+      _preferences?.getStringList('tipsReaded') ?? <String>[];
+  static set tipsReaded(List<String> value) =>
+      _preferences?.setStringList('tipsReaded', value);
 
   //*Filtros
   static int get tiposFilt => _preferences?.getInt('tiposFilt') ?? 0;
@@ -81,7 +92,8 @@ class Preferences {
   static set vaciosFilt(bool value) =>
       _preferences?.setBool('vaciosFilt', value);
 
-  static bool get pendientesFilt => _preferences?.getBool('pendientesFilt') ?? false;
+  static bool get pendientesFilt =>
+      _preferences?.getBool('pendientesFilt') ?? false;
   static set pendientesFilt(bool value) =>
       _preferences?.setBool('pendientesFilt', value);
 
@@ -121,8 +133,11 @@ class Preferences {
   static set grid(bool value) => _preferences?.setBool('grid', value);
 
   static double get ladaScroll => _preferences?.getDouble('ladaScroll') ?? 0;
-  static set ladaScroll(double value) => _preferences?.setDouble('ladaScroll', value);
+  static set ladaScroll(double value) =>
+      _preferences?.setDouble('ladaScroll', value);
 
-  static bool get propiosPendientes => _preferences?.getBool('propiosPendientes') ?? true;
-  static set propiosPendientes(bool value) => _preferences?.setBool('propiosPendientes', value);
+  static bool get propiosPendientes =>
+      _preferences?.getBool('propiosPendientes') ?? true;
+  static set propiosPendientes(bool value) =>
+      _preferences?.setBool('propiosPendientes', value);
 }

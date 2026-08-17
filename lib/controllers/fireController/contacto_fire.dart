@@ -129,4 +129,33 @@ class ContactoFire {
       return false;
     }
   }
+
+  static Future<bool> updateNullEmpleado({String? empleadoId}) async {
+    try {
+      int processedCount = 0;
+      const int limit = 30;
+
+      final querySnapshot = await db
+          .collection(name)
+          .where("empleado_id", isNull: true)
+          .limit(limit)
+          .get(options)
+          .timeout(const Duration(seconds: 120));
+
+      WriteBatch batch = db.batch();
+      for (var doc in querySnapshot.docs) {
+        batch.update(
+            db.collection(name).doc(doc.id), {"empleado_id": empleadoId});
+      }
+
+      await batch.commit().timeout(const Duration(seconds: firebaseTimeout));
+      processedCount += querySnapshot.docs.length;
+      showToast(
+          "Se actualizaron $processedCount contactos que tenían empleado_id nulo");
+      return true;
+    } catch (e) {
+      showToast("Error al actualizar empleado_id nulo en lotes: $e");
+      return false;
+    }
+  }
 }

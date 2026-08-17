@@ -35,7 +35,7 @@ class DialogDownload extends StatefulWidget {
 
 class _DialogDownloadState extends State<DialogDownload> {
   TextEditingController buscador = TextEditingController();
-  List<int> tips = [];
+  List<String> tips = [];
   List<ContactoModelo> selects = [];
   List<ReferenciaModelo> referencias = [];
   double progress = 0;
@@ -48,12 +48,104 @@ class _DialogDownloadState extends State<DialogDownload> {
 
   int maxValue = 50;
   int currentValue = 50;
+
+  Future<void> submit() async {
+    if (!carga) {
+      setState(() {
+        carga = true;
+      });
+      selects.clear();
+      List<Filter>? tempFilter;
+      String texto = buscador.text;
+      try {
+        // Si no es un número, solo buscamos por nombre
+        if (texto.isNotEmpty) {
+          tempFilter ??= [];
+          tempFilter.add(Filter.and(
+              Filter("nombre_completo", isGreaterThanOrEqualTo: texto),
+              Filter("nombre_completo", isLessThanOrEqualTo: '$texto\uf8ff')));
+        }
+
+        if (tipos.isNotEmpty) {
+          tempFilter ??= [];
+          tempFilter
+              .add(Filter("tipo", whereIn: tipos.map((e) => int.parse(e))));
+        }
+        if (estados.isNotEmpty) {
+          tempFilter ??= [];
+          tempFilter
+              .add(Filter("estado", whereIn: estados.map((e) => int.parse(e))));
+        }
+        if (zonas.isNotEmpty) {
+          tempFilter ??= [];
+          tempFilter
+              .add(Filter("zona", whereIn: zonas.map((e) => int.parse(e))));
+        }
+
+        var data = await ContactoFire.getItemPersonalizado(
+            id: null, filters: tempFilter, max: currentValue);
+        List<ReferenciaModelo> refTemp = [];
+        for (var element in data) {
+          var ref = await ReferenciaFire.getItemRId(id: element.id);
+          if (ref != null) {
+            refTemp.add(ref);
+          }
+        }
+
+        setState(() {
+          selects = data;
+          referencias = refTemp;
+          carga = false;
+        });
+        var refStr = referencias
+            .where((e) =>
+                !selects.map((r) => r.id).toList().contains(e.idRForenea))
+            .map((e) => e.idRForenea)
+            .toList();
+        log("refStr: ${refStr}");
+        if (refStr.isNotEmpty) {
+          await Dialogs.showMorph(
+              title: "Contactos Referenciados",
+              description:
+                  "Se encontraron ${referencias.length} contactos referenciados que no estan en la lista\n¿Deseas agregar estos contactos a la lista para descargar?\nEsta operacion agregara contactos a la lista",
+              loadingTitle: "",
+              onAcceptPressed: (context) async {
+                List<Filter> filter = [];
+                filter.add(Filter("id", whereIn: refStr));
+                try {
+                  var temp = await ContactoFire.getItemPersonalizado(
+                      id: null, filters: filter, max: currentValue);
+
+                  setState(() {
+                    selects.addAll(temp);
+                  });
+                } catch (e) {
+                  var str = await TransFun.trad(e.toString());
+                  showToast("Error: $str");
+                  log("Error: ${e.toString()}");
+                }
+              });
+        }
+      } catch (e) {
+        var str = await TransFun.trad(e.toString());
+        showToast("Error: $str");
+        log("Error: ${e.toString()}");
+        setState(() {
+          carga = false;
+        });
+      }
+    } else {
+      showToast("Espera a que termine la peticion");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<MainProvider>(context);
     return Dialog(
         child: Column(mainAxisSize: MainAxisSize.min, children: [
       AppBar(
+          toolbarHeight: 6.h,
           title: InkWell(
               onDoubleTap: () async {
                 int items = await ContactoFire.countItems(filters: []);
@@ -102,7 +194,7 @@ class _DialogDownloadState extends State<DialogDownload> {
         TextFormField(
             controller: buscador,
             enabled: !carga,
-            onEditingComplete: () {},
+            onFieldSubmitted: (value) async => await submit(),
             style: TextStyle(fontSize: 16.sp),
             decoration: InputDecoration(
                 fillColor: ThemaMain.second,
@@ -114,111 +206,15 @@ class _DialogDownloadState extends State<DialogDownload> {
                         fontSize: 15.sp,
                         color: ThemaMain.darkGrey)),
                 suffixIcon: IconButton.filledTonal(
-                    iconSize: 22.sp,
-                    onPressed: () async {
-                      if (!carga) {
-                        setState(() {
-                          carga = true;
-                        });
-                        selects.clear();
-                        List<Filter>? tempFilter;
-                        String texto = buscador.text;
-                        try {
-                          // Si no es un número, solo buscamos por nombre
-                          if (texto.isNotEmpty) {
-                            tempFilter ??= [];
-                            tempFilter.add(Filter.and(
-                                Filter("nombre_completo",
-                                    isGreaterThanOrEqualTo: texto),
-                                Filter("nombre_completo",
-                                    isLessThanOrEqualTo: '$texto\uf8ff')));
-                          }
-
-                          if (tipos.isNotEmpty) {
-                            tempFilter ??= [];
-                            tempFilter.add(Filter("tipo",
-                                whereIn: tipos.map((e) => int.parse(e))));
-                          }
-                          if (estados.isNotEmpty) {
-                            tempFilter ??= [];
-                            tempFilter.add(Filter("estado",
-                                whereIn: estados.map((e) => int.parse(e))));
-                          }
-                          if (zonas.isNotEmpty) {
-                            tempFilter ??= [];
-                            tempFilter.add(Filter("zona",
-                                whereIn: zonas.map((e) => int.parse(e))));
-                          }
-
-                          var data = await ContactoFire.getItemPersonalizado(
-                              id: null, filters: tempFilter, max: currentValue);
-                          List<ReferenciaModelo> refTemp = [];
-                          for (var element in data) {
-                            var ref =
-                                await ReferenciaFire.getItemRId(id: element.id);
-                            if (ref != null) {
-                              refTemp.add(ref);
-                            }
-                          }
-
-                          setState(() {
-                            selects = data;
-                            referencias = refTemp;
-                            carga = false;
-                          });
-                          var refStr = referencias
-                              .where((e) => !selects
-                                  .map((r) => r.id)
-                                  .toList()
-                                  .contains(e.idRForenea))
-                              .map((e) => e.idRForenea)
-                              .toList();
-                          log("refStr: ${refStr}");
-                          if (refStr.isNotEmpty) {
-                            await Dialogs.showMorph(
-                                title: "Contactos Referenciados",
-                                description:
-                                    "Se encontraron ${referencias.length} contactos referenciados que no estan en la lista\n¿Deseas agregar estos contactos a la lista para descargar?\nEsta operacion agregara contactos a la lista",
-                                loadingTitle: "",
-                                onAcceptPressed: (context) async {
-                                  List<Filter> filter = [];
-                                  filter.add(Filter("id", whereIn: refStr));
-                                  try {
-                                    var temp =
-                                        await ContactoFire.getItemPersonalizado(
-                                            id: null,
-                                            filters: filter,
-                                            max: currentValue);
-
-                                    setState(() {
-                                      selects.addAll(temp);
-                                    });
-                                  } catch (e) {
-                                    var str = await TransFun.trad(e.toString());
-                                    showToast("Error: $str");
-                                    log("Error: ${e.toString()}");
-                                  }
-                                });
-                          }
-                        } catch (e) {
-                          var str = await TransFun.trad(e.toString());
-                          showToast("Error: $str");
-                          log("Error: ${e.toString()}");
-                          setState(() {
-                            carga = false;
-                          });
-                        }
-                      } else {
-                        showToast("Espera a que termine la peticion");
-                      }
-                    },
+                    iconSize: 20.sp,
+                    onPressed: () async => await submit(),
                     icon: Icon(Icons.youtube_searched_for,
                         color: carga ? ThemaMain.darkGrey : ThemaMain.green)),
                 contentPadding:
-                    EdgeInsets.symmetric(horizontal: 2.w, vertical: 1.h))),
+                    EdgeInsets.symmetric(horizontal: 2.w, vertical: .5.h))),
         AnimatedContainer(
             constraints:
-                BoxConstraints(maxHeight: selects.isNotEmpty ? 65.h : 5.h),
+                BoxConstraints(maxHeight: selects.isNotEmpty ? 64.h : 5.h),
             duration: Durations.medium3,
             decoration: BoxDecoration(
                 color: ThemaMain.grey,
@@ -235,6 +231,7 @@ class _DialogDownloadState extends State<DialogDownload> {
                         trackVisibility: true,
                         thickness: 1.w,
                         child: ListView.builder(
+                            padding: EdgeInsets.zero,
                             itemCount: selects.length,
                             shrinkWrap: true,
                             itemBuilder: (context, index) {
@@ -279,21 +276,33 @@ class _DialogDownloadState extends State<DialogDownload> {
                                         naviPc: true,
                                         selectedVisible: true,
                                         selected: tips
-                                            .where(
-                                                (e) => e == (contacto.id ?? -1))
+                                            .where((e) =>
+                                                e.split("-")[0] ==
+                                                    (contacto.id ?? -1)
+                                                        .toString() &&
+                                                e.split("-")[1] ==
+                                                    contacto.empleadoId)
                                             .isNotEmpty,
                                         onSelected: (p0) {
                                           setState(() {
                                             if (p0 == true) {
-                                              tips.add(contacto.id ?? -1);
+                                              tips.add(
+                                                  "${contacto.id}-${contacto.empleadoId}");
                                             } else {
                                               tips.removeWhere((e) =>
-                                                  e == (contacto.id ?? -1));
+                                                  e ==
+                                                  "${contacto.id}-${contacto.empleadoId}");
                                             }
                                           });
+                                          log("tips ${tips.map((e) => e).toList()}");
                                         })),
                                 if (selects.length - 1 == index)
                                   TextButton.icon(
+                                      style: ButtonStyle(
+                                          padding: WidgetStatePropertyAll(
+                                              EdgeInsets.symmetric(
+                                                  horizontal: 1.w,
+                                                  vertical: 0))),
                                       icon: Icon(LineIcons.eraser,
                                           size: 18.sp, color: ThemaMain.red),
                                       onPressed: () => setState(() {
@@ -312,7 +321,7 @@ class _DialogDownloadState extends State<DialogDownload> {
           LinearProgressIndicator(
               value: (selects.isNotEmpty ? progress : 0) /
                   (selects.length + referencias.length),
-              minHeight: .6.h,
+              minHeight: .5.h,
               valueColor: AlwaysStoppedAnimation(ThemaMain.green)),
         Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
           if (tips.isNotEmpty)

@@ -185,7 +185,7 @@ class MainProvider with ChangeNotifier implements TickerProvider {
     estados = await EstadoController.getItems();
     roles = await RolesController.getAll();
     zonas = await ZonasController.getAll();
-    SqlGenerator.aads();
+    await SqlGenerator.aads();
     if (internet) {
       var temp = await UsuarioFire.getItem(
           table: "uuid", query: FirebaseAuth.instance.currentUser?.uid ?? "");

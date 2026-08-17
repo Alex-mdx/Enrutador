@@ -1,17 +1,21 @@
+import 'package:enrutador/models/tip_model.dart';
 import 'package:enrutador/models/usuario_model.dart';
 import 'package:enrutador/utilities/services/navigation_services.dart';
+import 'package:enrutador/utilities/textos.dart';
 import 'package:enrutador/utilities/theme/theme_color.dart';
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
+import 'package:oktoast/oktoast.dart';
 import 'package:provider/provider.dart';
 import 'package:rive_animated_icon/rive_animated_icon.dart';
 import 'package:sizer/sizer.dart';
 
+import '../../controllers/fireController/tip_fire.dart';
 import '../../utilities/main_provider.dart';
 import '../widgets/extras/card_user_select.dart';
 
 class DialogSendTip extends StatefulWidget {
-  final List<int> tips;
+  final List<String> tips;
   final UsuarioModel user;
   const DialogSendTip({super.key, required this.tips, required this.user});
 
@@ -20,6 +24,7 @@ class DialogSendTip extends StatefulWidget {
 }
 
 class _DialogSendTipState extends State<DialogSendTip> {
+  bool _isLoading = false;
   late String currentTip;
   String? assignedTo;
   TextEditingController controller = TextEditingController();
@@ -35,7 +40,9 @@ class _DialogSendTipState extends State<DialogSendTip> {
     final provider = Provider.of<MainProvider>(context);
     return Dialog(
         child: Column(mainAxisSize: MainAxisSize.min, children: [
-      AppBar(title: Text("Generar Tips", style: TextStyle(fontSize: 16.sp))),
+      AppBar(
+          title: Text("Generar Tips", style: TextStyle(fontSize: 16.sp)),
+          toolbarHeight: 6.h),
       Column(children: [
         Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -61,19 +68,18 @@ class _DialogSendTipState extends State<DialogSendTip> {
               onPressed: () => showDialog(
                   context: context,
                   builder: (context) => Dialog(
-                        child: CardUserSelect(
-                            empleadoSelected: currentTip,
-                            onTap: (e) {
-                              setState(() {
-                                currentTip = e.empleadoId!;
-                              });
-                              Navigation.pop();
-                            }),
-                      )),
+                      child: CardUserSelect(
+                          empleadoSelected: currentTip,
+                          onTap: (e) {
+                            setState(() {
+                              currentTip = e.empleadoId!;
+                            });
+                            Navigation.pop();
+                          }))),
               icon: Icon(LineIcons.helpingHands,
                   size: 20.sp, color: ThemaMain.green),
               label: Text(
-                  "Creado por: ${currentTip == provider.usuario?.empleadoId.toString() ? "Ti" : currentTip}",
+                  "Creado por: ${currentTip == provider.usuario?.empleadoId ? "Ti" : currentTip}",
                   style: TextStyle(fontSize: 14.sp))),
           ElevatedButton.icon(
               style: ButtonStyle(
@@ -83,17 +89,19 @@ class _DialogSendTipState extends State<DialogSendTip> {
                   context: context,
                   builder: (context) => Dialog(
                       child: CardUserSelect(
-                          empleadoSelected: assignedTo,
+                          empleadoSelected:
+                              assignedTo ?? provider.usuario?.empleadoId,
                           onTap: (e) {
                             setState(() {
                               assignedTo = e.empleadoId;
                             });
                             Navigation.pop();
-                          }))),
+                          },
+                          onlyOwn: true))),
               icon: Icon(LineIcons.handHoldingHeart,
                   size: 20.sp, color: ThemaMain.pink),
               label: Text(
-                  "Asignado a: ${assignedTo == provider.usuario?.empleadoId.toString() ? "Ti mismo" : assignedTo ?? "Nadie"}",
+                  "Asignado a: ${assignedTo == provider.usuario?.empleadoId ? "Ti mismo" : assignedTo ?? "Nadie"}",
                   style: TextStyle(fontSize: 14.sp)))
         ]),
         Padding(
@@ -109,8 +117,44 @@ class _DialogSendTipState extends State<DialogSendTip> {
                     contentPadding:
                         EdgeInsets.symmetric(horizontal: 1.w, vertical: 1.w)))),
         ElevatedButton(
-            onPressed: () {},
-            child: Text("Asignar Tip", style: TextStyle(fontSize: 15.sp)))
+            onPressed: () async {
+              if (assignedTo == null) {
+                showToast("Debes asignar un tip a alguien");
+                return;
+              }
+              setState(() {
+                _isLoading = true;
+              });
+
+              await Future.delayed(const Duration(seconds: 2), () async {
+                setState(() {
+                  _isLoading = false;
+                });
+              });
+
+              var tipModel = TipModel(
+                  uuid: Textos.randomWord(10),
+                  contactosIds: widget.tips,
+                  empleadoCreado: provider.usuario!.empleadoId!.toString(),
+                  empleadoBy: currentTip,
+                  empleadoTo: assignedTo!,
+                  contexto: controller.text,
+                  abierto: 1,
+                  estadoTip: 1,
+                  fechaCreacion: DateTime.now());
+              var result = await TipFire.sendItem(data: tipModel);
+              if (result) {
+                showToast("Tip enviado correctamente");
+                //Navigation.pop();
+              } else {
+                showToast("Error al enviar tip");
+              }
+            },
+            child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 200),
+                child: _isLoading
+                    ? const CircularProgressIndicator()
+                    : Text("Asignar Tip", style: TextStyle(fontSize: 15.sp))))
       ])
     ]));
   }

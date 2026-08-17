@@ -41,7 +41,7 @@ class FireConstants {
                     sqlContacto.empleadoEstado == empleado) &&
                 (sqlContacto.estado != null && sqlContacto.estado != -1))
             ? empleado
-            : sqlContacto.empleadoEstado,
+            : sqlContacto.empleadoEstado,empleadoId: empleado,
         aceptadoEmpleado: empleado);
     debugPrint("empleadoEstado: ${data.empleadoEstado}");
     var result = await ContactoFire.sendItem(
@@ -88,7 +88,7 @@ class FireConstants {
                     sqlContacto.empleadoEstado == empleado) &&
                 (sqlContacto.estado != null && sqlContacto.estado != -1))
             ? empleado
-            : sqlContacto.empleadoEstado,
+            : sqlContacto.empleadoEstado,empleadoId: empleado,
         aceptadoEmpleado: empleado);
     debugPrint("empleadoEstado: ${data.empleadoEstado}");
     referencia = referencia.map((e) => e.copyWith(estatus: 1)).toList();

@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../utilities/textos.dart';
+
 class TipModel {
-  final int id;
   final String uuid;
+  final List<String> contactosIds;
   final String empleadoCreado;
   final String empleadoBy;
   final String empleadoTo;
@@ -15,22 +17,22 @@ class TipModel {
   final DateTime? fechaCerrado;
 
   TipModel(
-      {required this.id,
-      required this.uuid,
+      {required this.uuid,
+      required this.contactosIds,
       required this.empleadoCreado,
       required this.empleadoBy,
       required this.empleadoTo,
       required this.contexto,
-      required this.respuesta,
+      this.respuesta,
       required this.abierto,
       required this.estadoTip,
       required this.fechaCreacion,
-      required this.fechaUpdate,
-      required this.fechaCerrado});
+      this.fechaUpdate,
+      this.fechaCerrado});
 
   TipModel copyWith(
-          {int? id,
-          String? uuid,
+          {String? uuid,
+          List<String>? contactosIds,
           String? empleadoCreado,
           String? empleadoBy,
           String? empleadoTo,
@@ -42,8 +44,8 @@ class TipModel {
           DateTime? fechaUpdate,
           DateTime? fechaCerrado}) =>
       TipModel(
-          id: id ?? this.id,
           uuid: uuid ?? this.uuid,
+          contactosIds: contactosIds ?? this.contactosIds,
           empleadoCreado: empleadoCreado ?? this.empleadoCreado,
           empleadoBy: empleadoBy ?? this.empleadoBy,
           empleadoTo: empleadoTo ?? this.empleadoTo,
@@ -55,8 +57,10 @@ class TipModel {
           fechaUpdate: fechaUpdate ?? this.fechaUpdate,
           fechaCerrado: fechaCerrado ?? this.fechaCerrado);
   factory TipModel.fromJson(Map<String, dynamic> json) => TipModel(
-      id: json["id"],
       uuid: json["uuid"],
+      contactosIds: json["contactos_ids"] == null
+          ? []
+          : List<String>.from(json["contactos_ids"]),
       empleadoCreado: json["empleado_creado"],
       empleadoBy: json["empleado_by"],
       empleadoTo: json["empleado_to"],
@@ -64,13 +68,13 @@ class TipModel {
       respuesta: json["respuesta"],
       abierto: json["abierto"],
       estadoTip: json["estado_tip"],
-      fechaCreacion: DateTime.parse(json["fecha_creacion"]),
-      fechaUpdate: DateTime.parse(json["fecha_update"]),
-      fechaCerrado: DateTime.parse(json["fecha_cerrado"]));
+      fechaCreacion: Textos.parseoDateFire(json["fecha_creacion"])!,
+      fechaUpdate: Textos.parseoDateFire(json["fecha_update"]),
+      fechaCerrado: Textos.parseoDateFire(json["fecha_cerrado"]));
 
   Map<String, dynamic> toFire() => {
-        "id": id,
         "uuid": uuid,
+        "contactos_ids": contactosIds.map((e) => e).toList(),
         "empleado_creado": empleadoCreado,
         "empleado_by": empleadoBy,
         "empleado_to": empleadoTo,

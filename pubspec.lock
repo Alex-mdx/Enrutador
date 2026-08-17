@@ -241,14 +241,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.4.1"
-  chat_bubbles:
-    dependency: "direct main"
-    description:
-      name: chat_bubbles
-      sha256: "1a75f3bda0425c1dfac56fa829da7e3e5cd43b9d06e75458a8e01b4a5a43a265"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.10.1"
   checked_yaml:
     dependency: transitive
     description:
@@ -265,14 +257,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "8.7.0"
-  circle_nav_bar:
-    dependency: "direct main"
-    description:
-      name: circle_nav_bar
-      sha256: "322b35143fedec52f744e6ce6eea5468c9995ece75a50df7516c7324871226eb"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.2.0"
   cli_config:
     dependency: transitive
     description:
@@ -393,14 +377,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.15.1"
-  crop_your_image:
-    dependency: "direct main"
-    description:
-      name: crop_your_image
-      sha256: "14c8977b11a009dc5e73e0f6522970f93363e38183f1b2ffefe1676dc9c3f49d"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.0.0"
   cross_file:
     dependency: transitive
     description:
@@ -2258,14 +2234,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.2.1"
-  weather:
-    dependency: "direct main"
-    description:
-      name: weather
-      sha256: "7d49931907242b2ae13f772ff9a721c51d54944f46e527ae41de68cb5c971267"
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.2.1"
   web:
     dependency: transitive
     description:

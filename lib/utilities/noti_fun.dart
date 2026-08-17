@@ -1,10 +1,10 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class NotiFun {
-  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+  static final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
   Future<void> showNotification(
-      {int id = 0,
+      {
       required String title,
       required String body,
       String? payload}) async {
@@ -20,7 +20,7 @@ class NotiFun {
         NotificationDetails(android: androidDetails);
 
     await flutterLocalNotificationsPlugin.show(
-        id: id,
+        id: 0,
         title: title,
         body: body,
         notificationDetails: notificationDetails,
@@ -28,7 +28,7 @@ class NotiFun {
   }
 
 // Función global para enviar una notificación con barra de progreso
-  Future<void> showProgressNotification(
+  static Future<void> showProgressNotification(
       {int id = 1,
       required String title,
       required String body,
@@ -57,7 +57,7 @@ class NotiFun {
   }
 
 // Función global para enviar una notificación de texto largo expandible (Big Text Style)
-  Future<void> showBigTextNotification(
+  static Future<void> showBigTextNotification(
       {int id = 2,
       required String title,
       required String body,

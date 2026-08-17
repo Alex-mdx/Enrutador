@@ -1,13 +1,16 @@
 import 'dart:async';
+import 'package:enrutador/controllers/fireController/tip_fire.dart';
 import 'package:enrutador/utilities/main_provider.dart';
 import 'package:enrutador/utilities/permisos.dart';
 import 'package:enrutador/utilities/preferences.dart';
 import 'package:enrutador/utilities/services/dialog_services.dart';
+import 'package:enrutador/utilities/services/navigation_services.dart';
 import 'package:enrutador/utilities/theme/theme_color.dart';
 import 'package:enrutador/views/map_main.dart';
 import 'package:enrutador/views/widgets/map_widget/map_navigation.dart';
 import 'package:enrutador/views/widgets/map_widget/map_sliding.dart';
 import 'package:enrutador/views/widgets/search/search_widget.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_slider_drawer/flutter_slider_drawer.dart';
@@ -56,6 +59,17 @@ class _HomeViewState extends State<HomeView> {
                     toolbarHeight: 6.h,
                     title: Text("Enrutador", style: TextStyle(fontSize: 18.sp)),
                     actions: [
+                      IconButton.filled(
+                          iconSize: 20.sp,
+                          onPressed: () async =>
+                              await Navigation.pushNamed(route: "tipHome"),
+                          icon: Icon(
+                              Preferences.tipsReaded.isNotEmpty
+                                  ? Icons.notifications_active
+                                  : Icons.notifications,
+                              color: Preferences.tipsReaded.isNotEmpty
+                                  ? ThemaMain.yellow
+                                  : ThemaMain.dialogbackground)),
                       IconButton.filledTonal(
                           iconSize: 20.sp,
                           onPressed: () => showDialog(
@@ -94,14 +108,12 @@ class _HomeViewState extends State<HomeView> {
                     ]),
                 body: IgnorePointer(
                     ignoring:
-                        _sliderDrawerKey.currentState?.isDrawerOpen ??
-                            false,
+                        _sliderDrawerKey.currentState?.isDrawerOpen ?? false,
                     child: AnimatedOpacity(
-                        duration: Durations.medium1,
-                        opacity: (_sliderDrawerKey.currentState
-                                    ?.isDrawerOpen ??
+                        duration: Durations.short4,
+                        opacity: (_sliderDrawerKey.currentState?.isDrawerOpen ??
                                 false)
-                            ? .25
+                            ? .2
                             : 1,
                         child: PopScope(
                             canPop: false,
@@ -128,6 +140,7 @@ class Paginado extends StatefulWidget {
 class PaginadoState extends State<Paginado> {
   final LocationSettings locationSettings = Permisos.location();
   final AppLinks appLinks = AppLinks();
+  Timer? _notificationTimer;
   @override
   void initState() {
     super.initState();
@@ -140,10 +153,8 @@ class PaginadoState extends State<Paginado> {
                 result == ConnectivityResult.other) &&
             Preferences.redMobile) {
           isConnected = true;
-          break;
         } else if (result == ConnectivityResult.wifi && Preferences.redWifi) {
           isConnected = true;
-          break;
         }
       }
       widget.provider.internet = isConnected;
@@ -159,10 +170,13 @@ class PaginadoState extends State<Paginado> {
         widget.provider.animaMap.centerOnPoint(
             LatLng(widget.provider.local?.latitude ?? 0,
                 widget.provider.local?.longitude ?? 0),
-            duration: Duration(milliseconds: 150));
+            duration: Duration(milliseconds: 10));
       }
     });
     initDeepLinks();
+    if (kDebugMode) {
+      TipFire().notiTips(_notificationTimer, widget.provider);
+    }
   }
 
   Future<void> initDeepLinks() async {
@@ -178,6 +192,12 @@ class PaginadoState extends State<Paginado> {
   }
 
   @override
+  void dispose() {
+    _notificationTimer?.cancel();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Stack(children: [
       MapMain(),
@@ -189,8 +209,3 @@ class PaginadoState extends State<Paginado> {
     ]);
   }
 }
-
-/* BottomNavigationBarItem _buildBottomNavigationBarItem(
-    IconData icon, String label) {
-  return BottomNavigationBarItem(icon: Icon(icon, size: 22.sp), label: label);
-} */

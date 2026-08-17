@@ -47,7 +47,8 @@ class ContactoController {
           creado TEXT,
           modificado TEXT,
           uuid TEXT,
-          sincronizado INTEGER
+          sincronizado INTEGER,
+          tip INTEGER
       )""");
   }
 
@@ -236,7 +237,8 @@ class ContactoController {
           "numero",
           "otro_numero",
           "pendiente",
-          "creado"
+          "creado",
+          "tip"
         ],
         orderBy: buildItemsFilter(),
         limit: limit,

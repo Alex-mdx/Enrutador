@@ -26,7 +26,7 @@ class CardContactoWidget extends StatelessWidget {
   final bool selectedVisible;
   final bool? selected;
   final Function(bool?) onSelected;
-  final String? entrada;
+  final String entrada;
   const CardContactoWidget(
       {super.key,
       required this.contacto,
@@ -35,7 +35,7 @@ class CardContactoWidget extends StatelessWidget {
       required this.selectedVisible,
       this.selected,
       required this.onSelected,
-      this.entrada,
+      this.entrada = '',
       this.naviPc = true});
 
   @override

@@ -32,6 +32,7 @@ class ContactoModelo {
   String? empleadoOtroNumero;
   String? empleadoTipo;
   String? empleadoEstado;
+  int? tip;
   int? status;
   int? pendiente;
   String? aceptadoEmpleado;
@@ -70,6 +71,7 @@ class ContactoModelo {
       this.empleadoOtroNumero,
       this.empleadoTipo,
       this.empleadoEstado,
+      this.tip,
       this.status,
       this.creado,
       this.modificado});
@@ -107,6 +109,7 @@ class ContactoModelo {
           String? empleadoOtroNumero,
           String? empleadoTipo,
           String? empleadoEstado,
+          int? tip,
           int? status,
           DateTime? creado,
           DateTime? modificado}) =>
@@ -137,6 +140,7 @@ class ContactoModelo {
           empleadoOtroNumero: empleadoOtroNumero ?? this.empleadoOtroNumero,
           empleadoTipo: empleadoTipo ?? this.empleadoTipo,
           empleadoEstado: empleadoEstado ?? this.empleadoEstado,
+          tip: tip ?? this.tip,
           fotoReferencia: fotoReferencia ?? this.fotoReferencia,
           fotoReferenciaFecha: fotoReferenciaFecha ?? this.fotoReferenciaFecha,
           what3Words: what3Words ?? this.what3Words,
@@ -179,6 +183,7 @@ class ContactoModelo {
       empleadoEstado: json["empleado_estado"]?.toString(),
       what3Words: json["what_3_words"],
       pendiente: Parser.toInt(json["pendiente"]),
+      tip: Parser.toInt(json["tip"]),
       aceptadoEmpleado: json["aceptado_empleado"]?.toString(),
       empleadoId: json["empleado_id"]?.toString(),
       status: Parser.toInt(json["status"]) ?? 1,
@@ -223,6 +228,7 @@ class ContactoModelo {
         "what_3_words": what3Words,
         "empleado_id": empleadoId,
         "status": status ?? 1,
+        "tip": tip ?? 0,
         "pendiente": pendiente ?? 1,
         "aceptado_empleado": aceptadoEmpleado,
         "creado": creado == null ? null : Timestamp.fromDate(creado!),
@@ -272,6 +278,7 @@ class ContactoModelo {
         "empleado_estado": empleadoEstado,
         "what_3_words": what3Words,
         "empleado_id": empleadoId,
+        "tip": tip ?? 0,
         "status": status ?? 1,
         "pendiente": pendiente ?? 1,
         "aceptado_empleado": aceptadoEmpleado,

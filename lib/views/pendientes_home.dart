@@ -1,4 +1,4 @@
-import 'package:circle_nav_bar/circle_nav_bar.dart';
+/* import 'package:circle_nav_bar/circle_nav_bar.dart';
 import 'package:enrutador/controllers/referencias_controller.dart';
 import 'package:enrutador/models/nota_model.dart';
 import 'package:enrutador/models/referencia_model.dart';
@@ -136,3 +136,4 @@ class _PendientesHomeState extends State<PendientesHome> {
             ]));
   }
 }
+ */
