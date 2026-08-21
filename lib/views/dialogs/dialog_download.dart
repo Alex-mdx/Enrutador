@@ -59,29 +59,34 @@ class _DialogDownloadState extends State<DialogDownload> {
       String texto = buscador.text;
       try {
         // Si no es un número, solo buscamos por nombre
+        List<Filter> allFilters = [];
+
         if (texto.isNotEmpty) {
-          tempFilter ??= [];
-          tempFilter.add(Filter.and(
+          allFilters.add(Filter.and(
               Filter("nombre_completo", isGreaterThanOrEqualTo: texto),
               Filter("nombre_completo", isLessThanOrEqualTo: '$texto\uf8ff')));
         }
-
         if (tipos.isNotEmpty) {
-          tempFilter ??= [];
-          tempFilter
-              .add(Filter("tipo", whereIn: tipos.map((e) => int.parse(e))));
+          allFilters.add(
+              Filter("tipo", whereIn: tipos.map((e) => int.parse(e)).toList()));
         }
         if (estados.isNotEmpty) {
-          tempFilter ??= [];
-          tempFilter
-              .add(Filter("estado", whereIn: estados.map((e) => int.parse(e))));
+          allFilters.add(Filter("estado",
+              whereIn: estados.map((e) => int.parse(e)).toList()));
         }
         if (zonas.isNotEmpty) {
-          tempFilter ??= [];
-          tempFilter
-              .add(Filter("zona", whereIn: zonas.map((e) => int.parse(e))));
+          allFilters.add(Filter("zonas",
+              arrayContainsAny: zonas.map((e) => int.parse(e)).toList()));
         }
 
+        if (allFilters.isNotEmpty) {
+          Filter combined = allFilters.first;
+          for (int i = 1; i < allFilters.length; i++) {
+            combined = Filter.and(combined, allFilters[i]);
+          }
+          tempFilter = [combined];
+        }
+        log("tempFilter: ${tempFilter?.toList().map((e) => e.toJson())}");
         var data = await ContactoFire.getItemPersonalizado(
             id: null, filters: tempFilter, max: currentValue);
         List<ReferenciaModelo> refTemp = [];

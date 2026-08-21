@@ -57,7 +57,9 @@ class _HomeViewState extends State<HomeView> {
                         icon: Icon(Icons.menu,
                             color: ThemaMain.darkBlue, size: 20.sp)),
                     toolbarHeight: 6.h,
-                    title: Text("Enrutador", style: TextStyle(fontSize: 18.sp)),
+                    title: Text(
+                        "Enrutador${kDebugMode ? provider.internet : ""}",
+                        style: TextStyle(fontSize: 18.sp)),
                     actions: [
                       IconButton.filled(
                           iconSize: 20.sp,
@@ -174,8 +176,18 @@ class PaginadoState extends State<Paginado> {
       }
     });
     initDeepLinks();
-    if (kDebugMode) {
-      TipFire().notiTips(_notificationTimer, widget.provider);
+    if (_notificationTimer != null && _notificationTimer!.isActive) {
+      _notificationTimer!.cancel();
+      _notificationTimer = null;
+    } else {
+      _notificationTimer = Timer.periodic(const Duration(minutes: kDebugMode ? 1 : 5),
+          (timer) async {
+        if (widget.provider.internet) {
+          await TipFire.findTips(
+              empleadoId: widget.provider.usuario!.empleadoId!.toString(),
+              abierto: false);
+        }
+      });
     }
   }
 

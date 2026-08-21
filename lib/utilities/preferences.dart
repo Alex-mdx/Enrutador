@@ -49,6 +49,12 @@ class Preferences {
   static set zonasDibujar(bool value) =>
       _preferences?.setBool('zonasDibujar', value);
 
+  static int get tipVis => _preferences?.getInt('tipVis') ?? 0;
+  static set tipVis(int value) => _preferences?.setInt('tipVis', value);
+
+  static String get empleadoIdVis => _preferences?.getString('empleadoIdVis') ?? "";
+  static set empleadoIdVis(String value) => _preferences?.setString('empleadoIdVis', value);
+
   static bool get enviarDirectoNotas =>
       _preferences?.getBool('enviarDirectoNotas') ?? false;
   static set enviarDirectoNotas(bool value) =>

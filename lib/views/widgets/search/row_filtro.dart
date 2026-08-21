@@ -5,6 +5,7 @@ import 'package:enrutador/controllers/tipo_controller.dart';
 import 'package:enrutador/models/estado_model.dart';
 import 'package:enrutador/models/tipos_model.dart';
 import 'package:enrutador/utilities/main_provider.dart';
+import 'package:enrutador/utilities/preferences.dart';
 import 'package:enrutador/utilities/services/navigation_services.dart';
 import 'package:enrutador/views/widgets/list_estado_widget.dart';
 import 'package:enrutador/views/widgets/list_tipo_widget.dart';
@@ -244,6 +245,65 @@ class _RowFiltroState extends State<RowFiltro> {
               condicion: widget.zonas.isNotEmpty,
               delete: () => setState(() {
                     widget.updateData(widget.tipos, widget.estados, []);
+                    if (widget.press != null) {
+                      widget.press!();
+                    }
+                  })),
+          chips(
+              icono: LineIcons.bell,
+              cabeza: Preferences.tipVis == 0
+                  ? "Tips"
+                  : Preferences.tipVis == 1
+                      ? "Propios"
+                      : "Todos",
+              fun: () => showDialog(
+                  context: context,
+                  builder: (context) => Dialog(
+                          child:
+                              Column(mainAxisSize: MainAxisSize.min, children: [
+                        Text("Seleccion de visualizacion por tips",
+                            style: TextStyle(fontSize: 15.sp)),
+                        RadioGroup<int>(
+                            groupValue: Preferences.tipVis,
+                            onChanged: (value) {
+                              Preferences.tipVis = value!;
+                              if (widget.press != null) {
+                                widget.press!();
+                              }
+                              setState(() {});
+                              Navigation.pop();
+                            },
+                            child: Column(children: [
+                              RadioListTile<int>(
+                                  activeColor: ThemaMain.green,
+                                  value: 0,
+                                  dense: Preferences.tipVis != 0,
+                                  title: Text('Ninguno'),
+                                  subtitle: Text(
+                                      'Se esta visualizando todos los contactos'),
+                                  isThreeLine: true),
+                              RadioListTile<int>(
+                                  activeColor: ThemaMain.green,
+                                  value: 1,
+                                  dense: Preferences.tipVis != 1,
+                                  title: Text('Propios'),
+                                  subtitle: Text(
+                                      'Solo se mostrarán los contactos que sean tips asignados a usted'),
+                                  isThreeLine: true),
+                              RadioListTile<int>(
+                                  activeColor: ThemaMain.green,
+                                  value: 2,
+                                  dense: Preferences.tipVis != 2,
+                                  title: Text('Todos'),
+                                  subtitle: Text(
+                                      "Se mostraran todos los contactos que hayan sido tips"),
+                                  isThreeLine: true)
+                            ]))
+                      ]))),
+              colorprincipal: ThemaMain.yellow,
+              condicion: Preferences.tipVis != 0,
+              delete: () => setState(() {
+                    Preferences.tipVis = 0;
                     if (widget.press != null) {
                       widget.press!();
                     }

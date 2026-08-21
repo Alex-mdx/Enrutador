@@ -41,7 +41,7 @@ class _DialogZonaViewState extends State<DialogZonaView> {
   Widget build(BuildContext context) {
     return Dialog(
         child: Column(mainAxisSize: MainAxisSize.min, children: [
-      AppBar(
+      AppBar(toolbarHeight: 6.h,
           title: Text("Filtro de Zonas", style: TextStyle(fontSize: 16.sp)),
           actions: [
             ElevatedButton.icon(

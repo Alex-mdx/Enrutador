@@ -13,6 +13,9 @@ class SqlGenerator {
 var db1 = await ContactoController.database();
         await SqlGenerator.existColumna(
         add: "tip", database: db1, nombreDB: "contacto");
+                await SqlGenerator.existColumna(
+        add: "empleado_tip", database: db1, nombreDB: "contacto");
+
    
   }
 

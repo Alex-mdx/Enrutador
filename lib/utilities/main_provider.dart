@@ -12,6 +12,7 @@ import 'package:enrutador/models/estado_model.dart';
 import 'package:enrutador/models/roles_model.dart';
 import 'package:enrutador/models/tipos_model.dart';
 import 'package:enrutador/models/usuario_model.dart';
+import 'package:enrutador/utilities/preferences.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -196,5 +197,6 @@ class MainProvider with ChangeNotifier implements TickerProvider {
           FirebaseAuth.instance.currentUser?.uid ?? "");
       log("USUARIO: ${usuario?.toJson()}");
     }
+    Preferences.empleadoIdVis = usuario?.empleadoId ?? "";
   }
 }

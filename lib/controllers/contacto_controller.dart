@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:enrutador/controllers/referencias_controller.dart';
 import 'package:enrutador/models/contacto_model.dart';
 import 'package:enrutador/utilities/preferences.dart';
@@ -105,10 +107,13 @@ class ContactoController {
     return modelo == null ? null : ContactoModelo.fromJson(modelo);
   }
 
-  static Future<ContactoModelo?> getItemId({required int id}) async {
+  static Future<ContactoModelo?> getItemId(
+      {required int id, String? empleadoId}) async {
     final db = await database();
     final modelo = (await db.query(nombreDB,
-            where: "id = ?", whereArgs: [id], orderBy: "id DESC"))
+            where: "id = ? ${empleadoId == null ? "" : "AND empleado_id = ?"}",
+            whereArgs: empleadoId == null ? [id] : [id, empleadoId],
+            orderBy: "id DESC"))
         .firstOrNull;
 
     return modelo == null ? null : ContactoModelo.fromJson(modelo);
@@ -180,7 +185,15 @@ class ContactoController {
     /* if (zoom! < 15) {
       query = ["id", "latitud", "longitud"];
     } else { */
-    query = ["id", "latitud", "longitud", "tipo", "estado"];
+    query = [
+      "id",
+      "latitud",
+      "longitud",
+      "tipo",
+      "estado",
+      "empleado_tip",
+      "tip"
+    ];
     //}
     final modelo = (await db.query(nombreDB, columns: query));
     List<ContactoModelo> model = [];
@@ -199,8 +212,16 @@ class ContactoController {
             .where((element) =>
                 Preferences.status.contains(element.estado.toString()))
             .toList();
+    var newModelfiltro3 = Preferences.tipVis == 0
+        ? newModelfiltro2
+        : Preferences.tipVis == 1
+            ? newModelfiltro2
+                .where((element) =>
+                    Preferences.empleadoIdVis == element.empleadoTip)
+                .toList()
+            : newModelfiltro2.where((element) => element.tip == 1).toList();
 
-    return newModelfiltro2;
+    return newModelfiltro3;
   }
 
   static Future<List<ContactoModelo>> getAll() async {
@@ -238,6 +259,7 @@ class ContactoController {
           "otro_numero",
           "pendiente",
           "creado",
+          "empleado_tip",
           "tip"
         ],
         orderBy: buildItemsFilter(),
@@ -266,7 +288,7 @@ class ContactoController {
           "estado",
           "nombre_completo",
           "numero",
-          "otro_numero"
+          "otro_numero",
         ],
         whereArgs: ['%$word%', '%$word%', '%$word%'],
         limit: limit ?? 10);
@@ -322,10 +344,11 @@ class ContactoController {
             : Preferences.vaciosFilt
                 ? "estado IS NOT NULL AND estado_fecha IS NOT NULL"
                 : "";
-    debugPrint("vacios $vacios");
+    log("vacios $vacios");
+
     vacios =
-        "$vacios${(Preferences.pendientesFilt ? " ${vacios.isNotEmpty ? "AND" : ""} (pendiente IS NULL OR pendiente = 1)" : "")}";
-    debugPrint("vacios $vacios");
+        "$vacios${(Preferences.pendientesFilt ? " ${vacios.isNotEmpty ? "AND" : ""} (pendiente IS NULL OR pendiente = 1)" : "")}${Preferences.tipVis != 0 ? (vacios.isNotEmpty ? "AND" : "") : ""}${Preferences.tipVis == 0 ? "" : Preferences.tipVis == 1 ? "empleado_tip LIKE '%${Preferences.empleadoIdVis}%'" : "tip = 1"}";
+    log("vacios $vacios");
     return vacios;
   }
 

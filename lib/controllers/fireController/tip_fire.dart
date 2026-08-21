@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:enrutador/utilities/main_provider.dart';
 import 'package:enrutador/utilities/trans_fun.dart';
+import 'package:flutter/foundation.dart';
 import 'package:oktoast/oktoast.dart';
 
 import '../../utilities/noti_fun.dart';
@@ -54,7 +55,7 @@ class TipFire {
       {int? id,
       List<Filter>? filters,
       int max = 50,
-      String orderBy = "empleado_creado",
+      String orderBy = "fecha_creacion",
       bool descending = false}) async {
     try {
       Query<Map<String, dynamic>> query = db.collection(name);
@@ -140,21 +141,18 @@ class TipFire {
     }
   }
 
-  void notiTips(Timer? timer, MainProvider provider) {
-    if (timer != null && timer.isActive) {
-      timer.cancel();
-      timer = null;
-    } else {
-      timer = Timer.periodic(const Duration(minutes: 1), (timer) async {
-        await findTips(provider.usuario!.empleadoId!.toString());
-      });
-    }
-  }
+  static Future<void> findTips(
+      {required String empleadoId, bool? abierto, bool? estadoTip}) async {
+    List<Filter> filters = [];
+    filters.add(Filter("empleado_to", isEqualTo: empleadoId));
 
-  Future<void> findTips(String empleadoId) async {
-    var filter = Filter.and(Filter("empleado_to", isEqualTo: empleadoId),
-        Filter("abierto", isEqualTo: 0), Filter("estado_tip", isEqualTo: 1));
-    var tips = await TipFire.getItemPersonalizado(filters: [filter]);
+    if (abierto != null) {
+      filters.add(Filter("abierto", isEqualTo: abierto == true ? 1 : 0));
+    }
+    if (estadoTip != null) {
+      filters.add(Filter("estado_tip", isEqualTo: estadoTip == true ? 1 : 0));
+    }
+    var tips = await TipFire.getItemPersonalizado(filters: filters);
     log("tips: ${tips.length}");
     if (tips.isNotEmpty) {
       await NotiFun().showNotification(
