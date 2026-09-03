@@ -21,7 +21,7 @@ if (keystorePropertiesFile.exists()) {
 
 android {
     namespace = "com.example.enrutador"
-    compileSdk = 36
+    compileSdk = 37
     ndkVersion = "29.0.14033849"
 
     compileOptions {
@@ -33,7 +33,7 @@ android {
     defaultConfig {
         applicationId = "com.example.enrutador"
         minSdk = 24
-        targetSdk = 36
+        targetSdk = 37
         versionCode = 1
         versionName = "1.0.9"
         multiDexEnabled = true
@@ -62,7 +62,7 @@ android {
             isMinifyEnabled = true
             
             proguardFiles(
-                getDefaultProguardFile("proguard-android.txt"),
+                getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"  
             )
             signingConfig = signingConfigs.getByName("release")

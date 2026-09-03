@@ -259,6 +259,7 @@ class ContactoController {
           "otro_numero",
           "pendiente",
           "creado",
+          "empleado_id",
           "empleado_tip",
           "tip"
         ],

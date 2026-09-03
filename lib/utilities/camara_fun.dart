@@ -2,7 +2,8 @@ import 'dart:developer';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:advanced_media_picker/advanced_media_picker.dart';
+import 'package:camera/camera.dart';
+import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 import 'package:flutter_doc_scanner/flutter_doc_scanner.dart';
 import 'package:flutter/material.dart';
 import 'package:oktoast/oktoast.dart';
@@ -14,25 +15,33 @@ import 'theme/theme_color.dart';
 class CamaraFun {
   static Future<List<XFile>> getGalleria(
       BuildContext context, String? nombre) async {
-    return await AdvancedMediaPicker.openPicker(
-            context: context,
-            isNeedVideoCamera: false,
-            style: PickerStyle(
-                crossAxisCount: 4,
-                backgroundColor: ThemaMain.second,
-                titleWidget: Text(nombre ?? "Seleccionar imagen",
-                    style: TextStyle(
-                        fontSize: 16.sp, fontWeight: FontWeight.bold))),
-            cameraStyle: CameraStyle(),
-            fileSelectorAllowedTypes: ["png", "jpg", "jpeg"],
-            allowedTypes: PickerAssetType.image,
-            maxVideoDuration: 60,
-            selectionLimit: 1)
-        .catchError((e) {
+    try {
+      final List<AssetEntity>? result = await AssetPicker.pickAssets(
+        context,
+        pickerConfig: AssetPickerConfig(
+          maxAssets: 1,
+          requestType: RequestType.image,
+          themeColor: ThemaMain.second,
+          textDelegate: const EnglishAssetPickerTextDelegate(),
+        ),
+      );
+
+      if (result != null && result.isNotEmpty) {
+        final List<XFile> xFiles = [];
+        for (final asset in result) {
+          final file = await asset.file;
+          if (file != null) {
+            xFiles.add(XFile(file.path));
+          }
+        }
+        return xFiles;
+      }
+      return <XFile>[];
+    } catch (e) {
       debugPrint("error al abrir galeria: $e");
       showToast("Error al abrir la galería");
       return <XFile>[];
-    });
+    }
   }
 
   static Future<File?> imagen(

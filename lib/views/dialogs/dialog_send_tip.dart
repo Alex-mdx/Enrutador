@@ -139,7 +139,7 @@ class _DialogSendTipState extends State<DialogSendTip> {
                   empleadoBy: currentTip,
                   empleadoTo: assignedTo!,
                   contexto: controller.text,
-                  abierto: 1,
+                  abierto: 0,
                   estadoTip: 1,
                   fechaCreacion: DateTime.now());
               var result = await TipFire.sendItem(data: tipModel);

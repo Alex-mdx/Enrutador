@@ -16,6 +16,21 @@ subprojects {
     project.evaluationDependsOn(":app")
 }
 
+subprojects {
+    project.buildscript.repositories {
+        google()
+        mavenCentral()
+    }
+    project.repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+tasks.withType<org.gradle.api.tasks.compile.JavaCompile>().configureEach {
+    options.compilerArgs.add("-Xlint:none")
+}
+
 tasks.register<Delete>("clean") {
     delete(rootProject.layout.buildDirectory)
 }

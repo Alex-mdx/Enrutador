@@ -8,6 +8,7 @@ import 'package:enrutador/utilities/main_provider.dart';
 import 'package:enrutador/utilities/services/dialog_services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_animations/flutter_map_animations.dart';
 import 'package:flutter_map_math/flutter_geo_math.dart';
 import 'package:get/get.dart';
@@ -160,6 +161,7 @@ class MapFun {
     provider.marker = AnimatedMarker(
         width: 21.sp,
         height: 21.sp,
+        alignment: Alignment.topCenter,
         rotate: true,
         point: newlocation,
         builder: (context, animation) => InkWell(
@@ -206,7 +208,7 @@ class MapFun {
             child: Stack(alignment: Alignment.center, children: [
               Image.asset("assets/mark_point2.png"),
               Padding(
-                  padding: EdgeInsets.only(bottom: 5.sp),
+                  padding: EdgeInsets.only(bottom: 6.sp),
                   child: Icon(
                       size: 20.sp,
                       Icons.add_circle,
@@ -216,21 +218,29 @@ class MapFun {
             ])));
   }
 
-  static AnimatedMarker marcadores(
+  static Marker marcadores(
       MainProvider provider, ContactoModelo e, double? zoom) {
     var tocable = (provider.contacto?.latitud == e.latitud &&
         provider.contacto?.longitud == e.longitud);
-    return AnimatedMarker(
+    return Marker(
+        key: ValueKey(e.id),
         width: tocable ? 23.sp : 18.sp,
         height: tocable ? 23.sp : 18.sp,
         rotate: true,
+        alignment: tocable ? Alignment.topCenter : Alignment.center,
         point: LatLng(e.latitud, e.longitud),
-        builder: (context, animation) => !tocable && zoom! < Preferences.zoomMark
+        child: !tocable && zoom! < Preferences.zoomMark
             ? Icon(Icons.circle,
                 color: provider.tipos
                     .firstWhereOrNull((element) => element.id == e.tipo)
                     ?.color,
-                size: (zoom - 1).clamp(6, Preferences.zoomMark - 1).sp)
+                size: (zoom - 1)
+                    .clamp(
+                        6,
+                        (Preferences.zoomMark - 1) < 6
+                            ? 6
+                            : (Preferences.zoomMark - 1))
+                    .sp)
             : InkWell(
                 onLongPress: () async => Dialogs.showMorph(
                     title: "Eliminar",
@@ -256,16 +266,18 @@ class MapFun {
                   await provider.slide.open();
                 },
                 child: bd.Badge(
+                    position: bd.BadgePosition.topEnd(top: -6, end: -5),
                     badgeStyle: bd.BadgeStyle(
                         badgeColor: Colors.black, shape: bd.BadgeShape.twitter),
-                    showBadge: e.estado != null && (e.estado ?? -1) != -1,
+                    showBadge: ((zoom ?? 1) > Preferences.zoomMark + 1) &&
+                        (e.estado != null && (e.estado ?? -1) != -1),
                     badgeAnimation: bd.BadgeAnimation.slide(),
                     badgeContent: Icon(Icons.circle,
                         color: provider.estados
                             .firstWhereOrNull(
                                 (element) => element.id == e.estado)
                             ?.color,
-                        size: tocable ? 14.sp : 10.sp),
+                        size: tocable ? 12.sp : 10.sp),
                     child: Stack(
                         fit: StackFit.expand,
                         alignment: Alignment.center,
@@ -275,7 +287,7 @@ class MapFun {
                               : "assets/mark_point.png"),
                           Padding(
                               padding:
-                                  EdgeInsets.only(bottom: tocable ? 5.sp : 0),
+                                  EdgeInsets.only(bottom: tocable ? 7.sp : 0),
                               child: Icon(
                                   provider.tipos
                                           .firstWhereOrNull(

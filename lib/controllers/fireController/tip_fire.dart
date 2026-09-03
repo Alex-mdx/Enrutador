@@ -1,7 +1,5 @@
 import 'dart:async';
 import 'dart:developer';
-
-import 'package:enrutador/utilities/main_provider.dart';
 import 'package:enrutador/utilities/trans_fun.dart';
 import 'package:flutter/foundation.dart';
 import 'package:oktoast/oktoast.dart';
@@ -142,7 +140,7 @@ class TipFire {
   }
 
   static Future<void> findTips(
-      {required String empleadoId, bool? abierto, bool? estadoTip}) async {
+      {required String empleadoId, bool? abierto, bool? estadoTip, bool save = true}) async {
     List<Filter> filters = [];
     filters.add(Filter("empleado_to", isEqualTo: empleadoId));
 
@@ -161,7 +159,7 @@ class TipFire {
               "Tienes ${tips.length + Preferences.tipsReaded.length} tip(s) aignado(s) que requieren tu atencion.");
       for (var tip in tips) {
         await TipFire.sendItem(data: tip.copyWith(abierto: 1));
-        if (!Preferences.tipsReaded.contains(tip.uuid)) {
+        if (!Preferences.tipsReaded.contains(tip.uuid) && save) {
           log("tip: ${tip.toFire()}");
 
           Preferences.tipsReaded = [...Preferences.tipsReaded, tip.uuid];

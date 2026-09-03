@@ -23,13 +23,13 @@ class PDFFun {
       var tipos = await TipoController.getItems();
       var estados = await EstadoController.getItems();
       final pdf = pw.Document();
-      pdf.addPage(pw.Page(
+      pdf.addPage(pw.MultiPage(
           pageFormat: PdfPageFormat.a4,
           orientation: pw.PageOrientation.landscape,
-          build: (context) => pw.Column(children: [
+          build: (context) => [
                 pw.Text("Reporte de ventas",
                     style: pw.TextStyle(
-                        fontSize: 24.sp, fontWeight: pw.FontWeight.bold)),
+                        fontSize: 20.sp, fontWeight: pw.FontWeight.bold)),
                 pw.Table(
                     border: pw.TableBorder.symmetric(
                         outside: pw.BorderSide(), inside: pw.BorderSide.none),
@@ -42,32 +42,32 @@ class PDFFun {
                                 textAlign: pw.TextAlign.center,
                                 tightBounds: true,
                                 style: pw.TextStyle(
-                                    fontSize: 15.sp,
+                                    fontSize: 14.sp,
                                     fontWeight: pw.FontWeight.bold)),
                             pw.Text("Nombre",
                                 textAlign: pw.TextAlign.center,
                                 style: pw.TextStyle(
-                                    fontSize: 15.sp,
+                                    fontSize: 14.sp,
                                     fontWeight: pw.FontWeight.bold)),
                             pw.Text("Teléfono",
                                 textAlign: pw.TextAlign.center,
                                 style: pw.TextStyle(
-                                    fontSize: 15.sp,
+                                    fontSize: 14.sp,
                                     fontWeight: pw.FontWeight.bold)),
                             pw.Text("Tipo",
                                 textAlign: pw.TextAlign.center,
                                 style: pw.TextStyle(
-                                    fontSize: 15.sp,
+                                    fontSize: 14.sp,
                                     fontWeight: pw.FontWeight.bold)),
                             pw.Text("Estado",
                                 textAlign: pw.TextAlign.center,
                                 style: pw.TextStyle(
-                                    fontSize: 15.sp,
+                                    fontSize: 14.sp,
                                     fontWeight: pw.FontWeight.bold)),
                             pw.Text("Tip",
                                 textAlign: pw.TextAlign.center,
                                 style: pw.TextStyle(
-                                    fontSize: 15.sp,
+                                    fontSize: 14.sp,
                                     fontWeight: pw.FontWeight.bold))
                           ]),
                       ...contactos.asMap().entries.map((entry) {
@@ -98,7 +98,7 @@ class PDFFun {
                                       ? "${user.nombre ?? "Sin Nombre"}\n${user.empleadoId}"
                                       : "",
                                   style: pw.TextStyle(
-                                      fontSize: 13.sp,
+                                      fontSize: 12.sp,
                                       fontWeight: pw.FontWeight.bold),
                                   tightBounds: true),
                               hasBorder: false,
@@ -107,7 +107,7 @@ class PDFFun {
                               pw.Text(
                                   "${e.nombreCompleto ?? "Sin nombre"}\n${e.domicilio?.substring(e.domicilio!.toLowerCase().indexOf("colonia").clamp(0, e.domicilio!.length)) ?? "Sin domicilio"}",
                                   style: pw.TextStyle(
-                                      fontSize: 14.sp,
+                                      fontSize: 12.sp,
                                       fontStyle: e.nombreCompleto != null
                                           ? pw.FontStyle.italic
                                           : null)),
@@ -116,10 +116,10 @@ class PDFFun {
                               ? pw.Text(
                                   NumberFun.formatNumberWithLadaAndParentheses(
                                       "${e.numero}"),
-                                  style: pw.TextStyle(fontSize: 13.sp))
+                                  style: pw.TextStyle(fontSize: 12.sp))
                               : pw.Text("Sin numero",
                                   style: pw.TextStyle(
-                                      fontSize: 13.sp,
+                                      fontSize: 12.sp,
                                       fontStyle:
                                           e.numero != null && e.numero != -1
                                               ? null
@@ -131,7 +131,7 @@ class PDFFun {
                                       ?.nombre ??
                                   "Tipo no asignado",
                               style: pw.TextStyle(
-                                  fontSize: 13.sp,
+                                  fontSize: 12.sp,
                                   decoration: e.tipo != null && e.tipo != -1
                                       ? pw.TextDecoration.underline
                                       : null,
@@ -150,7 +150,7 @@ class PDFFun {
                                       ?.nombre ??
                                   "Estado no asignado",
                               style: pw.TextStyle(
-                                  fontSize: 13.sp,
+                                  fontSize: 12.sp,
                                   decoration: e.estado != null && e.estado != -1
                                       ? pw.TextDecoration.underline
                                       : null,
@@ -162,18 +162,20 @@ class PDFFun {
                                   fontStyle: e.estado != null && e.estado != -1
                                       ? null
                                       : pw.FontStyle.italic))),
-                          cell(
-                               pw.Text(e.tip == 1 ?"Si":"No",
-                                  textAlign: pw.TextAlign.center,
-                                  style: pw.TextStyle(
-                                      fontSize: 13.sp,
-                                      fontWeight: e.tip == 1 ? pw.FontWeight.bold: pw.FontWeight.normal,
-                                      color: e.tip == 1 ? PdfColors.green: PdfColors.red))
-                              )
+                          cell(pw.Text(e.tip == 1 ? "Si" : "No",
+                              textAlign: pw.TextAlign.center,
+                              style: pw.TextStyle(
+                                  fontSize: 12.sp,
+                                  fontWeight: e.tip == 1
+                                      ? pw.FontWeight.bold
+                                      : pw.FontWeight.normal,
+                                  color: e.tip == 1
+                                      ? PdfColors.green
+                                      : PdfColors.red)))
                         ]);
                       })
                     ])
-              ])));
+              ]));
       var savedFile = await pdf.save();
       Directory documentDirectory = await getApplicationDocumentsDirectory();
       String savePath = "${documentDirectory.path}/$titular.pdf";

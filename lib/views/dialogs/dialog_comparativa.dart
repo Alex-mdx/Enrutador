@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:enrutador/controllers/fireController/contacto_fire.dart';
 import 'package:enrutador/models/contacto_model.dart';
 import 'package:enrutador/utilities/theme/theme_color.dart';
@@ -13,7 +14,13 @@ class DialogComparativa extends StatefulWidget {
   final String pag1;
   final String pag2;
   final bool? cargar;
-  const DialogComparativa({super.key, required this.entrada,  this.salida, required this.pag1, required this.pag2,  this.cargar = true});
+  const DialogComparativa(
+      {super.key,
+      required this.entrada,
+      this.salida,
+      required this.pag1,
+      required this.pag2,
+      this.cargar = true});
 
   @override
   State<DialogComparativa> createState() => _DialogComparativaState();
@@ -26,9 +33,9 @@ class _DialogComparativaState extends State<DialogComparativa> {
   @override
   void initState() {
     super.initState();
-    if(widget.cargar!){
-    initEntrada();
-    }else{
+    if (widget.cargar!) {
+      initEntrada();
+    } else {
       salida = widget.salida;
       cargando = false;
     }
@@ -36,7 +43,10 @@ class _DialogComparativaState extends State<DialogComparativa> {
 
   Future<void> initEntrada() async {
     try {
-      salida = await ContactoFire.getItem(id: widget.entrada.id);
+      List<Filter> filtros = [];
+      filtros.add(Filter.and(Filter("id", isEqualTo: salida!.id),
+          Filter("empleado_id", isEqualTo: salida!.empleadoId)));
+      salida = (await ContactoFire.getItemPersonalizado(filters: filtros, max: 1)).firstOrNull;
       setState(() {
         cargando = false;
       });

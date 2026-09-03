@@ -35,8 +35,7 @@ class Permisos {
     if (!serviceEnabled) {
       return Future.error('Location services are disabled.');
     }
-var permission = await location();
-
+    var permission = await geolocation();
 
     if (permission == LocationPermission.deniedForever) {
       return Future.error(
@@ -66,22 +65,19 @@ var permission = await location();
           accuracy: LocationAccuracy.bestForNavigation,
           distanceFilter: 0,
           forceLocationManager: false,
-          intervalDuration: const Duration(milliseconds: 100),
-          foregroundNotificationConfig: const ForegroundNotificationConfig(
-              notificationText: "Navegación en curso...",
-              notificationTitle: "Servicio de Ubicación",
-              enableWakeLock: true));
+          intervalDuration: const Duration(milliseconds: 1000),
+          timeLimit: const Duration(seconds: 10));
     } else if (defaultTargetPlatform == TargetPlatform.iOS ||
         defaultTargetPlatform == TargetPlatform.macOS) {
       locationSettings = AppleSettings(
           accuracy: LocationAccuracy.bestForNavigation,
-          activityType: ActivityType.fitness,
+          activityType: ActivityType.automotiveNavigation,
           distanceFilter: 0,
           pauseLocationUpdatesAutomatically: false,
           showBackgroundLocationIndicator: true);
     } else {
       locationSettings = const LocationSettings(
-          accuracy: LocationAccuracy.high, distanceFilter: 0);
+          accuracy: LocationAccuracy.bestForNavigation, distanceFilter: 0);
     }
     return locationSettings;
   }

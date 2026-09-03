@@ -4,7 +4,6 @@ import 'package:enrutador/views/estado_view.dart';
 import 'package:enrutador/views/lada_view.dart';
 import 'package:enrutador/views/login_view.dart';
 import 'package:enrutador/views/navegar_view.dart';
-import 'package:enrutador/views/pendientes_home.dart';
 import 'package:enrutador/views/pendientes_view.dart';
 import 'package:enrutador/views/regiones_mapa.dart';
 import 'package:enrutador/views/tip_home.dart';

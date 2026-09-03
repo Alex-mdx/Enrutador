@@ -65,7 +65,7 @@ class _ViajeMapPageState extends State<MapMain>
                     provider.local!.latitude, provider.local!.longitude)),
             children: [
                 Stack(children: [
-                   provider.mapaReal
+                  provider.mapaReal
                       ? TileLayer(
                           maxZoom: 20,
                           maxNativeZoom: 18,
@@ -90,14 +90,13 @@ class _ViajeMapPageState extends State<MapMain>
                         tms: true,
                         urlTemplate:
                             'https://grid.plus.codes/grid/tms/{z}/{x}/{y}.png${provider.mapaReal ? "?col=white" : ""}',
-                        userAgentPackageName: 'com.enrutador.app', 
+                        userAgentPackageName: 'com.enrutador.app',
                         errorTileCallback: (tile, error, stackTrace) =>
                             const SizedBox())
                 ]),
                 CurrentLocationLayer(
                     alignDirectionAnimationDuration: Durations.short3,
                     alignPositionAnimationDuration: Durations.extralong2,
-                    moveAnimationDuration: Durations.long3,
                     style: LocationMarkerStyle(
                         showAccuracyCircle: true,
                         markerSize: Size(19.sp, 19.sp),
@@ -110,31 +109,32 @@ class _ViajeMapPageState extends State<MapMain>
                                 Icons.circle,
                                 color: Colors.white)),
                         markerDirection: MarkerDirection.heading)),
-                for (var zona in Preferences.zonasDibujar ? Preferences.zonas : [])
-                    FutureBuilder(
-                        future: ZonasController.getId(int.parse(zona)),
-                        builder: (context, snapshot) {
-                          if (snapshot.hasData) {
-                            return PolylineLayer(
-                                polylines: snapshot.data!.latlongs.map((e) {
-                              var newE = e.map((lt) {
-                                var newlt =
-                                    lt.replaceAll("(", "").replaceAll(")", "");
-                                return LatLng(double.parse(newlt.split(",")[0]),
-                                    double.parse(newlt.split(",")[1]));
-                              });
+                for (var zona
+                    in Preferences.zonasDibujar ? Preferences.zonas : [])
+                  FutureBuilder(
+                      future: ZonasController.getId(int.parse(zona)),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          return PolylineLayer(
+                              polylines: snapshot.data!.latlongs.map((e) {
+                            var newE = e.map((lt) {
+                              var newlt =
+                                  lt.replaceAll("(", "").replaceAll(")", "");
+                              return LatLng(double.parse(newlt.split(",")[0]),
+                                  double.parse(newlt.split(",")[1]));
+                            });
 
-                              return Polyline(
-                                  points: [...newE, newE.first],
-                                  color:
-                                      snapshot.data!.color ?? ThemaMain.primary,
-                                  strokeWidth: 7.sp,
-                                  borderColor: ThemaMain.darkGrey);
-                            }).toList());
-                          } else {
-                            return SizedBox();
-                          }
-                        }),
+                            return Polyline(
+                                points: [...newE, newE.first],
+                                color:
+                                    snapshot.data!.color ?? ThemaMain.primary,
+                                strokeWidth: 7.sp,
+                                borderColor: ThemaMain.darkGrey);
+                          }).toList());
+                        } else {
+                          return SizedBox();
+                        }
+                      }),
                 if (!provider.descargarZona)
                   if (provider.contacto != null && !provider.descargarZona)
                     FutureBuilder(
@@ -169,7 +169,7 @@ class _ViajeMapPageState extends State<MapMain>
                         }),
                 if (provider.contacto != null &&
                     !provider.descargarZona &&
-                    currentZoom > 14)
+                    currentZoom > Preferences.zoomMark)
                   FutureBuilder(
                       future: ReferenciasController.getIdPrin(
                           idContacto: provider.contacto!.id,
@@ -200,7 +200,7 @@ class _ViajeMapPageState extends State<MapMain>
                 if (!provider.descargarZona)
                   FutureBuilder(
                       future: ContactoController.getItems(currentZoom),
-                      builder: (context, snapshot) => AnimatedMarkerLayer(
+                      builder: (context, snapshot) => MarkerLayer(
                           alignment: Alignment.center,
                           markers: !snapshot.hasData
                               ? []

@@ -57,7 +57,7 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
     final provider = Provider.of<MainProvider>(context);
     return bd.Badge(
         badgeAnimation: bd.BadgeAnimation.rotation(),
-        position: bd.BadgePosition.topEnd(end: 0, top: -10),
+        position: bd.BadgePosition.topEnd(end: 0, top: -8),
         showBadge: ((widget.contacto?.zonas.isNotEmpty ?? false) ||
                 (widget.contacto?.tip == 1)) &&
             provider.contacto?.id != null,
@@ -103,8 +103,10 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                 height: widget.contacto?.id == null
                     ? 0.h
                     : widget.compartir
-                        ? 29.h
+                        ? null
                         : 27.h,
+                constraints:
+                    widget.compartir ? BoxConstraints(maxHeight: 38.h) : null,
                 child: Row(children: [
                   Expanded(
                       flex: widget.compartir ? 10 : 5,

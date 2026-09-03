@@ -36,7 +36,7 @@ class _ContactosViewState extends State<ContactosView> {
   TextEditingController buscador = TextEditingController();
   GroupedItemScrollController itemScrollController =
       GroupedItemScrollController();
-  List<ContactoModelo> selects = [];
+  List<String> selects = [];
   bool carga = false;
   List<ContactoModelo> contactos = [];
   var index = 1;
@@ -255,8 +255,6 @@ class _ContactosViewState extends State<ContactosView> {
                 color: ThemaMain.dialogbackground,
                 fontWeight: FontWeight.bold)),
         itemBuilder: (context, contacto) {
-          var existencia =
-              selects.firstWhereOrNull((element) => element.id == contacto.id);
           return contacto.pendiente != 0
               ? slider(
                   contacto,
@@ -265,30 +263,48 @@ class _ContactosViewState extends State<ContactosView> {
                       entrada: buscador.text,
                       contacto: contacto,
                       funContact: (p0) {},
-                      onSelected: (p0) => setState(() {
-                            if (existencia != null) {
-                              selects.remove(existencia);
-                            } else {
-                              selects.add(contacto);
-                            }
-                          }),
+                      selected: selects
+                          .where((e) =>
+                              e.split("-")[0] ==
+                                  (contacto.id ?? -1).toString() &&
+                              e.split("-")[1] == contacto.empleadoId)
+                          .isNotEmpty,
+                      onSelected: (p0) {
+                        setState(() {
+                          if (p0 == true) {
+                            selects
+                                .add("${contacto.id}-${contacto.empleadoId}");
+                          } else {
+                            selects.removeWhere((e) =>
+                                e == "${contacto.id}-${contacto.empleadoId}");
+                          }
+                        });
+                      },
                       compartir: true,
-                      selected: existencia != null,
                       selectedVisible: true),
                   () => send())
               : CardContactoWidget(
                   entrada: buscador.text,
                   contacto: contacto,
                   funContact: (p0) {},
-                  onSelected: (p0) => setState(() {
-                        if (existencia != null) {
-                          selects.remove(existencia);
-                        } else {
-                          selects.add(contacto);
-                        }
-                      }),
+                  selected: selects
+                          .where((e) =>
+                              e.split("-")[0] ==
+                                  (contacto.id ?? -1).toString() &&
+                              e.split("-")[1] == contacto.empleadoId)
+                          .isNotEmpty,
+                      onSelected: (p0) {
+                        setState(() {
+                          if (p0 == true) {
+                            selects
+                                .add("${contacto.id}-${contacto.empleadoId}");
+                          } else {
+                            selects.removeWhere((e) =>
+                                e == "${contacto.id}-${contacto.empleadoId}");
+                          }
+                        });
+                      },
                   compartir: true,
-                  selected: existencia != null,
                   selectedVisible: true);
         },
         itemComparator: (e1, e2) =>

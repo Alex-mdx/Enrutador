@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:advanced_media_picker/advanced_media_picker.dart';
+import 'package:camera/camera.dart';
 import 'package:enrutador/utilities/main_provider.dart';
 import 'package:enrutador/utilities/textos.dart';
 import 'package:flutter/material.dart';
@@ -68,7 +68,8 @@ class _TarjetaContactoFotoState extends State<TarjetaContactoFoto> {
                           if (photo != null) {
                             final data = await photo.readAsBytes();
                             try {
-                              var reducir = await Parser.reducirUint8List(imgBytes: data);
+                              var reducir =
+                                  await Parser.reducirUint8List(imgBytes: data);
                               var newModel = widget.contacto?.copyWith(
                                   foto: base64Encode(reducir!),
                                   fotoFecha: DateTime.now());
@@ -81,19 +82,17 @@ class _TarjetaContactoFotoState extends State<TarjetaContactoFoto> {
                         }
                       },
                       child: Icon(Icons.contacts,
-                          size: widget.compartir ? 30.w : 21.w,
+                          size: widget.compartir ? 28.w : 21.w,
                           color: ThemaMain.primary))
                   : GaleriaWidget(
                       image64: widget.contacto?.foto,
-                      ontap: () => (!widget.compartir)
-                          ? showDialog(
+                      ontap: () =>  showDialog(
                               barrierDismissible: false,
                               context: context,
                               builder: (context) => VisualizadorWidget(
                                   image64: widget.contacto?.foto,
                                   carrusel:
-                                      "Ultima modificacion\n${Textos.fechaYMDHMS(fecha: widget.contacto!.fotoFecha!)}"))
-                          : null,
+                                      "Ultima modificacion\n${Textos.fechaYMDHMS(fecha: widget.contacto!.fotoFecha!)}")),
                       onDoubleTap: () async {
                         if (!widget.compartir) {
                           final XFile? photo = (await CamaraFun.getGalleria(
@@ -103,7 +102,8 @@ class _TarjetaContactoFotoState extends State<TarjetaContactoFoto> {
                           if (photo != null) {
                             final data = await photo.readAsBytes();
                             try {
-                              var reducir = await Parser.reducirUint8List(imgBytes: data);
+                              var reducir =
+                                  await Parser.reducirUint8List(imgBytes: data);
                               var newModel = widget.contacto?.copyWith(
                                   foto: base64Encode(reducir!),
                                   fotoFecha: DateTime.now());
@@ -143,7 +143,6 @@ class _TarjetaContactoFotoState extends State<TarjetaContactoFoto> {
                       widget.contacto?.fotoReferencia == "null")
                   ? InkWell(
                       onTap: () async {
-                        if (!widget.compartir) {
                           final XFile? photo = (await CamaraFun.getGalleria(
                                   context, "Seleccionar Foto del Domicilio"))
                               .firstOrNull;
@@ -151,7 +150,8 @@ class _TarjetaContactoFotoState extends State<TarjetaContactoFoto> {
                           if (photo != null) {
                             final data = await photo.readAsBytes();
                             try {
-                              var reducir = await Parser.reducirUint8List(imgBytes: data);
+                              var reducir =
+                                  await Parser.reducirUint8List(imgBytes: data);
                               var newModel = widget.contacto?.copyWith(
                                   fotoReferencia: base64Encode(reducir!),
                                   fotoReferenciaFecha: DateTime.now());
@@ -161,11 +161,11 @@ class _TarjetaContactoFotoState extends State<TarjetaContactoFoto> {
                               showToast("Error al comprimir imagen");
                             }
                           }
-                        }
+                        
                       },
                       child: Icon(Icons.image,
                           color: ThemaMain.green,
-                          size: widget.compartir ? 30.w : 21.w))
+                          size: widget.compartir ? 28.w : 21.w))
                   : GaleriaWidget(
                       image64: widget.contacto?.fotoReferencia,
                       ontap: () => (!widget.compartir)
@@ -186,7 +186,8 @@ class _TarjetaContactoFotoState extends State<TarjetaContactoFoto> {
                           if (photo != null) {
                             final data = await photo.readAsBytes();
                             try {
-                              var reducir = await Parser.reducirUint8List(imgBytes: data);
+                              var reducir =
+                                  await Parser.reducirUint8List(imgBytes: data);
                               var newModel = widget.contacto?.copyWith(
                                   fotoReferencia: base64Encode(reducir!),
                                   fotoReferenciaFecha: DateTime.now());
