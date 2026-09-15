@@ -13,10 +13,6 @@ subprojects {
     project.layout.buildDirectory.value(newSubprojectBuildDir)
 }
 subprojects {
-    project.evaluationDependsOn(":app")
-}
-
-subprojects {
     project.buildscript.repositories {
         google()
         mavenCentral()
@@ -24,6 +20,25 @@ subprojects {
     project.repositories {
         google()
         mavenCentral()
+    }
+
+    project.afterEvaluate {
+        val androidExt = project.extensions.findByName("android") as? com.android.build.gradle.BaseExtension
+        androidExt?.compileSdkVersion(36)
+    }
+
+    project.configurations.all {
+        resolutionStrategy.dependencySubstitution {
+            all {
+                // Previene fallos por sustituciones vacías
+            }
+        }
+    }
+    // Eliminar jcenter() si una librería antigua intenta incluirlo
+    project.buildscript.repositories.all {
+        if (this.name == "BintrayJCenter") {
+            project.buildscript.repositories.remove(this)
+        }
     }
 }
 

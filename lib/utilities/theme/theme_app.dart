@@ -39,13 +39,13 @@ ThemeData light = ThemeData(
         fillColor: WidgetStateProperty.all<Color>(LightTheme.primary)),
     primaryIconTheme: const IconThemeData(color: LightTheme.primary),
     appBarTheme: AppBarTheme(
-        elevation: 0,
+        elevation: 0,toolbarHeight: 6.h,
         actionsIconTheme: const IconThemeData(color: LightTheme.second),
         backgroundColor: ThemaMain.appbar,
         iconTheme: IconThemeData(color: LightTheme.second, size: 24.sp),
-        titleTextStyle: const TextStyle(
+        titleTextStyle:  TextStyle(
             color: LightTheme.second,
-            fontSize: 32,
+            fontSize: 18.sp,
             fontWeight: FontWeight.bold,fontFamily: 'Roboto')),
     scrollbarTheme: const ScrollbarThemeData(
         radius: Radius.circular(24),

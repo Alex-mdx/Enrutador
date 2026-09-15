@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "672550936534-gvd8udt5f0h3lkl64i13n9n3oht4kj49.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.enrutador",
+            "certificate_hash": "bfe05a38ee92b6a8ccb4bbfba7585b0e3b49fe1e"
+          }
+        },
+        {
           "client_id": "672550936534-8unl3cans2fcebk2ml15fafipes13k0o.apps.googleusercontent.com",
           "client_type": 3
         }

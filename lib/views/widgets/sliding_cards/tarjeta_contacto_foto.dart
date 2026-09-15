@@ -1,12 +1,12 @@
 import 'dart:convert';
 
-import 'package:camera/camera.dart';
 import 'package:enrutador/utilities/main_provider.dart';
 import 'package:enrutador/utilities/textos.dart';
 import 'package:flutter/material.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:provider/provider.dart';
 import 'package:badges/badges.dart' as bd;
+import 'package:share_plus/share_plus.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../controllers/contacto_controller.dart';

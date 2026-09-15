@@ -65,8 +65,7 @@ class Permisos {
           accuracy: LocationAccuracy.bestForNavigation,
           distanceFilter: 0,
           forceLocationManager: false,
-          intervalDuration: const Duration(milliseconds: 1000),
-          timeLimit: const Duration(seconds: 10));
+          intervalDuration: const Duration(milliseconds: 1000));
     } else if (defaultTargetPlatform == TargetPlatform.iOS ||
         defaultTargetPlatform == TargetPlatform.macOS) {
       locationSettings = AppleSettings(

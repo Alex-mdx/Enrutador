@@ -1,42 +1,63 @@
 import 'dart:developer';
 import 'dart:io';
 import 'dart:typed_data';
-
-import 'package:camera/camera.dart';
-import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 import 'package:flutter_doc_scanner/flutter_doc_scanner.dart';
 import 'package:flutter/material.dart';
+import 'package:insta_assets_picker/insta_assets_picker.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:sizer/sizer.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
-import 'package:sizer/sizer.dart';
-import 'theme/theme_color.dart';
 
 class CamaraFun {
   static Future<List<XFile>> getGalleria(
       BuildContext context, String? nombre) async {
     try {
-      final List<AssetEntity>? result = await AssetPicker.pickAssets(
-        context,
-        pickerConfig: AssetPickerConfig(
-          maxAssets: 1,
+      final List<AssetEntity>? entity = await InstaAssetPicker.pickAssets(
+          context,
           requestType: RequestType.image,
-          themeColor: ThemaMain.second,
-          textDelegate: const EnglishAssetPickerTextDelegate(),
-        ),
-      );
+          pickerConfig: InstaAssetPickerConfig(
+              title: nombre,
+              specialItemPosition: SpecialItemPosition.prepend,
+              specialItemBuilder: (context, path, length) {
+                if (path?.isAll != true) {
+                  return const SizedBox.shrink();
+                }
 
-      if (result != null && result.isNotEmpty) {
-        final List<XFile> xFiles = [];
-        for (final asset in result) {
-          final file = await asset.file;
-          if (file != null) {
-            xFiles.add(XFile(file.path));
-          }
+                return GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: () async {
+                      final image = await ImagePicker().pickImage(
+                          source: ImageSource.camera,
+                          requestFullMetadata: false);
+
+                      if (image != null) {
+                        final AssetEntity? entity = await PhotoManager.editor
+                            .saveImage(await image.readAsBytes(),
+                                filename: image.name, title: image.name);
+                        if (entity != null && context.mounted) {
+                          // Cerrar la ruta devolviendo el tipo List<AssetEntity> esperado
+                          Navigator.of(context).pop([entity]);
+                        }
+                      }
+                    },
+                    child: Center(child: Icon(Icons.camera_alt, size: 42.sp)));
+              },
+              closeOnComplete: true,
+              textDelegate: EnglishAssetPickerTextDelegate()),
+          maxAssets: 1,
+          onCompleted: (exportDetails) =>
+              showToast("Se ha importado el archivo"));
+      List<XFile> xFiles = [];
+      if (entity != null && entity.isNotEmpty) {
+        final file = await entity.first.file;
+        if (file != null) {
+          xFiles.add(XFile(file.path));
         }
-        return xFiles;
       }
-      return <XFile>[];
+
+      return xFiles;
     } catch (e) {
       debugPrint("error al abrir galeria: $e");
       showToast("Error al abrir la galería");
@@ -59,7 +80,6 @@ class CamaraFun {
       return null;
     }
   }
-
 
   static Future<Uint8List?> getScanner() async {
     try {

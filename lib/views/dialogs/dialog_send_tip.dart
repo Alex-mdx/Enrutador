@@ -145,7 +145,7 @@ class _DialogSendTipState extends State<DialogSendTip> {
               var result = await TipFire.sendItem(data: tipModel);
               if (result) {
                 showToast("Tip enviado correctamente");
-                //Navigation.pop();
+                Navigation.pop();
               } else {
                 showToast("Error al enviar tip");
               }

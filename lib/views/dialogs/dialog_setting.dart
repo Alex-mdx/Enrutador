@@ -64,18 +64,19 @@ class _DialogSettingState extends State<DialogSetting> {
             children:
                 obtenerKeysContacto().map((e) => _buildItem(key: e)).toList()),
         Padding(
-            padding: EdgeInsets.all(8.sp),
+            padding: EdgeInsets.all(10.sp),
             child: CheckboxListTile(
                 dense: true,
-                contentPadding: EdgeInsets.zero,
+                contentPadding:
+                    EdgeInsets.symmetric(horizontal: 2.w, vertical: .5.h),
                 minVerticalPadding: 0,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(borderRadius)),
                 tileColor: ThemaMain.second,
-                title: Text("No mostrar vacios",
-                    style: TextStyle(fontSize: 13.sp)),
+                title: Text("Ocultar campos vacíos",
+                    style: TextStyle(fontSize: 14.sp)),
                 subtitle: Text(
-                    "Si se selecciono un campo, pero este no tiene contenido ingresado, no se mostrará en el texto compartido",
+                    "Si activas esta opción, solo se desplegará la información de los elementos que tengan contenido registrado.",
                     style: TextStyle(
                         fontSize: 12.sp, fontWeight: FontWeight.bold)),
                 value: Preferences.removeVacios,
@@ -91,15 +92,13 @@ class _DialogSettingState extends State<DialogSetting> {
         Slider(
             value: Preferences.zoomMark.toDouble(),
             showValueIndicator: ShowValueIndicator.onDrag,
-            divisions: 12,
+            divisions: 24,
             label: Preferences.zoomMark.toString(),
             min: 10,
             max: 16,
-            onChanged: (value) {
-              setState(() {
-                Preferences.zoomMark = value;
-              });
-            }),
+            onChanged: (value) => setState(() {
+                  Preferences.zoomMark = value;
+                })),
         const Divider(),
         Text("Numero de contactos encontrados",
             style: TextStyle(fontSize: 16.sp)),
@@ -108,12 +107,12 @@ class _DialogSettingState extends State<DialogSetting> {
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 14.sp)),
         InputQty.int(
-            maxVal: 8,
+            maxVal: 10,
             onQtyChanged: (val) => setState(() {
                   Preferences.contactosMax = val;
                 }),
             initVal: Preferences.contactosMax,
-            minVal: 4,
+            minVal: 3,
             qtyFormProps: QtyFormProps(
                 enableTyping: false,
                 style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold)),
@@ -137,6 +136,8 @@ class _DialogSettingState extends State<DialogSetting> {
                 children: [
                   ChoiceChip(
                       showCheckmark: false,
+                      pressElevation: 0,
+                      selectedColor: ThemaMain.background,
                       avatar: Icon(Icons.network_cell,
                           color: Preferences.redMobile
                               ? ThemaMain.primary
@@ -148,6 +149,8 @@ class _DialogSettingState extends State<DialogSetting> {
                           })),
                   ChoiceChip(
                       showCheckmark: false,
+                      pressElevation: 0,
+                      selectedColor: ThemaMain.background,
                       avatar: Icon(Icons.wifi,
                           color: Preferences.redWifi
                               ? ThemaMain.green

@@ -9,8 +9,11 @@ class TextSend extends StatefulWidget {
   final Function(String)? fun;
   final String? textPlaceholder;
   final bool hideWhenSend;
+  final String? label;
   const TextSend(
-      {super.key, this.textPlaceholder, this.fun, this.hideWhenSend = true});
+      {super.key,
+      this.textPlaceholder, this.label = "Agregar Nota",
+      this.fun, this.hideWhenSend = true});
 
   @override
   State<TextSend> createState() => _TextSendState();
@@ -43,7 +46,7 @@ class _TextSendState extends State<TextSend> {
         maxLines: 3,
         style: TextStyle(fontSize: 16.sp),
         decoration: InputDecoration(
-            hintText: "Agregar nota",
+            hintText: widget.label,
             contentPadding:
                 EdgeInsets.symmetric(horizontal: 2.w, vertical: .5.h),
             border: OutlineInputBorder(

@@ -8,7 +8,9 @@ import '../../utilities/theme/theme_color.dart';
 
 class PdfViewer extends StatelessWidget {
   final String path;
-  const PdfViewer({super.key, required this.path});
+  final bool isLandscape;
+
+  const PdfViewer({super.key, required this.path, this.isLandscape = false});
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +21,7 @@ class PdfViewer extends StatelessWidget {
       body: PDFView(
           filePath: path,
           enableSwipe: true,
-          swipeHorizontal: true,
+          swipeHorizontal: isLandscape ? false : true,
           autoSpacing: false,
           pageFling: false,
           showScrollIndicators: true,

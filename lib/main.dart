@@ -30,7 +30,7 @@ Future<void> main() async {
   } catch (error) {
     var absPath = path.join(
         (await getApplicationDocumentsDirectory()).absolute.path, 'fmtc');
-    debugPrint(absPath);
+    debugPrint(absPath); 
     final dir = Directory(absPath);
 
     await dir.delete(recursive: true);
@@ -50,6 +50,8 @@ Future<void> main() async {
       settings: initializationSettings,
       onDidReceiveNotificationResponse: (NotificationResponse response) {
         debugPrint("Notificación presionada con payload: ${response.payload}");
+
+
       });
 
   // Obtener implementación de Android del plugin

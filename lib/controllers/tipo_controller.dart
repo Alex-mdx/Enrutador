@@ -23,7 +23,7 @@ class TipoController {
 
   static Future<void> insert(TiposModelo data) async {
     final db = await database();
-    var modelo = await getItem(data: data.id!);
+    var modelo = await getItem(data: data.id ?? -1);
     if (modelo != null) {
       await update(data);
       return;

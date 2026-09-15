@@ -143,6 +143,8 @@ class PaginadoState extends State<Paginado> {
   final LocationSettings locationSettings = Permisos.location();
   final AppLinks appLinks = AppLinks();
   Timer? _notificationTimer;
+  StreamSubscription<Position>? _positionSubscription;
+
   @override
   void initState() {
     super.initState();
@@ -165,24 +167,27 @@ class PaginadoState extends State<Paginado> {
     Permisos.determinePosition();
     Permisos.phone();
 
-    Geolocator.getPositionStream(locationSettings: locationSettings)
-        .listen((Position? position) {
+    _positionSubscription =
+        Geolocator.getPositionStream(locationSettings: locationSettings)
+            .listen((Position? position) {
       widget.provider.local = position;
       if (widget.provider.mapSeguir) {
         widget.provider.animaMap.centerOnPoint(
             LatLng(widget.provider.local?.latitude ?? 0,
                 widget.provider.local?.longitude ?? 0),
-            duration: Duration(milliseconds: 10));
+            duration: const Duration(milliseconds: 10));
       }
+    }, onError: (e) {
+      debugPrint("Error en stream de ubicación: $e");
     });
     initDeepLinks();
     if (_notificationTimer != null && _notificationTimer!.isActive) {
       _notificationTimer!.cancel();
       _notificationTimer = null;
     } else {
-      _notificationTimer = Timer.periodic(const Duration(minutes: kDebugMode ? 1 : 5),
-          (timer) async {
-        if (widget.provider.internet) {
+      _notificationTimer = Timer.periodic(
+          const Duration(minutes: kDebugMode ? 1 : 5), (timer) async {
+        if (widget.provider.internet && widget.provider.usuario != null) {
           await TipFire.findTips(
               empleadoId: widget.provider.usuario!.empleadoId!.toString(),
               abierto: false);
@@ -205,6 +210,7 @@ class PaginadoState extends State<Paginado> {
 
   @override
   void dispose() {
+    _positionSubscription?.cancel();
     _notificationTimer?.cancel();
     super.dispose();
   }

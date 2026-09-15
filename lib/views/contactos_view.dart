@@ -275,8 +275,8 @@ class _ContactosViewState extends State<ContactosView> {
                             selects
                                 .add("${contacto.id}-${contacto.empleadoId}");
                           } else {
-                            selects.removeWhere((e) =>
-                                e == "${contacto.id}-${contacto.empleadoId}");
+                            selects.remove(
+                                "${contacto.id}-${contacto.empleadoId}");
                           }
                         });
                       },
@@ -288,22 +288,20 @@ class _ContactosViewState extends State<ContactosView> {
                   contacto: contacto,
                   funContact: (p0) {},
                   selected: selects
-                          .where((e) =>
-                              e.split("-")[0] ==
-                                  (contacto.id ?? -1).toString() &&
-                              e.split("-")[1] == contacto.empleadoId)
-                          .isNotEmpty,
-                      onSelected: (p0) {
-                        setState(() {
-                          if (p0 == true) {
-                            selects
-                                .add("${contacto.id}-${contacto.empleadoId}");
-                          } else {
-                            selects.removeWhere((e) =>
-                                e == "${contacto.id}-${contacto.empleadoId}");
-                          }
-                        });
-                      },
+                      .where((e) =>
+                          e.split("-")[0] == (contacto.id ?? -1).toString() &&
+                          e.split("-")[1] == contacto.empleadoId)
+                      .isNotEmpty,
+                  onSelected: (p0) {
+                    setState(() {
+                      if (p0 == true) {
+                        selects.add("${contacto.id}-${contacto.empleadoId}");
+                      } else {
+                        selects.removeWhere((e) =>
+                            e == "${contacto.id}-${contacto.empleadoId}");
+                      }
+                    });
+                  },
                   compartir: true,
                   selectedVisible: true);
         },

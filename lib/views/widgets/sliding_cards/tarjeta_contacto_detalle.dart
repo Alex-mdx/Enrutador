@@ -10,7 +10,6 @@ import 'package:enrutador/views/dialogs/dialogs_estado_funcion.dart';
 import 'package:enrutador/views/widgets/extras/chip_referencia.dart';
 import 'package:enrutador/views/widgets/extras/tarjeta_contacto_call.dart';
 import 'package:enrutador/views/widgets/sliding_cards/tarjeta_contacto_foto.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:latlong2/latlong.dart';
@@ -80,7 +79,7 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
               if (widget.contacto?.zonas.isNotEmpty ?? false)
                 GestureDetector(
                     onTap: () => showToast(
-                        "Este contacto tiene zonas ${widget.contacto?.zonas.toList()}"),
+                        "Este contacto pertenece a ${widget.contacto?.zonas.length} zona${widget.contacto?.zonas.length != 1 ? 's' : ''}"),
                     child: Text(
                         widget.contacto?.zonas.isNotEmpty ?? false
                             ? widget.contacto?.zonas

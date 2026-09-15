@@ -4,7 +4,6 @@ import 'package:enrutador/models/usuario_model.dart';
 import 'package:enrutador/utilities/main_provider.dart';
 import 'package:enrutador/utilities/preferences.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
@@ -53,28 +52,25 @@ class _PendientesViewState extends State<PendientesView> {
           .sort((a, b) => b.fechaPendiente.isBefore(a.fechaPendiente) ? 1 : -1);
       setState(() => pendientes = nuevos);
     } else {
-      var nuevosRaw = await PendienteFire.getAllItems(limit: 50);
-      if (arguments.adminTipo != 5 && arguments.adminTipo != -1) {
-        final Map<String, PendienteModel> sinRepetidos = {};
-        for (var e in nuevosRaw) {
-          sinRepetidos.putIfAbsent(e.empleadoId, () => e);
-        }
-        var nuevos = sinRepetidos.values.toList();
-        List<String> empleados = [];
-        for (var e in nuevos) {
-          var user = await UsuarioFire.getItem(
-              query: "empleado_id", table: e.empleadoId);
-          if (user != null &&
-              ((user.adminTipo ?? 0) <= (arguments.adminTipo ?? 0))) {
-            empleados.addNonNull(user.empleadoId!);
-          }
-        }
-        nuevosRaw.where((e) => empleados.contains(e.empleadoId));
+      List<UsuarioModel> usuariosHijos = [];
+      if (arguments.children.isNotEmpty) {
+        usuariosHijos = await UsuarioFire.getItems(
+            table: "id", query: arguments.children, itsNumber: true);
+      }
+      List<String> empleadosTarget = [
+        if (arguments.empleadoId != null) arguments.empleadoId!,
+        ...usuariosHijos.map((e) => e.empleadoId).whereType<String>()
+      ];
+
+      List<PendienteModel> nuevos = [];
+      if (empleadosTarget.isNotEmpty) {
+        nuevos = await PendienteFire.getItems(
+            table: "empleado_id", query: empleadosTarget, limit: 50);
       }
 
-      nuevosRaw
+      nuevos
           .sort((a, b) => b.fechaPendiente.isBefore(a.fechaPendiente) ? 1 : -1);
-      setState(() => pendientes = nuevosRaw);
+      setState(() => pendientes = nuevos);
     }
     setState(() => cargando = false);
   }
@@ -98,7 +94,7 @@ class _PendientesViewState extends State<PendientesView> {
                                 "Todos los pendientes de usuarios que tengas por debajo de tu jerarquia",
                             child: Text("Todos",
                                 style: TextStyle(
-                                    fontSize: 14.sp,
+                                    fontSize: 15.sp,
                                     fontWeight: FontWeight.bold))),
                         if ((provider.usuario?.adminTipo ?? 0) >= 3 ||
                             (provider.usuario?.adminTipo ?? 0) == -1)
@@ -124,7 +120,7 @@ class _PendientesViewState extends State<PendientesView> {
                                 "Solo los pendientes asignados a ti, adjunto a los hijos que tengas",
                             child: Text("Mios",
                                 style: TextStyle(
-                                    fontSize: 14.sp,
+                                    fontSize: 15.sp,
                                     fontWeight: FontWeight.bold)))
                       ])))
             ]),

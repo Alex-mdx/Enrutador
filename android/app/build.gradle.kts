@@ -21,7 +21,7 @@ if (keystorePropertiesFile.exists()) {
 
 android {
     namespace = "com.example.enrutador"
-    compileSdk = 37
+    compileSdk = 36
     ndkVersion = "29.0.14033849"
 
     compileOptions {
@@ -33,7 +33,7 @@ android {
     defaultConfig {
         applicationId = "com.example.enrutador"
         minSdk = 24
-        targetSdk = 37
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0.9"
         multiDexEnabled = true
@@ -50,7 +50,7 @@ android {
             storeFile = if (storeFilePath != null) file(storeFilePath) else null
         }
     }
-    packagingOptions {
+    packaging {
         jniLibs {
             useLegacyPackaging = true
         }
@@ -68,11 +68,7 @@ android {
             signingConfig = signingConfigs.getByName("release")
         }
     }
-    packagingOptions {
-      jniLibs {
-        useLegacyPackaging = true
-      }
-    }
+
 }
 
 kotlin {
