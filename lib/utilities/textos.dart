@@ -130,10 +130,21 @@ class Textos {
     return !regex.hasMatch(texto);
   }
 
-  static String randomWord(int? number) {
+  static String randomWord(int? number,
+      {bool onlyNumbers = false, bool onlyLetters = false}) {
     final random = math.Random();
-    const caracteres =
-        'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
+    String caracteres = '';
+    var letras = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    var numeros = '1234567890';
+    if (onlyLetters == true) {
+      caracteres += letras;
+    }
+    if (onlyNumbers == true) {
+      caracteres += numeros;
+    }
+    if (onlyNumbers == false && onlyLetters == false) {
+      caracteres = numeros + letras;
+    }
     String cadenaAleatoria = '';
     for (int i = 0; i < (number ?? 10); i++) {
       int indice = random.nextInt(caracteres.length);

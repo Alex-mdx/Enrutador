@@ -49,8 +49,6 @@ class SideButtons extends StatelessWidget {
                                         size: 22.sp, color: ThemaMain.darkGrey)
                                   ])))))),
           cards(context, () async {
-            ///await ZonasController.deleteAll();
-
             await Navigation.pushNamed(route: "zonas");
           }, "Zonas", LineIcons.mapMarked, ThemaMain.red),
           cards(context, () async => await Navigation.pushNamed(route: "tipos"),
@@ -69,6 +67,9 @@ class SideButtons extends StatelessWidget {
               ThemaMain.green),
           cards(context, () async => await Navigation.pushNamed(route: "roles"),
               "Roles", LineIcons.userTag, ThemaMain.darkBlue),
+          cards(context, () async => Navigation.pushNamed(
+                  route: "carteraView", arguments: provider.usuario),
+              "Carteras", LineIcons.addressBookAlt, ThemaMain.green),
           cards(context, () async => await Navigation.pushNamed(route: "lada"),
               "Lada", Icons.perm_phone_msg, ThemaMain.pink),
           cards(

@@ -14,14 +14,15 @@ class CamaraFun {
   static Future<List<XFile>> getGalleria(
       BuildContext context, String? nombre) async {
     try {
-      final List<AssetEntity>? entity = await InstaAssetPicker.pickAssets(
-          context,
+      List<XFile> cameraFiles = [];
+
+      final dynamic result = await InstaAssetPicker.pickAssets(context,
           requestType: RequestType.image,
           pickerConfig: InstaAssetPickerConfig(
               title: nombre,
               specialItemPosition: SpecialItemPosition.prepend,
-              specialItemBuilder: (context, path, length) {
-                if (path?.isAll != true) {
+              specialItemBuilder: (context, p, length) {
+                if (p?.isAll != true) {
                   return const SizedBox.shrink();
                 }
 
@@ -33,27 +34,40 @@ class CamaraFun {
                           requestFullMetadata: false);
 
                       if (image != null) {
-                        final AssetEntity? entity = await PhotoManager.editor
-                            .saveImage(await image.readAsBytes(),
-                                filename: image.name, title: image.name);
-                        if (entity != null && context.mounted) {
-                          // Cerrar la ruta devolviendo el tipo List<AssetEntity> esperado
-                          Navigator.of(context).pop([entity]);
+                        final directory = await getTemporaryDirectory();
+                        final targetPath = path.join(directory.path,
+                            'cam_${DateTime.now().millisecondsSinceEpoch}.jpg');
+                        final savedFile =
+                            await File(image.path).copy(targetPath);
+                        cameraFiles = [XFile(savedFile.path)];
+
+                        if (context.mounted) {
+                          Navigator.of(context).pop();
                         }
                       }
                     },
-                    child: Center(child: Icon(Icons.camera_alt, size: 42.sp)));
+                    child: Center(child: Icon(Icons.camera_alt, size: 24.w)));
               },
               closeOnComplete: true,
               textDelegate: EnglishAssetPickerTextDelegate()),
           maxAssets: 1,
           onCompleted: (exportDetails) =>
               showToast("Se ha importado el archivo"));
+
+      if (cameraFiles.isNotEmpty) {
+        return cameraFiles;
+      }
+
       List<XFile> xFiles = [];
-      if (entity != null && entity.isNotEmpty) {
-        final file = await entity.first.file;
-        if (file != null) {
-          xFiles.add(XFile(file.path));
+      if (result != null && result is List && result.isNotEmpty) {
+        final item = result.first;
+        if (item is XFile) {
+          xFiles.add(item);
+        } else if (item is AssetEntity) {
+          final file = await item.file;
+          if (file != null) {
+            xFiles.add(XFile(file.path));
+          }
         }
       }
 

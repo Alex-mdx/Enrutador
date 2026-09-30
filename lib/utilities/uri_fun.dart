@@ -14,6 +14,7 @@ import '../controllers/roles_controller.dart';
 import '../models/roles_model.dart';
 import 'map_fun.dart';
 import 'pluscode_fun.dart';
+import 'package:open_location_code/open_location_code.dart';
 
 class UriFun {
   static const _channel =
@@ -21,11 +22,16 @@ class UriFun {
 
   static Future<void> readContentUriSafe(
       String uriString, MainProvider provider) async {
-    debugPrint(uriString);
-    if (uriString.contains("q=")) {
+    final isLocationUri = uriString.contains("q=") ||
+        uriString.contains("query=") ||
+        uriString.contains("maps") ||
+        uriString.startsWith("geo:");
+    if (isLocationUri) {
       showToast("Buscando ubicacion...");
-      Future.delayed(Duration(seconds: kDebugMode ? 2 : 1),
-          () async => await MapFun.getUri(provider: provider, uri: uriString));
+      while (provider.local == null) {
+        await Future.delayed(const Duration(milliseconds: 200));
+      }
+      await _processLocationUri(provider: provider, uri: uriString);
     } else {
       try {
         // Paso 1: Obtener tamaño
@@ -169,6 +175,44 @@ class UriFun {
       provider.cargaProgress = 0;
       debugPrint("error $e");
       showToast("error $e");
+    }
+  }
+
+  static Future<void> _processLocationUri(
+      {required MainProvider provider, required String uri}) async {
+    try {
+      String decodedUri = Uri.decodeFull(uri).replaceAll('+', ' ');
+
+      final qIndex = decodedUri.indexOf('q=');
+      final queryIndex = decodedUri.indexOf('query=');
+      String textToSearch = decodedUri;
+      if (qIndex != -1) {
+        textToSearch = decodedUri.substring(qIndex);
+      } else if (queryIndex != -1) {
+        textToSearch = decodedUri.substring(queryIndex);
+      }
+
+      final regExp = RegExp(r'(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)');
+      final match =
+          regExp.firstMatch(textToSearch) ?? regExp.firstMatch(decodedUri);
+
+      if (match != null) {
+        double lat = double.parse(match.group(1)!);
+        double lng = double.parse(match.group(2)!);
+
+        var pc = PlusCodeFun.psCODE(lat, lng);
+        var newlocation = PlusCode(pc).decode().center;
+        await MapFun.sendInitUri(
+            provider: provider,
+            lat: double.parse(newlocation.latitude.toStringAsFixed(7)),
+            lng: double.parse(newlocation.longitude.toStringAsFixed(7)));
+      } else {
+        showToast("No se pudo obtener las coordenadas del enlace");
+        debugPrint("No match for coordinates in URI: $uri");
+      }
+    } catch (e) {
+      debugPrint("Error procesando URI de ubicación: $e");
+      showToast("Error al procesar la ubicación");
     }
   }
 }

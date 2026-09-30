@@ -1,7 +1,6 @@
 import 'dart:developer';
 
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:enrutador/controllers/contacto_controller.dart';
 import 'package:enrutador/controllers/fireController/usuario_fire.dart';
 import 'package:enrutador/models/contacto_model.dart';
@@ -11,16 +10,13 @@ import 'package:enrutador/utilities/services/dialog_services.dart';
 import 'package:enrutador/utilities/services/navigation_services.dart';
 import 'package:enrutador/utilities/theme/theme_app.dart';
 import 'package:enrutador/utilities/theme/theme_color.dart';
-import 'package:enrutador/views/widgets/sliding_cards/tarjeta_contacto_detalle.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
-
-import '../../controllers/fireController/contacto_fire.dart';
 import '../../controllers/fireController/tip_fire.dart';
 import '../../models/usuario_model.dart';
+import '../widgets/extras/card_contacto_download.dart';
 
 class DialogTipInfo extends StatefulWidget {
   final TipModel tip;
@@ -54,7 +50,6 @@ class _DialogTipInfoState extends State<DialogTipInfo> {
           await UsuarioFire.getItem(table: "empleado_id", query: empleadoId);
       if (mounted) {
         setState(() {
-          
           usuarioBy = usuario;
         });
       }
@@ -114,76 +109,22 @@ class _DialogTipInfoState extends State<DialogTipInfo> {
                                 SliverGridDelegateWithFixedCrossAxisCount(
                                     crossAxisCount: 4),
                             itemCount: tip.contactosIds.length,
-                            itemBuilder: (context, index) {
-                              var idTemp = int.parse(
-                                  tip.contactosIds[index].split("-")[0]);
-                              var empleadoTemp =
-                                  tip.contactosIds[index].split("-")[1];
-
-                              var exist = (contactoTemp.firstWhereOrNull(
-                                      (element) =>
-                                          (element.id == idTemp) &&
-                                          (element.empleadoId ==
-                                              empleadoTemp))) !=
-                                  null;
-                              return InkWell(
-                                  onTap: () async {
-                                    if (!cargaContact) {
-                                      if (exist) {
-                                        showDialog(
-                                            context: context,
-                                            builder: (context) => Dialog(
-                                                child: TarjetaContactoDetalle(
-                                                    contacto: contactoTemp
-                                                        .firstWhere((element) =>
-                                                            (element.id ==
-                                                                idTemp) &&
-                                                            (element.empleadoId ==
-                                                                empleadoTemp)),
-                                                    compartir: true)));
-                                      } else {
-                                        setState(() {
-                                          cargaContact = true;
-                                        });
-                                        List<Filter> filtro = [];
-                                        filtro.add(Filter.and(
-                                            Filter("id", isEqualTo: idTemp),
-                                            Filter("empleado_id",
-                                                isEqualTo: empleadoTemp)));
-                                        var temp = (await ContactoFire
-                                                .getItemPersonalizado(
-                                                    filters: filtro, max: 1))
-                                            .firstOrNull;
-                                        if (temp != null) {
-                                          contactoTemp.add(temp);
-                                        } else {
-                                          showToast(
-                                              "No se encontro el contacto");
-                                        }
-                                        setState(() {
-                                          cargaContact = false;
-                                        });
-                                      }
-                                    } else {
-                                      showToast(
-                                          "Hay una descarga de contacto en proceso");
-                                    }
-                                  },
-                                  child: Card.filled(
-                                      color: cargaContact
-                                          ? ThemaMain.darkGrey
-                                          : null,
-                                      child: Center(
-                                          child: Text("Contacto\n#${index + 1}",
-                                              textAlign: TextAlign.center,
-                                              style: TextStyle(
-                                                  fontSize: 16.sp,
-                                                  color: exist
-                                                      ? ThemaMain.primary
-                                                      : null,
-                                                  fontWeight:
-                                                      FontWeight.bold)))));
-                            }))),
+                            itemBuilder: (context, index) =>
+                                CardContactoDownload(
+                                    tip: tip,
+                                    contactoTemp: contactoTemp,
+                                    refreshContactos: (contactos) {
+                                      setState(() {
+                                        contactoTemp = contactos;
+                                      });
+                                    },
+                                    index: index,
+                                    cargaContact: cargaContact,
+                                    setCargaContact: (value) {
+                                      setState(() {
+                                        cargaContact = value;
+                                      });
+                                    })))),
             Divider(indent: 4.w, endIndent: 4.w),
             Padding(
                 padding: EdgeInsets.all(4.sp),

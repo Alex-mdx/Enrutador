@@ -14,62 +14,99 @@ class ShareFun {
       {required String? titulo,
       required String? mensaje,
       List<XFile>? files}) async {
-    final params = ShareParams(title: titulo, text: mensaje == "" ? null : mensaje, files: files);
+    final params = ShareParams(
+        title: titulo, text: mensaje == "" ? null : mensaje, files: files);
     var share = await SharePlus.instance.share(params);
     return share.status.index;
   }
-  
 
-  static Future<List<File>> shareDatas(
-      {required String nombre, required List<dynamic> datas}) async {
-    showToast("Generando $nombre");
-    try {
-    var chunck = 50;
-    List<File> files = [];
-    List<dynamic> json = [];
-    for (var i = 0; i < datas.length; i++) {
-      json.add(datas[i]);
-      var paginado = i == 0 ? false : ((i / chunck) % 1) == 0;
-      final DateTime ahora = DateTime.now();
-      debugPrint("$paginado");
-      if (paginado) {
-        final Map<String, dynamic> jsonMap = {
-          nombre: json.map((e) => e.toJson()).toList()
-        };
-        final String jsonString = jsonEncode(jsonMap);
-        final Directory tempDir = await getTemporaryDirectory();
-        final String filePath =
-            '${tempDir.path}/${nombre}_${Textos.fechaYMD(fecha: ahora)}_${Textos.fechaHMS(fecha: ahora)}_${(i / chunck).toInt()}_${(datas.length / chunck).ceil()}.json';
-        await _ensureDirectoryExists(tempDir.path);
-        final File file = File(filePath);
-        await file.writeAsString(jsonString);
-        files.add(file);
-        json.clear();
-      }
-      if (i == datas.length - 1) {
-        final Map<String, dynamic> jsonMap = {
-          nombre: json.map((e) => e.toJson()).toList()
-        };
-        final String jsonString = jsonEncode(jsonMap);
-        final Directory tempDir = await getTemporaryDirectory();
+  static Future<List<File>> shareDatas({
+    String? name,
+    String? nombre,
+    List<String>? nombres,
+    required dynamic datas,
+  }) async {
+    final List<String> keyNames =
+        nombres ?? (nombre != null ? [nombre] : ["datos"]);
+    final String fileName = name ?? (nombre ?? "export");
 
-        final String filePath =
-            '${tempDir.path}/${nombre}_${Textos.fechaYMD(fecha: ahora)}_${Textos.fechaHMS(fecha: ahora)}_${(datas.length / chunck).ceil()}_${(datas.length / chunck).ceil()}.json';
-        await _ensureDirectoryExists(tempDir.path);
-
-        final File file = File(filePath);
-        await file.writeAsString(jsonString);
-        files.add(file);
-        json.clear();
+    List<List<dynamic>> dataLists = [];
+    if (datas is List) {
+      if (datas.isNotEmpty && datas.first is List) {
+        dataLists = datas.map((e) => (e as List).cast<dynamic>()).toList();
+      } else {
+        dataLists = [datas.cast<dynamic>()];
       }
     }
 
-    return files;
+    showToast("Generando ${keyNames.join(", ")}");
+    try {
+      const int chunkLimit = 50;
+      List<File> files = [];
+
+      int totalSum = 0;
+      for (var list in dataLists) {
+        totalSum += list.length;
+      }
+      if (totalSum == 0) return [];
+
+      int totalChunks = (totalSum / chunkLimit).ceil();
+      List<int> pointers = List<int>.filled(dataLists.length, 0);
+
+      bool hasMoreData() {
+        for (int j = 0; j < dataLists.length; j++) {
+          if (pointers[j] < dataLists[j].length) return true;
+        }
+        return false;
+      }
+
+      int chunkIndex = 1;
+
+      while (hasMoreData()) {
+        final DateTime ahora = DateTime.now();
+        Map<String, dynamic> jsonMap = {};
+        int currentFileCount = 0;
+
+        for (int j = 0; j < keyNames.length; j++) {
+          if (j >= dataLists.length) {
+            jsonMap[keyNames[j]] = [];
+            continue;
+          }
+
+          final list = dataLists[j];
+          int pointer = pointers[j];
+          int spaceLeft = chunkLimit - currentFileCount;
+
+          if (spaceLeft > 0 && pointer < list.length) {
+            int available = list.length - pointer;
+            int take = (available < spaceLeft) ? available : spaceLeft;
+            final sublist = list.sublist(pointer, pointer + take);
+            jsonMap[keyNames[j]] =
+                sublist.map((e) => e is Map ? e : e.toJson()).toList();
+            pointers[j] += take;
+            currentFileCount += take;
+          } else {
+            jsonMap[keyNames[j]] = [];
+          }
+        }
+
+        final String jsonString = jsonEncode(jsonMap);
+        final Directory tempDir = await getTemporaryDirectory();
+        final String filePath =
+            '${tempDir.path}/${fileName}_${Textos.fechaYMD(fecha: ahora)}_${Textos.fechaHMS(fecha: ahora)}_${chunkIndex}_$totalChunks.json';
+        await _ensureDirectoryExists(tempDir.path);
+        final File file = File(filePath);
+        await file.writeAsString(jsonString);
+        files.add(file);
+        chunkIndex++;
+      }
+
+      return files;
     } catch (e) {
       debugPrint("error $e");
       showToast("error: $e");
       return [];
-    } 
+    }
   }
 
   static Future<void> _ensureDirectoryExists(String path) async {

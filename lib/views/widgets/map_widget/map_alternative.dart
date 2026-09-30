@@ -38,7 +38,28 @@ class _MapAlternativeState extends State<MapAlternative> {
             spacing: .5.h,
             mainAxisSize: MainAxisSize.min,
             children: [
+              InkWell(
+                  onTap: () => showDialog(
+                      context: context,
+                      builder: (context) =>
+                          DialogEnrutamiento(provider: provider)),
+                  child: Container(
+                      decoration: BoxDecoration(
+                          color: ThemaMain.dialogbackground,
+                          borderRadius: BorderRadius.circular(borderRadius)),
+                      child: Padding(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: (2.5).w, vertical: .25.h),
+                          child: Column(children: [
+                            Icon(LineIcons.addressBook,
+                                color: ThemaMain.primary, size: 25.sp),
+                            Text("Cartera",
+                                style: TextStyle(
+                                    fontSize: 15.sp,
+                                    fontWeight: FontWeight.bold))
+                          ])))),
               bd.Badge(
+                  position: bd.BadgePosition.topEnd(top: -5, end: -6),
                   badgeStyle: bd.BadgeStyle(badgeColor: ThemaMain.primary),
                   badgeContent: FutureBuilder(
                       future: EnrutarController.getItems(),
@@ -61,7 +82,7 @@ class _MapAlternativeState extends State<MapAlternative> {
                                   BorderRadius.circular(borderRadius)),
                           child: Padding(
                               padding: EdgeInsets.symmetric(
-                                  horizontal: 2.w, vertical: .2.h),
+                                  horizontal: (2.5).w, vertical: .25.h),
                               child: Column(children: [
                                 Icon(LineIcons.directions,
                                     color: ThemaMain.green, size: 25.sp),

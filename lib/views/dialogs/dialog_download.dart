@@ -49,6 +49,10 @@ class _DialogDownloadState extends State<DialogDownload> {
   int maxValue = 50;
   int currentValue = 50;
 
+  ButtonStyle style = ButtonStyle(
+      padding: WidgetStatePropertyAll(
+          EdgeInsets.symmetric(horizontal: 2.w, vertical: 0)));
+
   Future<void> submit() async {
     if (!carga) {
       setState(() {
@@ -328,66 +332,90 @@ class _DialogDownloadState extends State<DialogDownload> {
                   (selects.length + referencias.length),
               minHeight: .5.h,
               valueColor: AlwaysStoppedAnimation(ThemaMain.green)),
-        Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
-          if (tips.isNotEmpty)
-            ElevatedButton.icon(
-                onPressed: () => showDialog(
-                    context: context,
-                    builder: (context) =>
-                        DialogSendTip(tips: tips, user: provider.usuario!)),
-                icon:
-                    Icon(LineIcons.bell, size: 20.sp, color: ThemaMain.yellow),
-                label: Text("Generar Tip", style: TextStyle(fontSize: 14.sp))),
-          ElevatedButton.icon(
-              onPressed: () async {
-                await Dialogs.showMorph(
-                    title: "Descargar la carga",
-                    description:
-                        "Desea ingresar los contactos encontrados como contactos nuevos?",
-                    loadingTitle: "Descargando ...",
-                    onAcceptPressed: (context) async {
-                      setState(() {
-                        c = true;
-                      });
-                    });
-                if (c) {
-                  try {
-                    for (var i = 0; i < selects.length; i++) {
-                      var contacto = selects[i];
-                      List<ContactoModelo> data =
-                          await ContactoController.buscar(
-                              contacto.nombreCompleto!, 1);
-                      if (data.isNotEmpty) {
-                        await ContactoController.update(data.first);
-                      } else {
-                        await ContactoController.insert(contacto);
-                      }
+        SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 0),
+                child: Row(
+                    spacing: 1.w,
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      ElevatedButton.icon(
+                          style: style,
+                          onPressed: () async {
+                            await Dialogs.showMorph(
+                                title: "Descargar la carga",
+                                description:
+                                    "Desea ingresar los contactos encontrados como contactos nuevos?",
+                                loadingTitle: "Descargando ...",
+                                onAcceptPressed: (context) async {
+                                  setState(() {
+                                    c = true;
+                                  });
+                                });
+                            if (c) {
+                              try {
+                                for (var i = 0; i < selects.length; i++) {
+                                  var contacto = selects[i];
+                                  List<ContactoModelo> data =
+                                      await ContactoController.buscar(
+                                          contacto.nombreCompleto!, 1);
+                                  if (data.isNotEmpty) {
+                                    await ContactoController.update(data.first);
+                                  } else {
+                                    await ContactoController.insert(contacto);
+                                  }
 
-                      setState(() {
-                        progress++;
-                      });
-                    }
-                    for (var element in referencias) {
-                      await ReferenciasController.insert(element);
-                      setState(() {
-                        progress++;
-                      });
-                    }
-                    showToast("Se han descargado todos los contactos");
-                  } catch (e) {
-                    showToast("Hubo un error\n$e");
-                  }
-                }
-              },
-              icon: Icon(Icons.done_all,
-                  color: selects.isNotEmpty || referencias.isNotEmpty
-                      ? ThemaMain.green
-                      : ThemaMain.darkGrey,
-                  size: selects.isNotEmpty || referencias.isNotEmpty
-                      ? 20.sp
-                      : 18.sp),
-              label: Text("Descargar", style: TextStyle(fontSize: 14.sp)))
-        ])
+                                  setState(() {
+                                    progress++;
+                                  });
+                                }
+                                for (var element in referencias) {
+                                  await ReferenciasController.insert(element);
+                                  setState(() {
+                                    progress++;
+                                  });
+                                }
+                                showToast(
+                                    "Se han descargado todos los contactos");
+                              } catch (e) {
+                                showToast("Hubo un error\n$e");
+                              }
+                            }
+                          },
+                          icon: Icon(Icons.done_all,
+                              color:
+                                  selects.isNotEmpty || referencias.isNotEmpty
+                                      ? ThemaMain.green
+                                      : ThemaMain.darkGrey,
+                              size: selects.isNotEmpty || referencias.isNotEmpty
+                                  ? 20.sp
+                                  : 18.sp),
+                          label: Text("Descargar",
+                              style: TextStyle(fontSize: 14.sp))),
+                      if (tips.isNotEmpty)
+                        ElevatedButton.icon(
+                            style: style,
+                            onPressed: () => showDialog(
+                                context: context,
+                                builder: (context) => DialogSendTip(
+                                    tips: tips, user: provider.usuario!)),
+                            icon: Icon(LineIcons.bell,
+                                size: 20.sp, color: ThemaMain.yellow),
+                            label: Text("Generar Tip",
+                                style: TextStyle(fontSize: 14.sp))),
+                      if (tips.isNotEmpty)
+                        ElevatedButton.icon(
+                            style: style,
+                            onPressed: () => showDialog(
+                                context: context,
+                                builder: (context) => DialogSendTip(
+                                    tips: tips, user: provider.usuario!)),
+                            icon: Icon(LineIcons.bookmarkAlt,
+                                size: 20.sp, color: ThemaMain.primary),
+                            label: Text("Crear Cartera",
+                                style: TextStyle(fontSize: 14.sp)))
+                    ])))
       ])
     ]));
   }

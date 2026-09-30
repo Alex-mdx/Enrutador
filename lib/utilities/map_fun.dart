@@ -24,19 +24,6 @@ import 'theme/theme_color.dart';
 import 'package:maps_toolkit/maps_toolkit.dart' as toolkit;
 
 class MapFun {
-  static Future<void> getUri(
-      {required MainProvider provider, required String uri}) async {
-    var newindex = uri.indexOf("?q=");
-    var newText = uri.replaceRange(0, newindex + 3, "");
-    List<String> datas = newText.split(",");
-    var pc = PlusCodeFun.psCODE(double.parse(datas[0]), double.parse(datas[1]));
-    var newlocation = PlusCode(pc).decode().center;
-    await sendInitUri(
-        provider: provider,
-        lat: double.parse(newlocation.latitude.toStringAsFixed(7)),
-        lng: double.parse(newlocation.longitude.toStringAsFixed(7)));
-  }
-
   static Future<void> sendInitUri(
       {required MainProvider provider,
       required double lat,
@@ -56,9 +43,9 @@ class MapFun {
   // Versión optimizada que devuelve solo el índice del punto más cercano
   static ContactoModelo? puntoMasCercano(
       double originLat, double originLon, List<ContactoModelo> points) {
-    if (points.isEmpty) showToast('La lista de puntos está vacía');
+    if (points.isEmpty) return null;
 
-    ContactoModelo? nearestIndex;
+    ContactoModelo? nearest;
     double minDistance = double.infinity;
 
     for (int i = 0; i < points.length; i++) {
@@ -71,11 +58,11 @@ class MapFun {
 
       if (distance < minDistance) {
         minDistance = distance;
-        nearestIndex = point;
+        nearest = point;
       }
     }
 
-    return nearestIndex;
+    return nearest;
   }
 
   static double calcularDistancia(
@@ -83,47 +70,50 @@ class MapFun {
       required double lon1,
       required double lat2,
       required double lon2}) {
-    return (FlutterMapMath.distanceBetween(lat1, lon1, lat2, lon2, '') == 0
-        ? 0
-        : FlutterMapMath.distanceBetween(lat1, lon1, lat2, lon2, '') / 10);
+    final dist = FlutterMapMath.distanceBetween(lat1, lon1, lat2, lon2, '');
+    return dist == 0 ? 0 : dist / 10;
   }
 
   static Future<void> ordenamiento(MainProvider provider) async {
     try {
-      var enrutar = await EnrutarController.getItems();
-      var temp = enrutar.map((e) => e).toList();
-      List<EnrutarModelo> enrutarList = [];
-      EnrutarModelo? ruta;
-      for (var i = 0; i < enrutar.length; i++) {
-        if (i == 0) {
-          var temp1 = MapFun.puntoMasCercano(
-              provider.local?.latitude ?? 0,
-              provider.local?.longitude ?? 0,
-              enrutar.map((e) => e.buscar).toList());
-          ruta = enrutar.firstWhereOrNull((element) =>
-              (element.buscar.latitud == temp1?.latitud) &&
-              (element.buscar.longitud == temp1?.longitud));
-        } else {
-          var temp1 = MapFun.puntoMasCercano(ruta?.buscar.latitud ?? 0,
-              ruta?.buscar.longitud ?? 0, temp.map((e) => e.buscar).toList());
-          ruta = enrutar.firstWhereOrNull((element) =>
-              (element.buscar.latitud == temp1?.latitud) &&
-              (element.buscar.longitud == temp1?.longitud));
+      final unvisited = await EnrutarController.getItems();
+      if (unvisited.isEmpty) return;
+
+      double currentLat = provider.local?.latitude ?? 0;
+      double currentLng = provider.local?.longitude ?? 0;
+
+      final List<EnrutarModelo> orderedList = [];
+
+      while (unvisited.isNotEmpty) {
+        int bestIndex = 0;
+        double minDistance = double.infinity;
+
+        for (int i = 0; i < unvisited.length; i++) {
+          final item = unvisited[i];
+          final dist = calcularDistancia(
+              lat1: currentLat,
+              lon1: currentLng,
+              lat2: item.buscar.latitud,
+              lon2: item.buscar.longitud);
+
+          if (dist < minDistance) {
+            minDistance = dist;
+            bestIndex = i;
+          }
         }
-        if (ruta != null) {
-          enrutarList.add(ruta);
-        }
-        temp.removeWhere((element) => element.id == ruta?.id);
-        debugPrint("${temp.map((e) => e.buscar.nombreCompleto).toList()}");
+
+        final nextItem = unvisited.removeAt(bestIndex);
+        orderedList.add(nextItem);
+        currentLat = nextItem.buscar.latitud;
+        currentLng = nextItem.buscar.longitud;
       }
 
-      debugPrint("${enrutarList.map((e) => e.buscar.nombreCompleto).toList()}");
-      for (var i = 0; i < enrutarList.length; i++) {
-        var enrutadorNew = enrutarList[i].copyWith(orden: i + 1);
+      for (int i = 0; i < orderedList.length; i++) {
+        final enrutadorNew = orderedList[i].copyWith(orden: i + 1);
         await EnrutarController.update(enrutadorNew);
       }
     } catch (e) {
-      debugPrint("$e");
+      debugPrint("Error en ordenamiento: $e");
     }
   }
 
@@ -208,7 +198,7 @@ class MapFun {
             child: Stack(alignment: Alignment.center, children: [
               Image.asset("assets/mark_point2.png"),
               Padding(
-                  padding: EdgeInsets.only(bottom: 6.sp),
+                  padding: EdgeInsets.only(bottom: 7.sp),
                   child: Icon(
                       size: 20.sp,
                       Icons.add_circle,
@@ -303,10 +293,8 @@ class MapFun {
                         ]))));
   }
 
-  static Future<bool> inPoly({
-    required LatLng point,
-    required List<LatLng> puntos,
-  }) async {
+  static Future<bool> inPoly(
+      {required LatLng point, required List<LatLng> puntos}) async {
     final polygonForMath =
         puntos.map((p) => toolkit.LatLng(p.latitude, p.longitude)).toList();
 

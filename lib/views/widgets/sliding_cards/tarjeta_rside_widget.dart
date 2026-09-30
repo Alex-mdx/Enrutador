@@ -361,7 +361,14 @@ class _TarjetaRsideWidgetState extends State<TarjetaRsideWidget> {
                       color: (provider.contacto?.tip == 1)
                           ? ThemaMain.yellow
                           : ThemaMain.background),
-                  iconSize: 18.sp)
+                  iconSize: 19.sp),
+            if (((provider.usuario?.adminTipo ?? 0) > 4 ||
+                    (provider.usuario?.adminTipo ?? 0) == -1) &&
+                provider.contacto?.id != null)
+              IconButton.filled(
+                  iconSize: 19.sp,
+                  onPressed: () {},
+                  icon: Icon(LineIcons.wallet, color: ThemaMain.green))
           ])
         ]);
   }

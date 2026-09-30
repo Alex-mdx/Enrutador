@@ -85,7 +85,7 @@ class ReferenciasController {
     final db = await database();
     final query = await db.query(nombreDB,
         where:
-            "id_foranea = ? OR (contacto_id_lat = ? AND contacto_id_lng = ?) ${status != null ? "AND estatus = ?" : ""}",
+            "(id_foranea = ? OR (contacto_id_lat = ? AND contacto_id_lng = ?)) ${status != null ? "AND estatus = ?" : ""}",
         whereArgs: status == null
             ? [idContacto, lat, lng]
             : [idContacto, lat, lng, status]);
@@ -104,7 +104,7 @@ class ReferenciasController {
     final db = await database();
     final query = await db.query(nombreDB,
         where:
-            "id_r_forenea = ? OR (contacto_id_r_lat = ? AND contacto_id_r_lng = ?) ${status != null ? "AND estatus = ?" : ""}",
+            "(id_r_forenea = ? OR (contacto_id_r_lat = ? AND contacto_id_r_lng = ?)) ${status != null ? "AND estatus = ?" : ""}",
         whereArgs: status == null
             ? [idRContacto, lat, lng]
             : [idRContacto, lat, lng, status]);

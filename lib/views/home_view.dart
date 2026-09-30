@@ -144,6 +144,8 @@ class PaginadoState extends State<Paginado> {
   final AppLinks appLinks = AppLinks();
   Timer? _notificationTimer;
   StreamSubscription<Position>? _positionSubscription;
+  StreamSubscription<String>? _appLinkSubscription;
+  static String? _handledInitialUrl;
 
   @override
   void initState() {
@@ -198,10 +200,14 @@ class PaginadoState extends State<Paginado> {
 
   Future<void> initDeepLinks() async {
     final uriString = await appLinks.getInitialLinkString();
-    if (uriString != null) _handleString(uriString);
+    if (uriString != null && uriString != _handledInitialUrl) {
+      _handledInitialUrl = uriString;
+      _handleString(uriString);
+    }
 
 // Escucha de enlaces cálidos (app abierta)
-    appLinks.stringLinkStream.listen(_handleString);
+    _appLinkSubscription?.cancel();
+    _appLinkSubscription = appLinks.stringLinkStream.listen(_handleString);
   }
 
   void _handleString(String url) {
@@ -212,6 +218,7 @@ class PaginadoState extends State<Paginado> {
   void dispose() {
     _positionSubscription?.cancel();
     _notificationTimer?.cancel();
+    _appLinkSubscription?.cancel();
     super.dispose();
   }
 

@@ -26,7 +26,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   try {
-    await FMTCObjectBoxBackend().initialise(); // The default/built-in backend
+    await FMTCObjectBoxBackend().initialise();
   } catch (error) {
     var absPath = path.join(
         (await getApplicationDocumentsDirectory()).absolute.path, 'fmtc');
@@ -38,8 +38,6 @@ Future<void> main() async {
 
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
-
-  // Inicialización de las notificaciones locales
   const AndroidInitializationSettings initializationSettingsAndroid =
       AndroidInitializationSettings('@mipmap/ic_launcher');
 
@@ -54,12 +52,9 @@ Future<void> main() async {
 
       });
 
-  // Obtener implementación de Android del plugin
   final AndroidFlutterLocalNotificationsPlugin? androidImplementation =
       flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<
           AndroidFlutterLocalNotificationsPlugin>();
-
-  // Solicitar permiso de notificaciones (requerido para Android 13+)
   await androidImplementation?.requestNotificationsPermission();
 
   FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;

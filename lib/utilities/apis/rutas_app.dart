@@ -13,6 +13,7 @@ import 'package:enrutador/views/widgets/extras/notas_builder.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../../views/account_view.dart';
+import '../../views/cartera_view.dart';
 import '../../views/home_view.dart';
 import '../../views/roles_view.dart';
 import '../../views/zonas_view.dart';
@@ -46,7 +47,8 @@ class AppRoutes {
     pendientesView: (_) => const PendientesView(),
     users: (_) => const UsersView(),
     zonas: (_) => const ZonasView(),
-    tipHome: (_) => const TipHome()
+    tipHome: (_) => const TipHome(),
+    cartera: (_) => const CarteraView(),
   };
   static Map<String, Widget Function(BuildContext)> get routes => _routes;
   static String get home => 'home';
@@ -65,4 +67,5 @@ class AppRoutes {
   static String get users => 'users';
   static String get zonas => 'zonas';
   static String get tipHome => 'tipHome';
+  static String get cartera => 'carteraView';
 }

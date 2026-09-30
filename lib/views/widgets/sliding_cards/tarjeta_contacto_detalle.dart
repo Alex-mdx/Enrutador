@@ -325,7 +325,7 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                           alignment: WrapAlignment.center,
                                           crossAxisAlignment:
                                               WrapCrossAlignment.center,
-                                          spacing: .5.w,
+                                          spacing: .2.w,
                                           runSpacing: 0,
                                           children: [
                                             FutureBuilder(
@@ -363,7 +363,7 @@ class _TarjetaContactoDetalleState extends State<TarjetaContactoDetalle> {
                                               lng: widget.contacto?.longitud),
                                           builder: (context, snapshot) => Wrap(
                                               runSpacing: 0,
-                                              spacing: .5.w,
+                                              spacing: .2.w,
                                               children: snapshot.data
                                                       ?.map((e) => ChipReferencia(
                                                           ref: e,
