@@ -249,7 +249,7 @@ class _MultiOpcionState extends State<MultiOpcion> {
                                         }
                                       }
                                       var archivo = await ShareFun.shareDatas(
-                                          name: "Contactos",
+                                          nombre: "Contactos",
                                           nombres: ["contactos", "referencias"],
                                           datas: [temps, refs]);
                                       if (archivo.isNotEmpty) {
@@ -335,8 +335,7 @@ class _MultiOpcionState extends State<MultiOpcion> {
                                         context: context,
                                         builder: (context) =>
                                             DialogCarteraCrear(
-                                                addContactos:
-                                                    widget.selects));
+                                                addContactos: widget.selects));
                                   },
                                   child: Card(
                                       child: Column(children: [

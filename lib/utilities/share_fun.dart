@@ -21,14 +21,13 @@ class ShareFun {
   }
 
   static Future<List<File>> shareDatas({
-    String? name,
     String? nombre,
     List<String>? nombres,
     required dynamic datas,
   }) async {
     final List<String> keyNames =
         nombres ?? (nombre != null ? [nombre] : ["datos"]);
-    final String fileName = name ?? (nombre ?? "export");
+    final String fileName = nombre ?? "archivo";
 
     List<List<dynamic>> dataLists = [];
     if (datas is List) {
