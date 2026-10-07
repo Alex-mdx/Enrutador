@@ -1,7 +1,7 @@
 import 'dart:developer';
-import 'dart:ffi';
 
 import 'package:enrutador/controllers/contacto_controller.dart';
+import 'package:enrutador/controllers/fireController/cartera_fire.dart';
 import 'package:enrutador/models/cartera_model.dart';
 import 'package:enrutador/models/contacto_model.dart';
 import 'package:enrutador/utilities/share_fun.dart';
@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../controllers/referencias_controller.dart';
@@ -106,15 +107,16 @@ class _DialogCarteraCrearState extends State<DialogCarteraCrear> {
             label: Text("Generar contraseña aleatoria",
                 style: TextStyle(fontSize: 15.sp))),
         Card(
-            child: PinWidget(
-                textController: _passwordController,
-                pin: _passwordController.text,
-                lenght: 5,
-                onCompleted: (p0) {})),
+          child: PinWidget(
+              textController: _passwordController,
+              pin: _passwordController.text,
+              lenght: 5,
+              onCompleted: (p0) {}),
+        ),
         Text(
             "Si no coloca una contraseña, aquellos que puedan ver su cartera podran acceder a ella y sus contactos, sin restricciones",
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 14.sp, fontStyle: FontStyle.italic)),
+            style: TextStyle(fontSize: 14.sp, fontStyle: FontStyle.italic))
       ])),
       ElevatedButton.icon(
           onPressed: () async {
@@ -156,7 +158,7 @@ class _DialogCarteraCrearState extends State<DialogCarteraCrear> {
                         ntemp.add(cTemp);
                       }
                     }
-                    cTemp.addAll(ntemp);
+                    cTemp = [...cTemp, ...ntemp];
                   }
                 }
               }
@@ -170,15 +172,30 @@ class _DialogCarteraCrearState extends State<DialogCarteraCrear> {
                   fechaActualizado: DateTime.now(),
                   fechaCreado: widget.cartera?.fechaCreado ?? DateTime.now(),
                   uuid: uuidTemp);
-              if (fisico) {
-                await ShareFun.shareDatas(
-                    datas: [cTemp, carteraTemp],
-                    nombre: "Cartera_$uuidTemp",
-                    nombres: ["contactos", "cartera"]);
+              var result = await CarteraFire.sendItem(data: carteraTemp);
+              if (result) showToast("Cartera enviada correctamente");
+              if (fisico && result) {
+                var files = (await ShareFun.shareDatas(
+                        datas: [carteraTemp, cTemp, refs],
+                        nombre: "Cartera_$uuidTemp",
+                        nombres: ["cartera", "contactos", "referencias"]))
+                    .firstOrNull;
+                if (files != null) {
+                  XFile file = XFile(files.path);
+                  await ShareFun.share(
+                      titulo: "Cartera",
+                      mensaje:
+                          "Este es un archivo compartido, contiene una cartera con ${cTemp.length} contacto(s) y ${refs.length} referencia(s) asociado(s), su codigo para importarla en el sistema es ${_passwordController.text}",
+                      files: [file]);
+                }
               }
+              setState(() {
+                charge = false;
+              });
 
               ///await ShareFun.shareDatas(datas: datas,)
             } catch (e) {
+              log("Error al crear cartera ${e.toString()}");
               showToast("Error al crear cartera");
               setState(() {
                 charge = false;

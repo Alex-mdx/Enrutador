@@ -137,19 +137,22 @@ class _MultiOpcionState extends State<MultiOpcion> {
                                       }
                                     },
                                     child: Card(
-                                        child: Column(children: [
-                                      RiveAnimatedIcon(
-                                          enableAbsorbPointer: true,
-                                          riveIcon: RiveIcon.reload,
-                                          color: ThemaMain.green,
-                                          height: 32.sp,
-                                          width: 32.sp,
-                                          strokeWidth: 10.sp),
-                                      Text("Sincronizar",
-                                          style: TextStyle(
-                                              fontSize: 14.sp,
-                                              fontWeight: FontWeight.bold))
-                                    ]))),
+                                        child: Padding(
+                                            padding: EdgeInsets.all(6.sp),
+                                            child: Column(children: [
+                                              RiveAnimatedIcon(
+                                                  enableAbsorbPointer: true,
+                                                  riveIcon: RiveIcon.reload,
+                                                  color: ThemaMain.green,
+                                                  height: 32.sp,
+                                                  width: 32.sp,
+                                                  strokeWidth: 10.sp),
+                                              Text("Sincronizar",
+                                                  style: TextStyle(
+                                                      fontSize: 14.sp,
+                                                      fontWeight:
+                                                          FontWeight.bold))
+                                            ])))),
                               InkWell(
                                   onTap: () async {
                                     if (widget.selects.length <= 5) {
@@ -205,19 +208,22 @@ class _MultiOpcionState extends State<MultiOpcion> {
                                     }
                                   },
                                   child: Card(
-                                      child: Column(children: [
-                                    RiveAnimatedIcon(
-                                        enableAbsorbPointer: true,
-                                        riveIcon: RiveIcon.timer,
-                                        color: ThemaMain.primary,
-                                        height: 32.sp,
-                                        width: 32.sp,
-                                        strokeWidth: 10.sp),
-                                    Text("Pendientes",
-                                        style: TextStyle(
-                                            fontSize: 14.sp,
-                                            fontWeight: FontWeight.bold))
-                                  ]))),
+                                      child: Padding(
+                                          padding: EdgeInsets.all(6.sp),
+                                          child: Column(children: [
+                                            RiveAnimatedIcon(
+                                                enableAbsorbPointer: true,
+                                                riveIcon: RiveIcon.timer,
+                                                color: ThemaMain.primary,
+                                                height: 32.sp,
+                                                width: 32.sp,
+                                                strokeWidth: 10.sp),
+                                            Text("Pendiente",
+                                                style: TextStyle(
+                                                    fontSize: 14.sp,
+                                                    fontWeight:
+                                                        FontWeight.bold))
+                                          ])))),
                               InkWell(
                                   onTap: () async {
                                     if (widget.selects.length <= 100) {
@@ -267,19 +273,22 @@ class _MultiOpcionState extends State<MultiOpcion> {
                                     }
                                   },
                                   child: Card(
-                                      child: Column(children: [
-                                    RiveAnimatedIcon(
-                                        enableAbsorbPointer: true,
-                                        riveIcon: RiveIcon.copy,
-                                        color: ThemaMain.darkBlue,
-                                        height: 32.sp,
-                                        width: 32.sp,
-                                        strokeWidth: 10.sp),
-                                    Text("Copiar",
-                                        style: TextStyle(
-                                            fontSize: 14.sp,
-                                            fontWeight: FontWeight.bold))
-                                  ]))),
+                                      child: Padding(
+                                          padding: EdgeInsets.all(6.sp),
+                                          child: Column(children: [
+                                            RiveAnimatedIcon(
+                                                enableAbsorbPointer: true,
+                                                riveIcon: RiveIcon.copy,
+                                                color: ThemaMain.darkBlue,
+                                                height: 32.sp,
+                                                width: 32.sp,
+                                                strokeWidth: 10.sp),
+                                            Text("Copiar",
+                                                style: TextStyle(
+                                                    fontSize: 14.sp,
+                                                    fontWeight:
+                                                        FontWeight.bold))
+                                          ])))),
                               InkWell(
                                   onTap: () async => showDialog(
                                       context: context,
@@ -287,19 +296,22 @@ class _MultiOpcionState extends State<MultiOpcion> {
                                           tips: widget.selects,
                                           user: provider.usuario!)),
                                   child: Card(
-                                      child: Column(children: [
-                                    RiveAnimatedIcon(
-                                        enableAbsorbPointer: true,
-                                        riveIcon: RiveIcon.bell,
-                                        color: ThemaMain.yellow,
-                                        height: 32.sp,
-                                        width: 32.sp,
-                                        strokeWidth: 10.sp),
-                                    Text("Tip",
-                                        style: TextStyle(
-                                            fontSize: 14.sp,
-                                            fontWeight: FontWeight.bold))
-                                  ]))),
+                                      child: Padding(
+                                          padding: EdgeInsets.all(6.sp),
+                                          child: Column(children: [
+                                            RiveAnimatedIcon(
+                                                enableAbsorbPointer: true,
+                                                riveIcon: RiveIcon.bell,
+                                                color: ThemaMain.yellow,
+                                                height: 32.sp,
+                                                width: 32.sp,
+                                                strokeWidth: 10.sp),
+                                            Text("Tip",
+                                                style: TextStyle(
+                                                    fontSize: 14.sp,
+                                                    fontWeight:
+                                                        FontWeight.bold))
+                                          ])))),
                               InkWell(
                                   onTap: () async {
                                     var file = await PDFFun.buildReporteVentas(
@@ -316,19 +328,20 @@ class _MultiOpcionState extends State<MultiOpcion> {
                                     }
                                   },
                                   child: Card(
+                                      margin: EdgeInsets.all(6.sp),
                                       child: Column(children: [
-                                    RiveAnimatedIcon(
-                                        enableAbsorbPointer: true,
-                                        riveIcon: RiveIcon.message,
-                                        color: ThemaMain.red,
-                                        height: 32.sp,
-                                        width: 32.sp,
-                                        strokeWidth: 10.sp),
-                                    Text("Reporte",
-                                        style: TextStyle(
-                                            fontSize: 14.sp,
-                                            fontWeight: FontWeight.bold))
-                                  ]))),
+                                        RiveAnimatedIcon(
+                                            enableAbsorbPointer: true,
+                                            riveIcon: RiveIcon.message,
+                                            color: ThemaMain.red,
+                                            height: 32.sp,
+                                            width: 32.sp,
+                                            strokeWidth: 10.sp),
+                                        Text("Reporte",
+                                            style: TextStyle(
+                                                fontSize: 14.sp,
+                                                fontWeight: FontWeight.bold))
+                                      ]))),
                               InkWell(
                                   onTap: () async {
                                     showDialog(
@@ -338,19 +351,22 @@ class _MultiOpcionState extends State<MultiOpcion> {
                                                 addContactos: widget.selects));
                                   },
                                   child: Card(
-                                      child: Column(children: [
-                                    RiveAnimatedIcon(
-                                        enableAbsorbPointer: true,
-                                        riveIcon: RiveIcon.bin,
-                                        color: ThemaMain.green,
-                                        height: 32.sp,
-                                        width: 32.sp,
-                                        strokeWidth: 10.sp),
-                                    Text("Cartera",
-                                        style: TextStyle(
-                                            fontSize: 14.sp,
-                                            fontWeight: FontWeight.bold))
-                                  ])))
+                                      child: Padding(
+                                          padding: EdgeInsets.all(6.sp),
+                                          child: Column(children: [
+                                            RiveAnimatedIcon(
+                                                enableAbsorbPointer: true,
+                                                riveIcon: RiveIcon.bin,
+                                                color: ThemaMain.green,
+                                                height: 32.sp,
+                                                width: 32.sp,
+                                                strokeWidth: 10.sp),
+                                            Text("Cartera",
+                                                style: TextStyle(
+                                                    fontSize: 14.sp,
+                                                    fontWeight:
+                                                        FontWeight.bold))
+                                          ]))))
                             ])
                       ])));
             },

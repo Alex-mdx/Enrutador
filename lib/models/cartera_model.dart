@@ -55,6 +55,17 @@ class CarteraModel {
         "empleado_by": empleadoBy,
         "empleado_to": empleadoTo,
         "activo": activo,
+        "fecha_creado": fechaCreado.toIso8601String(),
+        "fecha_actualizado": fechaActualizado.toIso8601String(),
+        "contactos": contactos
+      };
+
+  Map<String, dynamic> toFirestore() => {
+        "codigo": codigo,
+        "uuid": uuid,
+        "empleado_by": empleadoBy,
+        "empleado_to": empleadoTo,
+        "activo": activo,
         "fecha_creado": Timestamp.fromDate(fechaCreado),
         "fecha_actualizado": Timestamp.fromDate(fechaActualizado),
         "contactos": contactos

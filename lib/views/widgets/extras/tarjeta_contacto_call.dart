@@ -34,7 +34,7 @@ class TarjetaContactoCall extends StatelessWidget {
       return ElevatedButton.icon(
           style: ButtonStyle(
               padding: WidgetStatePropertyAll(
-                  EdgeInsets.symmetric(vertical: 0, horizontal: .5.w))),
+                  EdgeInsets.symmetric(vertical: 0, horizontal: 1.w))),
           iconAlignment: iconAlignment ?? IconAlignment.end,
           onLongPress: () async {
             await Clipboard.setData(

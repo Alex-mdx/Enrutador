@@ -68,10 +68,10 @@ class _CardUserSelectState extends State<CardUserSelect> {
     return AnimatedContainer(
         duration: Durations.short4,
         height: search
-            ? 14.h
+            ? (14.5).h
             : actuales.isEmpty
-                ? 13.h
-                : 16.h,
+                ? (13.5).h
+                : (16.5).h,
         width: double.infinity,
         child: Card(
             elevation: 0,

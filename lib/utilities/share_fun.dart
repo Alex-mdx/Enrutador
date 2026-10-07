@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:enrutador/utilities/textos.dart';
@@ -31,79 +32,57 @@ class ShareFun {
 
     List<List<dynamic>> dataLists = [];
     if (datas is List) {
-      if (datas.isNotEmpty && datas.first is List) {
-        dataLists = datas.map((e) => (e as List).cast<dynamic>()).toList();
-      } else {
-        dataLists = [datas.cast<dynamic>()];
+      for (var item in datas) {
+        if (item is List) {
+          dataLists.add(item.cast<dynamic>());
+        } else {
+          dataLists.add([item]);
+        }
       }
+    } else {
+      dataLists = [
+        [datas]
+      ];
     }
 
+    log("shareDatas -> dataLists: ${dataLists.length} listas, items por lista: ${dataLists.map((e) => e.length).toList()}");
     showToast("Generando ${keyNames.join(", ")}");
+
     try {
-      const int chunkLimit = 50;
-      List<File> files = [];
-
-      int totalSum = 0;
-      for (var list in dataLists) {
-        totalSum += list.length;
-      }
-      if (totalSum == 0) return [];
-
-      int totalChunks = (totalSum / chunkLimit).ceil();
-      List<int> pointers = List<int>.filled(dataLists.length, 0);
-
-      bool hasMoreData() {
-        for (int j = 0; j < dataLists.length; j++) {
-          if (pointers[j] < dataLists[j].length) return true;
+      dynamic toEncodable(dynamic e) {
+        if (e == null) return null;
+        if (e is Map) return e;
+        if (e is List) return e.map((item) => toEncodable(item)).toList();
+        try {
+          return (e as dynamic).toJson();
+        } catch (_) {
+          return e;
         }
-        return false;
       }
 
-      int chunkIndex = 1;
-
-      while (hasMoreData()) {
-        final DateTime ahora = DateTime.now();
-        Map<String, dynamic> jsonMap = {};
-        int currentFileCount = 0;
-
-        for (int j = 0; j < keyNames.length; j++) {
-          if (j >= dataLists.length) {
-            jsonMap[keyNames[j]] = [];
-            continue;
-          }
-
-          final list = dataLists[j];
-          int pointer = pointers[j];
-          int spaceLeft = chunkLimit - currentFileCount;
-
-          if (spaceLeft > 0 && pointer < list.length) {
-            int available = list.length - pointer;
-            int take = (available < spaceLeft) ? available : spaceLeft;
-            final sublist = list.sublist(pointer, pointer + take);
-            jsonMap[keyNames[j]] =
-                sublist.map((e) => e is Map ? e : e.toJson()).toList();
-            pointers[j] += take;
-            currentFileCount += take;
-          } else {
-            jsonMap[keyNames[j]] = [];
-          }
-        }
-
-        final String jsonString = jsonEncode(jsonMap);
-        final Directory tempDir = await getTemporaryDirectory();
-        final String filePath =
-            '${tempDir.path}/${fileName}_${Textos.fechaYMD(fecha: ahora)}_${Textos.fechaHMS(fecha: ahora)}_${chunkIndex}_$totalChunks.json';
-        await _ensureDirectoryExists(tempDir.path);
-        final File file = File(filePath);
-        await file.writeAsString(jsonString);
-        files.add(file);
-        chunkIndex++;
+      Map<String, dynamic> jsonMap = {};
+      for (int j = 0; j < dataLists.length; j++) {
+        final String key = (j < keyNames.length) ? keyNames[j] : "datos_$j";
+        final list = dataLists[j];
+        jsonMap[key] = list.map((e) => toEncodable(e)).toList();
       }
 
-      return files;
+      final DateTime ahora = DateTime.now();
+      final String jsonString = jsonEncode(jsonMap);
+      final Directory tempDir = await getTemporaryDirectory();
+      final String filePath =
+          '${tempDir.path}/${fileName}_${Textos.fechaYMD(fecha: ahora)}_${Textos.fechaHMS(fecha: ahora)}.json';
+
+      await _ensureDirectoryExists(tempDir.path);
+      final File file = File(filePath);
+      await file.writeAsString(jsonString);
+
+      log("Archivo JSON generado exitosamente en: $filePath");
+
+      return [file];
     } catch (e) {
-      debugPrint("error $e");
-      showToast("error: $e");
+      log("Error en shareDatas: $e");
+      showToast("Error: $e");
       return [];
     }
   }

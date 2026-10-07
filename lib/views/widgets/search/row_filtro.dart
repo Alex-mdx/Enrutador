@@ -12,6 +12,7 @@ import 'package:enrutador/views/widgets/list_tipo_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/utils.dart';
 import 'package:line_icons/line_icons.dart';
+import 'package:m3e_core/m3e_core.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 
@@ -41,274 +42,310 @@ class _RowFiltroState extends State<RowFiltro> {
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<MainProvider>(context);
+
     return SingleChildScrollView(
         scrollDirection: Axis.horizontal,
-        child: Row(spacing: .5.w, children: [
-          chips(
-              icono: Icons.type_specimen,
-              cabeza: widget.tipos.isEmpty
-                  ? "Tipo"
-                  : widget.tipos
-                      .map((e) => provider.tipos
-                          .firstWhereOrNull((ti) => ti.id == int.tryParse(e))
-                          ?.nombre)
-                      .join(", "),
-              fun: () => showDialog(
-                  context: context,
-                  builder: (context) => Dialog(
-                          child:
-                              Column(mainAxisSize: MainAxisSize.min, children: [
-                        Text("Seleccione tipos para filtrar",
-                            style: TextStyle(fontSize: 16.sp)),
-                        Padding(
-                            padding: EdgeInsets.only(bottom: 1.h),
-                            child: Container(
-                                constraints: BoxConstraints(maxHeight: 80.h),
-                                child: FutureBuilder(
-                                    future: TipoController.getItems(),
-                                    builder: (context, snapshot) {
-                                      if (snapshot.hasData) {
-                                        return ListView.builder(
-                                            shrinkWrap: true,
-                                            itemCount: snapshot.data!.length,
-                                            itemBuilder: (context, index) {
-                                              TiposModelo tipo =
-                                                  snapshot.data![index];
-                                              return ListTipoWidget(
-                                                  tipo: tipo,
-                                                  fun: () {},
-                                                  share: false,
-                                                  selectedVisible: true,
-                                                  selected: widget.tipos
-                                                      .contains(
-                                                          tipo.id.toString()),
-                                                  onSelected: (p0) {
-                                                    var temp = widget.tipos
-                                                        .map(
-                                                            (e) => int.parse(e))
-                                                        .toList();
-                                                    if (temp
-                                                        .contains(tipo.id)) {
-                                                      temp.remove(tipo.id);
-                                                    } else {
-                                                      temp.add(tipo.id!);
-                                                    }
-                                                    setState(() {
-                                                      widget.updateData(
-                                                          temp
-                                                              .map((e) =>
-                                                                  e.toString())
-                                                              .toList(),
-                                                          widget.estados,
-                                                          widget.zonas);
-                                                      if (widget.press !=
-                                                          null) {
-                                                        widget.press!();
-                                                      }
+        child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            spacing: .5.w,
+            children: [
+              chips(
+                  icono: Icons.type_specimen,
+                  cabeza: widget.tipos.isEmpty
+                      ? "Tipo"
+                      : widget.tipos
+                          .map((e) => provider.tipos
+                              .firstWhereOrNull(
+                                  (ti) => ti.id == int.tryParse(e))
+                              ?.nombre)
+                          .join(", "),
+                  fun: () => showDialog(
+                      context: context,
+                      builder: (context) => Dialog(
+                              child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                Text("Seleccione tipos para filtrar",
+                                    style: TextStyle(fontSize: 16.sp)),
+                                Padding(
+                                    padding: EdgeInsets.only(bottom: 1.h),
+                                    child: Container(
+                                        constraints:
+                                            BoxConstraints(maxHeight: 80.h),
+                                        child: FutureBuilder(
+                                            future: TipoController.getItems(),
+                                            builder: (context, snapshot) {
+                                              if (snapshot.hasData) {
+                                                return ListView.builder(
+                                                    shrinkWrap: true,
+                                                    itemCount:
+                                                        snapshot.data!.length,
+                                                    itemBuilder:
+                                                        (context, index) {
+                                                      TiposModelo tipo =
+                                                          snapshot.data![index];
+                                                      return ListTipoWidget(
+                                                          tipo: tipo,
+                                                          fun: () {},
+                                                          share: false,
+                                                          selectedVisible: true,
+                                                          selected: widget.tipos
+                                                              .contains(tipo.id
+                                                                  .toString()),
+                                                          onSelected: (p0) {
+                                                            var temp = widget
+                                                                .tipos
+                                                                .map((e) =>
+                                                                    int.parse(
+                                                                        e))
+                                                                .toList();
+                                                            if (temp.contains(
+                                                                tipo.id)) {
+                                                              temp.remove(
+                                                                  tipo.id);
+                                                            } else {
+                                                              temp.add(
+                                                                  tipo.id!);
+                                                            }
+                                                            setState(() {
+                                                              widget.updateData(
+                                                                  temp
+                                                                      .map((e) =>
+                                                                          e.toString())
+                                                                      .toList(),
+                                                                  widget.estados,
+                                                                  widget.zonas);
+                                                              if (widget
+                                                                      .press !=
+                                                                  null) {
+                                                                widget.press!();
+                                                              }
+                                                            });
+
+                                                            Navigation.pop();
+                                                          });
                                                     });
-
-                                                    Navigation.pop();
-                                                  });
-                                            });
-                                      } else if (snapshot.hasError) {
-                                        return Text("Error: ${snapshot.error}",
-                                            style: TextStyle(
-                                                fontSize: 15.sp,
-                                                fontStyle: FontStyle.italic));
-                                      } else {
-                                        return Padding(
-                                            padding: EdgeInsets.all(8.sp),
-                                            child: CircularProgressIndicator());
-                                      }
-                                    })))
-                      ]))),
-              colorprincipal: ThemaMain.primary,
-              condicion: widget.tipos.isNotEmpty,
-              delete: () => setState(() {
-                    widget.updateData([], widget.estados, widget.zonas);
-                    if (widget.press != null) {
-                      widget.press!();
-                    }
-                  })),
-          chips(
-              icono: Icons.contact_emergency,
-              cabeza: widget.estados.isEmpty
-                  ? "Estado"
-                  : widget.estados
-                      .map((e) => provider.estados
-                          .firstWhereOrNull((ti) => ti.id == int.tryParse(e))
-                          ?.nombre)
-                      .join(", "),
-              fun: () => showDialog(
-                  context: context,
-                  builder: (context) => Dialog(
-                          child:
-                              Column(mainAxisSize: MainAxisSize.min, children: [
-                        Text("Seleccione estados para filtrar",
-                            style: TextStyle(fontSize: 16.sp)),
-                        Padding(
-                            padding: EdgeInsets.only(bottom: 1.h),
-                            child: Container(
-                                constraints: BoxConstraints(maxHeight: 80.h),
-                                child: FutureBuilder(
-                                    future: EstadoController.getItems(),
-                                    builder: (context, snapshot) {
-                                      if (snapshot.hasData) {
-                                        return ListView.builder(
-                                            shrinkWrap: true,
-                                            itemCount: snapshot.data!.length,
-                                            itemBuilder: (context, index) {
-                                              EstadoModel estado =
-                                                  snapshot.data![index];
-                                              return ListEstadoWidget(
-                                                  estado: estado,
-                                                  fun: () {},
-                                                  share: false,
-                                                  selectedVisible: true,
-                                                  selected: widget.estados
-                                                      .contains(
-                                                          estado.id.toString()),
-                                                  onSelected: (p0) {
-                                                    var temp = widget.estados
-                                                        .map(
-                                                            (e) => int.parse(e))
-                                                        .toList();
-                                                    if (temp
-                                                        .contains(estado.id)) {
-                                                      temp.remove(estado.id);
-                                                    } else {
-                                                      temp.add(estado.id!);
-                                                    }
-                                                    log("${temp.map((e) => e.toString()).toList()}");
-                                                    setState(() {
-                                                      widget.updateData(
-                                                          widget.tipos,
-                                                          temp
-                                                              .map((e) =>
-                                                                  e.toString())
-                                                              .toList(),
-                                                          widget.zonas);
-                                                      if (widget.press !=
-                                                          null) {
-                                                        widget.press!();
-                                                      }
-                                                    });
-
-                                                    Navigation.pop();
-                                                  },
-                                                  dense: true);
-                                            });
-                                      } else if (snapshot.hasError) {
-                                        return Text("Error: ${snapshot.error}",
-                                            style: TextStyle(
-                                                fontSize: 15.sp,
-                                                fontStyle: FontStyle.italic));
-                                      } else {
-                                        return Padding(
-                                            padding: EdgeInsets.all(8.sp),
-                                            child: CircularProgressIndicator());
-                                      }
-                                    })))
-                      ]))),
-              colorprincipal: ThemaMain.darkBlue,
-              condicion: widget.estados.isNotEmpty,
-              delete: () => setState(() {
-                    widget.updateData(widget.tipos, [], widget.zonas);
-                    if (widget.press != null) {
-                      widget.press!();
-                    }
-                  })),
-          chips(
-              icono: LineIcons.mapMarked,
-              cabeza: widget.zonas.isEmpty
-                  ? "Zona"
-                  : widget.zonas
-                      .map((e) => provider.zonas
-                          .firstWhereOrNull((ti) => ti.id == int.tryParse(e))
-                          ?.nombre)
-                      .join(", "),
-              fun: () => showDialog(
-                  context: context,
-                  builder: (context) => DialogZonaView(
-                      zonas: widget.zonas.isEmpty
-                          ? []
-                          : widget.zonas.map((e) => int.parse(e)).toList(),
-                      fun: (p0) {
-                        setState(() {
-                          widget.updateData(widget.tipos, widget.estados,
-                              p0.map((e) => e.id.toString()).toList());
-                        });
-
-                        Navigation.pop();
+                                              } else if (snapshot.hasError) {
+                                                return Text(
+                                                    "Error: ${snapshot.error}",
+                                                    style: TextStyle(
+                                                        fontSize: 15.sp,
+                                                        fontStyle:
+                                                            FontStyle.italic));
+                                              } else {
+                                                return Padding(
+                                                    padding:
+                                                        EdgeInsets.all(8.sp),
+                                                    child:
+                                                        CircularProgressIndicator());
+                                              }
+                                            })))
+                              ]))),
+                  colorprincipal: ThemaMain.primary,
+                  condicion: widget.tipos.isNotEmpty,
+                  delete: () => setState(() {
+                        widget.updateData([], widget.estados, widget.zonas);
+                        if (widget.press != null) {
+                          widget.press!();
+                        }
                       })),
-              colorprincipal: ThemaMain.pink,
-              condicion: widget.zonas.isNotEmpty,
-              delete: () => setState(() {
-                    widget.updateData(widget.tipos, widget.estados, []);
-                    if (widget.press != null) {
-                      widget.press!();
-                    }
-                  })),
-          chips(
-              icono: LineIcons.bell,
-              cabeza: Preferences.tipVis == 0
-                  ? "Tips"
-                  : Preferences.tipVis == 1
-                      ? "Propios"
-                      : "Todos",
-              fun: () => showDialog(
-                  context: context,
-                  builder: (context) => Dialog(
-                          child:
-                              Column(mainAxisSize: MainAxisSize.min, children: [
-                        Text("Seleccion de visualizacion por tips",
-                            style: TextStyle(fontSize: 15.sp)),
-                        RadioGroup<int>(
-                            groupValue: Preferences.tipVis,
-                            onChanged: (value) {
-                              Preferences.tipVis = value!;
-                              if (widget.press != null) {
-                                widget.press!();
-                              }
-                              setState(() {});
-                              Navigation.pop();
-                            },
-                            child: Column(children: [
-                              RadioListTile<int>(
-                                  activeColor: ThemaMain.green,
-                                  value: 0,
-                                  dense: Preferences.tipVis != 0,
-                                  title: Text('Ninguno'),
-                                  subtitle: Text(
-                                      'Se esta visualizando todos los contactos'),
-                                  isThreeLine: true),
-                              RadioListTile<int>(
-                                  activeColor: ThemaMain.green,
-                                  value: 1,
-                                  dense: Preferences.tipVis != 1,
-                                  title: Text('Propios'),
-                                  subtitle: Text(
-                                      'Solo se mostrarán los contactos que sean tips asignados a usted'),
-                                  isThreeLine: true),
-                              RadioListTile<int>(
-                                  activeColor: ThemaMain.green,
-                                  value: 2,
-                                  dense: Preferences.tipVis != 2,
-                                  title: Text('Todos'),
-                                  subtitle: Text(
-                                      "Se mostraran todos los contactos que hayan sido tips"),
-                                  isThreeLine: true)
-                            ]))
-                      ]))),
-              colorprincipal: ThemaMain.yellow,
-              condicion: Preferences.tipVis != 0,
-              delete: () => setState(() {
-                    Preferences.tipVis = 0;
-                    if (widget.press != null) {
-                      widget.press!();
-                    }
-                  }))
-        ]));
+              chips(
+                  icono: Icons.contact_emergency,
+                  cabeza: widget.estados.isEmpty
+                      ? "Estado"
+                      : widget.estados
+                          .map((e) => provider.estados
+                              .firstWhereOrNull(
+                                  (ti) => ti.id == int.tryParse(e))
+                              ?.nombre)
+                          .join(", "),
+                  fun: () => showDialog(
+                      context: context,
+                      builder: (context) => Dialog(
+                              child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                Text("Seleccione estados para filtrar",
+                                    style: TextStyle(fontSize: 16.sp)),
+                                Padding(
+                                    padding: EdgeInsets.only(bottom: 1.h),
+                                    child: Container(
+                                        constraints:
+                                            BoxConstraints(maxHeight: 80.h),
+                                        child: FutureBuilder(
+                                            future: EstadoController.getItems(),
+                                            builder: (context, snapshot) {
+                                              if (snapshot.hasData) {
+                                                return ListView.builder(
+                                                    shrinkWrap: true,
+                                                    itemCount:
+                                                        snapshot.data!.length,
+                                                    itemBuilder:
+                                                        (context, index) {
+                                                      EstadoModel estado =
+                                                          snapshot.data![index];
+                                                      return ListEstadoWidget(
+                                                          estado: estado,
+                                                          fun: () {},
+                                                          share: false,
+                                                          selectedVisible: true,
+                                                          selected: widget
+                                                              .estados
+                                                              .contains(estado
+                                                                  .id
+                                                                  .toString()),
+                                                          onSelected: (p0) {
+                                                            var temp = widget
+                                                                .estados
+                                                                .map((e) =>
+                                                                    int.parse(
+                                                                        e))
+                                                                .toList();
+                                                            if (temp.contains(
+                                                                estado.id)) {
+                                                              temp.remove(
+                                                                  estado.id);
+                                                            } else {
+                                                              temp.add(
+                                                                  estado.id!);
+                                                            }
+                                                            log("${temp.map((e) => e.toString()).toList()}");
+                                                            setState(() {
+                                                              widget.updateData(
+                                                                  widget.tipos,
+                                                                  temp
+                                                                      .map((e) =>
+                                                                          e.toString())
+                                                                      .toList(),
+                                                                  widget.zonas);
+                                                              if (widget
+                                                                      .press !=
+                                                                  null) {
+                                                                widget.press!();
+                                                              }
+                                                            });
+
+                                                            Navigation.pop();
+                                                          },
+                                                          dense: true);
+                                                    });
+                                              } else if (snapshot.hasError) {
+                                                return Text(
+                                                    "Error: ${snapshot.error}",
+                                                    style: TextStyle(
+                                                        fontSize: 15.sp,
+                                                        fontStyle:
+                                                            FontStyle.italic));
+                                              } else {
+                                                return Padding(
+                                                    padding:
+                                                        EdgeInsets.all(8.sp),
+                                                    child:
+                                                        CircularProgressIndicator());
+                                              }
+                                            })))
+                              ]))),
+                  colorprincipal: ThemaMain.darkBlue,
+                  condicion: widget.estados.isNotEmpty,
+                  delete: () => setState(() {
+                        widget.updateData(widget.tipos, [], widget.zonas);
+                        if (widget.press != null) {
+                          widget.press!();
+                        }
+                      })),
+              chips(
+                  icono: LineIcons.mapMarked,
+                  cabeza: widget.zonas.isEmpty
+                      ? "Zona"
+                      : widget.zonas
+                          .map((e) => provider.zonas
+                              .firstWhereOrNull(
+                                  (ti) => ti.id == int.tryParse(e))
+                              ?.nombre)
+                          .join(", "),
+                  fun: () => showDialog(
+                      context: context,
+                      builder: (context) => DialogZonaView(
+                          zonas: widget.zonas.isEmpty
+                              ? []
+                              : widget.zonas.map((e) => int.parse(e)).toList(),
+                          fun: (p0) {
+                            setState(() {
+                              widget.updateData(widget.tipos, widget.estados,
+                                  p0.map((e) => e.id.toString()).toList());
+                            });
+
+                            Navigation.pop();
+                          })),
+                  colorprincipal: ThemaMain.pink,
+                  condicion: widget.zonas.isNotEmpty,
+                  delete: () => setState(() {
+                        widget.updateData(widget.tipos, widget.estados, []);
+                        if (widget.press != null) {
+                          widget.press!();
+                        }
+                      })),
+              chips(
+                  icono: LineIcons.bell,
+                  cabeza: Preferences.tipVis == 0
+                      ? "Tips"
+                      : Preferences.tipVis == 1
+                          ? "Propios"
+                          : "Todos",
+                  fun: () => showDialog(
+                      context: context,
+                      builder: (context) => Dialog(
+                              child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                Text("Seleccion de visualizacion por tips",
+                                    style: TextStyle(fontSize: 15.sp)),
+                                RadioGroup<int>(
+                                    groupValue: Preferences.tipVis,
+                                    onChanged: (value) {
+                                      Preferences.tipVis = value!;
+                                      if (widget.press != null) {
+                                        widget.press!();
+                                      }
+                                      setState(() {});
+                                      Navigation.pop();
+                                    },
+                                    child: Column(children: [
+                                      RadioListTile<int>(
+                                          activeColor: ThemaMain.green,
+                                          value: 0,
+                                          dense: Preferences.tipVis != 0,
+                                          title: Text('Ninguno'),
+                                          subtitle: Text(
+                                              'Se esta visualizando todos los contactos'),
+                                          isThreeLine: true),
+                                      RadioListTile<int>(
+                                          activeColor: ThemaMain.green,
+                                          value: 1,
+                                          dense: Preferences.tipVis != 1,
+                                          title: Text('Propios'),
+                                          subtitle: Text(
+                                              'Solo se mostrarán los contactos que sean tips asignados a usted'),
+                                          isThreeLine: true),
+                                      RadioListTile<int>(
+                                          activeColor: ThemaMain.green,
+                                          value: 2,
+                                          dense: Preferences.tipVis != 2,
+                                          title: Text('Todos'),
+                                          subtitle: Text(
+                                              "Se mostraran todos los contactos que hayan sido tips"),
+                                          isThreeLine: true)
+                                    ]))
+                              ]))),
+                  colorprincipal: ThemaMain.yellow,
+                  condicion: Preferences.tipVis != 0,
+                  delete: () => setState(() {
+                        Preferences.tipVis = 0;
+                        if (widget.press != null) {
+                          widget.press!();
+                        }
+                      }))
+            ]));
   }
 
   Widget chips(
@@ -318,22 +355,21 @@ class _RowFiltroState extends State<RowFiltro> {
       required Color colorprincipal,
       required bool condicion,
       required Function() delete}) {
-    return GestureDetector(
-        onTap: fun,
-        child: Chip(
-            avatar: Icon(icono,
-                size: 17.sp,
-                color: condicion ? colorprincipal : ThemaMain.darkGrey),
-            padding: EdgeInsets.all(0),
-            label: Text(cabeza,
-                style: TextStyle(
-                    fontSize: condicion ? 12.sp : 13.sp,
-                    fontWeight:
-                        condicion ? FontWeight.bold : FontWeight.normal)),
-            onDeleted: delete,
-            labelPadding: EdgeInsets.all(0),
-            deleteIcon: condicion
-                ? Icon(Icons.close, size: 18.sp, color: ThemaMain.red)
-                : SizedBox()));
+    return M3EToggleButton(
+        icon: Icon(icono,
+            size: 17.sp,
+            color: condicion ? colorprincipal : ThemaMain.darkGrey),
+        checkedLabel: Text(cabeza,
+            style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.bold)),
+        checked: condicion,
+        size: M3EButtonSize.sm,
+        decoration: M3EToggleButtonDecoration(
+            backgroundColor: WidgetStatePropertyAll(condicion
+                ? ThemaMain.darkBlue.withAlpha(220)
+                : ThemaMain.dialogbackground.withAlpha(220)),
+            haptic: M3EHapticFeedback.light,
+            motion: M3EMotion.expressiveSpatialDefault),
+        onCheckedChange: (p) => fun(),
+        onLongPress: delete);
   }
 }

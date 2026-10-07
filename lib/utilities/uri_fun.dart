@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'dart:io';
+import 'package:path_provider/path_provider.dart';
 import 'package:enrutador/controllers/contacto_controller.dart';
 import 'package:enrutador/controllers/estado_controller.dart';
 import 'package:enrutador/controllers/tipo_controller.dart';
@@ -79,6 +81,23 @@ class UriFun {
       if (!provider.cargaDatos) {
         provider.cargaDatos = true;
         Map<String, dynamic> datas = jsonDecode(content.toString());
+
+        if (datas.containsKey("cartera")) {
+          final directory = await getApplicationDocumentsDirectory();
+          final fileName = "cartera.json";
+          final file = File('${directory.path}/$fileName');
+
+          Map<String, dynamic> carteraOnly = {"cartera": datas["cartera"]};
+
+          await file.writeAsString(jsonEncode(carteraOnly));
+          showToast("Cartera guardada como archivo");
+
+          provider.cargaDatos = false;
+          provider.cargaLenght = 0;
+          provider.cargaProgress = 0;
+          return;
+        }
+
         for (var clave in datas.keys) {
           switch (clave) {
             case "contactos":

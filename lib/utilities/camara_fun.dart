@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:flutter_barcode_scanner_plus/flutter_barcode_scanner_plus.dart';
 import 'package:flutter_doc_scanner/flutter_doc_scanner.dart';
 import 'package:flutter/material.dart';
 import 'package:insta_assets_picker/insta_assets_picker.dart';
@@ -109,6 +110,21 @@ class CamaraFun {
             : imagePath;
         return await XFile(filePath).readAsBytes();
       }
+    } catch (e) {
+      log(e.toString());
+      showToast("Error al escanear");
+    }
+    return null;
+  }
+
+  static Future<String?> scanQr() async {
+    try {
+      var barcode = await FlutterBarcodeScanner.scanBarcode(
+          "#ff6666", "Cancelar", false, ScanMode.QR);
+      if (barcode != "-1") {
+        return barcode;
+      }
+      return null;
     } catch (e) {
       log(e.toString());
       showToast("Error al escanear");

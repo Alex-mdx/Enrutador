@@ -6,7 +6,6 @@ import '../../utilities/trans_fun.dart';
 import 'fire_constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:enrutador/utilities/textos.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 /// Operadores de comparación disponibles para [PendienteFire.getCompareItems].
 enum QueryOperator {
@@ -14,7 +13,7 @@ enum QueryOperator {
   greaterThan,
   greaterThanOrEqualTo,
   lessThan,
-  lessThanOrEqualTo,
+  lessThanOrEqualTo
 }
 
 class CarteraFire {
@@ -105,9 +104,8 @@ class CarteraFire {
           .collection(name)
           .where(table ?? "uuid",
               isEqualTo: itsNumber
-                  ? int.tryParse(
-                      query ?? FirebaseAuth.instance.currentUser?.uid ?? "")
-                  : query ?? FirebaseAuth.instance.currentUser?.uid)
+                  ? int.tryParse(query ?? data.uuid)
+                  : query ?? data.uuid)
           .limit(1)
           .get(options)
           .timeout(const Duration(seconds: firebaseTimeout));

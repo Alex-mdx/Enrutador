@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:enrutador/views/dialogs/dialog_cartera_view.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
@@ -9,6 +10,7 @@ import '../models/cartera_model.dart';
 import '../models/usuario_model.dart';
 import '../utilities/main_provider.dart';
 import '../utilities/theme/theme_color.dart';
+import 'widgets/extras/card_cartera.dart';
 
 class CarteraView extends StatefulWidget {
   const CarteraView({super.key});
@@ -37,8 +39,9 @@ class _CarteraViewState extends State<CarteraView> {
     setState(() => cargando = true);
 
     var result = await CarteraFire.getItemPersonalizado(
-        filters: [Filter("empleado_by",isEqualTo: arguments.empleadoId)],
+        filters: [Filter("empleado_by", isEqualTo: arguments.empleadoId)],
         orderBy: "fecha_actualizado",
+        descending: true,
         max: 20);
     if (result.isNotEmpty) {
       setState(() => pendientes = result);
@@ -52,9 +55,9 @@ class _CarteraViewState extends State<CarteraView> {
     final provider = Provider.of<MainProvider>(context);
     return Scaffold(
         appBar: AppBar(
-          title: Text("Carteras",
-              style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold)),
-        ),
+            title: Text("Carteras",
+                style:
+                    TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold))),
         body: cargando
             ? Center(
                 child: LoadingAnimationWidget.hexagonDots(
@@ -70,6 +73,11 @@ class _CarteraViewState extends State<CarteraView> {
                     child: ListView.builder(
                         controller: itemScrollController,
                         itemCount: pendientes.length,
-                        itemBuilder: (context, index) => Placeholder())));
+                        itemBuilder: (context, index) => CardCartera(
+                            cartera: pendientes[index],
+                            onTap: () => showDialog(
+                                context: context,
+                                builder: (context) => DialogCarteraView(
+                                    cartera: pendientes[index]))))));
   }
 }

@@ -206,7 +206,7 @@ class _ContactosViewState extends State<ContactosView> {
     return StickyGroupedListView<ContactoModelo, String?>(
         shrinkWrap: true,
         elements: contactos,
-        padding: EdgeInsets.symmetric(horizontal: .5.w, vertical: .1.h),
+        padding: EdgeInsets.symmetric(horizontal: .2.w, vertical: .1.h),
         groupBy: (element) => Preferences.tiposFilt == 0
             ? Preferences.agruparFilt == 0
                 ? element.nombreCompleto?.substring(0, 1)

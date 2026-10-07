@@ -40,6 +40,7 @@ class CardContactoWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    
     return bd.Badge(
         badgeStyle: bd.BadgeStyle(
             badgeColor: Colors.black, shape: bd.BadgeShape.twitter),
