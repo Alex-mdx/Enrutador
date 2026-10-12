@@ -83,7 +83,7 @@ class _DialogsEstadoFuncion extends State<DialogsEstadoFuncion> {
                     label: Text("Limpiar los estados",
                         style: TextStyle(fontSize: 15.sp)),
                     icon: Icon(Icons.cleaning_services_rounded,
-                        color: ThemaMain.darkBlue, size: 20.sp)),
+                        color: ThemaMain.pink, size: 20.sp)),
               Text(contacto.nombreCompleto ?? "Sin nombre",
                   style:
                       TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold)),

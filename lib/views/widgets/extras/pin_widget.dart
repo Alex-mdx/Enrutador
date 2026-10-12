@@ -45,30 +45,31 @@ class _PinWidgetState extends State<PinWidget> {
         decoration: defaultPinTheme.decoration
             ?.copyWith(color: ThemaMain.dialogbackground));
 
-    return Material(
-      color: Colors.transparent,
-      child: Pinput(
-          defaultPinTheme: defaultPinTheme,
-          focusedPinTheme: focusedPinTheme,
-          submittedPinTheme: submittedPinTheme,
-          closeKeyboardWhenCompleted: true,
-          controller: widget.textController,
-          validator: (s) {
-            return widget.error
-                ? s == widget.pin
-                    ? null
-                    : 'El Pin es incorrecto'
-                : null;
-          },
-          keyboardType:
-              TextInputType.numberWithOptions(decimal: false, signed: false),
-          length: widget.lenght,
-          pinputAutovalidateMode: PinputAutovalidateMode.onSubmit,
-          showCursor: true,
-          onCompleted: (pin) => widget.onCompleted(pin),
-          onChanged: widget.onChanged == null
-              ? (value) {}
-              : (value) => widget.onChanged!(value)),
+    return Card(
+      child: Material(
+          color: Colors.transparent,
+          child: Pinput(
+              defaultPinTheme: defaultPinTheme,
+              focusedPinTheme: focusedPinTheme,
+              submittedPinTheme: submittedPinTheme,
+              closeKeyboardWhenCompleted: true,
+              controller: widget.textController,
+              validator: (s) {
+                return widget.error
+                    ? s == widget.pin
+                        ? null
+                        : 'El Pin es incorrecto'
+                    : null;
+              },
+              keyboardType: TextInputType.numberWithOptions(
+                  decimal: false, signed: false),
+              length: widget.lenght,
+              pinputAutovalidateMode: PinputAutovalidateMode.onSubmit,
+              showCursor: true,
+              onCompleted: (pin) => widget.onCompleted(pin),
+              onChanged: widget.onChanged == null
+                  ? (value) {}
+                  : (value) => widget.onChanged!(value))),
     );
   }
 }

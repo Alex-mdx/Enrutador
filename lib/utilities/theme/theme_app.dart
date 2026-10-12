@@ -30,13 +30,13 @@ ColorScheme _buildExpressiveColorScheme({
 
   return baseScheme.copyWith(
     primary: primaryColor,
-    onPrimary: isDark ? DarkTheme.second : LightTheme.second,
+    onPrimary: LightTheme.second,
     primaryContainer: darkBlueColor,
     onPrimaryContainer: isDark ? DarkTheme.second : LightTheme.second,
     secondary: secondaryColor,
     onSecondary: isDark ? DarkTheme.second : LightTheme.second,
     secondaryContainer: dialogBackgroundColor,
-    onSecondaryContainer: isDark ? DarkTheme.darkGrey : LightTheme.darkBlue,
+    onSecondaryContainer: LightTheme.darkBlue,
     tertiary: Color(expressiveScheme.tertiary),
     onTertiary: Color(expressiveScheme.onTertiary),
     tertiaryContainer: Color(expressiveScheme.tertiaryContainer),

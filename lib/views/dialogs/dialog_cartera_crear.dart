@@ -106,13 +106,11 @@ class _DialogCarteraCrearState extends State<DialogCarteraCrear> {
             icon: Icon(LineIcons.random, size: 18.sp),
             label: Text("Generar contraseña aleatoria",
                 style: TextStyle(fontSize: 15.sp))),
-        Card(
-          child: PinWidget(
-              textController: _passwordController,
-              pin: _passwordController.text,
-              lenght: 5,
-              onCompleted: (p0) {}),
-        ),
+        PinWidget(
+            textController: _passwordController,
+            pin: _passwordController.text,
+            lenght: 5,
+            onCompleted: (p0) {}),
         Text(
             "Si no coloca una contraseña, aquellos que puedan ver su cartera podran acceder a ella y sus contactos, sin restricciones",
             textAlign: TextAlign.center,

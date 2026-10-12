@@ -2,6 +2,7 @@ import 'package:enrutador/utilities/main_provider.dart';
 import 'package:enrutador/utilities/preferences.dart';
 import 'package:enrutador/utilities/theme/theme_app.dart';
 import 'package:enrutador/utilities/theme/theme_color.dart';
+import 'package:enrutador/views/dialogs/dialog_cartera_view.dart';
 import 'package:enrutador/views/dialogs/dialog_enrutamiento.dart';
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
@@ -41,8 +42,7 @@ class _MapAlternativeState extends State<MapAlternative> {
               InkWell(
                   onTap: () => showDialog(
                       context: context,
-                      builder: (context) =>
-                          DialogEnrutamiento(provider: provider)),
+                      builder: (context) => DialogCarteraView(cartera: null)),
                   child: Container(
                       decoration: BoxDecoration(
                           color: ThemaMain.dialogbackground,

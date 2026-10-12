@@ -25,7 +25,7 @@ class DialogTiposAll extends StatelessWidget {
               padding: WidgetStatePropertyAll(
                   EdgeInsets.symmetric(vertical: 0, horizontal: 2.w))),
           icon: Icon(Icons.cleaning_services_rounded,
-              size: 18.sp, color: ThemaMain.darkBlue),
+              size: 18.sp, color: ThemaMain.pink),
           onPressed: () {
             selected(TiposModelo(
                 id: null, nombre: "", descripcion: "", icon: null, color: null));
