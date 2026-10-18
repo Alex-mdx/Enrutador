@@ -76,44 +76,66 @@ class MapFun {
 
   static Future<void> ordenamiento(MainProvider provider) async {
     try {
-      final unvisited = await EnrutarController.getItems();
-      if (unvisited.isEmpty) return;
+      final items = await EnrutarController.getItems();
+      if (items.isEmpty) return;
 
-      double currentLat = provider.local?.latitude ?? 0;
-      double currentLng = provider.local?.longitude ?? 0;
+      if (Preferences.visitados) {
+        final noVisitados =
+            items.where((element) => element.visitado != 1).toList();
+        final visitados =
+            items.where((element) => element.visitado == 1).toList();
 
-      final List<EnrutarModelo> orderedList = [];
+        // Proceso 1: Ordenar de manera independiente los no visitados (visitado = 0)
+        await _ordenarGrupo(noVisitados, provider);
 
-      while (unvisited.isNotEmpty) {
-        int bestIndex = 0;
-        double minDistance = double.infinity;
-
-        for (int i = 0; i < unvisited.length; i++) {
-          final item = unvisited[i];
-          final dist = calcularDistancia(
-              lat1: currentLat,
-              lon1: currentLng,
-              lat2: item.buscar.latitud,
-              lon2: item.buscar.longitud);
-
-          if (dist < minDistance) {
-            minDistance = dist;
-            bestIndex = i;
-          }
-        }
-
-        final nextItem = unvisited.removeAt(bestIndex);
-        orderedList.add(nextItem);
-        currentLat = nextItem.buscar.latitud;
-        currentLng = nextItem.buscar.longitud;
-      }
-
-      for (int i = 0; i < orderedList.length; i++) {
-        final enrutadorNew = orderedList[i].copyWith(orden: i + 1);
-        await EnrutarController.update(enrutadorNew);
+        // Proceso 2: Ordenar de manera independiente los visitados (visitado = 1)
+        await _ordenarGrupo(visitados, provider);
+      } else {
+        await _ordenarGrupo(items, provider);
       }
     } catch (e) {
       debugPrint("Error en ordenamiento: $e");
+    }
+  }
+
+  static Future<void> _ordenarGrupo(
+      List<EnrutarModelo> items, MainProvider provider,
+      {int startOrder = 1}) async {
+    if (items.isEmpty) return;
+
+    double currentLat = provider.local?.latitude ?? 0;
+    double currentLng = provider.local?.longitude ?? 0;
+
+    final List<EnrutarModelo> orderedList = [];
+    final List<EnrutarModelo> unvisited = List.from(items);
+
+    while (unvisited.isNotEmpty) {
+      int bestIndex = 0;
+      double minDistance = double.infinity;
+
+      for (int i = 0; i < unvisited.length; i++) {
+        final item = unvisited[i];
+        final dist = calcularDistancia(
+            lat1: currentLat,
+            lon1: currentLng,
+            lat2: item.buscar.latitud,
+            lon2: item.buscar.longitud);
+
+        if (dist < minDistance) {
+          minDistance = dist;
+          bestIndex = i;
+        }
+      }
+
+      final nextItem = unvisited.removeAt(bestIndex);
+      orderedList.add(nextItem);
+      currentLat = nextItem.buscar.latitud;
+      currentLng = nextItem.buscar.longitud;
+    }
+
+    for (int i = 0; i < orderedList.length; i++) {
+      final enrutadorNew = orderedList[i].copyWith(orden: startOrder + i);
+      await EnrutarController.update(enrutadorNew);
     }
   }
 

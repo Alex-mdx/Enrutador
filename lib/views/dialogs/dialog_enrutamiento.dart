@@ -328,7 +328,7 @@ class _DialogEnrutamientoState extends State<DialogEnrutamiento> {
               style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.bold)),
           subtitle: Column(children: [
             Text(
-                "Distancia: ${distancia > 100 ? "${Textos.moneda(moneda: distancia / 100)} KM" : "${Textos.moneda(moneda: distancia, digito: 0).replaceAll(".", "")} M"}~",
+                "Distancia: ${distancia > 100 ? "${Textos.moneda(moneda: distancia / 100)} Km" : "${Textos.moneda(moneda: distancia, digito: 0).replaceAll(".", "")} Mt"}~",
                 style: TextStyle(fontSize: 15.sp)),
             Text(
                 enrutar.buscar.agendar == null
