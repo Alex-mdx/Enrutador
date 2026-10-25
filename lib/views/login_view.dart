@@ -52,227 +52,277 @@ class _LoginViewState extends State<LoginView> {
                 shapeOffset: ScrollerShapeOffset.shiftAndMesh),
             child:
                 Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-              Card(
-                  margin: EdgeInsets.all(20),
-                  child: Padding(
-                      padding: EdgeInsets.all(12.sp),
-                      child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Padding(
-                                padding: EdgeInsets.only(bottom: 2.h),
-                                child: TextFormField(
-                                    enabled: !carga,
-                                    controller: email,
-                                    keyboardType: TextInputType.emailAddress,
-                                    decoration: InputDecoration(
-                                        fillColor: ThemaMain.background,
-                                        labelText: 'Correo Electronico'))),
-                            Padding(
-                                padding: EdgeInsets.all(12.sp),
-                                child: TextFormField(
-                                    enabled: !carga,
-                                    obscureText: show,
-                                    controller: password,
-                                    keyboardType: TextInputType.visiblePassword,
-                                    decoration: InputDecoration(
-                                        fillColor: ThemaMain.background,
-                                        labelText: 'Password',
-                                        suffixIcon: IconButton(
-                                            onPressed: () =>
-                                                setState(() => show = !show),
-                                            icon: Icon(show
-                                                ? Icons.visibility_off
-                                                : Icons.visibility))))),
-                            ElevatedButton.icon(
-                                style: ButtonStyle(
-                                    backgroundColor: WidgetStatePropertyAll(
-                                        ThemaMain.dialogbackground)),
-                                onPressed: () => showDialog(
-                                    context: context,
-                                    builder: (context) => DialogPoliticaUso()),
-                                label: Text("Aceptar politicas de uso",
-                                    style: TextStyle(fontSize: 15.sp)),
-                                icon: Icon(
-                                    Preferences.camara &&
-                                            Preferences.ubicacion &&
-                                            Preferences.contactos
-                                        ? Icons.check_circle
-                                        : Icons.check_box_outline_blank,
-                                    color: Preferences.camara &&
-                                            Preferences.ubicacion &&
-                                            Preferences.contactos
-                                        ? ThemaMain.green
-                                        : ThemaMain.red,
-                                    size: 18.sp)),
-                            Consumer<MainProvider>(
-                                builder: (context, provider, child) =>
-                                    ElevatedButton.icon(
-                                        onPressed: () async {
-                                          if (Preferences.camara &&
+              SingleChildScrollView(
+                child: Card(
+                    margin: EdgeInsets.all(8.sp),
+                    child: Padding(
+                        padding: EdgeInsets.all(12.sp),
+                        child: Column(
+                            spacing: 2.h,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              TextFormField(
+                                  enabled: !carga,
+                                  controller: email,
+                                  keyboardType: TextInputType.emailAddress,
+                                  decoration: InputDecoration(
+                                      fillColor: ThemaMain.background,
+                                      labelText: 'Correo Electronico')),
+                              TextFormField(
+                                  enabled: !carga,
+                                  obscureText: show,
+                                  controller: password,
+                                  keyboardType: TextInputType.visiblePassword,
+                                  decoration: InputDecoration(
+                                      fillColor: ThemaMain.background,
+                                      labelText: 'Password',
+                                      suffixIcon: IconButton(
+                                          onPressed: () =>
+                                              setState(() => show = !show),
+                                          icon: Icon(show
+                                              ? Icons.visibility_off
+                                              : Icons.visibility)))),
+                              ElevatedButton.icon(
+                                  style: ButtonStyle(
+                                      backgroundColor: WidgetStatePropertyAll(
+                                          ThemaMain.dialogbackground)),
+                                  onPressed: () => showDialog(
+                                      context: context,
+                                      builder: (context) =>
+                                          DialogPoliticaUso()),
+                                  label: Text("Aceptar politicas de uso",
+                                      style: TextStyle(fontSize: 15.sp)),
+                                  icon: Icon(
+                                      Preferences.camara &&
                                               Preferences.ubicacion &&
-                                              Preferences.contactos) {
-                                            if (email.text.isNotEmpty &&
-                                                password.text.isNotEmpty) {
-                                              setState(() => carga = true);
-                                              try {
-                                                var user = await FirebaseAuth
-                                                    .instance
-                                                    .signInWithEmailAndPassword(
-                                                        email: email.text,
-                                                        password:
-                                                            password.text);
-                                                log("result: ${user.toString()}");
-                                                await inLogin(user, provider);
-                                                setState(() => carga = false);
-                                              } catch (e) {
-                                                setState(() => carga = false);
-                                                var tr = await TransFun.trad(
-                                                    e.toString());
-                                                showToast(tr);
-                                              }
-                                            }
-                                          } else {
-                                            showToast(
-                                                "Debes aceptar las politicas de uso");
-                                          }
-                                        },
-                                        icon: carga
-                                            ? RiveAnimatedIcon(
-                                                riveIcon: RiveIcon.profile,
-                                                color: ThemaMain.primary,
-                                                strokeWidth: 6.w,
-                                                height: 6.w,
-                                                width: 6.w)
-                                            : Icon(Icons.login,
-                                                size: 22.sp,
-                                                color: ThemaMain.primary),
-                                        label: Text('Iniciar Sesion',
-                                            style: TextStyle(fontSize: 16.sp))))
-                          ]))),
-              Consumer<MainProvider>(
-                  builder: (context, provider, child) => ElevatedButton.icon(
-                      onPressed: () async {
-                        if (Preferences.camara &&
-                            Preferences.ubicacion &&
-                            Preferences.contactos) {
-                          if (email.text.isNotEmpty &&
-                              password.text.isNotEmpty) {
-                            setState(() => carga = true);
-                            await Dialogs.showMorph(
-                                    title: "Crear cuenta",
-                                    description:
-                                        "Se intento acceder con un usuario y contraseña inexistente\n¿Deseas crear una cuenta y acceder a la aplicacion con estos datos?",
-                                    loadingTitle: "Creando",
-                                    onAcceptPressed: (context) async {
-                                      try {
-                                        var result = await FirebaseAuth.instance
-                                            .createUserWithEmailAndPassword(
-                                                email: email.text,
-                                                password: password.text);
-                                        log(result.toString());
+                                              Preferences.contactos
+                                          ? Icons.check_circle
+                                          : Icons.check_box_outline_blank,
+                                      color: Preferences.camara &&
+                                              Preferences.ubicacion &&
+                                              Preferences.contactos
+                                          ? ThemaMain.green
+                                          : ThemaMain.red,
+                                      size: 18.sp)),
+                              Consumer<MainProvider>(
+                                  builder: (context, provider, child) => Wrap(
+                                          alignment: WrapAlignment.spaceAround,
+                                          crossAxisAlignment:
+                                              WrapCrossAlignment.center,
+                                          runAlignment:
+                                              WrapAlignment.spaceBetween,
+                                          children: [
+                                            ElevatedButton.icon(
+                                                onPressed: () async {
+                                                  if (Preferences.camara &&
+                                                      Preferences.ubicacion &&
+                                                      Preferences.contactos) {
+                                                    if (email.text.isNotEmpty &&
+                                                        password
+                                                            .text.isNotEmpty) {
+                                                      setState(
+                                                          () => carga = true);
+                                                      try {
+                                                        var user = await FirebaseAuth
+                                                            .instance
+                                                            .signInWithEmailAndPassword(
+                                                                email:
+                                                                    email.text,
+                                                                password:
+                                                                    password
+                                                                        .text);
+                                                        log("result: ${user.toString()}");
+                                                        await inLogin(
+                                                            user, provider);
+                                                        setState(() =>
+                                                            carga = false);
+                                                      } catch (e) {
+                                                        setState(() =>
+                                                            carga = false);
+                                                        var tr =
+                                                            await TransFun.trad(
+                                                                e.toString());
+                                                        showToast(tr);
+                                                      }
+                                                    }
+                                                  } else {
+                                                    showToast(
+                                                        "Debes aceptar las politicas de uso");
+                                                  }
+                                                },
+                                                icon: carga
+                                                    ? RiveAnimatedIcon(
+                                                        riveIcon:
+                                                            RiveIcon.profile,
+                                                        color:
+                                                            ThemaMain.primary,
+                                                        strokeWidth: 6.w,
+                                                        height: 6.w,
+                                                        width: 6.w)
+                                                    : Icon(Icons.login,
+                                                        size: 22.sp,
+                                                        color:
+                                                            ThemaMain.primary),
+                                                label: Text('Iniciar Sesion',
+                                                    style: TextStyle(
+                                                        fontSize: 16.sp))),
+                                            ElevatedButton.icon(
+                                                onPressed: () async {
+                                                  if (Preferences.camara &&
+                                                      Preferences.ubicacion &&
+                                                      Preferences.contactos) {
+                                                    if (email.text.isNotEmpty &&
+                                                        password
+                                                            .text.isNotEmpty) {
+                                                      setState(
+                                                          () => carga = true);
+                                                      await Dialogs.showMorph(
+                                                              title: "Crear cuenta",
+                                                              description:
+                                                                  "Se intento acceder con un usuario y contraseña inexistente\n¿Deseas crear una cuenta y acceder a la aplicacion con estos datos?",
+                                                              loadingTitle:
+                                                                  "Creando",
+                                                              onAcceptPressed:
+                                                                  (context) async {
+                                                                try {
+                                                                  var result = await FirebaseAuth
+                                                                      .instance
+                                                                      .createUserWithEmailAndPassword(
+                                                                          email: email
+                                                                              .text,
+                                                                          password:
+                                                                              password.text);
+                                                                  log(result
+                                                                      .toString());
 
-                                        if (result.user != null) {
-                                          showToast(
-                                              "Cuenta creada exitosamente");
-                                          var user = await FirebaseAuth.instance
-                                              .signInWithEmailAndPassword(
-                                                  email: email.text,
-                                                  password: password.text);
-                                          log("result: ${user.toString()}");
-                                          await inLogin(user, provider);
-                                        }
-                                      } catch (e) {
-                                        var tr =
-                                            await TransFun.trad(e.toString());
-                                        showToast(tr);
-                                      }
-                                    })
-                                .whenComplete(
-                                    () => setState(() => carga = false));
-                          } else {
-                            showToast(
-                                "Ingrese ${email.text.isEmpty ? "Correo electronico en su respectivo campo" : ""}${email.text.isEmpty && password.text.isEmpty ? " y " : ""}${password.text.isEmpty ? "Contraseña en su respectivo campo" : ""}");
-                          }
-                        } else {
-                          showToast("Debes aceptar las politicas de uso");
-                        }
-                      },
-                      icon: Icon(LineIcons.userPlus,
-                          size: 22.sp, color: ThemaMain.green),
-                      label: Text('Registrar cuenta',
-                          style: TextStyle(fontSize: 16.sp)))),
-              ElevatedButton.icon(
-                  onPressed: () async {
-                    if (email.text.isNotEmpty && password.text.isEmpty) {
-                      setState(() => carga = true);
-                      await Dialogs.showMorph(
-                          title: "Resetear contraseña",
-                          description:
-                              "Se esta intentando restablecer su contraseña de la cuenta ${email.text}",
-                          loadingTitle: "Restableciendo",
-                          onAcceptPressed: (context) async {
-                            try {
-                              await FirebaseAuth.instance
-                                  .sendPasswordResetEmail(email: email.text);
-                              showToast(
-                                  "Se ha enviado un codigo de restablecimiento de su contraseña");
-                            } catch (e) {
-                              var tr = await TransFun.trad(e.toString());
-                              showToast(tr);
-                            }
-                          }).whenComplete(() => setState(() => carga = false));
-                    } else {
-                      showToast(
-                          "${email.text.isEmpty ? "Ingrese correo electronico en su respectivo campo" : ""}${email.text.isEmpty && password.text.isNotEmpty ? " y " : ""}${password.text.isNotEmpty ? "Deje vacio el campo de contraseña" : ""}");
-                    }
-                  },
-                  icon: Icon(LineIcons.alternateUnlock,
-                      size: 22.sp, color: ThemaMain.primary),
-                  label: Text('Resetear contraseña',
-                      style: TextStyle(fontSize: 16.sp))),
+                                                                  if (result
+                                                                          .user !=
+                                                                      null) {
+                                                                    showToast(
+                                                                        "Cuenta creada exitosamente");
+                                                                    var user = await FirebaseAuth
+                                                                        .instance
+                                                                        .signInWithEmailAndPassword(
+                                                                            email:
+                                                                                email.text,
+                                                                            password: password.text);
+                                                                    log("result: ${user.toString()}");
+                                                                    await inLogin(
+                                                                        user,
+                                                                        provider);
+                                                                  }
+                                                                } catch (e) {
+                                                                  var tr =
+                                                                      await TransFun
+                                                                          .trad(
+                                                                              e.toString());
+                                                                  showToast(tr);
+                                                                }
+                                                              })
+                                                          .whenComplete(() =>
+                                                              setState(() =>
+                                                                  carga =
+                                                                      false));
+                                                    } else {
+                                                      showToast(
+                                                          "Ingrese ${email.text.isEmpty ? "Correo electronico en su respectivo campo" : ""}${email.text.isEmpty && password.text.isEmpty ? " y " : ""}${password.text.isEmpty ? "Contraseña en su respectivo campo" : ""}");
+                                                    }
+                                                  } else {
+                                                    showToast(
+                                                        "Debes aceptar las politicas de uso");
+                                                  }
+                                                },
+                                                icon: Icon(LineIcons.userPlus,
+                                                    size: 22.sp,
+                                                    color: ThemaMain.green),
+                                                label: Text('Registrar cuenta',
+                                                    style: TextStyle(
+                                                        fontSize: 16.sp)))
+                                          ]))
+                            ]))),
+              ),
               Consumer<MainProvider>(
-                  builder: (context, provider, child) => ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: carga ? ThemaMain.darkGrey : null,
-                      ),
-                      label: Text("Entrar con Google",
-                          style: TextStyle(fontSize: 16.sp)),
-                      icon: Icon(LineIcons.googleLogo,
-                          size: 24.sp, color: ThemaMain.green),
-                      onPressed: () async {
-                        try {
-                          setState(() => carga = true);
-                          if (Preferences.camara &&
-                              Preferences.ubicacion &&
-                              Preferences.contactos) {
-                            if (GoogleSignIn.instance.supportsAuthenticate()) {
-                              var auth =
-                                  await GoogleSignIn.instance.authenticate();
-                              if (auth.authentication.idToken != null) {
-                                // Usar GoogleAuthProvider.credential para obtener la credencial correcta
-                                AuthCredential cred =
-                                    GoogleAuthProvider.credential(
-                                        idToken: auth.authentication.idToken);
-                                var user = await FirebaseAuth.instance
-                                    .signInWithCredential(cred);
-                                await inLogin(user, provider);
+                  builder: (context, provider, child) =>
+                      Column(spacing: 1.h, children: [
+                        ElevatedButton.icon(
+                            onPressed: () async {
+                              if (email.text.isNotEmpty &&
+                                  password.text.isEmpty) {
+                                setState(() => carga = true);
+                                await Dialogs.showMorph(
+                                        title: "Resetear contraseña",
+                                        description:
+                                            "Se esta intentando restablecer su contraseña de la cuenta ${email.text}",
+                                        loadingTitle: "Restableciendo",
+                                        onAcceptPressed: (context) async {
+                                          try {
+                                            await FirebaseAuth.instance
+                                                .sendPasswordResetEmail(
+                                                    email: email.text);
+                                            showToast(
+                                                "Se ha enviado un codigo de restablecimiento de su contraseña");
+                                          } catch (e) {
+                                            var tr = await TransFun.trad(
+                                                e.toString());
+                                            showToast(tr);
+                                          }
+                                        })
+                                    .whenComplete(
+                                        () => setState(() => carga = false));
+                              } else {
+                                showToast(
+                                    "${email.text.isEmpty ? "Ingrese correo electronico en su respectivo campo" : ""}${email.text.isEmpty && password.text.isNotEmpty ? " y " : ""}${password.text.isNotEmpty ? "Deje vacio el campo de contraseña" : ""}");
                               }
-                            } else {
-                              showToast(
-                                  "No se pudo autenticar con Google en este dispositivo");
-                            }
-                          } else {
-                            showToast("Debes aceptar las politicas de uso");
-                          }
-                        } catch (e) {
-                          setState(() => carga = false);
-                          debugPrint(e.toString());
-                          var tr = await TransFun.trad(e.toString());
-                          showToast(tr);
-                        }
-                        setState(() => carga = false);
-                      }))
+                            },
+                            icon: Icon(LineIcons.alternateUnlock,
+                                size: 22.sp, color: ThemaMain.primary),
+                            label: Text('Resetear contraseña',
+                                style: TextStyle(fontSize: 16.sp))),
+                        ElevatedButton.icon(
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor:
+                                    carga ? ThemaMain.darkGrey : null),
+                            label: Text("Entrar con Google",
+                                style: TextStyle(fontSize: 16.sp)),
+                            icon: Icon(LineIcons.googleLogo,
+                                size: 24.sp, color: ThemaMain.green),
+                            onPressed: () async {
+                              try {
+                                setState(() => carga = true);
+                                if (Preferences.camara &&
+                                    Preferences.ubicacion &&
+                                    Preferences.contactos) {
+                                  if (GoogleSignIn.instance
+                                      .supportsAuthenticate()) {
+                                    var auth = await GoogleSignIn.instance
+                                        .authenticate();
+                                    if (auth.authentication.idToken != null) {
+                                      // Usar GoogleAuthProvider.credential para obtener la credencial correcta
+                                      AuthCredential cred =
+                                          GoogleAuthProvider.credential(
+                                              idToken:
+                                                  auth.authentication.idToken);
+                                      var user = await FirebaseAuth.instance
+                                          .signInWithCredential(cred);
+                                      await inLogin(user, provider);
+                                    }
+                                  } else {
+                                    showToast(
+                                        "No se pudo autenticar con Google en este dispositivo");
+                                  }
+                                } else {
+                                  showToast(
+                                      "Debes aceptar las politicas de uso");
+                                }
+                              } catch (e) {
+                                setState(() => carga = false);
+                                debugPrint(e.toString());
+                                var tr = await TransFun.trad(e.toString());
+                                showToast(tr);
+                              }
+                              setState(() => carga = false);
+                            })
+                      ]))
             ])));
   }
 

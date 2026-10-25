@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:enrutador/models/tip_model.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +13,7 @@ import '../../../utilities/theme/theme_color.dart';
 import '../sliding_cards/tarjeta_contacto_detalle.dart';
 
 class CardContactoDownload extends StatefulWidget {
-  final TipModel tip;
+  final String contact;
   final List<ContactoModelo> contactoTemp;
   final Function(List<ContactoModelo>) refreshContactos;
   final int index;
@@ -21,7 +22,7 @@ class CardContactoDownload extends StatefulWidget {
 
   const CardContactoDownload(
       {super.key,
-      required this.tip,
+      required this.contact,
       required this.contactoTemp,
       required this.refreshContactos,
       required this.index,
@@ -37,8 +38,8 @@ class _CardContactoDownloadState extends State<CardContactoDownload> {
 
   @override
   Widget build(BuildContext context) {
-    var idTemp = int.parse(widget.tip.contactosIds[widget.index].split("-")[0]);
-    var empleadoTemp = widget.tip.contactosIds[widget.index].split("-")[1];
+    var idTemp = int.parse(widget.contact.split("-")[0]);
+    var empleadoTemp = widget.contact.split("-")[1];
 
     var exist = (widget.contactoTemp.firstWhereOrNull((element) =>
             (element.id == idTemp) && (element.empleadoId == empleadoTemp))) !=
@@ -102,10 +103,13 @@ class _CardContactoDownloadState extends State<CardContactoDownload> {
                           ],
                         constraints: BoxConstraints.tightFor(
                             width: 35.sp, height: 35.sp),
-                        semanticsLabel: 'Loading',
+                        semanticsLabel: 'Cargando',
                         color: ThemaMain.primary,
-                        semanticsValue: 'In progress')
-                    : Text("Contacto\n#${widget.index + 1}",
+                        semanticsValue: 'Cargando...')
+                    : AutoSizeText("Contacto\n#${widget.index + 1}",
+                        minFontSize: 11,
+                        maxLines: 2,
+                        overflowReplacement: Text("Cont. #${widget.index + 1}"),
                         textAlign: TextAlign.center,
                         style: TextStyle(
                             fontSize: 16.sp,

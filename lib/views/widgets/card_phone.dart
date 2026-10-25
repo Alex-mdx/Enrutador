@@ -1,4 +1,5 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:enrutador/models/contacto_model.dart';
 import 'package:enrutador/utilities/number_fun.dart';
 import 'package:enrutador/utilities/theme/theme_app.dart';
 import 'package:enrutador/utilities/theme/theme_color.dart';
@@ -15,6 +16,50 @@ import '../../utilities/main_provider.dart';
 class PhoneStateWidget extends StatelessWidget {
   const PhoneStateWidget({super.key});
 
+  /// Normaliza el numero entrante y busca el contacto con multiples estrategias
+  /// para cubrir variaciones de formato (codigo de pais, lada, guiones, espacios).
+  static Future<List<ContactoModelo>> _buscarContacto(
+      String? rawNumber) async {
+    if (rawNumber == null || rawNumber.isEmpty) return [];
+
+    // 1. Extraer solo digitos del numero entrante
+    final soloDigitos = rawNumber.replaceAll(RegExp(r'\D'), '');
+    if (soloDigitos.isEmpty) return [];
+
+    // 2. Intentar con el numero formateado por NumberFun (metodo original)
+    final formateado =
+        NumberFun.formatNumber(rawNumber).replaceAll(RegExp(r'\D'), '');
+
+    // 3. Preparar variantes de busqueda (de mas especifica a menos)
+    final variantes = <String>{};
+
+    // Numero completo en digitos puros
+    if (soloDigitos.length >= 7) variantes.add(soloDigitos);
+
+    // Numero formateado por la libreria (sin espacios ni caracteres especiales)
+    if (formateado.length >= 7 && formateado != soloDigitos) {
+      variantes.add(formateado);
+    }
+
+    // Ultimos 10 digitos (numero nacional mexicano estandar)
+    if (soloDigitos.length > 10) {
+      variantes.add(soloDigitos.substring(soloDigitos.length - 10));
+    }
+
+    // Ultimos 7 digitos (numero local sin lada)
+    if (soloDigitos.length > 7) {
+      variantes.add(soloDigitos.substring(soloDigitos.length - 7));
+    }
+
+    // 4. Buscar con cada variante hasta encontrar resultados
+    for (final variante in variantes) {
+      final resultados = await ContactoController.buscar(variante, 2);
+      if (resultados.isNotEmpty) return resultados;
+    }
+
+    return [];
+  }
+
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<MainProvider>(context);
@@ -27,11 +72,8 @@ class PhoneStateWidget extends StatelessWidget {
                     ? 1
                     : 0,
                 duration: Durations.medium3,
-                child: FutureBuilder(
-                    future: ContactoController.buscar(
-                        (NumberFun.formatNumber(snapshot.data?.number ?? "-1"))
-                            .replaceAll(" ", ""),
-                        2),
+                child: FutureBuilder<List<ContactoModelo>>(
+                    future: _buscarContacto(snapshot.data?.number),
                     builder: (context, contacto) => InkWell(
                         borderRadius: BorderRadius.circular(borderRadius),
                         onTap: () async {
@@ -88,3 +130,4 @@ class PhoneStateWidget extends StatelessWidget {
             : SizedBox());
   }
 }
+

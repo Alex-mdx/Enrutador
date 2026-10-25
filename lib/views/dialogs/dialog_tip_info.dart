@@ -111,7 +111,7 @@ class _DialogTipInfoState extends State<DialogTipInfo> {
                             itemCount: tip.contactosIds.length,
                             itemBuilder: (context, index) =>
                                 CardContactoDownload(
-                                    tip: tip,
+                                    contact: tip.contactosIds[index],
                                     contactoTemp: contactoTemp,
                                     refreshContactos: (contactos) {
                                       setState(() {

@@ -24,46 +24,102 @@ import 'package:path_provider/path_provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  try {
-    await FMTCObjectBoxBackend().initialise();
-  } catch (error) {
-    var absPath = path.join(
-        (await getApplicationDocumentsDirectory()).absolute.path, 'fmtc');
-    debugPrint(absPath);
-    final dir = Directory(absPath);
 
-    await dir.delete(recursive: true);
+  String? errorMessage;
+
+  try {
+    // 1. Firebase
+    try {
+      await Firebase.initializeApp(
+          options: DefaultFirebaseOptions.currentPlatform);
+    } catch (e) {
+      errorMessage = 'Firebase: $e';
+    }
+
+    // 2. FMTC (ObjectBox)
+    if (errorMessage == null) {
+      try {
+        await FMTCObjectBoxBackend().initialise();
+      } catch (e) {
+        try {
+          var absPath = path.join(
+              (await getApplicationDocumentsDirectory()).absolute.path, 'fmtc');
+          final dir = Directory(absPath);
+          await dir.delete(recursive: true);
+          await FMTCObjectBoxBackend()
+              .initialise(); // Reintentar después de borrar
+        } catch (e2) {
+          errorMessage = 'FMTC: $e2';
+        }
+      }
+    }
+
+    // 3. Notificaciones (no crítico, si falla seguimos)
+    try {
+      final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+          FlutterLocalNotificationsPlugin();
+      const AndroidInitializationSettings initializationSettingsAndroid =
+          AndroidInitializationSettings('@mipmap/ic_launcher');
+      const InitializationSettings initializationSettings =
+          InitializationSettings(android: initializationSettingsAndroid);
+
+      await flutterLocalNotificationsPlugin.initialize(
+          settings: initializationSettings,
+          onDidReceiveNotificationResponse: (NotificationResponse response) {
+            debugPrint("Notificación presionada: ${response.payload}");
+          });
+
+      final AndroidFlutterLocalNotificationsPlugin? androidImplementation =
+          flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin>();
+      await androidImplementation?.requestNotificationsPermission();
+    } catch (e) {
+      debugPrint('Notificaciones falló (no crítico): $e');
+    }
+
+    // 4. Crashlytics
+    FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
+
+    // 5. Google Sign In
+    if (errorMessage == null) {
+      try {
+        await GoogleSignIn.instance
+            .initialize(serverClientId: Firebase.app().options.androidClientId);
+      } catch (e) {
+        errorMessage = 'GoogleSignIn: $e';
+      }
+    }
+
+    // 6. Preferences (SharedPreferences)
+    if (errorMessage == null) {
+      try {
+        await Preferences.init();
+      } catch (e) {
+        errorMessage = 'Preferences: $e';
+      }
+    }
+  } catch (e) {
+    errorMessage = 'Error general: $e';
   }
 
-  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-      FlutterLocalNotificationsPlugin();
-  const AndroidInitializationSettings initializationSettingsAndroid =
-      AndroidInitializationSettings('@mipmap/ic_launcher');
+  if (errorMessage != null) {
+    runApp(MaterialApp(
+        home: Scaffold(
+            backgroundColor: Colors.red[50],
+            body: Center(
+                child: Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Text('ERROR EN INICIO:\n$errorMessage',
+                        style: const TextStyle(color: Colors.red, fontSize: 16),
+                        textAlign: TextAlign.center))))));
+    return;
+  }
 
-  const InitializationSettings initializationSettings =
-      InitializationSettings(android: initializationSettingsAndroid);
+  await SystemChrome.setPreferredOrientations(
+      [DeviceOrientation.portraitDown, DeviceOrientation.portraitUp]);
 
-  await flutterLocalNotificationsPlugin.initialize(
-      settings: initializationSettings,
-      onDidReceiveNotificationResponse: (NotificationResponse response) {
-        debugPrint("Notificación presionada con payload: ${response.payload}");
-      });
-
-  final AndroidFlutterLocalNotificationsPlugin? androidImplementation =
-      flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin>();
-  await androidImplementation?.requestNotificationsPermission();
-
-  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
-  await GoogleSignIn.instance
-      .initialize(serverClientId: Firebase.app().options.androidClientId);
-  await Preferences.init();
-  SystemChrome.setPreferredOrientations(
-      [DeviceOrientation.portraitDown, DeviceOrientation.portraitUp]).then((_) {
-    runApp(ChangeNotifierProvider(
-        create: (_) => MainProvider(), child: const Main()));
-  });
+  runApp(ChangeNotifierProvider(
+      create: (_) => MainProvider(), child: const Main()));
 }
 
 class Main extends StatelessWidget {
