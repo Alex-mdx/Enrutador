@@ -6,6 +6,7 @@ import 'package:enrutador/utilities/preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart' as sql;
 
+import '../models/referencia_model.dart';
 import '../utilities/textos.dart';
 
 String nombreDB = "contacto";
@@ -132,7 +133,8 @@ class ContactoController {
           "agendar",
           "tipo",
           "estado",
-          "nombre_completo"
+          "nombre_completo",
+          "zonas"
         ],
         orderBy: "id DESC"));
     List<ContactoModelo> model = [];
@@ -140,6 +142,32 @@ class ContactoController {
       model.add(ContactoModelo.fromJson(element));
     }
     return model;
+  }
+
+  static Future<(List<ContactoModelo>, List<ReferenciaModelo>)> globalizar(
+      {required String element}) async {
+    List<ContactoModelo> cTemp = [];
+    List<ReferenciaModelo> refs = [];
+    var idCont = int.parse(element.split("-")[0]);
+    var empleadoId = element.split("-")[1];
+    var a =
+        await ContactoController.getItemId(id: idCont, empleadoId: empleadoId);
+    if (a != null) {
+      var refsTemp = await ReferenciasController.getIdPrin(
+          idContacto: a.id!, lat: a.latitud, lng: a.longitud);
+      refs.addAll(refsTemp);
+      log("referencia ${refs.length}");
+      cTemp.add(a);
+      List<ContactoModelo> ntemp = [];
+      for (var ref in refsTemp) {
+        var cTemp = await ContactoController.getItemId(id: ref.idRForenea!);
+        if (cTemp != null) {
+          ntemp.add(cTemp);
+        }
+      }
+      cTemp = [...cTemp, ...ntemp];
+    }
+    return (cTemp, refs);
   }
 
   static Future<int> getCountPendiente() async {
@@ -192,7 +220,8 @@ class ContactoController {
       "tipo",
       "estado",
       "empleado_tip",
-      "tip"
+      "tip",
+      "zonas"
     ];
     //}
     final modelo = (await db.query(nombreDB, columns: query));
@@ -221,7 +250,14 @@ class ContactoController {
                 .toList()
             : newModelfiltro2.where((element) => element.tip == 1).toList();
 
-    return newModelfiltro3;
+    var newModelfiltro4 = Preferences.zonas.isEmpty
+        ? newModelfiltro3
+        : newModelfiltro3
+            .where((element) => element.zonas
+                .any((z) => Preferences.zonas.contains(z.toString())))
+            .toList();
+
+    return newModelfiltro4;
   }
 
   static Future<List<ContactoModelo>> getAll() async {
@@ -261,7 +297,8 @@ class ContactoController {
           "creado",
           "empleado_id",
           "empleado_tip",
-          "tip"
+          "tip",
+          "zonas"
         ],
         orderBy: buildItemsFilter(),
         limit: limit,
@@ -290,6 +327,7 @@ class ContactoController {
           "nombre_completo",
           "numero",
           "otro_numero",
+          "zonas"
         ],
         whereArgs: ['%$word%', '%$word%', '%$word%'],
         limit: limit ?? 10);
@@ -349,6 +387,17 @@ class ContactoController {
 
     vacios =
         "$vacios${(Preferences.pendientesFilt ? " ${vacios.isNotEmpty ? "AND" : ""} (pendiente IS NULL OR pendiente = 1)" : "")}${Preferences.tipVis != 0 ? (vacios.isNotEmpty ? "AND" : "") : ""}${Preferences.tipVis == 0 ? "" : Preferences.tipVis == 1 ? "empleado_tip LIKE '%${Preferences.empleadoIdVis}%'" : "tip = 1"}";
+
+    if (Preferences.zonas.isNotEmpty) {
+  final zonasList = Preferences.zonas
+      .map((z) => "'${z.trim()}'")
+      .join(', ');
+  // json_each recorre cada elemento del arreglo JSON y compara exacto
+  vacios = "$vacios${vacios.isNotEmpty ? " AND " : ""}"
+      "(EXISTS (SELECT 1 FROM json_each(zonas) "
+      "WHERE CAST(json_each.value AS TEXT) IN ($zonasList)))";
+}
+
     log("vacios $vacios");
     return vacios;
   }
@@ -373,6 +422,12 @@ class ContactoController {
             .where((element) =>
                 Preferences.status.contains(element.estado.toString()))
             .toList();
-    return newModelfiltro2;
+    var newModelfiltro3 = Preferences.zonas.isEmpty
+        ? newModelfiltro2
+        : newModelfiltro2
+            .where((element) => element.zonas
+                .any((z) => Preferences.zonas.contains(z.toString())))
+            .toList();
+    return newModelfiltro3;
   }
 }

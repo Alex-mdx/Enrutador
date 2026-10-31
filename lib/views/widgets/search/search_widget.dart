@@ -8,6 +8,7 @@ import 'package:enrutador/utilities/main_provider.dart';
 import 'package:enrutador/utilities/map_fun.dart';
 import 'package:enrutador/utilities/pluscode_fun.dart';
 import 'package:enrutador/utilities/preferences.dart';
+import 'package:enrutador/utilities/textos.dart';
 import 'package:enrutador/utilities/theme/theme_app.dart';
 import 'package:enrutador/utilities/theme/theme_color.dart';
 import 'package:enrutador/utilities/w3w_fun.dart';
@@ -169,7 +170,7 @@ class _SearchWidgetState extends State<SearchWidget> {
                                         icon: Icon(Icons.send_rounded,
                                             color: ThemaMain.green))
                                 : null,
-                        prefixIcon: AnimatedCrossFade(
+                        prefixIcon: AnimatedCrossFade(firstCurve: Curves.easeIn,secondCurve: Curves.easeOut,
                             alignment: AlignmentGeometry.center,
                             firstChild: IconButton(
                                 iconSize: 22.sp,
@@ -253,7 +254,7 @@ class _SearchWidgetState extends State<SearchWidget> {
                   }))),
       FutureBuilder(
           future: ContactoController.buscar(
-              buscarController.text, Preferences.contactosMax),
+              Textos.normalizar(buscarController.text), Preferences.contactosMax),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               return Container(

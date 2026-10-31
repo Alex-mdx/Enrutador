@@ -1,6 +1,10 @@
+import 'dart:developer';
+
 import 'package:enrutador/utilities/trans_fun.dart';
 import 'package:oktoast/oktoast.dart';
 
+import '../../models/referencia_model.dart';
+import '../../utilities/services/dialog_services.dart';
 import 'fire_constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:enrutador/utilities/textos.dart';
@@ -8,6 +12,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../../models/contacto_model.dart';
+import 'referencia_fire.dart';
 
 class ContactoFire {
   static final db = FirebaseFirestore.instance;
@@ -83,6 +88,67 @@ class ContactoFire {
       debugPrint(e.toString());
       return false;
     }
+  }
+
+  static Future<(List<ContactoModelo> contacto, List<ReferenciaModelo> ref)>
+      getGeneral(
+          {int? id,
+          List<Filter>? filters,
+          int? max,
+          String orderBy = "nombre_completo",
+          bool descending = false,
+          bool saveRef = true,
+          bool saveContRef = true}) async {
+    List<ContactoModelo> contactoTemp = [];
+    List<ReferenciaModelo> referencias = [];
+    try {
+      var data = await ContactoFire.getItemPersonalizado(
+          id: null, filters: filters, max: max ?? 50);
+      List<ReferenciaModelo> refTemp = [];
+      if (saveRef) {
+        for (var element in data) {
+          var ref = await ReferenciaFire.getItemRId(id: element.id);
+          if (ref != null) {
+            refTemp.add(ref);
+          }
+        }
+
+        contactoTemp = data;
+        referencias = refTemp;
+        var refStr = referencias
+            .where((e) =>
+                !contactoTemp.map((r) => r.id).toList().contains(e.idRForenea))
+            .map((e) => e.idRForenea)
+            .toList();
+        log("refStr: $refStr");
+        if (refStr.isNotEmpty && saveContRef) {
+          await Dialogs.showMorph(
+              title: "Contactos Referenciados",
+              description:
+                  "Se encontraron ${referencias.length} contactos referenciados que no estan en la lista\n¿Deseas agregar estos contactos a la lista para descargar?\nEsta operacion agregara contactos a la lista",
+              loadingTitle: "",
+              onAcceptPressed: (context) async {
+                List<Filter> filter = [];
+                filter.add(Filter("id", whereIn: refStr));
+                try {
+                  var temp = await ContactoFire.getItemPersonalizado(
+                      id: null, filters: filter, max: max ?? 50);
+
+                  contactoTemp.addAll(temp);
+                } catch (e) {
+                  var str = await TransFun.trad(e.toString());
+                  showToast("Error: $str");
+                  log("Error: ${e.toString()}");
+                }
+              });
+        }
+      }
+    } catch (e) {
+      var str = await TransFun.trad(e.toString());
+      showToast("Error: $str");
+      log("Error: ${e.toString()}");
+    }
+    return (contactoTemp, referencias);
   }
 
   static Future<bool> sendItem(

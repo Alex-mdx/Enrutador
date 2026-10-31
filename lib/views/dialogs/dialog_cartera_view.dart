@@ -3,8 +3,8 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:enrutador/controllers/cartera_controller.dart';
 import 'package:enrutador/controllers/fireController/cartera_fire.dart';
-import 'package:enrutador/utilities/services/dialog_services.dart';
 import 'package:enrutador/utilities/services/navigation_services.dart';
 import 'package:enrutador/utilities/textos.dart';
 import 'package:enrutador/utilities/theme/theme_color.dart';
@@ -12,8 +12,6 @@ import 'package:enrutador/views/widgets/extras/card_contacto_download.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:enrutador/models/cartera_model.dart';
-import 'package:line_icons/line_icons.dart';
-import 'package:m3e_core/m3e_core.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
@@ -27,7 +25,9 @@ import '../widgets/extras/pin_widget.dart';
 
 class DialogCarteraView extends StatefulWidget {
   final CarteraModel? cartera;
-  const DialogCarteraView({super.key, required this.cartera});
+  final bool propio;
+  const DialogCarteraView(
+      {super.key, required this.cartera, this.propio = false});
 
   @override
   State<DialogCarteraView> createState() => _DialogCarteraViewState();
@@ -42,11 +42,13 @@ class _DialogCarteraViewState extends State<DialogCarteraView> {
 
   bool cargaContacto = false;
 
+  CarteraModel? carteraLocal;
+
   @override
   void initState() {
     super.initState();
     cartera = widget.cartera;
-    if (cartera == null) {
+    if (cartera == null && !widget.propio) {
       _cargarCarteraArchivo();
     }
   }
@@ -63,24 +65,21 @@ class _DialogCarteraViewState extends State<DialogCarteraView> {
         final content = await file.readAsString();
         datas = jsonDecode(content);
 
-        /* if (datas.containsKey("cartera")) {
-          final carteraData = datas["cartera"];
+        if (datas!.containsKey("cartera")) {
+          final carteraData = datas!["cartera"];
           final model =
               CarteraModel.fromJson(Map<String, dynamic>.from(carteraData));
           if (mounted) {
             setState(() {
-              cartera = model;
+              carteraLocal = model;
             });
           }
-        }*/
+        }
       } else {
-        showToast("No se encontró archivo de cartera");
+        log("No se encontró archivo de cartera");
       }
     } catch (e) {
-      if (kDebugMode) {
-        print("Error al cargar cartera.json: $e");
-      }
-      showToast("Error al leer el archivo de cartera");
+      log("Error al cargar cartera.json: $e");
     } finally {
       if (mounted) {
         setState(() {
@@ -112,7 +111,6 @@ class _DialogCarteraViewState extends State<DialogCarteraView> {
                                     onCompleted: (p0) {
                                       if (p0 == cartera?.codigo.toString()) {
                                         var temp = cartera?.copyWith(activo: 1);
-
                                         showToast(
                                             "Cartera escaneada exitosamente");
                                         setState(() {
@@ -165,7 +163,10 @@ class _DialogCarteraViewState extends State<DialogCarteraView> {
                             max: 1,
                             orderBy: "fecha_creado"))
                         .firstOrNull;
+                    await _cargarCarteraArchivo();
+
                     if (temp != null) {
+                      await CarteraController.update(temp);
                       setState(() {
                         cartera = temp;
                       });
@@ -194,7 +195,7 @@ class _DialogCarteraViewState extends State<DialogCarteraView> {
       Padding(
           padding: EdgeInsets.all(8.sp),
           child: Column(children: [
-            IconButton.filledTonal(
+            /* IconButton.filledTonal(
                 onLongPress: () {
                   Dialogs.showMorph(
                       title: "Eliminar",
@@ -237,8 +238,8 @@ class _DialogCarteraViewState extends State<DialogCarteraView> {
                         ? Icon(LineIcons.folderOpenAlt,
                             color: ThemaMain.darkGrey)
                         : Icon(LineIcons.fileAlt, color: ThemaMain.green)),
-            Divider(),
-            cartera?.activo == null
+            Divider(), */
+            cartera?.activo == null && !widget.propio
                 ? Text("No se encontro ninguna cartera",
                     style: TextStyle(
                         fontSize: 16.sp,
@@ -248,36 +249,37 @@ class _DialogCarteraViewState extends State<DialogCarteraView> {
                     padding: EdgeInsets.all(8.sp),
                     child: Column(children: [
                       bd.Badge(
-                          onTap: () => showToast(
-                              "Esta cartera esta bloqueada, ingrese su codigo para acceder a los contactos"),
+                          badgeStyle: bd.BadgeStyle(
+                              badgeColor: cartera?.uuid == carteraLocal?.uuid
+                                  ? ThemaMain.green
+                                  : ThemaMain.yellow),
+                          onTap: () => showToast("${carteraLocal?.uuid}"),
                           badgeContent: RiveAnimatedIcon(
-                              riveIcon: RiveIcon.shield,
+                              riveIcon: carteraLocal == null
+                                  ? RiveIcon.warning
+                                  : RiveIcon.zap,
                               enableAbsorbPointer: true,
-                              height: 20.sp,
-                              width: 20.sp,
+                              height: 18.sp,
+                              width: 18.sp,
                               strokeWidth: 16.sp,
                               color: ThemaMain.primary),
                           badgeAnimation: const bd.BadgeAnimation.slide(),
-                          showBadge: cartera!.activo == 0 && datas != null,
+                          showBadge: cartera!.activo != 0,
                           child: AnimatedContainer(
                               duration: Durations.medium1,
                               curve: Curves.easeInOut,
                               width: double.infinity,
                               constraints: BoxConstraints(
-                                  maxHeight: cartera!.activo == 0 ? 6.h : 30.h),
+                                  maxHeight: cartera!.activo == 0 && !widget.propio
+                                      ? 6.h
+                                      : 45.h),
                               decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(20.sp),
-                                  color: cartera!.activo == 0
+                                  color: cartera!.activo == 0 && !widget.propio
                                       ? ThemaMain.darkGrey
-                                      : ThemaMain.second),
-                              child: cartera!.activo == 0
-                                  ? Center(
-                                      child: Text("Contactos bloqueados",
-                                          style: TextStyle(
-                                              fontSize: 16.sp,
-                                              fontWeight: FontWeight.bold,
-                                              color: ThemaMain.second)))
-                                  : GridView.builder(
+                                      : ThemaMain.background),
+                              child: cartera?.activo == 1 || widget.propio
+                                  ? GridView.builder(
                                       shrinkWrap: true,
                                       itemCount: cartera!.contactos.length,
                                       gridDelegate:
@@ -295,7 +297,16 @@ class _DialogCarteraViewState extends State<DialogCarteraView> {
                                                 setState(() {
                                                   cargaContacto = p0;
                                                 }));
-                                      }))),
+                                      })
+                                  : InkWell(
+                                      onTap: () => showToast(
+                                          "Ingresa su codigo para visualizar los contactos"),
+                                      child: Center(
+                                          child: Text("Contactos bloqueados",
+                                              style: TextStyle(
+                                                  fontSize: 16.sp,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: ThemaMain.second)))))),
                       Wrap(
                           runAlignment: WrapAlignment.spaceAround,
                           alignment: WrapAlignment.spaceAround,

@@ -225,9 +225,9 @@ class _CardAccountLiteState extends State<CardAccountLite> {
                               icon: Icon(Icons.account_circle,
                                   size: 20.sp, color: ThemaMain.background)))
                     ]),
-                Wrap(
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    runAlignment: WrapAlignment.spaceAround,
+                Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       Column(children: [
                         InputQty.int(
@@ -323,15 +323,14 @@ class _CardAccountLiteState extends State<CardAccountLite> {
                           label: Text(
                               user.empleadoId ?? "Sin N. Empleado ingresado",
                               style: TextStyle(
-                                  color: ThemaMain.darkBlue,
-                                  fontSize: 15.sp,
+                                  fontSize: 16.sp,
                                   fontWeight: FontWeight.bold)))
                     ]),
-                Wrap(
-                    alignment: WrapAlignment.spaceAround,
-                    runAlignment: WrapAlignment.spaceBetween,
+                Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      ElevatedButton.icon(
+                      TextButton.icon(
                           icon: Icon(LineIcons.helpingHands,
                               color: ThemaMain.green, size: 20.sp),
                           onPressed: () {
@@ -366,7 +365,7 @@ class _CardAccountLiteState extends State<CardAccountLite> {
                                   color: ThemaMain.darkBlue,
                                   fontSize: 15.sp,
                                   fontWeight: FontWeight.bold))),
-                      ElevatedButton.icon(
+                      TextButton.icon(
                           icon: Icon(LineIcons.mapMarked,
                               color: ThemaMain.red, size: 20.sp),
                           onPressed: () {
@@ -382,7 +381,7 @@ class _CardAccountLiteState extends State<CardAccountLite> {
                                   color: ThemaMain.darkBlue,
                                   fontSize: 15.sp,
                                   fontWeight: FontWeight.bold))),
-                      ElevatedButton.icon(
+                      TextButton.icon(
                           icon: Icon(Icons.type_specimen,
                               color: ThemaMain.primary, size: 20.sp),
                           onPressed: () {

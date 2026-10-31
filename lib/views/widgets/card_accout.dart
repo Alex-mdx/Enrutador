@@ -50,6 +50,7 @@ class _CardAccoutState extends State<CardAccout> {
         child: Padding(
             padding: EdgeInsets.all(4.sp),
             child: Column(
+                spacing: 5.h,
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -251,6 +252,10 @@ class _CardAccoutState extends State<CardAccout> {
                                               : FontWeight.normal)));
                             }),
                         ElevatedButton.icon(
+                            style: ButtonStyle(
+                                padding: WidgetStatePropertyAll(
+                                    EdgeInsets.symmetric(
+                                        horizontal: 2.w, vertical: 0))),
                             onPressed: () async {
                               var accout = FirebaseAuth.instance.currentUser;
                               await Dialogs.showMorph(
@@ -277,6 +282,10 @@ class _CardAccoutState extends State<CardAccout> {
                             label: Text('Resetear contraseña',
                                 style: TextStyle(fontSize: 16.sp))),
                         ElevatedButton.icon(
+                            style: ButtonStyle(
+                                padding: WidgetStatePropertyAll(
+                                    EdgeInsets.symmetric(
+                                        horizontal: 2.w, vertical: 0))),
                             onPressed: () async => Dialogs.showMorph(
                                 title: "Cerrar sesión",
                                 description: "¿Desea cerrar sesión?",
@@ -297,6 +306,10 @@ class _CardAccoutState extends State<CardAccout> {
                                     fontSize: 16.sp, color: ThemaMain.red))),
                         Center(
                             child: ElevatedButton.icon(
+                                style: ButtonStyle(
+                                    padding: WidgetStatePropertyAll(
+                                        EdgeInsets.symmetric(
+                                            horizontal: 2.w, vertical: 0))),
                                 onPressed: () async {
                                   final user =
                                       FirebaseAuth.instance.currentUser;

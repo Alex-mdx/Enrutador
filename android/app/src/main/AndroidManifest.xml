@@ -126,5 +126,30 @@
             <action android:name="android.intent.action.GET_CONTENT" />
             <data android:mimeType="application/json" />
         </intent>
+        <!-- Google Maps & Google Maps Go -->
+        <package android:name="com.google.android.apps.maps" />
+        <package android:name="com.google.android.apps.mapslite" />
+        <!-- Waze -->
+        <package android:name="com.waze" />
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="waze" />
+        </intent>
+        <!-- OsmAnd & OsmAnd+ -->
+        <package android:name="net.osmand" />
+        <package android:name="net.osmand.plus" />
+        <!-- Huawei Petal Maps -->
+        <package android:name="com.huawei.maps.app" />
+        <!-- what3words -->
+        <package android:name="com.what3words.android" />
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="w3w" />
+        </intent>
+        <!-- Soporte para cualquier visor o navegador de coordenadas geo -->
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="geo" />
+        </intent>
     </queries>
 </manifest>

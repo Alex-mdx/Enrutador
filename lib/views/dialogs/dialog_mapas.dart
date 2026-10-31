@@ -1,3 +1,4 @@
+import 'package:enrutador/models/demomap_model.dart';
 import 'package:enrutador/utilities/services/navigation_services.dart';
 import 'package:enrutador/views/widgets/list_maps_widget.dart';
 import 'package:flutter/material.dart';
@@ -16,8 +17,8 @@ class DialogMapas extends StatelessWidget {
         child: Column(mainAxisSize: MainAxisSize.min, children: [
       Text("Seleccione algun mapa",
           style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold)),
-      FutureBuilder(
-          future: MapLauncher.installedMaps,
+      FutureBuilder<List<AvailableMap>>(
+          future: MapLauncher.getAvailableMaps(DemoMapModel.maps),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               return snapshot.data!.isEmpty
@@ -37,7 +38,8 @@ class DialogMapas extends StatelessWidget {
                             child: ListMapsWidget(
                                 mapas: mapas,
                                 latitud: coordenadas.latitude,
-                                longitud: coordenadas.longitude,word: words,
+                                longitud: coordenadas.longitude,
+                                word: words,
                                 launch: (p0) async {
                                   Navigation.pop();
                                 }));

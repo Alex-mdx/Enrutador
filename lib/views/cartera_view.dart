@@ -78,6 +78,7 @@ class _CarteraViewState extends State<CarteraView> {
                             onTap: () => showDialog(
                                 context: context,
                                 builder: (context) => DialogCarteraView(
-                                    cartera: pendientes[index]))))));
+                                    cartera: pendientes[index],
+                                    propio: true))))));
   }
 }

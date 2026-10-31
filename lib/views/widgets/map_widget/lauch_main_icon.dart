@@ -1,4 +1,5 @@
 import 'package:badges/badges.dart' as bd;
+import 'package:enrutador/models/demomap_model.dart';
 import 'package:enrutador/utilities/theme/theme_color.dart';
 import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
@@ -22,21 +23,41 @@ class LauchMainIcon extends StatelessWidget {
             backgroundColor: WidgetStatePropertyAll(ThemaMain.green)),
         color: ThemaMain.green,
         onPressed: () async {
-          final availableMaps = await MapLauncher.installedMaps;
+          final availableMaps =
+              await MapLauncher.getAvailableMaps(DemoMapModel.maps);
           if (Preferences.mapa != "") {
-            await availableMaps
-                .firstWhere(
-                    (element) => element.mapType.name == Preferences.mapa)
-                .showMarker(
-                    zoom: 16,
-                    coords: Coords(coordenadas.latitude, coordenadas.longitude),
-                    title: words ?? "Ubicacion Seleccionada");
+            final targetMap = availableMaps
+                .where((element) => element.name == Preferences.mapa)
+                .map((e) => e.map)
+                .firstOrNull;
+
+            if (Preferences.tipoNav == -1) {
+              await MapLauncher.marker(
+                Location.coords(coordenadas.latitude, coordenadas.longitude,
+                    title: words ?? "Ubicacion Seleccionada"),
+                zoom: 16,
+              ).show(map: targetMap);
+            } else {
+              final modes = TravelMode.values;
+              final mode = (Preferences.tipoNav >= 0 &&
+                      Preferences.tipoNav < modes.length)
+                  ? modes[Preferences.tipoNav]
+                  : TravelMode.driving;
+
+              await MapLauncher.directions(
+                Location.coords(coordenadas.latitude, coordenadas.longitude,
+                    title: words ?? "Ubicacion Seleccionada"),
+                mode: mode,
+              ).show(map: targetMap);
+            }
           } else {
-            showDialog(
-                context: context,
-                builder: (context) => DialogMapas(
-                    words: words ?? "Ubicacion Seleccionada",
-                    coordenadas: coordenadas));
+            if (context.mounted) {
+              showDialog(
+                  context: context,
+                  builder: (context) => DialogMapas(
+                      words: words ?? "Ubicacion Seleccionada",
+                      coordenadas: coordenadas));
+            }
           }
         },
         icon: Stack(alignment: Alignment.center, children: [

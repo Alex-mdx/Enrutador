@@ -2,6 +2,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:enrutador/controllers/contacto_controller.dart';
 import 'package:enrutador/models/contacto_model.dart';
 import 'package:enrutador/utilities/main_provider.dart';
+import 'package:enrutador/utilities/theme/theme_app.dart';
 import 'package:enrutador/utilities/theme/theme_color.dart';
 import 'package:enrutador/views/dialogs/dialog_compartir.dart';
 import 'package:flutter/foundation.dart';
@@ -40,20 +41,52 @@ class CardContactoWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    
     return bd.Badge(
-        badgeStyle: bd.BadgeStyle(
-            badgeColor: Colors.black, shape: bd.BadgeShape.twitter),
-        showBadge: contacto.estado != null && (contacto.estado ?? -1) != -1,
-        position: bd.BadgePosition.topStart(start: 0, top: 0),
-        badgeAnimation: bd.BadgeAnimation.size(),
-        badgeContent: Consumer<MainProvider>(
-            builder: (context, provider, child) => Icon(Icons.circle,
-                color: provider.estados
-                    .firstWhereOrNull(
-                        (element) => element.id == contacto.estado)
-                    ?.color,
-                size: 15.sp)),
+        badgeStyle: bd.BadgeStyle(badgeColor: Colors.transparent),
+        showBadge: (contacto.estado != null && (contacto.estado ?? -1) != -1) ||
+            contacto.zonas.isNotEmpty,
+        position: bd.BadgePosition.topStart(start: 0, top: -8),
+        badgeAnimation: bd.BadgeAnimation.fade(),
+        badgeContent: Container(
+            padding: EdgeInsets.symmetric(horizontal: .5.w, vertical: .1.h),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(borderRadius),
+                color: ThemaMain.black),
+            child: Consumer<MainProvider>(
+                builder: (context, provider, child) => Row(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          if (contacto.estado != null &&
+                              (contacto.estado ?? -1) != -1)
+                            Icon(Icons.circle,
+                                color: provider.estados
+                                    .firstWhereOrNull((element) =>
+                                        element.id == contacto.estado)
+                                    ?.color,
+                                size: 13.sp),
+                          Container(
+                              width: 6.w,
+                              alignment: Alignment.center,
+                              child: AutoSizeText(
+                                  contacto.zonas
+                                      .map((e) =>
+                                          provider.zonas
+                                              .firstWhereOrNull(
+                                                  (z) => z.id == e)
+                                              ?.nombre ??
+                                          "")
+                                      .join("-"),
+                                  maxLines: 1,
+                                  minFontSize: 6,
+                                  textAlign: TextAlign.center,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                      fontSize: 13.sp,
+                                      color: ThemaMain.white,
+                                      fontWeight: FontWeight.bold)))
+                        ]))),
         child: GestureDetector(
             onTap: () => funContact(contacto),
             child: Card(
@@ -144,7 +177,7 @@ class CardContactoWidget extends StatelessWidget {
                                                         fontStyle:
                                                             FontStyle.italic),
                                                     maxLines: 1,
-                                                    minFontSize: 13,
+                                                    minFontSize: 12,
                                                     textAlign: TextAlign.end,
                                                     overflow: TextOverflow
                                                         .ellipsis))),
@@ -152,7 +185,14 @@ class CardContactoWidget extends StatelessWidget {
                                             flex: 3,
                                             child: AutoSizeText(
                                                 contacto.domicilio?.substring(
-                                                        contacto.domicilio!.toLowerCase().indexOf("colonia").clamp(0, contacto.domicilio!.length)) ??
+                                                        contacto.domicilio!
+                                                            .toLowerCase()
+                                                            .indexOf("colonia")
+                                                            .clamp(
+                                                                0,
+                                                                contacto
+                                                                    .domicilio!
+                                                                    .length)) ??
                                                     "Sin domicilio",
                                                 maxLines: 1,
                                                 minFontSize: 12,

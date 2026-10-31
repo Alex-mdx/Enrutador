@@ -150,9 +150,8 @@ class _DialogsEstadoFuncion extends State<DialogsEstadoFuncion> {
                                                     ? estados[index].color ??
                                                         ThemaMain.primary
                                                     : null,
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                        borderRadius))
+                                                borderRadius: BorderRadius.circular(
+                                                    borderRadius))
                                             : null,
                                         height: aceptar[index] ? 5.w : 20.sp,
                                         width: aceptar[index] ? 5.w : 20.sp,
@@ -164,12 +163,11 @@ class _DialogsEstadoFuncion extends State<DialogsEstadoFuncion> {
                                                     style: TextStyle(
                                                         fontSize: 15.sp,
                                                         fontWeight: FontWeight.bold)))
-                                            : DotIndicator(size: contacto.estado == estados[index].id ? 24.sp : 20.sp, color: estados[index].color ?? ThemaMain.primary, child: contacto.estado == estados[index].id ? Icon(LineIcons.doubleCheck, color: ThemaMain.second, size: 20.sp) : null))))),
-                      ),
+                                            : DotIndicator(size: contacto.estado == estados[index].id ? 24.sp : 20.sp, color: estados[index].color ?? ThemaMain.primary, child: contacto.estado == estados[index].id ? Icon(LineIcons.doubleCheck, color: ThemaMain.second, size: 20.sp) : null)))))),
             Divider(),
             ElevatedButton.icon(
                 icon: Icon(Icons.contact_emergency,
-                    size: 22.sp, color: ThemaMain.darkBlue),
+                    size: 22.sp, color: ThemaMain.green),
                 onPressed: () {
                   widget.estatus(contacto);
                   Navigation.pop();

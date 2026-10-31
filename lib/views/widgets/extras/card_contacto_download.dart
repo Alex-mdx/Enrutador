@@ -1,6 +1,5 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:enrutador/models/tip_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:m3e_core/m3e_core.dart';

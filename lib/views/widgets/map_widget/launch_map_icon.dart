@@ -27,25 +27,36 @@ class LaunchMapIcon extends StatefulWidget {
 class _LaunchMapIconState extends State<LaunchMapIcon> {
   @override
   Widget build(BuildContext context) {
+    final bool installed = widget.mapas.isInstalled;
+
     return IconButton.filledTonal(
         iconSize: 24.sp,
-        onPressed: () async => {
-              Preferences.tipoNav == -1
-                  ? await widget.mapas
-                      .showMarker(
-                          zoom: 15,
-                          coords: Coords(widget.latitud, widget.longitud),
-                          title: widget.word)
-                      .whenComplete(() async => widget.launch != null? await widget.launch!(null) : null)
-                  : await widget.mapas
-                      .showDirections(
-                          directionsMode: DirectionsMode.values
-                              .where((e) => e.index == Preferences.tipoNav)
-                              .first,
-                          destinationTitle: widget.word,
-                          destination: Coords(widget.latitud, widget.longitud))
-                      .whenComplete(() async => widget.launch != null? await widget.launch!(null) : null)
-            },
+        onPressed: installed
+            ? () async {
+                final coords = Location.coords(widget.latitud, widget.longitud,
+                    title: widget.word);
+                if (Preferences.tipoNav == -1) {
+                  await MapLauncher.marker(
+                    coords,
+                    zoom: 15,
+                  ).show(map: widget.mapas.map);
+                } else {
+                  final modes = TravelMode.values;
+                  final mode = (Preferences.tipoNav >= 0 &&
+                          Preferences.tipoNav < modes.length)
+                      ? modes[Preferences.tipoNav]
+                      : TravelMode.driving;
+
+                  await MapLauncher.directions(
+                    coords,
+                    mode: mode,
+                  ).show(map: widget.mapas.map);
+                }
+                if (widget.launch != null) {
+                  await widget.launch!(null);
+                }
+              }
+            : null,
         icon: Icon(
             Preferences.tipoNav == 0
                 ? LineIcons.car

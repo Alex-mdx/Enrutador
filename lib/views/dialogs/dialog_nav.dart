@@ -12,7 +12,7 @@ class DialogNav extends StatefulWidget {
 }
 
 class _DialogNavState extends State<DialogNav> {
-  List<String> tipos = DirectionsMode.values.map((e) => e.name).toList();
+  List<String> tipos = TravelMode.values.map((e) => e.name).toList();
   @override
   void initState() {
     super.initState();
@@ -39,12 +39,12 @@ class _DialogNavState extends State<DialogNav> {
                   onSelected: (value) {
                     setState(() {
                       if (Preferences.tipoNav ==
-                          DirectionsMode.values
+                          TravelMode.values
                               .firstWhere((element) => element.name.contains(e))
                               .index) {
                         Preferences.tipoNav = -1;
                       } else {
-                        Preferences.tipoNav = DirectionsMode.values
+                        Preferences.tipoNav = TravelMode.values
                             .firstWhere((element) => element.name.contains(e))
                             .index;
                       }
@@ -64,7 +64,7 @@ class _DialogNavState extends State<DialogNav> {
                       size: 19.sp),
                   label: Text(e, style: TextStyle(fontSize: 14.sp)),
                   selected: Preferences.tipoNav ==
-                      DirectionsMode.values
+                      TravelMode.values
                           .firstWhere((element) => element.name.contains(e))
                           .index))
               .toList()),

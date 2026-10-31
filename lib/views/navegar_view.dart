@@ -1,3 +1,4 @@
+import 'package:enrutador/models/demomap_model.dart';
 import 'package:enrutador/utilities/main_provider.dart';
 import 'package:enrutador/utilities/preferences.dart';
 import 'package:enrutador/utilities/theme/theme_color.dart';
@@ -39,8 +40,8 @@ class NavegarView extends StatelessWidget {
                           color: ThemaMain.green)
                       : Icon(Icons.auto_fix_off, color: ThemaMain.primary))
             ]),
-        body: FutureBuilder(
-            future: MapLauncher.installedMaps,
+        body: FutureBuilder<List<AvailableMap>>(
+            future: MapLauncher.getAvailableMaps(DemoMapModel.maps),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 return snapshot.data!.isEmpty

@@ -54,7 +54,7 @@ class _PaginadorGroupedWidgetState extends State<PaginadorGroupedWidget> {
                           curve: Curves.easeInOut),
                   icon:
                       Icon(LineIcons.arrowCircleUp, color: ThemaMain.primary)),
-            IconButton.filledTonal(
+            IconButton.filled(
                 iconSize: 19.sp,
                 onPressed: () async {
                   if (index != 1) {
@@ -66,7 +66,7 @@ class _PaginadorGroupedWidgetState extends State<PaginadorGroupedWidget> {
                   }
                 },
                 icon: Icon(LineIcons.angleDoubleLeft, color: ThemaMain.green)),
-            IconButton.filledTonal(
+            IconButton.filled(
                 iconSize: 19.sp,
                 onPressed: () async {
                   if (index != 1) {
@@ -82,7 +82,7 @@ class _PaginadorGroupedWidgetState extends State<PaginadorGroupedWidget> {
                 icon: Icon(LineIcons.angleLeft, color: ThemaMain.green)),
             Text("$index - $max",
                 style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold)),
-            IconButton.filledTonal(
+            IconButton.filled(
                 iconSize: 19.sp,
                 onPressed: () async {
                   if (index != max) {
@@ -96,7 +96,7 @@ class _PaginadorGroupedWidgetState extends State<PaginadorGroupedWidget> {
                   }
                 },
                 icon: Icon(LineIcons.angleRight, color: ThemaMain.green)),
-            IconButton.filledTonal(
+            IconButton.filled(
                 iconSize: 19.sp,
                 onPressed: () async {
                   if (index != max) {
